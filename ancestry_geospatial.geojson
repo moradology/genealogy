@@ -1,0 +1,3157 @@
+{
+  "type": "FeatureCollection",
+  "name": "zimmerman_dible_ancestry_temporal_geography",
+  "metadata": {
+    "schema_version": "1.0.0",
+    "updated": "2026-07-07",
+    "coordinate_reference_system": "WGS84 longitude/latitude, EPSG:4326",
+    "purpose": "Machine-readable temporal geography layer for the Zimmerman-Dible ancestry artifact.",
+    "append_policy": "Append new event features, family-link features, and route sequence entries as research advances. Preserve existing ids unless correcting an error.",
+    "date_policy": "Use ISO dates when known. Use year or year-month only when the source is less specific. Store date_sort for timeline ordering.",
+    "precision_values": {
+      "hamlet": "Specific hamlet or named settlement.",
+      "village": "Village or unincorporated community point.",
+      "unincorporated_community": "Unincorporated community or named rural settlement.",
+      "town": "Town or city point.",
+      "township": "Township-level point or centroid.",
+      "town_or_county_unresolved": "A source may mean either a town/city or the surrounding county; coordinates use the best current point while awaiting original records.",
+      "county": "County-level centroid.",
+      "region": "State, province, historic region, or broad locality.",
+      "country": "Country-level centroid.",
+      "unresolved": "Known place name is not yet geocoded safely."
+    },
+    "confidence_values": {
+      "documented": "Directly supported by obituary, cemetery, indexed record, or specific record collection.",
+      "strong": "Repeated public tree/index/cemetery evidence with consistent people, places, and dates.",
+      "lead": "Specific compiled or indexed evidence worth mapping, but still awaiting original-record confirmation.",
+      "working": "Useful compiled lead or indirect evidence; needs original proof.",
+      "possible": "Hypothesis or possible-parent lead that must stay visually distinct from stronger evidence.",
+      "target": "Record-search location rather than a proven life event.",
+      "open": "Research target, not a proven life event."
+    },
+    "geocoding_note": "Coordinates are approximate modern locations from OpenStreetMap Nominatim lookups on 2026-07-06 unless coordinate_source says unresolved or manual_centroid. Historic boundaries are not modeled yet."
+  },
+  "place_registry": {
+    "place.selden_ks": {
+      "label": "Selden, Sheridan County, Kansas, USA",
+      "coordinates": [-100.567644, 39.540837],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.colby_ks": {
+      "label": "Colby, Thomas County, Kansas, USA",
+      "coordinates": [-101.0526881, 39.3959655],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.flagler_co": {
+      "label": "Flagler, Kit Carson County, Colorado, USA",
+      "coordinates": [-103.067158, 39.2930463],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.winona_ks": {
+      "label": "Winona, Logan County, Kansas, USA",
+      "coordinates": [-101.2449267, 39.0617169],
+      "precision": "town",
+      "coordinate_source": "GNIS coordinate in search result, checked 2026-07-07",
+      "record_context": "Evelyn Mundell Zimmerman was raised by grandmother Frances Adolph and graduated from Winona High School."
+    },
+    "place.logan_county_ks": {
+      "label": "Logan County, Kansas, USA",
+      "coordinates": [-101.19, 39.13],
+      "precision": "county",
+      "coordinate_source": "County centroid approximation, checked 2026-07-07",
+      "record_context": "County-level target for Winona-area Frances Adolph, Evelyn Mundell, school, census, guardianship, cemetery, probate, and newspaper records."
+    },
+    "place.st_louis_mo": {
+      "label": "St. Louis, Missouri, USA",
+      "coordinates": [-90.1910154, 38.6280278],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.minnesota": {
+      "label": "Minnesota, USA",
+      "coordinates": [-94.6858998, 46.729553],
+      "precision": "region",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.arkansas": {
+      "label": "Arkansas, USA",
+      "coordinates": [-92.4479108, 34.7519275],
+      "precision": "region",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.aurora_mo": {
+      "label": "Aurora, Lawrence County, Missouri, USA",
+      "coordinates": [-93.717979, 36.970891],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.smith_center_ks": {
+      "label": "Smith Center, Smith County, Kansas, USA",
+      "coordinates": [-98.7851, 39.7792],
+      "precision": "town",
+      "coordinate_source": "Smith Center locality reference, checked 2026-07-06"
+    },
+    "place.smith_county_ks": {
+      "label": "Smith County, Kansas, USA",
+      "coordinates": [-98.7851, 39.7792],
+      "precision": "county",
+      "coordinate_source": "County-seat proxy at Smith Center, checked 2026-07-06",
+      "note": "Used as a target centroid for Mary Frances Rust's possible birthplace and parentage records."
+    },
+    "place.reamsville_cemetery_ks": {
+      "label": "Reamsville / Pleasant Hill Cemetery, Martin Township, Smith County, Kansas, USA",
+      "coordinates": [-99.859444, 39.943611],
+      "precision": "cemetery",
+      "coordinate_source": "Interment.net Reamsville Cemetery transcription gives Lat 39 56 37 N, Lon 99 51 34 W",
+      "record_context": "Candidate Rust family cemetery cluster for F. John Rust, John A. Rust, Nomdje N. Rust, and related Smith County Rust records."
+    },
+    "place.beloit_ks": {
+      "label": "Beloit, Mitchell County, Kansas, USA",
+      "coordinates": [-98.1051, 39.4561],
+      "precision": "town",
+      "coordinate_source": "manual locality point checked against Mitchell County seat context 2026-07-07",
+      "record_context": "Candidate later residence for Mary Frances Rust after remarriage to Lyle Strawn, per Rust-family forum lead."
+    },
+    "place.rexford_ks": {
+      "label": "Rexford, Thomas County, Kansas, USA",
+      "coordinates": [-100.743482, 39.471671],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.oberlin_ks": {
+      "label": "Oberlin, Decatur County, Kansas, USA",
+      "coordinates": [-100.5282, 39.8183],
+      "precision": "town",
+      "coordinate_source": "manual locality point checked against Decatur County seat context 2026-07-07"
+    },
+    "place.decatur_county_ks": {
+      "label": "Decatur County, Kansas, USA",
+      "coordinates": [-100.5282, 39.8183],
+      "precision": "county",
+      "coordinate_source": "County-seat proxy at Oberlin, checked 2026-07-07",
+      "record_context": "Original marriage-record target for Samuel D. Claar and Mary Margaret Hoyle / Maggie M. Hogle."
+    },
+    "place.bonita_springs_fl": {
+      "label": "Bonita Springs, Lee County, Florida, USA",
+      "coordinates": [-81.7786972, 26.339806],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.lee_county_fl": {
+      "label": "Lee County, Florida, USA",
+      "coordinates": [-81.8823135, 26.5999265],
+      "precision": "county",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.mainhardt_de": {
+      "label": "Mainhardt, Baden-Wuerttemberg, Germany",
+      "coordinates": [9.5579299, 49.0813807],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.wuerttemberger_hof_de": {
+      "label": "Wuerttemberger Hof, Huetten, Mainhardt, Baden-Wuerttemberg, Germany",
+      "coordinates": [9.5830848, 49.064658],
+      "precision": "hamlet",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.norfolk_ne": {
+      "label": "Norfolk, Madison County, Nebraska, USA",
+      "coordinates": [-97.4169964, 42.0283379],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.cawker_city_ks": {
+      "label": "Cawker City, Mitchell County, Kansas, USA",
+      "coordinates": [-98.433672, 39.51251],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.new_almelo_ks": {
+      "label": "New Almelo, Norton County, Kansas, USA",
+      "coordinates": [-100.1179098, 39.5941707],
+      "precision": "hamlet",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.waterloo_on": {
+      "label": "Waterloo / Waterloo County, Ontario, Canada",
+      "coordinates": [-80.5222961, 43.4652699],
+      "precision": "town_or_county_unresolved",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06",
+      "historic_county": "Waterloo County",
+      "note": "FamilySearch and compiled Nauer leads use Waterloo, Ontario/Waterloo County; exact township for Elizabeth Catherine Nauer's birth still needs original record proof."
+    },
+    "place.wilmot_township_on": {
+      "label": "Wilmot Township, Waterloo County, Ontario, Canada",
+      "coordinates": [-80.65, 43.4],
+      "precision": "township",
+      "coordinate_source": "Wilmot township coordinate reference, checked 2026-07-06",
+      "historic_county": "Waterloo County",
+      "record_context": "Possible Johann Lorenz Nauer residence by 1851/52"
+    },
+    "place.new_prussia_on": {
+      "label": "New Prussia, Wilmot Township, Waterloo County, Ontario, Canada",
+      "coordinates": [-80.75694, 43.45361],
+      "precision": "unincorporated_community",
+      "coordinate_source": "New Prussia locality reference, checked 2026-07-06",
+      "historic_county": "Waterloo County",
+      "record_context": "Contextual Wilmot Township Rhenish Prussian Catholic settlement; not yet a proven Nauer residence."
+    },
+    "place.st_clements_on": {
+      "label": "St. Clements, Wellesley Township, Waterloo County, Ontario, Canada",
+      "coordinates": [-80.6520331, 43.5230932],
+      "precision": "village",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06",
+      "historic_county": "Waterloo County",
+      "record_context": "Catholic baptism/register target for Waterloo-area Nauers"
+    },
+    "place.carrick_township_on": {
+      "label": "Carrick Township, Bruce County, Ontario, Canada",
+      "coordinates": [-81.2, 44.03333300259],
+      "precision": "township",
+      "coordinate_source": "Carrick township coordinate reference, checked 2026-07-06",
+      "historic_county": "Bruce County",
+      "record_context": "Possible Lorenz Nauer residence by 1861; Dorothea Meyer Nauer death area in 1878 per compiled Waterloo German Catholic Settlers PDF"
+    },
+    "place.leoville_ks": {
+      "label": "Leoville, Decatur County, Kansas, USA",
+      "coordinates": [-100.4609753, 39.5816708],
+      "precision": "hamlet",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.marquette_county_wi": {
+      "label": "Marquette County, Wisconsin, USA",
+      "coordinates": [-89.3926785, 43.8122244],
+      "precision": "county",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.sabanka_prussia_unresolved": {
+      "label": "Sabanka, Prussia",
+      "coordinates": null,
+      "precision": "unresolved",
+      "coordinate_source": "unresolved; Meyers/GOV/Nominatim searches for Sabanka/Sabanki returned no safe match on 2026-07-06",
+      "record_context": "Literal birthplace wording from Leoville Calvary Cemetery transcription for John M. Zodrow; keep unmapped until an original record or gazetteer match proves the locality."
+    },
+    "place.neu_lebehnke_westpreussen": {
+      "label": "Neu Lebehnke / Nowa Lubianka, Kreis Deutsch Krone, Westpreussen, Prussia",
+      "coordinates": [16.64198, 53.240226],
+      "precision": "town",
+      "coordinate_source": "Kartenmeister and Deutsch Krone Project",
+      "modern_name": "Nowa Lubianka",
+      "historic_name": "Neu Lebehnke",
+      "historic_county": "Kreis Deutsch Krone",
+      "historic_province": "Westpreussen",
+      "modern_county": "Pila County",
+      "modern_voivodeship": "Greater Poland Voivodeship",
+      "catholic_parish_1905": "Lebehnke",
+      "lutheran_parish_1905": "Lebehnke",
+      "civil_registry_1905": "Lebehnke",
+      "candidate_for": "Sabanka, Prussia",
+      "candidate_rationale": "Sabanka is not found in Meyers/Nominatim; Neu Lebehnke/Nowa Lubianka is a West Prussian locality with Zodrow clustering, Lebehnke Catholic banns collateral entries, a Johann Zodrow property-file catalog entry, and a phonetic/remembered-name path through Lubianka/Lebehnke."
+    },
+    "place.lebehnke_westpreussen": {
+      "label": "Lebehnke / Stara Lubianka, Kreis Deutsch Krone, Westpreussen, Prussia",
+      "coordinates": [16.688606, 53.230802],
+      "precision": "village",
+      "coordinate_source": "Deutsch Krone Project / Stara Lubianka locality reference, checked 2026-07-06",
+      "modern_name": "Stara Lubianka",
+      "historic_name": "Lebehnke",
+      "historic_county": "Kreis Deutsch Krone",
+      "historic_province": "Westpreussen",
+      "modern_county": "Pila County",
+      "modern_voivodeship": "Greater Poland Voivodeship",
+      "record_context": "Parish and civil registry jurisdiction target for Neu Lebehnke / Nowa Lubianka in the Sabanka-Zodrow problem.",
+      "meyers_roles": ["Catholic parish church", "Protestant parish church", "Standesamt/Civil Registry"]
+    },
+    "place.deutsch_krone_county_westpreussen": {
+      "label": "Kreis Deutsch Krone, Westpreussen, Prussia",
+      "coordinates": [16.4718, 53.2713],
+      "precision": "county",
+      "coordinate_source": "County-seat proxy at Deutsch Krone / Walcz; historic county boundaries not modeled",
+      "historic_name": "Kreis Deutsch Krone",
+      "historic_province": "Westpreussen",
+      "modern_context": "Walcz area, Poland",
+      "record_context": "County-level jurisdiction for Neu Lebehnke and Lebehnke record searches."
+    },
+    "place.poland_country": {
+      "label": "Poland",
+      "coordinates": [19.1451, 51.9194],
+      "precision": "country",
+      "coordinate_source": "manual_centroid"
+    },
+    "place.clinton_county_in": {
+      "label": "Clinton County, Indiana, USA",
+      "coordinates": [-86.4692735, 40.2992769],
+      "precision": "county",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.liberty_mills_in": {
+      "label": "Liberty Mills, Wabash County, Indiana, USA",
+      "coordinates": [-85.7358, 41.0337],
+      "precision": "unincorporated_community",
+      "coordinate_source": "Liberty Mills locality reference, checked 2026-07-07",
+      "record_context": "Same-name collision context for Marjorie Opal Clemans, not a proven Evelyn Mundell ancestor locality."
+    },
+    "place.south_bend_in": {
+      "label": "South Bend, St. Joseph County, Indiana, USA",
+      "coordinates": [-86.2503, 41.6764],
+      "precision": "town",
+      "coordinate_source": "South Bend coordinate reference, checked 2026-07-07",
+      "record_context": "Same-name collision context for Marjorie Opal Clemans marriage to Clay V. Stamper, not a proven Evelyn Mundell ancestor locality."
+    },
+    "place.clarke_county_ia": {
+      "label": "Clarke County, Iowa, USA",
+      "coordinates": [-93.7842976, 41.0152092],
+      "precision": "county",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.orange_county_ca": {
+      "label": "Orange County, California, USA",
+      "coordinates": [-117.8722311, 33.750631],
+      "precision": "county",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.anaheim_ca": {
+      "label": "Anaheim, Orange County, California, USA",
+      "coordinates": [-117.911732, 33.8347516],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.coshocton_county_oh": {
+      "label": "Coshocton County, Ohio, USA",
+      "coordinates": [-81.9271441, 40.2905684],
+      "precision": "county",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.trenton_ne": {
+      "label": "Trenton, Hitchcock County, Nebraska, USA",
+      "coordinates": [-101.0131604, 40.1757537],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.armstrong_county_pa": {
+      "label": "Armstrong County, Pennsylvania, USA",
+      "coordinates": [-79.4689832, 40.7876239],
+      "precision": "county",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.kiskiminetas_township_pa": {
+      "label": "Kiskiminetas Township, Armstrong County, Pennsylvania, USA",
+      "coordinates": [-79.4921599, 40.5853625],
+      "precision": "township",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06",
+      "record_context": "Specific Dible/Moore record target from John Moore Dible compiled/index lead."
+    },
+    "place.westmoreland_county_pa": {
+      "label": "Westmoreland County, Pennsylvania, USA",
+      "coordinates": [-79.4873204, 40.2930159],
+      "precision": "county",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.bodigheim_de": {
+      "label": "Bodigheim, Buchen, Baden-Wuerttemberg, Germany",
+      "coordinates": [9.315242, 49.4783262],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.jackson_county_ks": {
+      "label": "Jackson County, Kansas, USA",
+      "coordinates": [-95.8159647, 39.4030917],
+      "precision": "county",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.greene_county_pa": {
+      "label": "Greene County, Pennsylvania, USA",
+      "coordinates": [-80.22, 39.86],
+      "precision": "county",
+      "coordinate_source": "County coordinates and Waynesburg county-seat context checked 2026-07-07",
+      "record_context": "Dorsey Overturf McClelland birth target and Alexander McClelland / Sarah Hoge marriage target."
+    },
+    "place.fayette_city_pa": {
+      "label": "Fayette City, Fayette County, Pennsylvania, USA",
+      "coordinates": [-79.840601, 40.1003509],
+      "precision": "borough",
+      "coordinate_source": "Fayette City coordinate references checked 2026-07-07",
+      "record_context": "Alexander M. McClelland compiled birth-place lead."
+    },
+    "place.hartleyville_oh": {
+      "label": "Hartleyville, Athens County, Ohio, USA",
+      "coordinates": [-82.10333, 39.54389],
+      "precision": "unincorporated_community",
+      "coordinate_source": "Hartleyville coordinates checked 2026-07-07",
+      "record_context": "Dorsey Overturf McClelland and Lovina Parker Love marriage target."
+    },
+    "place.trimble_township_oh": {
+      "label": "Trimble Township, Athens County, Ohio, USA",
+      "coordinates": [-82.0875, 39.49722],
+      "precision": "township",
+      "coordinate_source": "Trimble Township coordinates checked 2026-07-07",
+      "record_context": "Lovina Parker Love birth target."
+    },
+    "place.bishopville_oh": {
+      "label": "Bishopville, Athens/Morgan County, Ohio, USA",
+      "coordinates": [-82.0514, 39.5117],
+      "precision": "unincorporated_community",
+      "coordinate_source": "Bishopville Cemetery / locality coordinate reference checked 2026-07-07",
+      "record_context": "Alexander M. McClelland compiled death-place lead."
+    },
+    "place.osborne_county_ks": {
+      "label": "Osborne County, Kansas, USA",
+      "coordinates": [-98.69, 39.17],
+      "precision": "county",
+      "coordinate_source": "County coordinates / county-seat context checked 2026-07-07",
+      "record_context": "Lovina Parker Love McClelland death/burial target."
+    },
+    "place.troy_ks": {
+      "label": "Troy, Doniphan County, Kansas, USA",
+      "coordinates": [-95.090839, 39.7881],
+      "precision": "town",
+      "coordinate_source": "Troy coordinate reference checked 2026-07-07",
+      "record_context": "Sarah Hoge McClelland burial target at Mount Olive Cemetery."
+    },
+    "place.griggsville_il": {
+      "label": "Griggsville, Pike County, Illinois, USA",
+      "coordinates": [-90.7245722, 39.7089362],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.williamson_county_tn": {
+      "label": "Williamson County, Tennessee, USA",
+      "coordinates": [-86.8978708, 35.8772991],
+      "precision": "county",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.lincolnshire_england": {
+      "label": "Lincolnshire, England, United Kingdom",
+      "coordinates": [-0.2031209, 53.1823034],
+      "precision": "region",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.north_carolina": {
+      "label": "North Carolina, USA",
+      "coordinates": [-79.0392919, 35.6729639],
+      "precision": "region",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.caswell_county_nc": {
+      "label": "Caswell County, North Carolina, USA",
+      "coordinates": [-79.3357315, 36.4035101],
+      "precision": "county",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.menard_county_il": {
+      "label": "Menard County, Illinois, USA",
+      "coordinates": [-89.7858065, 40.0166667],
+      "precision": "county",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.nebo_ky": {
+      "label": "Nebo, Hopkins County, Kentucky, USA",
+      "coordinates": [-87.6427843, 37.383656],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.hopkins_county_ky": {
+      "label": "Hopkins County, Kentucky, USA",
+      "coordinates": [-87.4989, 37.3281],
+      "precision": "county",
+      "coordinate_source": "County-seat proxy at Madisonville, checked 2026-07-07",
+      "record_context": "County-level target for David Monroe Durham death, cemetery, probate, and land records around Nebo."
+    },
+    "place.cumberland_county_ky": {
+      "label": "Cumberland County, Kentucky, USA",
+      "coordinates": [-85.3884436, 36.7864777],
+      "precision": "county",
+      "coordinate_source": "U.S. Census geocoder county centroid, checked 2026-07-06",
+      "record_context": "Haden/Reid parentage target for Elizabeth J. Haden Dible"
+    },
+    "place.greenville_ky": {
+      "label": "Greenville, Muhlenberg County, Kentucky, USA",
+      "coordinates": [-87.1788854, 37.2011539],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.muhlenberg_county_ky": {
+      "label": "Muhlenberg County, Kentucky, USA",
+      "coordinates": [-87.1417319, 37.1984359],
+      "precision": "county",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.friendship_ky": {
+      "label": "Friendship area, Muhlenberg County, Kentucky, USA",
+      "coordinates": [-87.1933312, 37.1634449],
+      "precision": "region",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06; returned Friendship Church Cemetery as locality proxy"
+    },
+    "place.virginia": {
+      "label": "Virginia, USA",
+      "coordinates": [-78.4927721, 37.1232245],
+      "precision": "region",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.scotland_country": {
+      "label": "Scotland, United Kingdom",
+      "coordinates": [-4.2026, 56.4907],
+      "precision": "country",
+      "coordinate_source": "manual national centroid",
+      "record_context": "Family-tradition origin for John Laborn Ford Sr. and Aritta Davis in Rev. G. W. Ford's 1911 letter; not yet tied to a parish or civil record."
+    },
+    "place.east_tennessee": {
+      "label": "East Tennessee, USA",
+      "coordinates": [-83.92, 35.96],
+      "precision": "region",
+      "coordinate_source": "regional proxy near Knoxville; exact county not yet identified",
+      "record_context": "Rev. G. W. Ford's 1911 letter says John Burton Staples moved to East Tennessee about 1830 before settling in Muhlenberg County in 1835, and says the elder John Laborn Ford moved to East Tennessee after Aritta Davis died."
+    },
+    "place.albemarle_county_va": {
+      "label": "Albemarle County, Virginia, USA",
+      "coordinates": [-78.4767, 38.0293],
+      "precision": "county",
+      "coordinate_source": "County-seat proxy at Charlottesville, checked 2026-07-07",
+      "record_context": "Richard D. Haden and Sarah Sally Lewis Tompkins marriage-record target."
+    },
+    "place.bedford_county_va": {
+      "label": "Bedford County, Virginia, USA",
+      "coordinates": [-79.5231, 37.3343],
+      "precision": "county",
+      "coordinate_source": "County-seat proxy at Bedford, checked 2026-07-07",
+      "record_context": "Possible Richard D. Haden tax-record context before Cumberland County, Kentucky."
+    },
+    "place.fluvanna_county_va": {
+      "label": "Fluvanna County, Virginia, USA",
+      "coordinates": [-78.2633, 37.8604],
+      "precision": "county",
+      "coordinate_source": "County-seat proxy at Palmyra, checked 2026-07-07",
+      "record_context": "Richard D. Haden 1802 personal property tax-list context from KaysAncestry lead."
+    },
+    "place.jackson_county_oh": {
+      "label": "Jackson County, Ohio, USA",
+      "coordinates": [-82.6089043, 39.0131871],
+      "precision": "county",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.topeka_ks": {
+      "label": "Topeka, Shawnee County, Kansas, USA",
+      "coordinates": [-95.677556, 39.049011],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.bedford_county_pa": {
+      "label": "Bedford County, Pennsylvania, USA",
+      "coordinates": [-78.5237447, 40.0271453],
+      "precision": "county",
+      "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "id": "event.doyle_zimmerman.birth.1930-04-12",
+      "geometry": {"type": "Point", "coordinates": [-100.567644, 39.540837]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "birth",
+        "person_id": "person.doyle_jule_zimmerman",
+        "person_name": "Doyle Jule Zimmerman",
+        "anchor": "Doyle Jule Zimmerman",
+        "line_ids": ["line.zimmerman_surname", "line.zodrow_baier", "line.nauer"],
+        "generation": 1,
+        "date": "1930-04-12",
+        "date_sort": "1930-04-12",
+        "place_id": "place.selden_ks",
+        "place_label": "Selden, Sheridan County, Kansas",
+        "confidence": "documented",
+        "source_refs": ["https://nb.findagrave.com/memorial/34266662/doyle-jule-zimmerman"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.doyle_zimmerman.marriage.1953-06-14",
+      "geometry": {"type": "Point", "coordinates": [-101.0526881, 39.3959655]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "marriage",
+        "person_id": "person.doyle_jule_zimmerman",
+        "person_name": "Doyle Jule Zimmerman",
+        "participants": ["person.doyle_jule_zimmerman", "person.evelyn_delores_mundell"],
+        "anchor": "Doyle Jule Zimmerman",
+        "line_ids": ["line.zimmerman_surname", "line.mundell_rust_cantwell"],
+        "generation": 1,
+        "date": "1953-06-14",
+        "date_sort": "1953-06-14",
+        "place_id": "place.colby_ks",
+        "place_label": "Colby, Thomas County, Kansas",
+        "confidence": "documented",
+        "source_refs": ["https://www.baalmannmortuary.com/obituaries/evelyn-zimmerman"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.evelyn_mundell.birth.1935-01-16",
+      "geometry": {"type": "Point", "coordinates": [-103.067158, 39.2930463]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "birth",
+        "person_id": "person.evelyn_delores_mundell",
+        "person_name": "Evelyn Delores Mundell Zimmerman",
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "line_ids": ["line.mundell_rust_cantwell", "line.clemans_flaherty"],
+        "generation": 1,
+        "date": "1935-01-16",
+        "date_sort": "1935-01-16",
+        "place_id": "place.flagler_co",
+        "place_label": "Flagler, Kit Carson County, Colorado",
+        "confidence": "documented",
+        "source_refs": ["https://www.baalmannmortuary.com/obituaries/evelyn-zimmerman"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.evelyn_mundell.death.2023-04-15",
+      "geometry": {"type": "Point", "coordinates": [-101.0526881, 39.3959655]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "death",
+        "person_id": "person.evelyn_delores_mundell",
+        "person_name": "Evelyn Delores Mundell Zimmerman",
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "line_ids": ["line.mundell_rust_cantwell", "line.clemans_flaherty"],
+        "generation": 1,
+        "date": "2023-04-15",
+        "date_sort": "2023-04-15",
+        "place_id": "place.colby_ks",
+        "place_label": "Colby, Thomas County, Kansas",
+        "confidence": "documented",
+        "source_refs": ["https://www.baalmannmortuary.com/obituaries/evelyn-zimmerman"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.clemans.talmage_margaret_marriage.1921-04-16",
+      "geometry": {"type": "Point", "coordinates": [-90.1910154, 38.6280278]},
+      "properties": {
+        "feature_kind": "candidate_life_event",
+        "event_type": "marriage",
+        "person_id": "person.talmadge_dewitt_clemans",
+        "person_name": "Talmadge Dewitt Clemans",
+        "name_variants": ["Talmage Clemans", "Talmage D. Clemans", "Talmage D. Clemons"],
+        "participants": ["person.talmadge_dewitt_clemans", "person.margaret_ellen_flaherty"],
+        "participant_name_variants": {
+          "person.margaret_ellen_flaherty": ["Margaret Ellen Flaherty", "Margaret Flaherty", "Margaret Ellen Flaherty Clemans"]
+        },
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "line_ids": ["line.clemans_flaherty"],
+        "generation": 3,
+        "date": "1921-04-16",
+        "date_sort": "1921-04-16",
+        "place_id": "place.st_louis_mo",
+        "place_label": "St. Louis, Missouri",
+        "confidence": "lead",
+        "evidence_note": "Find a Grave's Margaret Ellen Flaherty Clemans memorial cites an online St. Louis marriage note: V3-237, 16 Apr 1921, Clemans, Talmage and Flaherty, Margaret. Original St. Louis marriage record still needed.",
+        "source_refs": ["https://www.findagrave.com/memorial/113830517/margaret_ellen-clemans"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.clemans.genevieve_birth.1925-01-15",
+      "geometry": {"type": "Point", "coordinates": [-94.6858998, 46.729553]},
+      "properties": {
+        "feature_kind": "collateral_life_event",
+        "event_type": "birth",
+        "person_id": "person.genevieve_clemans",
+        "person_name": "Genevieve Clemans",
+        "participants": ["person.talmadge_dewitt_clemans", "person.margaret_ellen_flaherty"],
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "line_ids": ["line.clemans_flaherty"],
+        "generation": 2,
+        "relationship_to_anchor": "Collateral sibling lead for Marjorie Clemans Mundell",
+        "date": "1925-01-15",
+        "date_sort": "1925-01-15",
+        "place_id": "place.minnesota",
+        "place_label": "Minnesota",
+        "confidence": "lead",
+        "evidence_note": "FamilySearch's public Genevieve Clemans page names Talmadge Dewitt Clemans and Margaret Ellen Flaherty as parents and lists Marjorie Clemans as a sibling.",
+        "source_refs": ["https://ancestors.familysearch.org/en/G6RD-KWY/genevieve-clemans-1925-2003"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.flaherty.edward_birth.1897",
+      "geometry": {"type": "Point", "coordinates": [-92.4479108, 34.7519275]},
+      "properties": {
+        "feature_kind": "collateral_life_event",
+        "event_type": "birth",
+        "person_id": "person.edward_j_flaherty",
+        "person_name": "Edward J. Flaherty",
+        "participants": ["person.martin_flaherty", "person.kate_flaherty"],
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "line_ids": ["line.clemans_flaherty"],
+        "generation": 3,
+        "relationship_to_anchor": "Collateral sibling lead for Margaret Ellen Flaherty Clemans",
+        "date": "1897",
+        "date_sort": "1897-01-01",
+        "place_id": "place.arkansas",
+        "place_label": "Arkansas",
+        "confidence": "lead",
+        "evidence_note": "Edward J. Flaherty's Find a Grave page gives birth in Arkansas, names parents Martin Flaherty and Kate Flaherty, and lists Margaret Ellen Flaherty Clemans among siblings.",
+        "source_refs": ["https://www.findagrave.com/memorial/36793267/edward_j-flaherty"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.flaherty.margaret_parent_cluster",
+      "geometry": {
+        "type": "MultiPoint",
+        "coordinates": [[-92.4479108, 34.7519275], [-90.1910154, 38.6280278], [-93.717979, 36.970891], [-94.6858998, 46.729553]]
+      },
+      "properties": {
+        "feature_kind": "record_target",
+        "target_type": "same_person_parentage_and_marriage_proof",
+        "line_ids": ["line.clemans_flaherty"],
+        "label": "Margaret Ellen Flaherty Clemans parentage and same-name-collision target",
+        "date_start": "1897",
+        "date_end": "1925",
+        "confidence": "target",
+        "candidate_places": ["place.arkansas", "place.st_louis_mo", "place.aurora_mo", "place.minnesota"],
+        "candidate_people": ["person.margaret_ellen_flaherty", "person.edward_j_flaherty", "person.martin_flaherty", "person.kate_flaherty"],
+        "research_question": "Does a direct Margaret Ellen Flaherty record prove Martin Flaherty and Kate Flaherty as her parents, and is the 1901/1902 Margaret who married Talmage Clemans distinct from the separate 1908 Chicago/Prairie View FamilySearch same-name profile?",
+        "evidence_note": "The 1925 Genevieve Clemans profile and 1921 St. Louis marriage note fit a Margaret born about 1901/1902; Edward J. Flaherty's sibling cluster points to Martin and Kate. Direct records are still required before merging or extending this Flaherty line.",
+        "source_refs": ["https://ancestors.familysearch.org/en/G6RD-KWY/genevieve-clemans-1925-2003", "https://www.findagrave.com/memorial/113830517/margaret_ellen-clemans", "https://www.findagrave.com/memorial/36793267/edward_j-flaherty"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.bill_dible.birth.1933-06-02",
+      "geometry": {"type": "Point", "coordinates": [-100.743482, 39.471671]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "birth",
+        "person_id": "person.william_j_dible",
+        "person_name": "William J. \"Bill\" Dible",
+        "anchor": "William J. Dible",
+        "line_ids": ["line.dible_surname", "line.long_sleight_mcclelland"],
+        "generation": 1,
+        "date": "1933-06-02",
+        "date_sort": "1933-06-02",
+        "place_id": "place.rexford_ks",
+        "place_label": "Rexford, Thomas County, Kansas",
+        "confidence": "documented",
+        "source_refs": ["https://www.baalmannmortuary.com/obituaries/william-dible"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.bill_dible.death.2022-08-09",
+      "geometry": {"type": "Point", "coordinates": [-81.8823135, 26.5999265]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "death",
+        "person_id": "person.william_j_dible",
+        "person_name": "William J. \"Bill\" Dible",
+        "anchor": "William J. Dible",
+        "line_ids": ["line.dible_surname", "line.long_sleight_mcclelland"],
+        "generation": 1,
+        "date": "2022-08-09",
+        "date_sort": "2022-08-09",
+        "place_id": "place.lee_county_fl",
+        "place_label": "Lee County, Florida",
+        "confidence": "documented",
+        "source_refs": ["https://www.baalmannmortuary.com/obituaries/william-dible"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.donna_connelly.birth.1935-04-24",
+      "geometry": {"type": "Point", "coordinates": [-100.743482, 39.471671]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "birth",
+        "person_id": "person.donna_lea_connelly",
+        "person_name": "Donna Lea Connelly Dible",
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.connelly_durham", "line.claar_white_stropes"],
+        "generation": 1,
+        "date": "1935-04-24",
+        "date_sort": "1935-04-24",
+        "place_id": "place.rexford_ks",
+        "place_label": "Rexford, Thomas County, Kansas",
+        "confidence": "documented",
+        "source_refs": ["https://www.baalmannmortuary.com/obituaries/donna-dible"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.donna_connelly.death.2022-12-20",
+      "geometry": {"type": "Point", "coordinates": [-81.7786972, 26.339806]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "death",
+        "person_id": "person.donna_lea_connelly",
+        "person_name": "Donna Lea Connelly Dible",
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.connelly_durham", "line.claar_white_stropes"],
+        "generation": 1,
+        "date": "2022-12-20",
+        "date_sort": "2022-12-20",
+        "place_id": "place.bonita_springs_fl",
+        "place_label": "Bonita Springs, Lee County, Florida",
+        "confidence": "documented",
+        "source_refs": ["https://www.baalmannmortuary.com/obituaries/donna-dible"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.zimmerman.michael_birth.1869-10-25",
+      "geometry": {"type": "Point", "coordinates": [9.5830848, 49.064658]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "birth",
+        "person_id": "person.michael_john_zimmerman_sr",
+        "person_name": "Michael John Zimmerman Sr.",
+        "anchor": "Doyle Jule Zimmerman",
+        "line_ids": ["line.zimmerman_surname"],
+        "generation": 3,
+        "date": "1869-10-25",
+        "date_sort": "1869-10-25",
+        "place_id": "place.wuerttemberger_hof_de",
+        "place_label": "Wuerttemberger Hof, Mainhardt, Baden-Wuerttemberg",
+        "confidence": "strong",
+        "source_refs": ["https://ancestors.familysearch.org/en/LLWL-MJL/michael-john-zimmerman-sr.-1869-1964"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.zimmerman.michael_elizabeth_marriage.1895-11-19",
+      "geometry": {"type": "Point", "coordinates": [-98.433672, 39.51251]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "marriage",
+        "person_id": "person.michael_john_zimmerman_sr",
+        "person_name": "Michael John Zimmerman Sr.",
+        "participants": ["person.michael_john_zimmerman_sr", "person.elizabeth_catherine_nauer"],
+        "anchor": "Doyle Jule Zimmerman",
+        "line_ids": ["line.zimmerman_surname", "line.nauer"],
+        "generation": 3,
+        "date": "1895-11-19",
+        "date_sort": "1895-11-19",
+        "place_id": "place.cawker_city_ks",
+        "place_label": "Cawker City, Mitchell County, Kansas",
+        "confidence": "strong",
+        "source_refs": ["https://ancestors.familysearch.org/en/LCPJ-KZV/elizabeth-catherine-nauer-1872-1935"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.nauer.elizabeth_birth.1872-04-07",
+      "geometry": {"type": "Point", "coordinates": [-80.5222961, 43.4652699]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "birth",
+        "person_id": "person.elizabeth_catherine_nauer",
+        "person_name": "Elizabeth Catherine Nauer Zimmerman",
+        "anchor": "Doyle Jule Zimmerman",
+        "line_ids": ["line.nauer"],
+        "generation": 3,
+        "date": "1872-04-07",
+        "date_sort": "1872-04-07",
+        "place_id": "place.waterloo_on",
+        "place_label": "Waterloo, Ontario",
+        "confidence": "strong",
+        "source_refs": ["https://ancestors.familysearch.org/en/LCPJ-KZV/elizabeth-catherine-nauer-1872-1935"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.nauer.catherina_koeberger_death.1906-02-01",
+      "geometry": {"type": "Point", "coordinates": [-100.1179098, 39.5941707]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "death_or_burial",
+        "person_id": "person.catherina_marie_koeberger",
+        "person_name": "Catherina Marie Koeberger Nauer",
+        "anchor": "Doyle Jule Zimmerman",
+        "line_ids": ["line.nauer"],
+        "generation": 4,
+        "date": "1906-02-01",
+        "date_sort": "1906-02-01",
+        "place_id": "place.new_almelo_ks",
+        "place_label": "Saint Joseph Cemetery, New Almelo, Norton County, Kansas",
+        "confidence": "strong",
+        "source_refs": ["https://www.findagrave.com/memorial/48214393/catherina-nauer"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.nauer.thomas_catharine_waterloo_residence.1871",
+      "geometry": {"type": "Point", "coordinates": [-80.5222961, 43.4652699]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "residence",
+        "person_id": "person.thomas_a_nauer",
+        "person_name": "Thomas A. Nauer",
+        "participants": ["person.thomas_a_nauer", "person.catherina_marie_koeberger"],
+        "anchor": "Doyle Jule Zimmerman",
+        "line_ids": ["line.nauer"],
+        "generation": 4,
+        "date": "1871",
+        "date_sort": "1871",
+        "place_id": "place.waterloo_on",
+        "place_label": "Waterloo County, Ontario",
+        "confidence": "lead",
+        "evidence_note": "Compiled Waterloo German Catholic Settlers PDF places Thomas and Catharine Nauer in Waterloo County in 1871.",
+        "source_refs": ["https://img1.wsimg.com/blobby/go/c0db0dfe-27d2-4632-889f-eeb26fbb14e1/downloads/f7bcaab9-38ae-4388-a9eb-f4fbecb15a21/Waterloo%20German%20Catholic%20Settlers.pdf?ver=1781326202841"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.nauer.thomas_catharine_cawker_residence.1880",
+      "geometry": {"type": "Point", "coordinates": [-98.433672, 39.51251]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "residence",
+        "person_id": "person.thomas_a_nauer",
+        "person_name": "Thomas A. Nauer",
+        "participants": ["person.thomas_a_nauer", "person.catherina_marie_koeberger"],
+        "anchor": "Doyle Jule Zimmerman",
+        "line_ids": ["line.nauer"],
+        "generation": 4,
+        "date": "1880",
+        "date_sort": "1880",
+        "place_id": "place.cawker_city_ks",
+        "place_label": "Cawker, Mitchell County, Kansas",
+        "confidence": "lead",
+        "evidence_note": "Compiled Waterloo German Catholic Settlers PDF places Thomas and Catharine Nauer at Cawker, Mitchell County, Kansas by 1880.",
+        "source_refs": ["https://img1.wsimg.com/blobby/go/c0db0dfe-27d2-4632-889f-eeb26fbb14e1/downloads/f7bcaab9-38ae-4388-a9eb-f4fbecb15a21/Waterloo%20German%20Catholic%20Settlers.pdf?ver=1781326202841"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.nauer.lorenz_wilmot_residence.1851",
+      "geometry": {"type": "Point", "coordinates": [-80.65, 43.4]},
+      "properties": {
+        "feature_kind": "candidate_life_event",
+        "event_type": "residence",
+        "person_id": "person.lorenz_nauer",
+        "person_name": "Johann Lorenz Nauer",
+        "name_variants": ["Lorenz Nauer"],
+        "participants": ["person.lorenz_nauer", "person.dorothea_meyer"],
+        "participant_name_variants": {
+          "person.dorothea_meyer": ["Dorothea Meyer", "Mary Dorothea Wand", "Dorothea Wand/Wandt"]
+        },
+        "anchor": "Doyle Jule Zimmerman",
+        "line_ids": ["line.nauer"],
+        "generation": 5,
+        "date": "1851/1852",
+        "date_sort": "1851",
+        "place_id": "place.wilmot_township_on",
+        "place_label": "Wilmot Township, Waterloo County, Ontario",
+        "confidence": "possible",
+        "candidate_relationship": "Johann Lorenz/Lorenz Nauer is proposed as a possible father of Thomas A. Nauer, not proved.",
+        "evidence_note": "The Waterloo German Catholic Settlers PDF uses Dorothea Meyer, widow of Adam Wand/Wandt; WikiTree names Mary Dorothea Wand. Original records are needed before merging the aliases.",
+        "source_refs": ["https://img1.wsimg.com/blobby/go/c0db0dfe-27d2-4632-889f-eeb26fbb14e1/downloads/f7bcaab9-38ae-4388-a9eb-f4fbecb15a21/Waterloo%20German%20Catholic%20Settlers.pdf?ver=1781326202841", "https://www.wikitree.com/wiki/Nauer-7"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.nauer.lorenz_carrick_residence.1861",
+      "geometry": {"type": "Point", "coordinates": [-81.2, 44.03333300259]},
+      "properties": {
+        "feature_kind": "candidate_life_event",
+        "event_type": "residence",
+        "person_id": "person.lorenz_nauer",
+        "person_name": "Johann Lorenz Nauer",
+        "name_variants": ["Lorenz Nauer"],
+        "participants": ["person.lorenz_nauer", "person.dorothea_meyer"],
+        "participant_name_variants": {
+          "person.dorothea_meyer": ["Dorothea Meyer", "Mary Dorothea Wand", "Dorothea Wand/Wandt"]
+        },
+        "anchor": "Doyle Jule Zimmerman",
+        "line_ids": ["line.nauer"],
+        "generation": 5,
+        "date": "1861",
+        "date_sort": "1861",
+        "place_id": "place.carrick_township_on",
+        "place_label": "Carrick Township, Bruce County, Ontario",
+        "confidence": "possible",
+        "candidate_relationship": "Johann Lorenz/Lorenz Nauer is proposed as a possible father of Thomas A. Nauer, not proved.",
+        "evidence_note": "The Waterloo German Catholic Settlers PDF uses Dorothea Meyer, widow of Adam Wand/Wandt; WikiTree names Mary Dorothea Wand. Original records are needed before merging the aliases.",
+        "source_refs": ["https://img1.wsimg.com/blobby/go/c0db0dfe-27d2-4632-889f-eeb26fbb14e1/downloads/f7bcaab9-38ae-4388-a9eb-f4fbecb15a21/Waterloo%20German%20Catholic%20Settlers.pdf?ver=1781326202841", "https://www.wikitree.com/wiki/Nauer-7"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.nauer.new_prussia_context",
+      "geometry": {"type": "Point", "coordinates": [-80.75694, 43.45361]},
+      "properties": {
+        "feature_kind": "record_target",
+        "target_type": "locality_context",
+        "line_ids": ["line.nauer"],
+        "label": "New Prussia / Wilmot German Catholic locality context",
+        "place_id": "place.new_prussia_on",
+        "place_label": "New Prussia, Wilmot Township, Waterloo County, Ontario",
+        "date_start": "1830",
+        "date_end": "1872",
+        "confidence": "target",
+        "research_question": "Do New Prussia, St. Agatha, St. Clements, or nearby Wilmot Catholic records place Johann Lorenz Nauer, Dorothea Meyer/Wand, Thomas A. Nauer, or Catherina Koeberger in a specific parish community?",
+        "evidence_note": "New Prussia was a Rhenish Prussian Catholic settlement in Wilmot and helps narrow context, but it is not yet a proven Nauer residence.",
+        "source_refs": ["https://en.wikipedia.org/wiki/New_Prussia%2C_Ontario", "https://img1.wsimg.com/blobby/go/c0db0dfe-27d2-4632-889f-eeb26fbb14e1/downloads/f7bcaab9-38ae-4388-a9eb-f4fbecb15a21/Waterloo%20German%20Catholic%20Settlers.pdf?ver=1781326202841"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.nauer.st_clements_registers",
+      "geometry": {"type": "Point", "coordinates": [-80.6520331, 43.5230932]},
+      "properties": {
+        "feature_kind": "record_target",
+        "target_type": "church_registers",
+        "line_ids": ["line.nauer"],
+        "label": "St. Clements Catholic registers for Waterloo-area Nauer families",
+        "place_id": "place.st_clements_on",
+        "place_label": "St. Clements, Wellesley Township, Waterloo County, Ontario",
+        "date_start": "1851",
+        "date_end": "1872",
+        "confidence": "target",
+        "research_question": "Do St. Clements baptisms, marriages, or burials prove whether Thomas A. Nauer was a son of Lorenz Nauer and Dorothea Meyer, or identify Catherina Koeberger's parents?",
+        "source_refs": ["https://img1.wsimg.com/blobby/go/c0db0dfe-27d2-4632-889f-eeb26fbb14e1/downloads/f7bcaab9-38ae-4388-a9eb-f4fbecb15a21/Waterloo%20German%20Catholic%20Settlers.pdf?ver=1781326202841"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.zimmerman.john_paul_household.1880",
+      "geometry": {"type": "Point", "coordinates": [-97.4169964, 42.0283379]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "household",
+        "person_id": "person.john_paul_zimmerman",
+        "person_name": "John Paul Zimmerman",
+        "participants": ["person.catherine_zinkle", "person.michael_john_zimmerman_sr", "person.paul_michael_zimmerman"],
+        "anchor": "Doyle Jule Zimmerman",
+        "line_ids": ["line.zimmerman_surname"],
+        "generation": 4,
+        "date": "1880",
+        "date_sort": "1880-06-01",
+        "place_id": "place.norfolk_ne",
+        "place_label": "Norfolk, Madison County, Nebraska",
+        "confidence": "strong",
+        "source_refs": ["https://negenweb.net/NEMadison/Census/1880/1880_census.pdf"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.zimmerman.mainhardt_archion",
+      "geometry": {"type": "Point", "coordinates": [9.5579299, 49.0813807]},
+      "properties": {
+        "feature_kind": "record_target",
+        "event_type": "church_record_target",
+        "label": "Mainhardt church books for Zimmerman/Zinkle",
+        "anchor": "Doyle Jule Zimmerman",
+        "line_ids": ["line.zimmerman_surname"],
+        "date": "1835/1877",
+        "date_sort": "1835-01-01",
+        "place_id": "place.mainhardt_de",
+        "place_label": "Mainhardt, Baden-Wuerttemberg",
+        "confidence": "open",
+        "notes": "Archion Band 25 family register, Band 15 marriage book, Band 9 baptisms, and Band 7 possible John Paul baptism target.",
+        "source_refs": [
+          "https://www.archion.de/de/alle-archive/baden-wuerttemberg/evangelisches-archiv-baden-und-wuerttemberg-wuerttemberg/dekanat-schwaebisch-hall/mainhardt/96441",
+          "https://www.archion.de/de/alle-archive/baden-wuerttemberg/evangelisches-archiv-baden-und-wuerttemberg-wuerttemberg/dekanat-schwaebisch-hall/mainhardt/96411"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.zodrow.john_birth.1843-06-29",
+      "geometry": null,
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "birth",
+        "person_id": "person.john_zodrow",
+        "person_name": "John Zodrow",
+        "anchor": "Doyle Jule Zimmerman",
+        "line_ids": ["line.zodrow_baier"],
+        "generation": 4,
+        "date": "1843-06-29",
+        "date_sort": "1843-06-29",
+        "place_id": "place.sabanka_prussia_unresolved",
+        "place_label": "Sabanka, Prussia",
+        "confidence": "strong",
+        "geocode_status": "unresolved",
+        "candidate_places": [
+          {
+            "place_id": "place.neu_lebehnke_westpreussen",
+            "candidate_confidence": "working",
+            "rationale": "Sabanka is unresolved in Meyers/GOV/Nominatim; Neu Lebehnke / Nowa Lubianka, Kreis Deutsch Krone, Westpreussen has known Lebehnke parish/civil registry jurisdictions, local Zodrow cluster evidence, Lebehnke Catholic banns collateral entries, and a Johann Zodrow property-file catalog hit."
+          }
+        ],
+        "related_places": ["place.neu_lebehnke_westpreussen", "place.lebehnke_westpreussen", "place.deutsch_krone_county_westpreussen"],
+        "source_refs": ["https://www.ksgenweb.org/KSDecatur/cemeteries/leovillecalvarycemetery.htm"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.zodrow.neu_lebehnke_hypothesis",
+      "geometry": {"type": "Point", "coordinates": [16.64198, 53.240226]},
+      "properties": {
+        "feature_kind": "record_target",
+        "event_type": "candidate_birthplace_and_parish_target",
+        "label": "Neu Lebehnke / Nowa Lubianka candidate for Sabanka, Prussia",
+        "anchor": "Doyle Jule Zimmerman",
+        "line_ids": ["line.zodrow_baier"],
+        "generation": 4,
+        "date": "1843",
+        "date_sort": "1843-01-01",
+        "place_id": "place.neu_lebehnke_westpreussen",
+        "place_label": "Neu Lebehnke / Nowa Lubianka, Kreis Deutsch Krone, Westpreussen",
+        "confidence": "working",
+        "jurisdictions": {
+          "village_place_id": "place.neu_lebehnke_westpreussen",
+          "parish_place_id": "place.lebehnke_westpreussen",
+          "civil_registry_place_id": "place.lebehnke_westpreussen",
+          "county_place_id": "place.deutsch_krone_county_westpreussen",
+          "historic_county": "Kreis Deutsch Krone",
+          "historic_regierungsbezirk": "Marienwerder",
+          "historic_province": "Westpreussen",
+          "catholic_parish_1905": "Lebehnke",
+          "lutheran_parish_1905": "Lebehnke",
+          "civil_registry_1905": "Lebehnke"
+        },
+        "related_places": ["place.lebehnke_westpreussen", "place.deutsch_krone_county_westpreussen"],
+        "notes": "Use as a focused search target, not as a corrected birthplace, until John M. Zodrow's baptism, marriage, naturalization, or obituary confirms the locality. The research handle is no longer just 'Sabanka': search Neu Lebehnke / Nowa Lubianka for the village, Lebehnke / Stara Lubianka for Catholic/Lutheran parish and civil registration, and Kreis Deutsch Krone for county-level records. Collateral targets now include Lebehnke banns naming Zodrow families in Neu/Alt Lebehnke and a Polish archive catalog entry for a Johann Zodrow property file in Neu Lebehnke.",
+        "source_refs": [
+          "http://www.kartenmeister.com/preview/City.asp?CitNum=25032",
+          "https://www.meyersgaz.org/place/20287016",
+          "https://www.meyersgaz.org/place/20036035",
+          "https://agoff.de/?p=83526",
+          "https://agoff.de/?p=108567",
+          "https://deutschkrone.rosentreterfoundation.org/placesearch.php?psearch=Nowa+Lubianka%2C+Pila+County%2C+Greater+Poland+Voivodeship%2C+Poland&sitever=standard",
+          "https://www.ksgenweb.org/KSDecatur/cemeteries/leovillecalvarycemetery.htm",
+          "https://www.yumpu.com/de/document/view/8280032/aufgebote-lebehnke-ab-1874-1925-the-roots-in-deutsch-",
+          "https://www.szukajwarchiwach.gov.pl/en/c/portal/update_language?languageId=de_DE&p_l_id=41967&redirect=%2Fen%2Fzespol%2F-%2Fzespol%2F77604%3F_Zespol_javax.portlet.action%3DzmienWidok%26_Zespol_nameofjsp%3Djednostki%26_Zespol_delta%3D45%26_Zespol_resetCur%3Dfalse%26_Zespol_cur%3D10"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.zodrow.sabanka_jurisdiction_stack",
+      "geometry": {
+        "type": "MultiPoint",
+        "coordinates": [[16.64198, 53.240226], [16.688606, 53.230802], [16.4718, 53.2713]]
+      },
+      "properties": {
+        "feature_kind": "record_target",
+        "event_type": "jurisdiction_stack",
+        "label": "Sabanka clue, usable Neu Lebehnke / Lebehnke / Deutsch Krone search stack",
+        "anchor": "Doyle Jule Zimmerman",
+        "line_ids": ["line.zodrow_baier"],
+        "generation": 4,
+        "date_start": "1843",
+        "date_end": "1915",
+        "date_sort": "1843-01-01",
+        "place_ids": [
+          "place.sabanka_prussia_unresolved",
+          "place.neu_lebehnke_westpreussen",
+          "place.lebehnke_westpreussen",
+          "place.deutsch_krone_county_westpreussen"
+        ],
+        "confidence": "target",
+        "jurisdictions": {
+          "literal_birthplace": "Sabanka, Prussia",
+          "village_place_id": "place.neu_lebehnke_westpreussen",
+          "parish_place_id": "place.lebehnke_westpreussen",
+          "civil_registry_place_id": "place.lebehnke_westpreussen",
+          "county_place_id": "place.deutsch_krone_county_westpreussen",
+          "historic_village": "Neu Lebehnke",
+          "modern_village": "Nowa Lubianka",
+          "historic_parish_and_standesamt": "Lebehnke",
+          "modern_parish_area": "Stara Lubianka",
+          "historic_county": "Kreis Deutsch Krone",
+          "historic_regierungsbezirk": "Marienwerder",
+          "historic_province": "Westpreussen",
+          "modern_county": "Pila County",
+          "modern_voivodeship": "Greater Poland Voivodeship"
+        },
+        "search_layers": [
+          {
+            "level": "literal_clue",
+            "label": "Sabanka, Prussia",
+            "place_id": "place.sabanka_prussia_unresolved",
+            "use": "Preserve as the cemetery-reported birthplace wording until a direct record proves the historical locality."
+          },
+          {
+            "level": "village_target",
+            "label": "Neu Lebehnke / Nowa Lubianka",
+            "place_id": "place.neu_lebehnke_westpreussen",
+            "use": "Best current town-level candidate for searching collateral Zodrow records; not yet a corrected birthplace."
+          },
+          {
+            "level": "parish_and_civil_registry",
+            "label": "Lebehnke / Stara Lubianka",
+            "place_id": "place.lebehnke_westpreussen",
+            "use": "Search Catholic parish, Protestant parish, and Standesamt records here for Neu Lebehnke families."
+          },
+          {
+            "level": "county_kreis",
+            "label": "Kreis Deutsch Krone",
+            "place_id": "place.deutsch_krone_county_westpreussen",
+            "use": "Search county-level land, court, probate, archive catalog, and locality-table records."
+          },
+          {
+            "level": "historic_administration",
+            "label": "Regierungsbezirk Marienwerder, Westpreussen, Preussen",
+            "place_id": "place.deutsch_krone_county_westpreussen",
+            "use": "Use in Prussian gazetteers and record descriptions where records are grouped above the Kreis."
+          },
+          {
+            "level": "modern_repository_locator",
+            "label": "Nowa Lubianka / Stara Lubianka, Pila County, Greater Poland Voivodeship, Poland",
+            "place_id": "place.neu_lebehnke_westpreussen",
+            "use": "Use modern Polish place names for archive, map, and repository searches."
+          }
+        ],
+        "search_terms": [
+          "Sabanka Prussia Zodrow",
+          "Neu Lebehnke Zodrow",
+          "Nowa Lubianka Zodrow",
+          "Lebehnke Zodrow",
+          "Stara Lubianka Zodrow",
+          "Kreis Deutsch Krone Zodrow",
+          "Standesamt Lebehnke Zodrow"
+        ],
+        "notes": "This is the practical search layer for the Sabanka clue. Keep Sabanka as the literal reported birthplace, but search the Neu Lebehnke village, Lebehnke Catholic/Lutheran parish and civil registry, and Kreis Deutsch Krone county context until a direct John M. Zodrow record confirms or rejects the candidate locality.",
+        "source_refs": [
+          "https://www.ksgenweb.org/KSDecatur/cemeteries/leovillecalvarycemetery.htm",
+          "https://www.meyersgaz.org/place/20287016",
+          "https://www.meyersgaz.org/place/20036035",
+          "https://agoff.de/?p=83526",
+          "https://agoff.de/?p=108567",
+          "https://deutschkrone.rosentreterfoundation.org/placesearch.php?psearch=Nowa+Lubianka%2C+Pila+County%2C+Greater+Poland+Voivodeship%2C+Poland&sitever=standard"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.zodrow.lebehnke_parish_civil_registry",
+      "geometry": {"type": "Point", "coordinates": [16.688606, 53.230802]},
+      "properties": {
+        "feature_kind": "record_target",
+        "event_type": "parish_and_civil_registry_target",
+        "label": "Lebehnke / Stara Lubianka parish and civil registry target",
+        "anchor": "Doyle Jule Zimmerman",
+        "line_ids": ["line.zodrow_baier"],
+        "generation": 4,
+        "date_start": "1843",
+        "date_end": "1915",
+        "date_sort": "1843-01-01",
+        "place_id": "place.lebehnke_westpreussen",
+        "place_label": "Lebehnke / Stara Lubianka, Kreis Deutsch Krone, Westpreussen",
+        "confidence": "target",
+        "related_places": ["place.neu_lebehnke_westpreussen", "place.deutsch_krone_county_westpreussen"],
+        "record_types": ["Catholic parish registers", "Lutheran parish registers", "Standesamt civil registration from 1874"],
+        "research_question": "If Sabanka resolves to the Neu Lebehnke neighborhood, do Lebehnke parish or civil registry books identify John M. Zodrow's birth family, marriage origin, siblings, or collateral kin?",
+        "source_refs": [
+          "https://www.meyersgaz.org/place/20287016",
+          "https://www.meyersgaz.org/place/20036035",
+          "https://agoff.de/?p=83526",
+          "https://agoff.de/?p=108567"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.zodrow.lebehnke_banns_collateral",
+      "geometry": {"type": "Point", "coordinates": [16.688606, 53.230802]},
+      "properties": {
+        "feature_kind": "record_target",
+        "event_type": "collateral_family_banns_target",
+        "label": "Lebehnke Catholic banns Zodrow collateral cluster",
+        "anchor": "Doyle Jule Zimmerman",
+        "line_ids": ["line.zodrow_baier"],
+        "generation": 5,
+        "date_start": "1874",
+        "date_end": "1925",
+        "date_sort": "1874-01-01",
+        "place_id": "place.lebehnke_westpreussen",
+        "place_label": "Lebehnke parish, Kreis Deutsch Krone, Westpreussen",
+        "confidence": "target",
+        "related_places": ["place.neu_lebehnke_westpreussen", "place.deutsch_krone_county_westpreussen"],
+        "collateral_persons": [
+          "Christoph Zodrow",
+          "Rosalia Zaske",
+          "Albert Zodrow",
+          "August Zodrow",
+          "Andreas Zodrow",
+          "Justina Reinke",
+          "Martha Zodrow",
+          "Mathilde Amanda Zodrow"
+        ],
+        "research_question": "Can the Lebehnke banns and underlying parish registers connect these collateral Zodrows to John M. Zodrow, born 1843 in 'Sabanka, Prussia'?",
+        "source_refs": ["https://www.yumpu.com/de/document/view/8280032/aufgebote-lebehnke-ab-1874-1925-the-roots-in-deutsch-"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.zodrow.johann_property_neu_lebehnke.1860-1873",
+      "geometry": {"type": "Point", "coordinates": [16.64198, 53.240226]},
+      "properties": {
+        "feature_kind": "record_target",
+        "event_type": "land_mortgage_file_target",
+        "label": "Johann Zodrow property file, Neu Lebehnke No. 100",
+        "anchor": "Doyle Jule Zimmerman",
+        "line_ids": ["line.zodrow_baier"],
+        "generation": 4,
+        "date_start": "1860",
+        "date_end": "1873",
+        "date_sort": "1860-01-01",
+        "place_id": "place.neu_lebehnke_westpreussen",
+        "place_label": "Neu Lebehnke No. 100, Kreis Deutsch Krone, Westpreussen",
+        "confidence": "target",
+        "research_question": "Is the Johann Zodrow in the Neu Lebehnke property/mortgage file John M. Zodrow, his father, or another collateral relative?",
+        "source_refs": ["https://www.szukajwarchiwach.gov.pl/en/c/portal/update_language?languageId=de_DE&p_l_id=41967&redirect=%2Fen%2Fzespol%2F-%2Fzespol%2F77604%3F_Zespol_javax.portlet.action%3DzmienWidok%26_Zespol_nameofjsp%3Djednostki%26_Zespol_delta%3D45%26_Zespol_resetCur%3Dfalse%26_Zespol_cur%3D10"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.zodrow.antonette_grams_birth.1846-05-23",
+      "geometry": {"type": "Point", "coordinates": [19.1451, 51.9194]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "birth",
+        "person_id": "person.antonette_grams",
+        "person_name": "Antonia/Antonette Grams Zodrow",
+        "anchor": "Doyle Jule Zimmerman",
+        "line_ids": ["line.zodrow_baier"],
+        "generation": 4,
+        "date": "1846-05-23",
+        "date_sort": "1846-05-23",
+        "place_id": "place.poland_country",
+        "place_label": "Poland",
+        "confidence": "strong",
+        "geocode_status": "country_centroid",
+        "source_refs": ["https://www.findagrave.com/memorial/156365204/antonette-zodrow"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.zodrow.john_death.1915-03-15",
+      "geometry": {"type": "Point", "coordinates": [-100.4609753, 39.5816708]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "death_or_burial",
+        "person_id": "person.john_zodrow",
+        "person_name": "John Zodrow",
+        "anchor": "Doyle Jule Zimmerman",
+        "line_ids": ["line.zodrow_baier"],
+        "generation": 4,
+        "date": "1915-03-15",
+        "date_sort": "1915-03-15",
+        "place_id": "place.leoville_ks",
+        "place_label": "Leoville, Decatur County, Kansas",
+        "confidence": "strong",
+        "source_refs": ["https://www.ksgenweb.org/KSDecatur/cemeteries/leovillecalvarycemetery.htm"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.mundell.harvey_birth.1837-04",
+      "geometry": {"type": "Point", "coordinates": [-86.4692735, 40.2992769]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "birth",
+        "person_id": "person.harvey_william_mundell",
+        "person_name": "Harvey William Mundell",
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "line_ids": ["line.mundell_rust_cantwell"],
+        "generation": 5,
+        "date": "1837-04",
+        "date_sort": "1837-04-01",
+        "place_id": "place.clinton_county_in",
+        "place_label": "Clinton County, Indiana",
+        "confidence": "working",
+        "source_refs": ["https://occgs.com/projects/civil_war/Mundell_Harvey.pdf", "https://stchsgenealogy.com/p213.htm"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.rust.frances_birth.1894-06-06",
+      "geometry": {"type": "Point", "coordinates": [-98.7851, 39.7792]},
+      "properties": {
+        "feature_kind": "candidate_life_event",
+        "event_type": "birth",
+        "person_id": "person.mary_frances_rust",
+        "person_name": "Mary Frances Rust Mundell Adolph",
+        "name_variants": ["Frances Rust", "Mary Frances Rust", "Frances Adolph"],
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "line_ids": ["line.mundell_rust_cantwell"],
+        "generation": 3,
+        "date": "1894-06-06",
+        "date_sort": "1894-06-06",
+        "place_id": "place.smith_county_ks",
+        "place_label": "possibly Smith County, Kansas",
+        "confidence": "possible",
+        "evidence_note": "Rust-family forum says Mary Frances Rust went by Frances and was born 6 Jun 1894, possibly in Smith County, Kansas.",
+        "source_refs": ["https://www.support.genealogy.com/forum/surnames/topics/rust/482/"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.mundell.walter_frances_marriage.1910",
+      "geometry": {"type": "Point", "coordinates": [-98.7851, 39.7792]},
+      "properties": {
+        "feature_kind": "candidate_life_event",
+        "event_type": "marriage",
+        "person_id": "person.walter_william_mundell",
+        "person_name": "Walter William Mundell",
+        "participants": ["person.walter_william_mundell", "person.mary_frances_rust"],
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "line_ids": ["line.mundell_rust_cantwell"],
+        "generation": 3,
+        "date": "1910",
+        "date_sort": "1910-01-01",
+        "place_id": "place.smith_center_ks",
+        "place_label": "Smith Center, Smith County, Kansas",
+        "confidence": "lead",
+        "evidence_note": "FamilySearch's public Walter William Mundell page gives spouse Frances Rust and a 1910 marriage at Smith Center, Kansas.",
+        "source_refs": ["https://ancestors.familysearch.org/en/LV1R-Z1G/walter-william-mundell-1885-1931"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.rust.smith_county_parentage",
+      "geometry": {"type": "Point", "coordinates": [-98.7851, 39.7792]},
+      "properties": {
+        "feature_kind": "record_target",
+        "target_type": "birth_census_probate_parentage",
+        "line_ids": ["line.mundell_rust_cantwell"],
+        "label": "Mary Frances Rust Smith County parentage target",
+        "place_id": "place.smith_county_ks",
+        "place_label": "Smith County, Kansas",
+        "date_start": "1894",
+        "date_end": "1910",
+        "confidence": "target",
+        "candidate_people": ["person.mary_frances_rust", "person.william_bryan_rust", "person.clarence_aison_rust", "person.mary_viola_beach", "person.john_f_rust", "person.ethel_b_rupert"],
+        "research_question": "Do Smith County birth, school, census, probate, marriage, cemetery, or newspaper records prove Mary Frances Rust as sister of William Bryan Rust and Clarence Aison Rust, and daughter of John F. Rust and Ethel B. Rupert?",
+        "evidence_note": "The forum clue names Frances's birth date, possible Smith County birthplace, and a brother William/Bill whose wife was Viola. Public search snippets for William Bryan Rust and Clarence Aison Rust point to Smith County, Kansas, and name parents John F. Rust and Ethel B. Rupert; William Bryan Rust's Find a Grave search result lists Mary Frances Rust Strawn, 1894-1984, as a sibling. This is a candidate cluster, not parent proof.",
+        "source_refs": ["https://www.support.genealogy.com/forum/surnames/topics/rust/482/", "https://ancestors.familysearch.org/en/LV1R-Z1G/walter-william-mundell-1885-1931", "https://www.findagrave.com/memorial/124223039/william_bryan-rust", "https://www.ancestry.com/genealogy/records/results?firstName=clarence&geo-lang=en&lastName=rust&page=2"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.rust.john_f_ethel_rupert_reamsville_cluster",
+      "geometry": {"type": "Point", "coordinates": [-99.859444, 39.943611]},
+      "properties": {
+        "feature_kind": "record_target",
+        "target_type": "cemetery_census_probate_parentage",
+        "line_ids": ["line.mundell_rust_cantwell"],
+        "label": "John F. Rust and Ethel B. Rupert Reamsville parentage cluster",
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "place_id": "place.reamsville_cemetery_ks",
+        "place_label": "Reamsville / Pleasant Hill Cemetery, Martin Township, Smith County, Kansas",
+        "date_start": "1870",
+        "date_end": "1984",
+        "confidence": "candidate",
+        "related_places": ["place.smith_county_ks", "place.smith_center_ks"],
+        "candidate_people": ["person.john_f_rust", "person.ethel_b_rupert", "person.mary_frances_rust", "person.william_bryan_rust", "person.clarence_aison_rust", "person.john_aissen_rust", "person.nomdje_n_rust"],
+        "evidence_note": "Reamsville Cemetery transcription lists F. John Rust, 1870-1909, and a nearby Smith County Rust cluster including John A. Rust and Nomdje N. Rust. Search snippets for William Bryan Rust and Clarence Aison Rust point to John F. Rust and Ethel B. Rupert as parents, while the William Bryan Rust Find a Grave search result lists Mary Frances Rust Strawn as a sibling.",
+        "research_question": "Do Smith County census, cemetery, marriage, guardianship, probate, and newspaper records prove this Reamsville John F. Rust/Ethel B. Rupert family as Mary Frances Rust's birth household?",
+        "source_refs": [
+          "https://www.interment.net/data/us/ks/smith/reamsville/index.htm",
+          "https://www.findagrave.com/memorial/124223039/william_bryan-rust",
+          "https://www.ancestry.com/genealogy/records/results?firstName=clarence&geo-lang=en&lastName=rust&page=2",
+          "https://fr.findagrave.com/memorial/97845385/john-aissen-rust"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.rust.frances_adolph_strawn_beloit",
+      "geometry": {"type": "Point", "coordinates": [-98.1051, 39.4561]},
+      "properties": {
+        "feature_kind": "record_target",
+        "event_type": "same_person_identity_target",
+        "label": "Frances Rust Adolph to Mary Frances Rust Strawn Beloit identity target",
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "line_ids": ["line.mundell_rust_cantwell"],
+        "generation": 3,
+        "date_start": "1910",
+        "date_end": "1984",
+        "date_sort": "1910-01-01",
+        "place_id": "place.beloit_ks",
+        "place_label": "Beloit, Mitchell County, Kansas",
+        "confidence": "open",
+        "related_places": ["place.smith_county_ks", "place.smith_center_ks", "place.winona_ks", "place.logan_county_ks"],
+        "candidate_people": ["person.mary_frances_rust", "person.frances_adolph", "person.lyle_strawn", "person.walter_william_mundell", "person.evelyn_delores_mundell"],
+        "evidence_note": "Rust-family forum says Mary Frances Rust married an Adolph and, after he died, married Lyle Strawn and lived in Beloit, Kansas. William Bryan Rust's Find a Grave search result lists a sibling Mary Frances Rust Strawn, 1894-1984. Evelyn's obituary independently says she was raised by grandmother Frances Adolph.",
+        "research_question": "Do Beloit/Mitchell County marriage, obituary, cemetery, probate, city directory, or newspaper records prove Frances Adolph and Mary Frances Rust Strawn are the same person?",
+        "source_refs": [
+          "https://www.support.genealogy.com/forum/surnames/topics/rust/482/",
+          "https://www.findagrave.com/memorial/124223039/william_bryan-rust",
+          "https://www.baalmannmortuary.com/obituaries/evelyn-zimmerman"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.evelyn_mundell.winona_residence_school",
+      "geometry": {"type": "Point", "coordinates": [-101.2449267, 39.0617169]},
+      "properties": {
+        "feature_kind": "life_context",
+        "event_type": "residence_or_school",
+        "person_id": "person.evelyn_delores_mundell",
+        "person_name": "Evelyn Delores Mundell Zimmerman",
+        "participants": ["person.evelyn_delores_mundell", "person.mary_frances_rust"],
+        "participant_name_variants": {
+          "person.mary_frances_rust": ["Frances Adolph", "Mary Frances Rust", "Frances Rust"]
+        },
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "line_ids": ["line.mundell_rust_cantwell"],
+        "generation": 1,
+        "date_start": "1935",
+        "date_end": "1953",
+        "date_sort": "1935-01-16",
+        "place_id": "place.winona_ks",
+        "place_label": "Winona, Logan County, Kansas",
+        "confidence": "documented",
+        "evidence_note": "Evelyn's obituary says she was raised by grandmother Frances Adolph and graduated from Winona High School.",
+        "source_refs": ["https://www.baalmannmortuary.com/obituaries/evelyn-zimmerman", "https://nces.ed.gov/ccd/schoolsearch/school_list.asp?County=Logan+County&Search=1&State=20"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.rust.frances_adolph_winona_identity",
+      "geometry": {"type": "Point", "coordinates": [-101.2449267, 39.0617169]},
+      "properties": {
+        "feature_kind": "record_target",
+        "event_type": "same_person_identity_target",
+        "label": "Frances Rust to Frances Adolph Winona identity target",
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "line_ids": ["line.mundell_rust_cantwell"],
+        "generation": 3,
+        "date_start": "1910",
+        "date_end": "1953",
+        "date_sort": "1910-01-01",
+        "place_id": "place.winona_ks",
+        "place_label": "Winona, Logan County, Kansas",
+        "confidence": "open",
+        "related_places": ["place.logan_county_ks", "place.smith_county_ks", "place.smith_center_ks", "place.flagler_co"],
+        "candidate_people": ["person.mary_frances_rust", "person.frances_adolph", "person.evelyn_delores_mundell", "person.homer_clair_mundell", "person.marjorie_clemans"],
+        "evidence_note": "Rust-family forum says Mary Frances Rust later married a man surnamed Adolph; Evelyn's obituary says she was raised by grandmother Frances Adolph and graduated from Winona High School. These two clues fit, but same-person proof is still missing.",
+        "research_question": "Do Winona and Logan County school, census, guardianship, cemetery, probate, obituary, newspaper, or remarriage records prove that Frances Adolph was Mary Frances Rust Mundell and explain Evelyn's childhood household?",
+        "source_refs": [
+          "https://www.support.genealogy.com/forum/surnames/topics/rust/482/",
+          "https://www.baalmannmortuary.com/obituaries/evelyn-zimmerman",
+          "https://www.fryfuneralhome.com/obituaries/donald-mundell",
+          "https://nces.ed.gov/ccd/schoolsearch/school_list.asp?County=Logan+County&Search=1&State=20"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.mundell.harvey_marriage.1857-12-27",
+      "geometry": {"type": "Point", "coordinates": [-93.7842976, 41.0152092]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "marriage",
+        "person_id": "person.harvey_william_mundell",
+        "person_name": "Harvey William Mundell",
+        "participants": ["person.harvey_william_mundell", "person.elizabeth_jane_brown"],
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "line_ids": ["line.mundell_rust_cantwell"],
+        "generation": 5,
+        "date": "1857-12-27",
+        "date_sort": "1857-12-27",
+        "place_id": "place.clarke_county_ia",
+        "place_label": "Clarke County, Iowa",
+        "confidence": "working",
+        "source_refs": ["https://occgs.com/projects/civil_war/Mundell_Harvey.pdf", "https://stchsgenealogy.com/p213.htm"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.mundell.harvey_death.1911-03-26",
+      "geometry": {"type": "Point", "coordinates": [-117.8722311, 33.750631]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "death",
+        "person_id": "person.harvey_william_mundell",
+        "person_name": "Harvey William Mundell",
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "line_ids": ["line.mundell_rust_cantwell"],
+        "generation": 5,
+        "date": "1911-03-26",
+        "date_sort": "1911-03-26",
+        "place_id": "place.orange_county_ca",
+        "place_label": "Orange County, California",
+        "confidence": "working",
+        "source_refs": ["https://stchsgenealogy.com/p213.htm"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.mundell.cantwell_coshocton",
+      "geometry": {"type": "Point", "coordinates": [-81.9271441, 40.2905684]},
+      "properties": {
+        "feature_kind": "record_target",
+        "event_type": "county_record_target",
+        "label": "Cantwell/Mundell Ohio record target",
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "line_ids": ["line.mundell_rust_cantwell"],
+        "date": "1813/1883",
+        "date_sort": "1813-01-01",
+        "place_id": "place.coshocton_county_oh",
+        "place_label": "Coshocton County, Ohio",
+        "confidence": "open",
+        "notes": "Barnabas Cantwell and Sarah Alice Cantwell proof target.",
+        "source_refs": ["https://ancestors.familysearch.org/en/2ZS8-B73/barnabas-barney-cantwell-1813-1883"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.clemans.marjorie_opal_same_name_collision",
+      "geometry": {
+        "type": "MultiPoint",
+        "coordinates": [[-85.7358, 41.0337], [-86.2503, 41.6764]]
+      },
+      "properties": {
+        "feature_kind": "exclusion_target",
+        "event_type": "same_name_collision",
+        "label": "Marjorie Opal Clemans same-name collision, Indiana",
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "line_ids": ["line.clemans_flaherty"],
+        "generation": 2,
+        "date_start": "1914-03-01",
+        "date_end": "1935-10-23",
+        "date_sort": "1914-03-01",
+        "place_ids": ["place.liberty_mills_in", "place.south_bend_in"],
+        "place_label": "Liberty Mills and South Bend, Indiana",
+        "confidence": "lead",
+        "candidate_person": "person.marjorie_opal_clemans",
+        "ancestor_person": "person.marjorie_clemans_mundell",
+        "exclusion_note": "FamilySearch and a compiled Eby genealogy describe Marjorie Opal Clemans as an Indiana woman born in Liberty Mills on 1 Mar 1914 and married to Clay V. Stamper in South Bend on 23 Oct 1935. This conflicts with the working Colorado/Kansas context for Evelyn's mother Marjorie Clemans Mundell and should not be merged without direct proof.",
+        "research_question": "Do Evelyn's birth, Homer/Marjorie marriage/divorce, census, or obituary records prove Marjorie's parents and exclude the Indiana Marjorie Opal Clemans profile?",
+        "source_refs": [
+          "https://ancestors.familysearch.org/en/L5K9-Q7H/marjorie-opal-clemans-1914-1991",
+          "https://archive.org/stream/descendantsofchr00minn/descendantsofchr00minn_djvu.txt",
+          "https://www.baalmannmortuary.com/obituaries/evelyn-zimmerman"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.dible.harry_julia_marriage.1896-06-10",
+      "geometry": {"type": "Point", "coordinates": [-101.0131604, 40.1757537]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "marriage",
+        "person_id": "person.harry_h_dible",
+        "person_name": "Harry H. Dible",
+        "participants": ["person.harry_h_dible", "person.julia_dible"],
+        "anchor": "William J. Dible",
+        "line_ids": ["line.dible_surname"],
+        "generation": 3,
+        "date": "1896-06-10",
+        "date_sort": "1896-06-10",
+        "place_id": "place.trenton_ne",
+        "place_label": "Trenton, Hitchcock County, Nebraska",
+        "confidence": "strong",
+        "source_refs": ["https://ancestors.familysearch.org/en/KCBR-YSR/julia-dible-1874-1967"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.dible.early_pennsylvania",
+      "geometry": {"type": "MultiPoint", "coordinates": [[-79.4921599, 40.5853625], [-79.4689832, 40.7876239], [-79.4873204, 40.2930159]]},
+      "properties": {
+        "feature_kind": "record_target",
+        "event_type": "county_record_target",
+        "label": "Dible/Heckman/Moore/Haden Pennsylvania record cluster",
+        "anchor": "William J. Dible",
+        "line_ids": ["line.dible_surname"],
+        "date": "1780/1875",
+        "date_sort": "1780-01-01",
+        "place_ids": ["place.kiskiminetas_township_pa", "place.armstrong_county_pa", "place.westmoreland_county_pa"],
+        "place_label": "Kiskiminetas Township, Armstrong County, and Westmoreland County, Pennsylvania",
+        "confidence": "open",
+        "notes": "Probate, land, church, cemetery, and guardianship target for Dible, Heckman, Moore, Haden, Allshouse, and Otterman lines. Catherine Moore's exact dates conflict across compiled/index sources, so Kiskiminetas Township records are a priority.",
+        "source_refs": ["https://www.familiesbyvelmaparsons.com/pdfs/DIBLE.pdf", "https://allshousefamily.org/getperson.php?personID=P6145&tree=Allshouse1", "https://www.ancestry.com/genealogy/records/john-moore-dible-24-1zyhn5", "https://www.wikitree.com/wiki/Dible-21"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.dible.catherine_moore_kiskiminetas_conflict",
+      "geometry": {"type": "Point", "coordinates": [-79.4921599, 40.5853625]},
+      "properties": {
+        "feature_kind": "record_target",
+        "event_type": "identity_conflict_target",
+        "label": "Catherine Moore identity/date conflict target",
+        "anchor": "William J. Dible",
+        "line_ids": ["line.dible_surname"],
+        "generation": 4,
+        "date_start": "1834",
+        "date_end": "1872",
+        "date_sort": "1834-01-01",
+        "place_id": "place.kiskiminetas_township_pa",
+        "place_label": "Kiskiminetas Township, Armstrong County, Pennsylvania",
+        "confidence": "target",
+        "conflict_note": "Ancestry's John Moore Dible profile gives Catherine Moore 1839-1864; WikiTree's Harry Dible profile gives about 1834-6 Jun 1872. Original local records are needed before assigning exact dates or parents.",
+        "source_refs": ["https://www.ancestry.com/genealogy/records/john-moore-dible-24-1zyhn5", "https://www.wikitree.com/wiki/Dible-21"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.haden.cumberland_county_parentage",
+      "geometry": {"type": "Point", "coordinates": [-85.3884436, 36.7864777]},
+      "properties": {
+        "feature_kind": "record_target",
+        "event_type": "parentage_proof_target",
+        "label": "Elizabeth J. Haden Cumberland County parentage target",
+        "anchor": "William J. Dible",
+        "line_ids": ["line.dible_surname"],
+        "generation": 5,
+        "date_start": "1843",
+        "date_end": "1860",
+        "date_sort": "1843-01-01",
+        "place_id": "place.cumberland_county_ky",
+        "place_label": "Cumberland County, Kentucky",
+        "confidence": "target",
+        "candidate_people": ["person.elizabeth_j_haden", "person.andrew_jackson_haden", "person.sophia_reid", "person.richard_d_haden", "person.sarah_sally_lewis_tompkins"],
+        "research_question": "Do Cumberland County census, marriage, deed, probate, cemetery, or Bible records prove Elizabeth J. Haden as daughter of Andrew Jackson Haden and Sophia Reid/Reed, and Andrew as son of Richard D. Haden and Sarah Sally Lewis Tompkins?",
+        "evidence_note": "Find a Grave names Andrew Jackson Haden and Sophia Reid as Elizabeth's parents. KaysAncestry agrees, uses Sophia Reed, cites 1850/1860 Cumberland County census households, and its Andrew Jackson Haden page notes a Cumberland County mortgage to Sally L. Haden as Andrew's mother.",
+        "source_refs": [
+          "https://www.findagrave.com/memorial/9609623/elizabeth-j-dible",
+          "https://sites.rootsmagic.com/KaysAncestry/individual.php?p=7222",
+          "https://sites.rootsmagic.com/KaysAncestry/individual.php?p=5328",
+          "https://sites.rootsmagic.com/KaysAncestry/individual.php?p=659",
+          "https://sites.rootsmagic.com/KaysAncestry/individual.php?p=1960"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.haden.richard_sally_marriage.1799-03-07",
+      "geometry": {"type": "Point", "coordinates": [-78.4767, 38.0293]},
+      "properties": {
+        "feature_kind": "candidate_life_event",
+        "event_type": "marriage",
+        "person_id": "person.richard_d_haden",
+        "person_name": "Richard D. Haden",
+        "participants": ["person.richard_d_haden", "person.sarah_sally_lewis_tompkins"],
+        "anchor": "William J. Dible",
+        "line_ids": ["line.dible_surname"],
+        "generation": 6,
+        "date": "1799-03-07",
+        "date_sort": "1799-03-07",
+        "place_id": "place.albemarle_county_va",
+        "place_label": "Albemarle County, Virginia",
+        "confidence": "lead",
+        "evidence_note": "KaysAncestry's Richard D. Haden page gives a 7 Mar 1799 Albemarle County marriage to Sarah Sally Lewis Tompkins and notes bondsman/minister details.",
+        "source_refs": ["https://sites.rootsmagic.com/KaysAncestry/individual.php?p=659", "https://sites.rootsmagic.com/KaysAncestry/individual.php?p=1960"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.haden.richard_sally_virginia_kentucky",
+      "geometry": {
+        "type": "MultiPoint",
+        "coordinates": [[-78.4767, 38.0293], [-78.2633, 37.8604], [-79.5231, 37.3343], [-85.3884436, 36.7864777]]
+      },
+      "properties": {
+        "feature_kind": "record_target",
+        "event_type": "parentage_and_migration_target",
+        "label": "Richard D. Haden and Sarah Sally Lewis Tompkins Virginia-to-Kentucky record chain",
+        "anchor": "William J. Dible",
+        "line_ids": ["line.dible_surname"],
+        "generation": 6,
+        "date_start": "1799",
+        "date_end": "1841",
+        "date_sort": "1799-03-07",
+        "place_ids": ["place.albemarle_county_va", "place.fluvanna_county_va", "place.bedford_county_va", "place.cumberland_county_ky"],
+        "place_label": "Albemarle, Fluvanna, and Bedford Counties, Virginia; Cumberland County, Kentucky",
+        "confidence": "open",
+        "candidate_people": ["person.richard_d_haden", "person.sarah_sally_lewis_tompkins", "person.andrew_jackson_haden"],
+        "evidence_note": "KaysAncestry places Richard and Sally in Albemarle marriage records, notes possible Richmond/Fluvanna/Bedford tax context, and places their deaths in Cumberland County, Kentucky. The Andrew page names them as Andrew's parents and includes a Sally L. Haden deed clue.",
+        "research_question": "Do Albemarle marriage bonds, Virginia tax lists, Cumberland County deeds, and Cumberland probate records prove the Richard/Sally-to-Andrew Jackson Haden connection?",
+        "source_refs": [
+          "https://sites.rootsmagic.com/KaysAncestry/individual.php?p=5328",
+          "https://sites.rootsmagic.com/KaysAncestry/individual.php?p=659",
+          "https://sites.rootsmagic.com/KaysAncestry/individual.php?p=1960"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.reid.sophia_parentage_cumberland",
+      "geometry": {"type": "Point", "coordinates": [-85.3884436, 36.7864777]},
+      "properties": {
+        "feature_kind": "record_target",
+        "event_type": "parentage_proof_target",
+        "label": "Sophia Reed/Reid Cumberland County parentage target",
+        "anchor": "William J. Dible",
+        "line_ids": ["line.dible_surname"],
+        "generation": 6,
+        "date_start": "1817",
+        "date_end": "1872",
+        "date_sort": "1817-01-01",
+        "place_id": "place.cumberland_county_ky",
+        "place_label": "Cumberland County, Kentucky",
+        "confidence": "open",
+        "candidate_people": ["person.sophia_reid", "person.robert_reid", "person.edwin_reid"],
+        "evidence_note": "KaysAncestry notes Robert Reid, age 69, in Andrew and Sophia Haden's 1860 household and Edwin Reid, age 50, in Sophia's 1870 household, but presents them only as possible father/brother clues.",
+        "research_question": "Do Cumberland County marriage, probate, land, tax, cemetery, or census records identify Sophia Reed/Reid's parents and explain Robert Reid and Edwin Reid in the Haden households?",
+        "source_refs": ["https://sites.rootsmagic.com/KaysAncestry/individual.php?p=5328", "https://sites.rootsmagic.com/KaysAncestry/individual.php?p=7219"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.heckman.bodigheim_origin",
+      "geometry": {"type": "Point", "coordinates": [9.315242, 49.4783262]},
+      "properties": {
+        "feature_kind": "origin_lead",
+        "event_type": "european_origin_lead",
+        "label": "Albrecht Heckman immigrant-origin lead",
+        "anchor": "William J. Dible",
+        "line_ids": ["line.dible_surname"],
+        "date": "1700/1800",
+        "date_sort": "1700-01-01",
+        "place_id": "place.bodigheim_de",
+        "place_label": "Bodigheim, Baden-Wuerttemberg, Germany",
+        "confidence": "working",
+        "notes": "Beyond displayed Gen 6; sibling memorial for Ludwig Heckman points to Albrecht Heckman of Bodigheim/Baden.",
+        "source_refs": ["https://www.findagrave.com/memorial/43410689/ludwig-heckman"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.long.ray_almeda_marriage.1922",
+      "geometry": {"type": "Point", "coordinates": [-95.8159647, 39.4030917]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "marriage",
+        "person_id": "person.almeda_ora_long",
+        "person_name": "Almeda Ora Long Dible",
+        "participants": ["person.ray_hershel_dible", "person.almeda_ora_long"],
+        "anchor": "William J. Dible",
+        "line_ids": ["line.long_sleight_mcclelland", "line.dible_surname"],
+        "generation": 2,
+        "date": "1922",
+        "date_sort": "1922-01-01",
+        "place_id": "place.jackson_county_ks",
+        "place_label": "Jackson County, Kansas",
+        "confidence": "documented",
+        "source_refs": ["https://usgenealogyresearch.atwebpages.com/Kansas/Jackson/marriages.html"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.long.robert_ann_marriage.1857-02-19",
+      "geometry": {"type": "Point", "coordinates": [-90.7245722, 39.7089362]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "marriage",
+        "person_id": "person.robert_nelson_long",
+        "person_name": "Robert Nelson Long",
+        "participants": ["person.robert_nelson_long", "person.ann_ghent_sleight"],
+        "anchor": "William J. Dible",
+        "line_ids": ["line.long_sleight_mcclelland"],
+        "generation": 4,
+        "date": "1857-02-19",
+        "date_sort": "1857-02-19",
+        "place_id": "place.griggsville_il",
+        "place_label": "Griggsville Township, Pike County, Illinois",
+        "confidence": "strong",
+        "source_refs": ["https://www.findagrave.com/memorial/101356599/robert_nelson-long"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.long.robert_betsy_residence.1805",
+      "geometry": {"type": "Point", "coordinates": [-86.8978708, 35.8772991]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "residence",
+        "person_id": "person.rev_robert_long",
+        "person_name": "Rev. Robert Long",
+        "participants": ["person.betsy_wasson"],
+        "anchor": "William J. Dible",
+        "line_ids": ["line.long_sleight_mcclelland"],
+        "generation": 5,
+        "date": "1805",
+        "date_sort": "1805-01-01",
+        "place_id": "place.williamson_county_tn",
+        "place_label": "Williamson County, Tennessee",
+        "confidence": "working",
+        "source_refs": ["https://www.findagrave.com/memorial/68978483/robert-long"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.sleight.lincolnshire_origin",
+      "geometry": {"type": "Point", "coordinates": [-0.2031209, 53.1823034]},
+      "properties": {
+        "feature_kind": "origin_lead",
+        "event_type": "european_origin_lead",
+        "label": "Sleight family Lincolnshire origin",
+        "anchor": "William J. Dible",
+        "line_ids": ["line.long_sleight_mcclelland"],
+        "generation": 5,
+        "date": "1700/1850",
+        "date_sort": "1700-01-01",
+        "place_id": "place.lincolnshire_england",
+        "place_label": "Lincolnshire, England",
+        "confidence": "strong",
+        "source_refs": ["https://www.findagrave.com/memorial/101356599/robert_nelson-long", "https://ancestors.familysearch.org/en/M2HW-VTF/henry-sleight-1828"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.mcclelland.alexander_birth.1801-10-31",
+      "geometry": {"type": "Point", "coordinates": [-79.840601, 40.1003509]},
+      "properties": {
+        "feature_kind": "candidate_life_event",
+        "event_type": "birth",
+        "person_id": "person.alexander_m_mcclelland",
+        "person_name": "Alexander M. McClelland",
+        "anchor": "William J. Dible",
+        "line_ids": ["line.long_sleight_mcclelland"],
+        "generation": 5,
+        "date": "about 1801-10-31",
+        "date_sort": "1801-10-31",
+        "place_id": "place.fayette_city_pa",
+        "place_label": "Fayette City / Fayette County, Pennsylvania",
+        "confidence": "lead",
+        "source_refs": ["https://www.wikitree.com/wiki/McClelland-1186"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.mcclelland.alexander_sarah_marriage.1822",
+      "geometry": {"type": "Point", "coordinates": [-80.22, 39.86]},
+      "properties": {
+        "feature_kind": "candidate_life_event",
+        "event_type": "marriage",
+        "person_id": "person.alexander_m_mcclelland",
+        "person_name": "Alexander M. McClelland",
+        "participants": ["person.alexander_m_mcclelland", "person.sarah_hoge"],
+        "anchor": "William J. Dible",
+        "line_ids": ["line.long_sleight_mcclelland"],
+        "generation": 5,
+        "date": "about 1822",
+        "date_sort": "1822-01-01",
+        "place_id": "place.greene_county_pa",
+        "place_label": "Greene County, Pennsylvania",
+        "confidence": "lead",
+        "source_refs": ["https://www.wikitree.com/wiki/McClelland-1186", "https://www.wikitree.com/wiki/Hoge-395"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.mcclelland.dorsey_birth.1825-09-26",
+      "geometry": {"type": "Point", "coordinates": [-80.22, 39.86]},
+      "properties": {
+        "feature_kind": "candidate_life_event",
+        "event_type": "birth",
+        "person_id": "person.dorsey_overturf_mcclelland",
+        "person_name": "Dorsey Overturf McClelland",
+        "anchor": "William J. Dible",
+        "line_ids": ["line.long_sleight_mcclelland"],
+        "generation": 4,
+        "date": "1825-09-26",
+        "date_sort": "1825-09-26",
+        "place_id": "place.greene_county_pa",
+        "place_label": "Greene County, Pennsylvania",
+        "confidence": "lead",
+        "source_refs": ["https://www.findagrave.com/memorial/81010414/dorsey_overturf-mcclelland", "https://www.wikitree.com/wiki/McClelland-1174"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.love.lovina_birth.1832-10-28",
+      "geometry": {"type": "Point", "coordinates": [-82.0875, 39.49722]},
+      "properties": {
+        "feature_kind": "candidate_life_event",
+        "event_type": "birth",
+        "person_id": "person.lovina_parker_love",
+        "person_name": "Lovina Parker Love McClelland",
+        "anchor": "William J. Dible",
+        "line_ids": ["line.long_sleight_mcclelland"],
+        "generation": 4,
+        "date": "1832-10-28",
+        "date_sort": "1832-10-28",
+        "place_id": "place.trimble_township_oh",
+        "place_label": "Trimble / Athens County, Ohio",
+        "confidence": "lead",
+        "source_refs": ["https://www.findagrave.com/memorial/97905624/lovina_parker-mcclellan", "https://www.wikitree.com/wiki/Love-4617"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.mcclelland.dorsey_lovina_marriage.1850-11-18",
+      "geometry": {"type": "Point", "coordinates": [-82.10333, 39.54389]},
+      "properties": {
+        "feature_kind": "candidate_life_event",
+        "event_type": "marriage",
+        "person_id": "person.dorsey_overturf_mcclelland",
+        "person_name": "Dorsey Overturf McClelland",
+        "participants": ["person.dorsey_overturf_mcclelland", "person.lovina_parker_love"],
+        "anchor": "William J. Dible",
+        "line_ids": ["line.long_sleight_mcclelland"],
+        "generation": 4,
+        "date": "1850-11-18",
+        "date_sort": "1850-11-18",
+        "place_id": "place.hartleyville_oh",
+        "place_label": "Hartleyville, Athens County, Ohio",
+        "confidence": "lead",
+        "source_refs": ["https://www.wikitree.com/wiki/Love-4617"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.mcclelland.alexander_death.1863-02-07",
+      "geometry": {"type": "Point", "coordinates": [-82.0514, 39.5117]},
+      "properties": {
+        "feature_kind": "candidate_life_event",
+        "event_type": "death",
+        "person_id": "person.alexander_m_mcclelland",
+        "person_name": "Alexander M. McClelland",
+        "anchor": "William J. Dible",
+        "line_ids": ["line.long_sleight_mcclelland"],
+        "generation": 5,
+        "date": "about 1863-02-07",
+        "date_sort": "1863-02-07",
+        "place_id": "place.bishopville_oh",
+        "place_label": "Bishopville / Athens County, Ohio",
+        "confidence": "lead",
+        "source_refs": ["https://www.wikitree.com/wiki/McClelland-1186"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.love.lovina_death.1883-12-23",
+      "geometry": {"type": "Point", "coordinates": [-98.69, 39.17]},
+      "properties": {
+        "feature_kind": "candidate_life_event",
+        "event_type": "death",
+        "person_id": "person.lovina_parker_love",
+        "person_name": "Lovina Parker Love McClelland",
+        "anchor": "William J. Dible",
+        "line_ids": ["line.long_sleight_mcclelland"],
+        "generation": 4,
+        "date": "1883-12-23",
+        "date_sort": "1883-12-23",
+        "place_id": "place.osborne_county_ks",
+        "place_label": "Osborne County, Kansas",
+        "confidence": "lead",
+        "source_refs": ["https://www.findagrave.com/memorial/97905624/lovina_parker-mcclellan", "https://www.wikitree.com/wiki/Love-4617"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.hoge.sarah_burial.1892",
+      "geometry": {"type": "Point", "coordinates": [-95.090839, 39.7881]},
+      "properties": {
+        "feature_kind": "candidate_life_event",
+        "event_type": "death_or_burial",
+        "person_id": "person.sarah_hoge",
+        "person_name": "Sarah Hoge McClelland",
+        "anchor": "William J. Dible",
+        "line_ids": ["line.long_sleight_mcclelland"],
+        "generation": 5,
+        "date": "1892",
+        "date_sort": "1892-01-01",
+        "place_id": "place.troy_ks",
+        "place_label": "Mount Olive Cemetery, Troy, Doniphan County, Kansas",
+        "confidence": "lead",
+        "source_refs": ["https://www.wikitree.com/wiki/Hoge-395"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.mcclelland.dorsey_burial_selden.1904",
+      "geometry": {"type": "Point", "coordinates": [-100.567644, 39.540837]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "death_or_burial",
+        "person_id": "person.dorsey_overturf_mcclelland",
+        "person_name": "Dorsey Overturf McClelland",
+        "anchor": "William J. Dible",
+        "line_ids": ["line.long_sleight_mcclelland"],
+        "generation": 4,
+        "date": "1904-05-19",
+        "date_sort": "1904-05-19",
+        "place_id": "place.selden_ks",
+        "place_label": "Selden Cemetery, Selden, Sheridan County, Kansas",
+        "confidence": "strong",
+        "evidence_note": "KSGenWeb lists Dorsey O. McClelland, Ora E. McClelland, and Almeda O. Dible on identical stones/same concrete base at Selden Cemetery.",
+        "source_refs": ["https://www.ksgenweb.org/KSSheridan/cemetery/selden2.html", "https://www.findagrave.com/memorial/81010414/dorsey_overturf-mcclelland"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.mcclelland_love.pa_oh_ks_validation",
+      "geometry": {
+        "type": "MultiPoint",
+        "coordinates": [[-79.840601, 40.1003509], [-80.22, 39.86], [-82.0875, 39.49722], [-82.10333, 39.54389], [-98.69, 39.17], [-100.567644, 39.540837]]
+      },
+      "properties": {
+        "feature_kind": "record_target",
+        "event_type": "lineage_validation_cluster",
+        "label": "McClelland/Hoge and Love/James Pennsylvania-Ohio-Kansas validation cluster",
+        "anchor": "William J. Dible",
+        "line_ids": ["line.long_sleight_mcclelland"],
+        "generation_start": 4,
+        "generation_end": 5,
+        "date_start": "1801",
+        "date_end": "1904",
+        "date_sort": "1801-01-01",
+        "place_ids": ["place.fayette_city_pa", "place.greene_county_pa", "place.trimble_township_oh", "place.hartleyville_oh", "place.bishopville_oh", "place.osborne_county_ks", "place.selden_ks", "place.troy_ks"],
+        "confidence": "target",
+        "record_types": ["marriage records", "probate records", "land records", "church registers", "cemetery records", "county histories", "census images"],
+        "research_question": "Can original Greene/Fayette County Pennsylvania, Athens County Ohio, Osborne County Kansas, Selden Cemetery, and Doniphan County Kansas records prove Dorsey McClelland's parents, Lovina Love's parents, and the Pennsylvania-to-Ohio-to-Kansas route?",
+        "source_refs": ["https://www.wikitree.com/wiki/McClelland-1186", "https://www.wikitree.com/wiki/Hoge-395", "https://www.wikitree.com/wiki/Love-4617", "https://www.findagrave.com/memorial/97905624/lovina_parker-mcclellan", "https://www.ksgenweb.org/KSSheridan/cemetery/selden2.html", "https://ancestors.familysearch.org/en/9S5X-B38/thomas-lewis-love-1796-1871"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.durham.david_birth.1832-12-28",
+      "geometry": {"type": "Point", "coordinates": [-79.0392919, 35.6729639]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "birth",
+        "person_id": "person.david_monroe_durham",
+        "person_name": "David Monroe Durham",
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.connelly_durham"],
+        "generation": 4,
+        "date": "1832-12-28",
+        "date_sort": "1832-12-28",
+        "place_id": "place.north_carolina",
+        "place_label": "North Carolina",
+        "confidence": "strong",
+        "geocode_status": "region_centroid",
+        "identity_conflict_ref": "target.durham.david_identity_hopkins_muhlenberg",
+        "source_refs": ["https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1021&context=muhlenberg_cty_heritage"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.durham.david_virginia_marriage.1857-08-19",
+      "geometry": {"type": "Point", "coordinates": [-89.7858065, 40.0166667]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "marriage",
+        "person_id": "person.david_monroe_durham",
+        "person_name": "David Monroe Durham",
+        "participants": ["person.david_monroe_durham", "person.virginia_ann_ford"],
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.connelly_durham"],
+        "generation": 4,
+        "date": "1857-08-19",
+        "date_sort": "1857-08-19",
+        "place_id": "place.menard_county_il",
+        "place_label": "Menard County, Illinois",
+        "confidence": "strong",
+        "identity_conflict_ref": "target.durham.david_identity_hopkins_muhlenberg",
+        "source_refs": ["https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1021&context=muhlenberg_cty_heritage"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.durham.david_death.1897-08-24",
+      "geometry": {"type": "Point", "coordinates": [-87.6427843, 37.383656]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "death",
+        "person_id": "person.david_monroe_durham",
+        "person_name": "David Monroe Durham",
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.connelly_durham"],
+        "generation": 4,
+        "date": "1897-08-24",
+        "date_sort": "1897-08-24",
+        "place_id": "place.nebo_ky",
+        "place_label": "Nebo, Hopkins County, Kentucky",
+        "confidence": "strong",
+        "identity_conflict_ref": "target.durham.david_identity_hopkins_muhlenberg",
+        "source_refs": ["https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1021&context=muhlenberg_cty_heritage"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.durham.david_identity_hopkins_muhlenberg",
+      "geometry": {"type": "Point", "coordinates": [-87.4989, 37.3281]},
+      "properties": {
+        "feature_kind": "record_target",
+        "event_type": "identity_conflict_target",
+        "label": "David Monroe Durham identity and parentage cleanup target",
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.connelly_durham"],
+        "generation": 4,
+        "date_start": "1857",
+        "date_end": "1897",
+        "date_sort": "1857-08-19",
+        "place_id": "place.hopkins_county_ky",
+        "place_label": "Hopkins County, Kentucky",
+        "confidence": "open",
+        "related_places": ["place.nebo_ky", "place.muhlenberg_county_ky", "place.menard_county_il", "place.north_carolina"],
+        "evidence_conflict": {
+          "wku_identity": "David Monroe Durham, born 28 Dec 1832 in North Carolina, died 24 Aug 1897 in Nebo, Kentucky, married Virginia Ann Ford 19 Aug 1857 in Menard County, Illinois.",
+          "ford_family_letter": "Rev. G. W. Ford's 1911 letter says his sister Virginia Ann Ford was born 27 Dec 1842 and married David M. Durham of North Carolina in February 1858.",
+          "familysearch_child_page": "Son David Milton Durham page calls father David Monroe Durham Jr. and mother Virginia Ann Ford.",
+          "findagrave_child_snippet": "Mary Isabella Durham Hibbs snippet names father David M. Durham and mother Virginia Ann Ford, with variant father dates 1829-1887."
+        },
+        "research_question": "Do original Menard County marriage, Hopkins/Muhlenberg death, cemetery, probate, and land records identify David Monroe Durham's exact dates and parents, and explain the Jr. label?",
+        "source_refs": [
+          "https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1021&context=muhlenberg_cty_heritage",
+          "https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1011&context=muhlenberg_cty_heritage",
+          "https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1014&context=muhlenberg_cty_heritage",
+          "https://ancestors.familysearch.org/en/KVP1-L7H/david-milton-durham-1868-1932",
+          "https://nb.findagrave.com/memorial/140303398/mary-isabella-hibbs"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.ford.john_laborn_birth.1811",
+      "geometry": {"type": "Point", "coordinates": [-79.3357315, 36.4035101]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "birth",
+        "person_id": "person.john_laborn_ford",
+        "person_name": "John Laborn/Laban Ford",
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.connelly_durham"],
+        "generation": 5,
+        "date": "1811-10-11",
+        "date_sort": "1811-10-11",
+        "place_id": "place.caswell_county_nc",
+        "place_label": "Caswell County, North Carolina",
+        "confidence": "lead",
+        "evidence_note": "Rev. G. W. Ford's 1911 letter gives the exact 11 Oct 1811 Caswell County birth; later queries repeat 1811 and treat his parents as unresolved.",
+        "source_refs": ["https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1011&context=muhlenberg_cty_heritage", "https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1014&context=muhlenberg_cty_heritage", "https://ncccha.blogspot.com/2010/06/john-laborn-ford.html"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.ford.john_laborn_death.1898",
+      "geometry": {"type": "Point", "coordinates": [-87.1788854, 37.2011539]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "death",
+        "person_id": "person.john_laborn_ford",
+        "person_name": "John Laborn/Laban Ford",
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.connelly_durham"],
+        "generation": 5,
+        "date": "1898",
+        "date_sort": "1898-01-01",
+        "place_id": "place.greenville_ky",
+        "place_label": "Greenville, Muhlenberg County, Kentucky",
+        "confidence": "working",
+        "source_refs": ["https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1014&context=muhlenberg_cty_heritage"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.ford.john_laborn_migration_greenville.1839",
+      "geometry": {"type": "Point", "coordinates": [-87.1788854, 37.2011539]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "migration_or_residence",
+        "person_id": "person.john_laborn_ford",
+        "person_name": "John Laborn/Laban Ford",
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.connelly_durham"],
+        "generation": 5,
+        "date": "1839",
+        "date_sort": "1839-01-01",
+        "place_id": "place.greenville_ky",
+        "place_label": "Greenville, Muhlenberg County, Kentucky",
+        "confidence": "lead",
+        "evidence_note": "Rev. G. W. Ford's 1911 letter says John Laborn Ford rode from North Carolina to Muhlenberg County in 1839, first stopping at Greenville before meeting Lucy Ann Staples at Friendship church.",
+        "source_refs": ["https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1011&context=muhlenberg_cty_heritage"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.ford.john_laborn_lucy_marriage_conflict.1840-1842",
+      "geometry": {"type": "Point", "coordinates": [-87.1933312, 37.1634449]},
+      "properties": {
+        "feature_kind": "record_target",
+        "event_type": "marriage_date_conflict",
+        "label": "John Laborn Ford and Lucy Ann Staples marriage date conflict",
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.connelly_durham"],
+        "generation": 5,
+        "date_start": "1840-04",
+        "date_end": "1842-03-30",
+        "date_sort": "1840-04-01",
+        "place_id": "place.friendship_ky",
+        "place_label": "Friendship / Greenville area, Muhlenberg County, Kentucky",
+        "confidence": "target",
+        "evidence_conflict": {
+          "ford_family_letter": "Rev. G. W. Ford's 1911 letter says John Laborn Ford and Lucy Ann Staples married in April 1840.",
+          "compiled_index_leads": "WikiTree and Ancestry-style public snippets point to a 30 Mar 1842 Kentucky marriage."
+        },
+        "research_question": "Do Muhlenberg County marriage books, bonds, minister returns, or Friendship Missionary Baptist Church records identify the correct marriage date and witnesses?",
+        "source_refs": ["https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1011&context=muhlenberg_cty_heritage", "https://www.wikitree.com/wiki/Staples-3420", "https://www.ancestry.it/genealogy/records/lucy-ann-staples-24-1m59w"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.staples.john_burton_birth.1785",
+      "geometry": {"type": "Point", "coordinates": [-78.4927721, 37.1232245]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "birth",
+        "person_id": "person.john_burton_staples",
+        "person_name": "John Burton Staples",
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.connelly_durham"],
+        "generation": 6,
+        "date": "1785-06-25",
+        "date_sort": "1785-06-25",
+        "place_id": "place.virginia",
+        "place_label": "Virginia",
+        "confidence": "lead",
+        "geocode_status": "region_centroid",
+        "source_refs": ["https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1011&context=muhlenberg_cty_heritage", "https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1014&context=muhlenberg_cty_heritage"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.staples.john_burton_east_tennessee_residence.1830",
+      "geometry": {"type": "Point", "coordinates": [-83.92, 35.96]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "migration_or_residence",
+        "person_id": "person.john_burton_staples",
+        "person_name": "John Burton Staples",
+        "participants": ["person.nancy_ann_turner"],
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.connelly_durham"],
+        "generation": 6,
+        "date": "1830",
+        "date_sort": "1830-01-01",
+        "place_id": "place.east_tennessee",
+        "place_label": "East Tennessee",
+        "confidence": "lead",
+        "geocode_status": "regional_proxy",
+        "evidence_note": "Rev. G. W. Ford's 1911 letter says John Burton Staples and Nancy Ann Turner moved from Virginia to East Tennessee about 1830 before settling in Muhlenberg County in fall 1835.",
+        "source_refs": ["https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1011&context=muhlenberg_cty_heritage"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.staples.john_burton_migration.1835",
+      "geometry": {"type": "Point", "coordinates": [-87.1417319, 37.1984359]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "migration_or_residence",
+        "person_id": "person.john_burton_staples",
+        "person_name": "John Burton Staples",
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.connelly_durham"],
+        "generation": 6,
+        "date": "1835",
+        "date_sort": "1835-01-01",
+        "place_id": "place.muhlenberg_county_ky",
+        "place_label": "Muhlenberg County, Kentucky",
+        "confidence": "lead",
+        "evidence_note": "Rev. G. W. Ford's 1911 letter says the Staples family settled about three miles southeast of Greenville in fall 1835.",
+        "source_refs": ["https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1011&context=muhlenberg_cty_heritage", "https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1014&context=muhlenberg_cty_heritage"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.staples.john_burton_death.1867",
+      "geometry": {"type": "Point", "coordinates": [-87.1933312, 37.1634449]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "death",
+        "person_id": "person.john_burton_staples",
+        "person_name": "John Burton Staples",
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.connelly_durham"],
+        "generation": 6,
+        "date": "1867-06",
+        "date_sort": "1867-06-01",
+        "place_id": "place.friendship_ky",
+        "place_label": "Near Friendship, Muhlenberg County, Kentucky",
+        "confidence": "lead",
+        "evidence_note": "Rev. G. W. Ford's 1911 letter says John Burton Staples died in June 1867 and that he and Nancy Ann Turner were members of Friendship Missionary Baptist Church.",
+        "source_refs": ["https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1011&context=muhlenberg_cty_heritage", "https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1014&context=muhlenberg_cty_heritage"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.staples.nancy_ann_turner_birth.1782-11",
+      "geometry": {"type": "Point", "coordinates": [-78.4927721, 37.1232245]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "birth",
+        "person_id": "person.nancy_ann_turner",
+        "person_name": "Nancy Ann Turner Staples",
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.connelly_durham"],
+        "generation": 6,
+        "date": "1782-11",
+        "date_sort": "1782-11-01",
+        "place_id": "place.virginia",
+        "place_label": "Virginia",
+        "confidence": "lead",
+        "geocode_status": "region_centroid",
+        "evidence_note": "Rev. G. W. Ford's 1911 letter gives Nancy Ann Turner as born in Virginia in November 1782.",
+        "source_refs": ["https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1011&context=muhlenberg_cty_heritage"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.staples.nancy_ann_turner_death.1882-02",
+      "geometry": {"type": "Point", "coordinates": [-87.1933312, 37.1634449]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "death",
+        "person_id": "person.nancy_ann_turner",
+        "person_name": "Nancy Ann Turner Staples",
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.connelly_durham"],
+        "generation": 6,
+        "date": "1882-02",
+        "date_sort": "1882-02-01",
+        "place_id": "place.friendship_ky",
+        "place_label": "Friendship area, Muhlenberg County, Kentucky",
+        "confidence": "lead",
+        "evidence_note": "Rev. G. W. Ford's 1911 letter says Nancy Ann Turner Staples died in February 1882, aged 99, and identifies Friendship Missionary Baptist Church as the family church.",
+        "source_refs": ["https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1011&context=muhlenberg_cty_heritage"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.ford.levi_aritta_caswell",
+      "geometry": {
+        "type": "MultiPoint",
+        "coordinates": [[-4.2026, 56.4907], [-79.3357315, 36.4035101], [-83.92, 35.96], [-87.1933312, 37.1634449]]
+      },
+      "properties": {
+        "feature_kind": "record_target",
+        "event_type": "parentage_conflict_target",
+        "label": "John Laborn Ford parentage conflict: John Laborn Ford Sr. or Levi Ford with Aritta Davis",
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.connelly_durham"],
+        "generation": 6,
+        "date_start": "1767",
+        "date_end": "1839",
+        "date_sort": "1767-01-01",
+        "place_ids": ["place.scotland_country", "place.caswell_county_nc", "place.east_tennessee", "place.friendship_ky"],
+        "place_label": "Scotland, Caswell County North Carolina, East Tennessee, and Muhlenberg County Kentucky",
+        "confidence": "open",
+        "candidate_parent_sets": [
+          {
+            "label": "1911 family-letter tradition",
+            "father": "John Laborn Ford Sr.",
+            "mother": "Aritta Davis",
+            "summary": "Rev. G. W. Ford's 1911 letter says the elder John Laborn Ford was born in Scotland in 1767, Aritta Davis in Scotland in 1770, they married in 1793, came to Caswell County around 1797, and Aritta died three days after the younger John Laborn Ford was born on 11 Oct 1811."
+          },
+          {
+            "label": "Later Levi Ford hypothesis",
+            "father": "Levi Ford",
+            "mother": "Aritta Davis",
+            "summary": "A 1983 Muhlenberg County Heritage query and the Caswell County Historical Association note raise Levi Ford as a possible father, but both frame the parentage as unproved and in need of empirical documentation."
+          }
+        ],
+        "research_question": "Do Caswell County marriage bonds, deeds, estate papers, guardianship records, tax lists, or court minutes prove whether John Laborn Ford, born 1811, was son of John Laborn Ford Sr. or Levi Ford, and identify Aritta Davis's origin?",
+        "notes": "This is a conflict/record target, not an attached proved ancestor layer.",
+        "source_refs": ["https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1011&context=muhlenberg_cty_heritage", "https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1026&context=muhlenberg_cty_heritage", "https://ncccha.blogspot.com/2010/06/john-laborn-ford.html"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.claar.henry_birth.1838-12-31",
+      "geometry": {"type": "Point", "coordinates": [-82.6089043, 39.0131871]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "birth",
+        "person_id": "person.henry_claar",
+        "person_name": "Henry Claar",
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.claar_white_stropes"],
+        "generation": 4,
+        "date": "1838-12-31",
+        "date_sort": "1838-12-31",
+        "place_id": "place.jackson_county_oh",
+        "place_label": "Jackson County, Ohio",
+        "confidence": "strong",
+        "source_refs": ["https://ancestors.familysearch.org/en/LYQT-6V7/henry-claar-1838-1915"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.claar.henry_death.1915-12-28",
+      "geometry": {"type": "Point", "coordinates": [-95.677556, 39.049011]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "death",
+        "person_id": "person.henry_claar",
+        "person_name": "Henry Claar",
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.claar_white_stropes"],
+        "generation": 4,
+        "date": "1915-12-28",
+        "date_sort": "1915-12-28",
+        "place_id": "place.topeka_ks",
+        "place_label": "Topeka, Kansas",
+        "confidence": "strong",
+        "source_refs": ["https://ancestors.familysearch.org/en/LYQT-6V7/henry-claar-1838-1915"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.claar.samuel_mary_marriage_conflict.1895-10-05",
+      "geometry": {"type": "Point", "coordinates": [-100.5282, 39.8183]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "marriage_with_name_conflict",
+        "person_id": "person.samuel_dove_claar",
+        "person_name": "Samuel Dove Claar",
+        "spouse_name": "Mary Margaret Hoyle / Maggie M. Hogle",
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.claar_white_stropes"],
+        "generation": 3,
+        "date": "1895-10-05",
+        "date_sort": "1895-10-05",
+        "place_id": "place.oberlin_ks",
+        "place_label": "Oberlin, Decatur County, Kansas",
+        "confidence": "working",
+        "evidence_conflict": {
+          "familysearch_spouse_name": "Mary Margaret Hoyle",
+          "ksgenweb_bride_name": "Maggie M. Hogle",
+          "shared_details": "Same groom, same marriage date, same Oberlin place."
+        },
+        "research_question": "Is Hogle a transcription variant/error for Hoyle, a different legal surname, or a clue to Mary Margaret's parentage or prior household?",
+        "source_refs": [
+          "https://ancestors.familysearch.org/en/KN4D-VND/samuel-dove-claar-1873-1952",
+          "https://www.ksgenweb.org/KSDecatur/Marriages/groom_c.htm",
+          "https://www.ksgenweb.org/KSDecatur/Marriages/bride_g.htm"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.hoyle_hogle.decatur_marriage_original.1895",
+      "geometry": {"type": "Point", "coordinates": [-100.5282, 39.8183]},
+      "properties": {
+        "feature_kind": "record_target",
+        "event_type": "marriage_record_conflict_target",
+        "label": "Original Decatur County marriage record for Samuel D. Claar and Maggie M. Hogle / Mary Margaret Hoyle",
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.claar_white_stropes"],
+        "generation": 3,
+        "date": "1895-10-05",
+        "date_sort": "1895-10-05",
+        "place_id": "place.decatur_county_ks",
+        "place_label": "Decatur County, Kansas",
+        "confidence": "open",
+        "related_places": ["place.oberlin_ks"],
+        "repository_target": "Decatur County Clerk of the District Court, 120 E Hall, Oberlin, KS 67749",
+        "notes": "KSGenWeb says all Decatur County marriage records are on file with the Clerk of the District Court and warns that dates and names can be questionable. This is the controlling record target before extending Mary Margaret's Hoyle/Hogle parents.",
+        "source_refs": [
+          "https://www.ksgenweb.org/KSDecatur/Marriages/groom_c.htm",
+          "https://www.ksgenweb.org/KSDecatur/Marriages/bride_g.htm"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.claar.bedford_pennsylvania",
+      "geometry": {"type": "Point", "coordinates": [-78.5237447, 40.0271453]},
+      "properties": {
+        "feature_kind": "record_target",
+        "event_type": "county_record_target",
+        "label": "Klar/Claar Bedford County validation target",
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.claar_white_stropes"],
+        "generation": 6,
+        "date": "1750/1850",
+        "date_sort": "1750-01-01",
+        "place_id": "place.bedford_county_pa",
+        "place_label": "Bedford County, Pennsylvania",
+        "confidence": "open",
+        "notes": "Original records target for George Washington Claar, Barbara House, Samuel Claar, and Lydia Stropes.",
+        "source_refs": ["https://www.motherbedford.com/KlarGen05.htm", "https://www.wikitree.com/wiki/Claar-51"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "path.zimmerman_surname",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[9.5830848, 49.064658], [-97.4169964, 42.0283379], [-98.433672, 39.51251], [-100.567644, 39.540837], [-101.0526881, 39.3959655]]
+      },
+      "properties": {
+        "feature_kind": "temporal_path",
+        "path_type": "lineage_route",
+        "line_id": "line.zimmerman_surname",
+        "label": "Zimmerman surname route: Mainhardt/Wuerttemberger Hof to Nebraska to Kansas",
+        "anchor": "Doyle Jule Zimmerman",
+        "date_start": "1869-10-25",
+        "date_end": "1953-06-14",
+        "confidence": "strong",
+        "sequence": [
+          {"order": 1, "date_sort": "1869-10-25", "place_id": "place.wuerttemberger_hof_de", "event_id": "event.zimmerman.michael_birth.1869-10-25"},
+          {"order": 2, "date_sort": "1880-06-01", "place_id": "place.norfolk_ne", "event_id": "event.zimmerman.john_paul_household.1880"},
+          {"order": 3, "date_sort": "1895-11-19", "place_id": "place.cawker_city_ks", "event_id": "event.zimmerman.michael_elizabeth_marriage.1895-11-19"},
+          {"order": 4, "date_sort": "1930-04-12", "place_id": "place.selden_ks", "event_id": "event.doyle_zimmerman.birth.1930-04-12"},
+          {"order": 5, "date_sort": "1953-06-14", "place_id": "place.colby_ks", "event_id": "event.doyle_zimmerman.marriage.1953-06-14"}
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "path.nauer",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[-80.5222961, 43.4652699], [-98.433672, 39.51251], [-100.1179098, 39.5941707], [-100.567644, 39.540837]]
+      },
+      "properties": {
+        "feature_kind": "temporal_path",
+        "path_type": "lineage_route",
+        "line_id": "line.nauer",
+        "label": "Nauer route: Waterloo County, Ontario to Kansas",
+        "anchor": "Doyle Jule Zimmerman",
+        "date_start": "1871",
+        "date_end": "1930-04-12",
+        "confidence": "strong",
+        "sequence": [
+          {"order": 1, "date_sort": "1871", "place_id": "place.waterloo_on", "event_id": "event.nauer.thomas_catharine_waterloo_residence.1871"},
+          {"order": 2, "date_sort": "1872-04-07", "place_id": "place.waterloo_on", "event_id": "event.nauer.elizabeth_birth.1872-04-07"},
+          {"order": 3, "date_sort": "1880", "place_id": "place.cawker_city_ks", "event_id": "event.nauer.thomas_catharine_cawker_residence.1880"},
+          {"order": 4, "date_sort": "1895-11-19", "place_id": "place.cawker_city_ks", "event_id": "event.zimmerman.michael_elizabeth_marriage.1895-11-19"},
+          {"order": 5, "date_sort": "1906-02-01", "place_id": "place.new_almelo_ks", "event_id": "event.nauer.catherina_koeberger_death.1906-02-01"},
+          {"order": 6, "date_sort": "1930-04-12", "place_id": "place.selden_ks", "event_id": "event.doyle_zimmerman.birth.1930-04-12"}
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "path.nauer_candidate_lorenz",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[-80.65, 43.4], [-81.2, 44.03333300259], [-80.5222961, 43.4652699], [-98.433672, 39.51251]]
+      },
+      "properties": {
+        "feature_kind": "temporal_path",
+        "path_type": "candidate_parentage_route",
+        "line_id": "line.nauer",
+        "label": "Candidate Nauer route if Thomas was son of Lorenz Nauer and Dorothea Meyer",
+        "anchor": "Doyle Jule Zimmerman",
+        "date_start": "1851",
+        "date_end": "1880",
+        "confidence": "possible",
+        "evidence_note": "This path encodes a compiled possible-parent lead only; it should be visually distinct from the stronger Thomas/Elizabeth Nauer route.",
+        "sequence": [
+          {"order": 1, "date_sort": "1851", "place_id": "place.wilmot_township_on", "event_id": "event.nauer.lorenz_wilmot_residence.1851"},
+          {"order": 2, "date_sort": "1861", "place_id": "place.carrick_township_on", "event_id": "event.nauer.lorenz_carrick_residence.1861"},
+          {"order": 3, "date_sort": "1871", "place_id": "place.waterloo_on", "event_id": "event.nauer.thomas_catharine_waterloo_residence.1871"},
+          {"order": 4, "date_sort": "1880", "place_id": "place.cawker_city_ks", "event_id": "event.nauer.thomas_catharine_cawker_residence.1880"}
+        ],
+        "source_refs": ["https://img1.wsimg.com/blobby/go/c0db0dfe-27d2-4632-889f-eeb26fbb14e1/downloads/f7bcaab9-38ae-4388-a9eb-f4fbecb15a21/Waterloo%20German%20Catholic%20Settlers.pdf?ver=1781326202841"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "path.mundell",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[-86.4692735, 40.2992769], [-93.7842976, 41.0152092], [-98.7851, 39.7792], [-117.8722311, 33.750631], [-103.067158, 39.2930463], [-101.2449267, 39.0617169], [-101.0526881, 39.3959655]]
+      },
+      "properties": {
+        "feature_kind": "temporal_path",
+        "path_type": "lineage_route",
+        "line_id": "line.mundell_rust_cantwell",
+        "label": "Mundell/Rust route: Indiana to Iowa to Smith County, Kansas, California, then Evelyn's Colorado/Winona/Colby anchors",
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "date_start": "1837-04",
+        "date_end": "2023-04-15",
+        "confidence": "working",
+        "sequence": [
+          {"order": 1, "date_sort": "1837-04-01", "place_id": "place.clinton_county_in", "event_id": "event.mundell.harvey_birth.1837-04"},
+          {"order": 2, "date_sort": "1857-12-27", "place_id": "place.clarke_county_ia", "event_id": "event.mundell.harvey_marriage.1857-12-27"},
+          {"order": 3, "date_sort": "1894-06-06", "place_id": "place.smith_county_ks", "event_id": "event.rust.frances_birth.1894-06-06"},
+          {"order": 4, "date_sort": "1910-01-01", "place_id": "place.smith_center_ks", "event_id": "event.mundell.walter_frances_marriage.1910"},
+          {"order": 5, "date_sort": "1911-03-26", "place_id": "place.orange_county_ca", "event_id": "event.mundell.harvey_death.1911-03-26"},
+          {"order": 6, "date_sort": "1935-01-16", "place_id": "place.flagler_co", "event_id": "event.evelyn_mundell.birth.1935-01-16"},
+          {"order": 7, "date_sort": "1935-01-16", "place_id": "place.winona_ks", "event_id": "event.evelyn_mundell.winona_residence_school"},
+          {"order": 8, "date_sort": "2023-04-15", "place_id": "place.colby_ks", "event_id": "event.evelyn_mundell.death.2023-04-15"}
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "path.rust_candidate_john_f_ethel_b_rupert",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[-99.859444, 39.943611], [-98.7851, 39.7792], [-98.7851, 39.7792], [-101.2449267, 39.0617169], [-98.1051, 39.4561]]
+      },
+      "properties": {
+        "feature_kind": "temporal_path",
+        "path_type": "candidate_parentage_and_identity_route",
+        "line_id": "line.mundell_rust_cantwell",
+        "label": "Candidate Rust route: Reamsville parent cluster to Smith Center marriage, Winona Adolph clue, and Beloit Strawn clue",
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "date_start": "1870-04-12",
+        "date_end": "1984",
+        "confidence": "candidate",
+        "evidence_note": "This path isolates the unresolved Rust hypothesis so it can be mapped without promoting it to proved lineage: John F. Rust/Ethel B. Rupert at Reamsville, Mary Frances Rust's possible Smith County birth and Smith Center marriage, Evelyn's Winona Frances Adolph clue, and the forum's Lyle Strawn/Beloit clue.",
+        "sequence": [
+          {"order": 1, "date_sort": "1870-04-12", "place_id": "place.reamsville_cemetery_ks", "event_id": "target.rust.john_f_ethel_rupert_reamsville_cluster"},
+          {"order": 2, "date_sort": "1894-06-06", "place_id": "place.smith_county_ks", "event_id": "event.rust.frances_birth.1894-06-06"},
+          {"order": 3, "date_sort": "1910-01-01", "place_id": "place.smith_center_ks", "event_id": "event.mundell.walter_frances_marriage.1910"},
+          {"order": 4, "date_sort": "1935-01-16", "place_id": "place.winona_ks", "event_id": "target.rust.frances_adolph_winona_identity"},
+          {"order": 5, "date_sort": "1984-01-01", "place_id": "place.beloit_ks", "event_id": "target.rust.frances_adolph_strawn_beloit"}
+        ],
+        "source_refs": [
+          "https://www.support.genealogy.com/forum/surnames/topics/rust/482/",
+          "https://www.findagrave.com/memorial/124223039/william_bryan-rust",
+          "https://www.interment.net/data/us/ks/smith/reamsville/index.htm"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "path.clemans_flaherty",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[-90.1910154, 38.6280278], [-94.6858998, 46.729553], [-103.067158, 39.2930463], [-101.0526881, 39.3959655]]
+      },
+      "properties": {
+        "feature_kind": "temporal_path",
+        "path_type": "lineage_route_with_collateral_evidence",
+        "line_id": "line.clemans_flaherty",
+        "label": "Clemans/Flaherty evidence route: St. Louis marriage target to Minnesota sibling lead, then Evelyn's Colorado/Kansas anchors",
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "date_start": "1921-04-16",
+        "date_end": "2023-04-15",
+        "confidence": "working",
+        "sequence": [
+          {"order": 1, "date_sort": "1921-04-16", "place_id": "place.st_louis_mo", "event_id": "event.clemans.talmage_margaret_marriage.1921-04-16"},
+          {"order": 2, "date_sort": "1925-01-15", "place_id": "place.minnesota", "event_id": "event.clemans.genevieve_birth.1925-01-15"},
+          {"order": 3, "date_sort": "1935-01-16", "place_id": "place.flagler_co", "event_id": "event.evelyn_mundell.birth.1935-01-16"},
+          {"order": 4, "date_sort": "2023-04-15", "place_id": "place.colby_ks", "event_id": "event.evelyn_mundell.death.2023-04-15"}
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "path.dible_surname",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[9.315242, 49.4783262], [-79.4689832, 40.7876239], [-101.0131604, 40.1757537], [-100.743482, 39.471671], [-81.8823135, 26.5999265]]
+      },
+      "properties": {
+        "feature_kind": "temporal_path",
+        "path_type": "lineage_route_with_origin_lead",
+        "line_id": "line.dible_surname",
+        "label": "Dible/Heckman route: Baden origin lead to Pennsylvania/Nebraska/Kansas/Florida",
+        "anchor": "William J. Dible",
+        "date_start": "1700",
+        "date_end": "2022-08-09",
+        "confidence": "working",
+        "sequence": [
+          {"order": 1, "date_sort": "1700-01-01", "place_id": "place.bodigheim_de", "event_id": "target.heckman.bodigheim_origin"},
+          {"order": 2, "date_sort": "1780-01-01", "place_id": "place.armstrong_county_pa", "event_id": "target.dible.early_pennsylvania"},
+          {"order": 3, "date_sort": "1896-06-10", "place_id": "place.trenton_ne", "event_id": "event.dible.harry_julia_marriage.1896-06-10"},
+          {"order": 4, "date_sort": "1933-06-02", "place_id": "place.rexford_ks", "event_id": "event.bill_dible.birth.1933-06-02"},
+          {"order": 5, "date_sort": "2022-08-09", "place_id": "place.lee_county_fl", "event_id": "event.bill_dible.death.2022-08-09"}
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "path.long_sleight",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[-0.2031209, 53.1823034], [-86.8978708, 35.8772991], [-90.7245722, 39.7089362], [-95.8159647, 39.4030917], [-100.743482, 39.471671]]
+      },
+      "properties": {
+        "feature_kind": "temporal_path",
+        "path_type": "lineage_route",
+        "line_id": "line.long_sleight_mcclelland",
+        "label": "Long/Sleight route: Lincolnshire lead through Tennessee/Illinois/Kansas",
+        "anchor": "William J. Dible",
+        "date_start": "1700",
+        "date_end": "1933-06-02",
+        "confidence": "working",
+        "sequence": [
+          {"order": 1, "date_sort": "1700-01-01", "place_id": "place.lincolnshire_england", "event_id": "target.sleight.lincolnshire_origin"},
+          {"order": 2, "date_sort": "1805-01-01", "place_id": "place.williamson_county_tn", "event_id": "event.long.robert_betsy_residence.1805"},
+          {"order": 3, "date_sort": "1857-02-19", "place_id": "place.griggsville_il", "event_id": "event.long.robert_ann_marriage.1857-02-19"},
+          {"order": 4, "date_sort": "1922-01-01", "place_id": "place.jackson_county_ks", "event_id": "event.long.ray_almeda_marriage.1922"},
+          {"order": 5, "date_sort": "1933-06-02", "place_id": "place.rexford_ks", "event_id": "event.bill_dible.birth.1933-06-02"}
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "path.mcclelland_love",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[-79.840601, 40.1003509], [-80.22, 39.86], [-82.0875, 39.49722], [-82.10333, 39.54389], [-98.69, 39.17], [-100.567644, 39.540837], [-95.8159647, 39.4030917], [-100.743482, 39.471671]]
+      },
+      "properties": {
+        "feature_kind": "temporal_path",
+        "path_type": "candidate_lineage_route",
+        "line_id": "line.long_sleight_mcclelland",
+        "label": "McClelland/Love route: Pennsylvania to Athens County Ohio to Kansas",
+        "anchor": "William J. Dible",
+        "date_start": "1801-10-31",
+        "date_end": "1933-06-02",
+        "confidence": "lead",
+        "evidence_note": "Encodes the compiled McClelland/Hoge and Love/James route separately from the stronger Long/Sleight route so the map can style it as a validation target.",
+        "sequence": [
+          {"order": 1, "date_sort": "1801-10-31", "place_id": "place.fayette_city_pa", "event_id": "event.mcclelland.alexander_birth.1801-10-31"},
+          {"order": 2, "date_sort": "1825-09-26", "place_id": "place.greene_county_pa", "event_id": "event.mcclelland.dorsey_birth.1825-09-26"},
+          {"order": 3, "date_sort": "1832-10-28", "place_id": "place.trimble_township_oh", "event_id": "event.love.lovina_birth.1832-10-28"},
+          {"order": 4, "date_sort": "1850-11-18", "place_id": "place.hartleyville_oh", "event_id": "event.mcclelland.dorsey_lovina_marriage.1850-11-18"},
+          {"order": 5, "date_sort": "1883-12-23", "place_id": "place.osborne_county_ks", "event_id": "event.love.lovina_death.1883-12-23"},
+          {"order": 6, "date_sort": "1904-05-19", "place_id": "place.selden_ks", "event_id": "event.mcclelland.dorsey_burial_selden.1904"},
+          {"order": 7, "date_sort": "1922-01-01", "place_id": "place.jackson_county_ks", "event_id": "event.long.ray_almeda_marriage.1922"},
+          {"order": 8, "date_sort": "1933-06-02", "place_id": "place.rexford_ks", "event_id": "event.bill_dible.birth.1933-06-02"}
+        ],
+        "source_refs": ["https://www.wikitree.com/wiki/McClelland-1186", "https://www.wikitree.com/wiki/Hoge-395", "https://www.wikitree.com/wiki/Love-4617", "https://www.findagrave.com/memorial/97905624/lovina_parker-mcclellan", "https://www.ksgenweb.org/KSSheridan/cemetery/selden2.html"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "path.connelly_durham",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[-78.4927721, 37.1232245], [-79.3357315, 36.4035101], [-83.92, 35.96], [-87.1417319, 37.1984359], [-87.1788854, 37.2011539], [-89.7858065, 40.0166667], [-87.6427843, 37.383656], [-100.743482, 39.471671], [-81.7786972, 26.339806]]
+      },
+      "properties": {
+        "feature_kind": "temporal_path",
+        "path_type": "lineage_route",
+        "line_id": "line.connelly_durham",
+        "label": "Connelly/Durham/Ford/Staples route: Virginia/Carolina to Illinois/Kentucky/Kansas/Florida",
+        "anchor": "Donna Lea Connelly Dible",
+        "date_start": "1782-11",
+        "date_end": "2022-12-20",
+        "confidence": "working",
+        "sequence": [
+          {"order": 1, "date_sort": "1782-11-01", "place_id": "place.virginia", "event_id": "event.staples.nancy_ann_turner_birth.1782-11"},
+          {"order": 2, "date_sort": "1785-06-25", "place_id": "place.virginia", "event_id": "event.staples.john_burton_birth.1785"},
+          {"order": 3, "date_sort": "1811-10-11", "place_id": "place.caswell_county_nc", "event_id": "event.ford.john_laborn_birth.1811"},
+          {"order": 4, "date_sort": "1830-01-01", "place_id": "place.east_tennessee", "event_id": "event.staples.john_burton_east_tennessee_residence.1830"},
+          {"order": 5, "date_sort": "1835-01-01", "place_id": "place.muhlenberg_county_ky", "event_id": "event.staples.john_burton_migration.1835"},
+          {"order": 6, "date_sort": "1839-01-01", "place_id": "place.greenville_ky", "event_id": "event.ford.john_laborn_migration_greenville.1839"},
+          {"order": 7, "date_sort": "1857-08-19", "place_id": "place.menard_county_il", "event_id": "event.durham.david_virginia_marriage.1857-08-19"},
+          {"order": 8, "date_sort": "1897-08-24", "place_id": "place.nebo_ky", "event_id": "event.durham.david_death.1897-08-24"},
+          {"order": 9, "date_sort": "1935-04-24", "place_id": "place.rexford_ks", "event_id": "event.donna_connelly.birth.1935-04-24"},
+          {"order": 10, "date_sort": "2022-12-20", "place_id": "place.bonita_springs_fl", "event_id": "event.donna_connelly.death.2022-12-20"}
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "path.claar_white_stropes",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[-78.5237447, 40.0271453], [-82.6089043, 39.0131871], [-100.5282, 39.8183], [-95.677556, 39.049011], [-100.743482, 39.471671]]
+      },
+      "properties": {
+        "feature_kind": "temporal_path",
+        "path_type": "lineage_route",
+        "line_id": "line.claar_white_stropes",
+        "label": "Claar/White/Stropes route: Pennsylvania to Ohio to Decatur County and Thomas County, Kansas",
+        "anchor": "Donna Lea Connelly Dible",
+        "date_start": "1750",
+        "date_end": "1935-04-24",
+        "confidence": "working",
+        "sequence": [
+          {"order": 1, "date_sort": "1750-01-01", "place_id": "place.bedford_county_pa", "event_id": "target.claar.bedford_pennsylvania"},
+          {"order": 2, "date_sort": "1838-12-31", "place_id": "place.jackson_county_oh", "event_id": "event.claar.henry_birth.1838-12-31"},
+          {"order": 3, "date_sort": "1895-10-05", "place_id": "place.oberlin_ks", "event_id": "event.claar.samuel_mary_marriage_conflict.1895-10-05"},
+          {"order": 4, "date_sort": "1915-12-28", "place_id": "place.topeka_ks", "event_id": "event.claar.henry_death.1915-12-28"},
+          {"order": 5, "date_sort": "1935-04-24", "place_id": "place.rexford_ks", "event_id": "event.donna_connelly.birth.1935-04-24"}
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "family_link.zimmerman_nauer_births_to_union",
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [[9.5830848, 49.064658], [-98.433672, 39.51251]],
+          [[-80.5222961, 43.4652699], [-98.433672, 39.51251]]
+        ]
+      },
+      "properties": {
+        "feature_kind": "family_link",
+        "link_type": "couple_convergence",
+        "link_id": "link.zimmerman_nauer_births_to_union",
+        "label": "Michael Zimmerman and Elizabeth Nauer converge at Cawker City",
+        "anchor": "Doyle Jule Zimmerman",
+        "date_start": "1869-10-25",
+        "date_end": "1895-11-19",
+        "confidence": "strong",
+        "style_hint": "solid",
+        "from_event_ids": ["event.zimmerman.michael_birth.1869-10-25", "event.nauer.elizabeth_birth.1872-04-07"],
+        "to_event_id": "event.zimmerman.michael_elizabeth_marriage.1895-11-19",
+        "sequence": [
+          {"order": 1, "date_sort": "1869-10-25", "event_id": "event.zimmerman.michael_birth.1869-10-25", "role": "input"},
+          {"order": 2, "date_sort": "1872-04-07", "event_id": "event.nauer.elizabeth_birth.1872-04-07", "role": "input"},
+          {"order": 3, "date_sort": "1895-11-19", "event_id": "event.zimmerman.michael_elizabeth_marriage.1895-11-19", "role": "union"}
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "family_link.zimmerman_nauer_union_to_doyle",
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [[-98.433672, 39.51251], [-100.567644, 39.540837]]
+        ]
+      },
+      "properties": {
+        "feature_kind": "family_link",
+        "link_type": "descendant_path",
+        "link_id": "link.zimmerman_nauer_union_to_doyle",
+        "label": "Michael and Elizabeth's line runs through Leonard Henry Zimmerman to Doyle",
+        "anchor": "Doyle Jule Zimmerman",
+        "date_start": "1895-11-19",
+        "date_end": "1930-04-12",
+        "confidence": "strong",
+        "style_hint": "dashed",
+        "from_event_ids": ["event.zimmerman.michael_elizabeth_marriage.1895-11-19"],
+        "to_event_id": "event.doyle_zimmerman.birth.1930-04-12",
+        "sequence": [
+          {"order": 1, "date_sort": "1895-11-19", "event_id": "event.zimmerman.michael_elizabeth_marriage.1895-11-19", "role": "ancestor_union"},
+          {"order": 2, "date_sort": "1930-04-12", "event_id": "event.doyle_zimmerman.birth.1930-04-12", "role": "descendant_birth"}
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "family_link.doyle_evelyn_births_to_union",
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [[-100.567644, 39.540837], [-101.0526881, 39.3959655]],
+          [[-103.067158, 39.2930463], [-101.0526881, 39.3959655]]
+        ]
+      },
+      "properties": {
+        "feature_kind": "family_link",
+        "link_type": "couple_convergence",
+        "link_id": "link.doyle_evelyn_births_to_union",
+        "label": "Doyle Zimmerman and Evelyn Mundell converge at Colby",
+        "anchor": "Doyle Jule Zimmerman",
+        "date_start": "1930-04-12",
+        "date_end": "1953-06-14",
+        "confidence": "documented",
+        "style_hint": "solid",
+        "from_event_ids": ["event.doyle_zimmerman.birth.1930-04-12", "event.evelyn_mundell.birth.1935-01-16"],
+        "to_event_id": "event.doyle_zimmerman.marriage.1953-06-14",
+        "sequence": [
+          {"order": 1, "date_sort": "1930-04-12", "event_id": "event.doyle_zimmerman.birth.1930-04-12", "role": "input"},
+          {"order": 2, "date_sort": "1935-01-16", "event_id": "event.evelyn_mundell.birth.1935-01-16", "role": "input"},
+          {"order": 3, "date_sort": "1953-06-14", "event_id": "event.doyle_zimmerman.marriage.1953-06-14", "role": "union"}
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "family_link.john_paul_household_to_michael",
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [[-97.4169964, 42.0283379], [9.5830848, 49.064658]]
+        ]
+      },
+      "properties": {
+        "feature_kind": "family_link",
+        "link_type": "parent_evidence",
+        "link_id": "link.john_paul_household_to_michael",
+        "label": "John Paul and Catherine's household anchors Michael's parent generation",
+        "anchor": "Doyle Jule Zimmerman",
+        "date_start": "1869-10-25",
+        "date_end": "1880",
+        "confidence": "strong",
+        "style_hint": "dashed",
+        "from_event_ids": ["event.zimmerman.john_paul_household.1880"],
+        "to_event_id": "event.zimmerman.michael_birth.1869-10-25",
+        "sequence": [
+          {"order": 1, "date_sort": "1869-10-25", "event_id": "event.zimmerman.michael_birth.1869-10-25", "role": "child_birth"},
+          {"order": 2, "date_sort": "1880-06-01", "event_id": "event.zimmerman.john_paul_household.1880", "role": "parent_household_evidence"}
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "family_link.dible_union_to_bill",
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [[-95.8159647, 39.4030917], [-100.743482, 39.471671]]
+        ]
+      },
+      "properties": {
+        "feature_kind": "family_link",
+        "link_type": "parents_to_child",
+        "link_id": "link.dible_union_to_bill",
+        "label": "Ray Dible and Almeda Long produce Bill Dible",
+        "anchor": "William J. Dible",
+        "date_start": "1922",
+        "date_end": "1933-06-02",
+        "confidence": "documented",
+        "style_hint": "solid",
+        "from_event_ids": ["event.long.ray_almeda_marriage.1922"],
+        "to_event_id": "event.bill_dible.birth.1933-06-02",
+        "sequence": [
+          {"order": 1, "date_sort": "1922-01-01", "event_id": "event.long.ray_almeda_marriage.1922", "role": "parent_union"},
+          {"order": 2, "date_sort": "1933-06-02", "event_id": "event.bill_dible.birth.1933-06-02", "role": "child_birth"}
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "family_link.harry_julia_to_bill",
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [[-101.0131604, 40.1757537], [-100.743482, 39.471671]]
+        ]
+      },
+      "properties": {
+        "feature_kind": "family_link",
+        "link_type": "descendant_path",
+        "link_id": "link.harry_julia_to_bill",
+        "label": "Harry and Julia Dible's line runs through Ray Hershel Dible to Bill",
+        "anchor": "William J. Dible",
+        "date_start": "1896-06-10",
+        "date_end": "1933-06-02",
+        "confidence": "strong",
+        "style_hint": "dashed",
+        "from_event_ids": ["event.dible.harry_julia_marriage.1896-06-10"],
+        "to_event_id": "event.bill_dible.birth.1933-06-02",
+        "sequence": [
+          {"order": 1, "date_sort": "1896-06-10", "event_id": "event.dible.harry_julia_marriage.1896-06-10", "role": "ancestor_union"},
+          {"order": 2, "date_sort": "1933-06-02", "event_id": "event.bill_dible.birth.1933-06-02", "role": "descendant_birth"}
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "family_link.long_sleight_to_almeda",
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [[-90.7245722, 39.7089362], [-95.8159647, 39.4030917]]
+        ]
+      },
+      "properties": {
+        "feature_kind": "family_link",
+        "link_type": "descendant_path",
+        "link_id": "link.long_sleight_to_almeda",
+        "label": "Robert Long and Ann Sleight's line runs down to Almeda Long",
+        "anchor": "William J. Dible",
+        "date_start": "1857-02-19",
+        "date_end": "1922",
+        "confidence": "working",
+        "style_hint": "dashed",
+        "from_event_ids": ["event.long.robert_ann_marriage.1857-02-19"],
+        "to_event_id": "event.long.ray_almeda_marriage.1922",
+        "sequence": [
+          {"order": 1, "date_sort": "1857-02-19", "event_id": "event.long.robert_ann_marriage.1857-02-19", "role": "ancestor_union"},
+          {"order": 2, "date_sort": "1922-01-01", "event_id": "event.long.ray_almeda_marriage.1922", "role": "descendant_union"}
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "family_link.durham_birth_to_union",
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [[-79.0392919, 35.6729639], [-89.7858065, 40.0166667]]
+        ]
+      },
+      "properties": {
+        "feature_kind": "family_link",
+        "link_type": "individual_to_union",
+        "link_id": "link.durham_birth_to_union",
+        "label": "David Monroe Durham moves into the Durham/Ford union",
+        "anchor": "Donna Lea Connelly Dible",
+        "date_start": "1832-12-28",
+        "date_end": "1857-08-19",
+        "confidence": "strong",
+        "style_hint": "solid",
+        "from_event_ids": ["event.durham.david_birth.1832-12-28"],
+        "to_event_id": "event.durham.david_virginia_marriage.1857-08-19",
+        "sequence": [
+          {"order": 1, "date_sort": "1832-12-28", "event_id": "event.durham.david_birth.1832-12-28", "role": "input"},
+          {"order": 2, "date_sort": "1857-08-19", "event_id": "event.durham.david_virginia_marriage.1857-08-19", "role": "union"}
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "family_link.durham_ford_to_donna",
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [[-89.7858065, 40.0166667], [-100.743482, 39.471671]]
+        ]
+      },
+      "properties": {
+        "feature_kind": "family_link",
+        "link_type": "descendant_path",
+        "link_id": "link.durham_ford_to_donna",
+        "label": "David Durham and Virginia Ford's line runs through America and Chester to Donna",
+        "anchor": "Donna Lea Connelly Dible",
+        "date_start": "1857-08-19",
+        "date_end": "1935-04-24",
+        "confidence": "strong",
+        "style_hint": "dashed",
+        "from_event_ids": ["event.durham.david_virginia_marriage.1857-08-19"],
+        "to_event_id": "event.donna_connelly.birth.1935-04-24",
+        "sequence": [
+          {"order": 1, "date_sort": "1857-08-19", "event_id": "event.durham.david_virginia_marriage.1857-08-19", "role": "ancestor_union"},
+          {"order": 2, "date_sort": "1935-04-24", "event_id": "event.donna_connelly.birth.1935-04-24", "role": "descendant_birth"}
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "family_link.claar_to_donna",
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [[-82.6089043, 39.0131871], [-100.743482, 39.471671]],
+          [[-95.677556, 39.049011], [-100.743482, 39.471671]]
+        ]
+      },
+      "properties": {
+        "feature_kind": "family_link",
+        "link_type": "descendant_path",
+        "link_id": "link.claar_to_donna",
+        "label": "Henry Claar's line runs through Samuel and Martha to Donna",
+        "anchor": "Donna Lea Connelly Dible",
+        "date_start": "1838-12-31",
+        "date_end": "1935-04-24",
+        "confidence": "strong",
+        "style_hint": "dashed",
+        "from_event_ids": ["event.claar.henry_birth.1838-12-31", "event.claar.henry_death.1915-12-28"],
+        "to_event_id": "event.donna_connelly.birth.1935-04-24",
+        "sequence": [
+          {"order": 1, "date_sort": "1838-12-31", "event_id": "event.claar.henry_birth.1838-12-31", "role": "ancestor_birth"},
+          {"order": 2, "date_sort": "1915-12-28", "event_id": "event.claar.henry_death.1915-12-28", "role": "ancestor_death"},
+          {"order": 3, "date_sort": "1935-04-24", "event_id": "event.donna_connelly.birth.1935-04-24", "role": "descendant_birth"}
+        ]
+      }
+    }
+  ]
+}

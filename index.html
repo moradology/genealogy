@@ -1,0 +1,1682 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zimmerman-Dible Ancestry Working Artifact</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    :root {
+      --ink: #1f2933;
+      --muted: #65758b;
+      --line: #d9e2ec;
+      --paper: #fbfcfe;
+      --panel: #ffffff;
+      --blue: #1d4f73;
+      --green: #1f6f55;
+      --amber: #8a5a00;
+      --red: #9b2c2c;
+      --soft-blue: #e8f2fa;
+      --soft-green: #e8f5ef;
+      --soft-amber: #fff4d6;
+      --soft-red: #fdecec;
+      --shadow: 0 10px 30px rgba(31, 41, 51, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.5;
+    }
+
+    header {
+      background: #193549;
+      color: #fff;
+      padding: 38px 24px 26px;
+    }
+
+    header .wrap,
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 5vw, 4rem);
+      line-height: 1.03;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: 1.6rem;
+      color: #183b56;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 1.05rem;
+      color: #243b53;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    a {
+      color: #155e91;
+    }
+
+    .subtitle {
+      max-width: 900px;
+      color: #dbe8f3;
+      font-size: 1.05rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 999px;
+      color: #edf6ff;
+      font-size: 0.85rem;
+    }
+
+    main {
+      padding: 26px 0 60px;
+    }
+
+    section {
+      margin: 0 0 26px;
+      padding: 22px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .note {
+      padding: 14px 16px;
+      background: #f0f4f8;
+      border-left: 4px solid #486581;
+      border-radius: 6px;
+      color: #334e68;
+    }
+
+    .event-map-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(240px, 0.9fr);
+      gap: 16px;
+      margin-top: 16px;
+      align-items: stretch;
+    }
+
+    .event-map-frame {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #edf2f7;
+      min-height: 430px;
+    }
+
+    .event-map {
+      width: 100%;
+      height: 430px;
+    }
+
+    .event-map-side {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .event-map-side h3 {
+      margin-bottom: 0;
+    }
+
+    .event-map-legend {
+      display: grid;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: #334e68;
+    }
+
+    .event-map-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .event-map-swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 1px var(--line);
+      flex: 0 0 auto;
+    }
+
+    .event-map-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+      max-height: 330px;
+      overflow: auto;
+      font-size: 0.84rem;
+    }
+
+    .event-map-list li {
+      margin: 0;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      cursor: default;
+      transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+    }
+
+    .event-map-list li.active {
+      border-color: #486581;
+      box-shadow: 0 6px 18px rgba(31, 41, 51, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .event-map-list strong {
+      display: block;
+      color: #243b53;
+    }
+
+    .family-link-list {
+      display: grid;
+      gap: 8px;
+      font-size: 0.84rem;
+    }
+
+    .family-link-item {
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      cursor: default;
+      transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+    }
+
+    .family-link-item.active {
+      border-color: #486581;
+      box-shadow: 0 6px 18px rgba(31, 41, 51, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .family-link-item strong {
+      display: block;
+      color: #243b53;
+    }
+
+    .family-link-kind {
+      color: #52606d;
+      display: block;
+    }
+
+    .event-story {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      font-size: 0.88rem;
+      color: #334e68;
+    }
+
+    .event-story p {
+      margin: 0;
+    }
+
+    .map-marker {
+      width: 18px;
+      height: 18px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      box-shadow: 0 1px 5px rgba(31, 41, 51, 0.35);
+      transition: transform 120ms ease, box-shadow 120ms ease;
+    }
+
+    .map-marker.strong {
+      width: 14px;
+      height: 14px;
+      opacity: 0.9;
+    }
+
+    .map-marker.active {
+      transform: scale(1.45);
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.85), 0 4px 16px rgba(31, 41, 51, 0.35);
+    }
+
+    .map-popup-title {
+      font-weight: 700;
+      color: #243b53;
+      margin-bottom: 3px;
+    }
+
+    .map-popup-meta {
+      color: #52606d;
+      font-size: 0.85rem;
+    }
+
+    .leaflet-tooltip.event-tooltip {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      box-shadow: 0 8px 20px rgba(31, 41, 51, 0.16);
+      color: #243b53;
+      font-size: 0.82rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #fff;
+      min-height: 150px;
+    }
+
+    .card strong {
+      display: block;
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+    }
+
+    .small {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .confidence {
+      border-radius: 8px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      min-height: 92px;
+    }
+
+    .documented {
+      background: var(--soft-green);
+      border-color: #b7e4cc;
+    }
+
+    .strong {
+      background: var(--soft-blue);
+      border-color: #b7d7ee;
+    }
+
+    .lead {
+      background: var(--soft-amber);
+      border-color: #f4d37b;
+    }
+
+    .open {
+      background: var(--soft-red);
+      border-color: #f4b5b5;
+    }
+
+    .tag {
+      display: inline-block;
+      margin: 0 0 6px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .tag.documented {
+      color: var(--green);
+      background: #d8f3e5;
+      border: 1px solid #a7d8be;
+    }
+
+    .tag.strong {
+      color: var(--blue);
+      background: #d8ebf7;
+      border: 1px solid #a9cfe7;
+    }
+
+    .tag.lead {
+      color: var(--amber);
+      background: #ffe9a8;
+      border: 1px solid #e6c66c;
+    }
+
+    .tag.open {
+      color: var(--red);
+      background: #fad7d7;
+      border: 1px solid #e5aaaa;
+    }
+
+    .branch {
+      display: grid;
+      grid-template-columns: minmax(150px, 220px) 1fr;
+      gap: 16px;
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+      margin-top: 18px;
+    }
+
+    .branch:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+      margin-top: 0;
+    }
+
+    .branch-title {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+    }
+
+    .generations {
+      display: grid;
+      gap: 10px;
+    }
+
+    .generation {
+      display: grid;
+      grid-template-columns: 88px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .gen-label {
+      color: #52606d;
+      font-weight: 700;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+    }
+
+    .people {
+      display: grid;
+      gap: 7px;
+    }
+
+    .person {
+      padding: 10px;
+      border-radius: 6px;
+      background: #f8fafc;
+      border: 1px solid #e6edf4;
+    }
+
+    .person-name {
+      font-weight: 700;
+    }
+
+    .person-details {
+      color: #52606d;
+      font-size: 0.9rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+
+    .jurisdiction-table {
+      margin-top: 12px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #334e68;
+      background: #f0f4f8;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    li {
+      margin: 0 0 7px;
+    }
+
+    .sources {
+      columns: 2;
+      column-gap: 32px;
+    }
+
+    .sources li {
+      break-inside: avoid;
+      margin-bottom: 10px;
+    }
+
+    footer {
+      padding: 24px;
+      color: #52606d;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 920px) {
+      .grid,
+      .legend {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .event-map-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .branch {
+        grid-template-columns: 1fr;
+      }
+
+      .branch-title {
+        position: static;
+      }
+
+      .sources {
+        columns: 1;
+      }
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 28px 16px 20px;
+      }
+
+      section {
+        padding: 16px;
+      }
+
+      .grid,
+      .legend {
+        grid-template-columns: 1fr;
+      }
+
+      .generation {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Zimmerman-Dible Ancestry</h1>
+      <p class="subtitle">A sourced working artifact for all four grandparent lines: Doyle Jule Zimmerman, Evelyn Delores Mundell Zimmerman, William J. "Bill" Dible, and Donna Lea Connelly Dible. This is a public-record draft, not a final proof tree.</p>
+      <div class="meta">
+        <span class="pill">Prepared July 7, 2026</span>
+        <span class="pill">Six-generation target from each grandparent anchor</span>
+        <span class="pill">Living descendants intentionally omitted</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2>How To Read This</h2>
+      <p class="note">The goal here is breadth plus honesty. I included every branch I could support from public sources, then marked the weak points rather than filling holes with unsourced guesses. "Generation 1" is one of the four grandparents. Generation 6 is that grandparent's 3x-great-grandparent layer. If you count from you instead, shift the numbers down by two generations.</p>
+      <div class="legend" aria-label="confidence legend">
+        <div class="confidence documented">
+          <span class="tag documented">Documented</span>
+          <p>Supported by obituary, cemetery, indexed record, or a specific record collection.</p>
+        </div>
+        <div class="confidence strong">
+          <span class="tag strong">Strong lead</span>
+          <p>Repeated in public tree/index data and consistent with locations/dates, but still wants a primary record.</p>
+        </div>
+        <div class="confidence lead">
+          <span class="tag lead">Working lead</span>
+          <p>Useful compiled genealogy or tree clue. Treat as a search target, not final proof.</p>
+        </div>
+        <div class="confidence open">
+          <span class="tag open">Open edge</span>
+          <p>The trail is tattered on open web. This is where a paid image, local record, or archive pull is needed.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Where The Family Joins</h2>
+      <p class="note">The map shows only places where the evidence is strong enough to stand on: documented events and high-confidence life events. The open questions stay in the branch notes below.</p>
+      <div class="event-map-layout">
+        <div class="event-map-frame">
+          <div id="verified-event-map" class="event-map" role="img" aria-label="Map of verified ancestry events"></div>
+        </div>
+        <div class="event-map-side">
+          <h3>Family Links</h3>
+          <div class="event-story">
+            <p>People meet, households form, and children carry the line forward.</p>
+            <p>Solid links show direct mapped family joins. Dashed links mark a proven line where an intermediate generation is not mapped here.</p>
+            <p>Hover a link, marker, or event to see the related places.</p>
+          </div>
+          <div id="event-map-summary" class="small"></div>
+          <div id="event-map-legend" class="event-map-legend"></div>
+          <div id="family-link-list" class="family-link-list" aria-label="Mapped family connections"></div>
+          <ul id="event-map-list" class="event-map-list" aria-label="Mapped verified events"></ul>
+        </div>
+      </div>
+      <p class="small">Full coordinates, confidence labels, open targets, and geospatial records live in <a href="ancestry_geospatial.geojson">ancestry_geospatial.geojson</a>.</p>
+    </section>
+
+    <section>
+      <h2>Four Grandparent Anchors</h2>
+      <div class="grid">
+        <div class="card">
+          <strong>Doyle Jule Zimmerman</strong>
+          <div class="small">Born 12 Apr 1930, Selden, Sheridan County, Kansas. Died 9 Apr 2005. Married Evelyn Delores Mundell on 14 Jun 1953 in Colby, Kansas. Cemetery profile names Leonard Henry Zimmerman and Cecilia Antoinette Zodrow Zimmerman as parents.</div>
+          <p><span class="tag documented">Documented</span></p>
+        </div>
+        <div class="card">
+          <strong>Evelyn Delores Mundell Zimmerman</strong>
+          <div class="small">Born 16 Jan 1935, Flagler, Colorado. Died 15 Apr 2023, Colby, Kansas. Daughter of Homer Mundell and Marjorie Clemans; raised by grandmother Frances Adolph and graduated from Winona High School.</div>
+          <p><span class="tag documented">Documented</span></p>
+        </div>
+        <div class="card">
+          <strong>William J. "Bill" Dible</strong>
+          <div class="small">Born 2 Jun 1933, Rexford, Kansas. Died 9 Aug 2022, Lee County, Florida. Youngest child of Ray Hershel Dible and Almeda Ora Long.</div>
+          <p><span class="tag documented">Documented</span></p>
+        </div>
+        <div class="card">
+          <strong>Donna Lea Connelly Dible</strong>
+          <div class="small">Born 24 Apr 1935, Rexford, Kansas. Died 20 Dec 2022, Bonita Springs, Florida. Youngest child of Chester Franklin Connelly and Martha Frances Claar.</div>
+          <p><span class="tag documented">Documented</span></p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Doyle Jule Zimmerman Branches</h2>
+
+      <div class="branch">
+        <div class="branch-title">
+          <h3>Zimmerman Surname Line</h3>
+          <p class="small">Kansas to Nebraska to Mainhardt/Wuerttemberg. The German locality is the best breakthrough so far.</p>
+        </div>
+        <div class="generations">
+          <div class="generation">
+            <div class="gen-label">Gen 1</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Doyle Jule Zimmerman</div><div class="person-details">1930-2005, Selden/Colby, Kansas. Find a Grave profile names Leonard Henry Zimmerman and Cecilia Antoinette Zodrow Zimmerman as parents. <span class="tag documented">Documented</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 2</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Leonard Henry Zimmerman</div><div class="person-details">1903-1968, Doyle's father by cemetery profile. Elizabeth Catherine Nauer Zimmerman's cemetery profile lists Leonard Henry among the children of Michael John Zimmerman and Elizabeth, closing the main American link in the surname chain pending a primary certificate/census pull. <span class="tag documented">Documented</span></div></div>
+              <div class="person"><div class="person-name">Cecilia Antoinette Zodrow Zimmerman</div><div class="person-details">1904-1997, Doyle's mother by cemetery profile. <span class="tag documented">Documented</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 3</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Michael John Zimmerman Sr. + Elizabeth Catherine Nauer</div><div class="person-details">Michael born 25 Oct 1869, indexed at Wuerttemberger Hof, Mainhardt. FamilySearch says he married Elizabeth Catherine Nauer, 1872-1935, at Cawker City, Kansas, 19 Nov 1895. Selden Cemetery lists Elizabeth A. Zimmerman, born 4-7-1871, died 9-25-1935, same stone as Michael J. Zimmerman; Elizabeth's Find a Grave profile lists Leonard Henry among their children. <span class="tag strong">Strong lead</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 4</div>
+            <div class="people">
+              <div class="person"><div class="person-name">John Paul Zimmerman + Catherine M. Zinkle/Zinkl</div><div class="person-details">John born 9 Mar 1842 in Bavaria/Germany; Catherine born 30 Jan 1839 in Bavaria/Germany. Their 1880 household was in Norfolk, Madison County, Nebraska. <span class="tag strong">Strong lead</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 5</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Parents of John Paul Zimmerman</div><div class="person-details">Not yet proven. Best target: Archion Mainhardt Taufregister 1835-1843 Band 7, if John was baptized in that parish. <span class="tag open">Open edge</span></div></div>
+              <div class="person"><div class="person-name">Parents of Catherine M. Zinkle/Zinkl</div><div class="person-details">Not yet proven. Best target: the 1864-ish marriage entry and Mainhardt family register. <span class="tag open">Open edge</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 6</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Unknown German ancestors above John Paul and Catherine</div><div class="person-details">Likely born roughly 1800-1820. The Archion Band 25 family register and Band 15 marriage book should be the next records. <span class="tag open">Open edge</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="branch">
+        <div class="branch-title">
+          <h3>Zodrow / Baier Line</h3>
+          <p class="small">Strong enough to carry Cecilia back one more generation, then it thins quickly.</p>
+          <p class="small"><strong>Usable Zodrow jurisdiction stack:</strong> literal cemetery clue = Sabanka, Prussia; working village target = Neu Lebehnke / Nowa Lubianka; parish and civil registry target = Lebehnke / Stara Lubianka; county-level target = Kreis Deutsch Krone; district = Regierungsbezirk Marienwerder; province = Westpreussen; modern jurisdiction = Nowa Lubianka, Pila County, Greater Poland Voivodeship, Poland.</p>
+          <table class="jurisdiction-table">
+            <thead>
+              <tr>
+                <th>Layer</th>
+                <th>Use this search value</th>
+                <th>Why it matters</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Literal clue</td>
+                <td>Sabanka, Prussia</td>
+                <td>Keep this wording because it is what the Leoville Calvary Cemetery transcription reports for John M. Zodrow's birthplace.</td>
+              </tr>
+              <tr>
+                <td>Village target</td>
+                <td>Neu Lebehnke / Nowa Lubianka</td>
+                <td>This is the best current town-level candidate, not a proved correction; the Deutsch Krone Project shows a local Zodrow cluster there.</td>
+              </tr>
+              <tr>
+                <td>Parish and civil registry</td>
+                <td>Lebehnke / Stara Lubianka</td>
+                <td>Meyers and AGOFF point Neu Lebehnke searches to Lebehnke for Catholic church, Protestant church, and Standesamt records.</td>
+              </tr>
+              <tr>
+                <td>County / Kreis</td>
+                <td>Kreis Deutsch Krone</td>
+                <td>Use county-level catalogs when village or parish books are missing, indexed under a wider district, or held as land/probate files.</td>
+              </tr>
+              <tr>
+                <td>Administrative stack</td>
+                <td>Regierungsbezirk Marienwerder, Westpreussen, Preussen</td>
+                <td>This is the historical jurisdiction path to use in German gazetteers, Polish archive catalogs, and Prussian civil-record descriptions.</td>
+              </tr>
+              <tr>
+                <td>Modern locator</td>
+                <td>Nowa Lubianka / Stara Lubianka, Pila County, Greater Poland Voivodeship, Poland</td>
+                <td>Use these names for modern maps, Polish repositories, and archive-place searches.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="generations">
+          <div class="generation">
+            <div class="gen-label">Gen 1</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Doyle Jule Zimmerman</div><div class="person-details">Through mother Cecilia Zodrow. <span class="tag strong">Strong lead</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 2</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Cecilia Antoinette Zodrow Zimmerman</div><div class="person-details">1904-1997. <span class="tag lead">Working lead</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 3</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Julius Henry Zodrow + Ernestina Baier</div><div class="person-details">Julius 1869-1959; Ernestina 1872-1963. Public FamilySearch sibling indexing supports this household. <span class="tag strong">Strong lead</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 4</div>
+            <div class="people">
+              <div class="person"><div class="person-name">John Zodrow + Antonia/Antonette Grams</div><div class="person-details">Julius Henry Zodrow's memorial and sibling memorials place him in the John Zodrow and Antonette Grams family. FamilySearch indexes John as born 29 Jun 1843 in Prussia/Germany, and the Leoville Calvary Cemetery transcription gives the more specific birthplace "Sabanka Prussia." Sabanka itself is not resolving in Meyers, GOV, or Nominatim. The best usable county/parish/town target remains Neu Lebehnke / Nowa Lubianka, village in Kreis Deutsch Krone, Regierungsbezirk Marienwerder, Westpreussen, with civil registry at Lebehnke and church targets at Lebehnke / Stara Lubianka. Meyers identifies Neu Lebehnke as a Dorf and points to Standesamt Lebehnke; Meyers identifies Lebehnke as having Catholic and Protestant parish churches; AGOFF's 1885 Kreis Deutsch Krone table lists Neu Lebehnke with evangelical church, Catholic church, and Standesamt all at Lebehnke. The Deutsch Krone Project shows a local Zodrow cluster; Lebehnke Catholic banns name Zodrow collateral families there; and a Polish archive catalog points to a Johann Zodrow property file in Neu Lebehnke, 1860-1873. This is still a locality hypothesis, not proof of John's birth parish yet. <span class="tag strong">Strong lead</span></div></div>
+              <div class="person"><div class="person-name">Parents of Ernestina Baier/Bayer</div><div class="person-details">Not proven from open public sources in this pass. <span class="tag open">Open edge</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 5-6</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Collateral Neu Lebehnke Zodrow families</div><div class="person-details">Open but useful. Lebehnke banns name Albert Zodrow of Alt Lebehnke as son of Christoph Zodrow and Rosalia Zaske of Neu Lebehnke; another entry names August Zodrow as son of the deceased Christoph Zodrow and Rosalia Zaske; other entries point to Andreas Zodrow with Justina Reinke and to additional Zodrow daughters. These are not John's parents yet, but they are the right neighborhood and record set: Neu Lebehnke / Nowa Lubianka for the village, Lebehnke / Stara Lubianka for the parish and civil registry, and Kreis Deutsch Krone for county-level records. <span class="tag lead">Working lead</span></div></div>
+              <div class="person"><div class="person-name">Earlier Zodrow/Grams and Baier ancestors</div><div class="person-details">No direct public proof located yet. Search should focus on Sheridan County, Kansas; Marquette County, Wisconsin; Idaho death certificates for Zodrow siblings; Lebehnke Catholic records and Polish archive land files for Neu Lebehnke in Kreis Deutsch Krone; and Polish/German Grams parish variants. <span class="tag open">Open edge</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="branch">
+        <div class="branch-title">
+          <h3>Nauer Line</h3>
+          <p class="small">This is Michael John Zimmerman's wife's line. It runs from Kansas back into Waterloo County, Ontario, with a possible earlier Nauer cluster in Wilmot, St. Clements, and Carrick Township.</p>
+        </div>
+        <div class="generations">
+          <div class="generation">
+            <div class="gen-label">Gen 1</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Doyle Jule Zimmerman</div><div class="person-details">Through father Leonard, then grandmother Elizabeth Catherine Nauer Zimmerman. <span class="tag strong">Strong lead</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 2</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Leonard Henry Zimmerman</div><div class="person-details">1903-1968. The American proof gap is still Leonard-to-Michael, but Doyle's cemetery profile anchors Leonard as Doyle's father. <span class="tag documented">Documented</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 3</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Elizabeth Catherine Nauer Zimmerman</div><div class="person-details">Born 7 Apr 1872 in Waterloo, Ontario per FamilySearch; buried at Selden Cemetery as Elizabeth A. Zimmerman, same stone as Michael J. Zimmerman. <span class="tag strong">Strong lead</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 4</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Thomas A. Nauer + Catherina Marie Koeberger</div><div class="person-details">FamilySearch indexes Elizabeth's father as Thomas A. Nauer and her mother as Catherine Marie; sibling and cemetery-index evidence gives the fuller name Catherina Marie Koeberger/Koburger. Moritz Thomas Nauer's memorial gives Thomas A. Nauer, 1824-1884, and Catherina Koeberger Nauer, 1832-1906; Catherina's own memorial gives birth 4 Mar 1832 and death 1 Feb 1906. The Waterloo German Catholic Settlers PDF places Thomas and Catharine in Waterloo County in 1871 and Cawker, Mitchell County, Kansas by 1880. <span class="tag strong">Strong lead</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 5-6</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Possible: Johann Lorenz Nauer + Dorothea Meyer / Mary Dorothea Wand</div><div class="person-details">Open, not proven. The Waterloo German Catholic Settlers PDF says Thomas Nauer, born about 1824, is another possible son of Lorenz Nauer, born about 1803, and Dorothea Meyer, born about 1802, widow of Adam Wand/Wandt. WikiTree sharpens that compiled lead as Johann Lorenz Nauer and Mary Dorothea Wand, but the Meyer/Wand naming needs original marriage or burial records before merging. The PDF places Lorenz and Dorothea in Wilmot Township by 1851/52 and Carrick Township, Bruce County by 1861; St. Clements baptisms for related Nauers make that parish a priority. New Prussia in Wilmot is useful context because it was a Rhenish Prussian Catholic settlement with later movement to Bruce County. <span class="tag open">Open edge</span></div></div>
+              <div class="person"><div class="person-name">Earlier Koeberger ancestors</div><div class="person-details">Still open. Catherina's maiden name is now consistently appearing as Koeberger/Koburger, but I do not yet have a county, parish, or European locality for her parents. <span class="tag open">Open edge</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Evelyn Delores Mundell Zimmerman Branches</h2>
+
+      <div class="branch">
+        <div class="branch-title">
+          <h3>Mundell / Rust / Cantwell Line</h3>
+          <p class="small">Evelyn's obituary proves the Homer Mundell and Marjorie Clemans link. Donald Mundell's obituary and public indexes make Homer's older Mundell line a usable lead, but Donald's Leora/William Rogers wording means the sibling set may involve remarriage or half-sibling context.</p>
+        </div>
+        <div class="generations">
+          <div class="generation">
+            <div class="gen-label">Gen 1</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Evelyn Delores Mundell Zimmerman</div><div class="person-details">1935-2023, born Flagler, Colorado, died Colby, Kansas. Evelyn's obituary names Homer and Marjorie (Clemans) Mundell as parents. <span class="tag documented">Documented</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 2</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Homer Clair/Claire Mundell</div><div class="person-details">Named as Evelyn's father. Donald Lynn Mundell's obituary places Evelyn Zimmerman, Marilyn Ayer/Ayers, and Judy Bastian in the same sibling set and names Homer Claire Mundell in the parent line, while also naming Leora/William Rogers context that needs household-level sorting. <span class="tag documented">Documented</span></div></div>
+              <div class="person"><div class="person-name">Marjorie Clemans Mundell</div><div class="person-details">Named as Evelyn's mother in Evelyn's obituary; separated below into the Clemans branch. <span class="tag documented">Documented</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 3</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Walter William Mundell + Mary Frances Rust</div><div class="person-details">FamilySearch and Mundell/Cantwell forum leads identify Walter William Mundell and Mary Frances Rust as Homer Clair Mundell's parents. FamilySearch's Walter page gives Frances Rust as 1894-1984 and places the marriage in 1910 at Smith Center, Kansas. The Rust-family forum says Mary Frances "Frances" Rust remarried a man surnamed Adolph and, after he died, married Lyle Strawn and lived in Beloit, Kansas; that makes the Find a Grave search result for Mary Frances Rust Strawn, 1894-1984, in William Bryan Rust's sibling list especially important. Evelyn's obituary says Evelyn was raised by grandmother Frances Adolph and graduated from Winona High School. This fits the same-person path, but it still needs original marriage, divorce, death, obituary, probate, census, or school records before the Rust-to-Adolph-to-Strawn sequence is treated as proved. <span class="tag lead">Working lead</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 4</div>
+            <div class="people">
+              <div class="person"><div class="person-name">John Pryor Mundell + Sarah Alice Cantwell</div><div class="person-details">Public FamilySearch and Find a Grave entries place Walter William Mundell in this household; the OCCGS Harvey Mundell Civil War profile and St. Charles County page also track John Pryor as a child of Harvey William Mundell and Elizabeth Jane Brown. <span class="tag strong">Strong lead</span></div></div>
+              <div class="person"><div class="person-name">Possible John F. Rust + Ethel B. Rupert</div><div class="person-details">New candidate parent set for Mary Frances Rust, not proved. The Rust-family forum's brother clue points to William/Bill Rust with wife Viola. Public search snippets for William Bryan Rust and Clarence Aison Rust point to Smith County, Kansas, and name parents John F. Rust and Ethel B. Rupert; the William Bryan Rust Find a Grave result lists Mary Frances Rust Strawn, 1894-1984, as a sibling. Reamsville/Pleasant Hill Cemetery in Smith County has a matching F. John Rust, born 12 Apr 1870 and died 18 Oct 1909, plus a wider Rust cluster. The next step is to pull Smith County birth, census, marriage, probate, and cemetery records proving whether Mary Frances belongs to this John/Ethel household. <span class="tag lead">Working lead</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 5</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Harvey William Mundell + Elizabeth Jane Brown</div><div class="person-details">FamilySearch, OCCGS, and the St. Charles County Historical Society compiled page identify John Pryor Mundell as a child of Harvey William Mundell and Elizabeth Jane Brown. Harvey was born in April 1837 in Clinton County, Indiana, married Elizabeth Jane Brown on 27 Dec 1857 in Clarke County, Iowa, served in Company G, Iowa 34th Infantry, and later lived in Iowa, Kansas, Oklahoma, and California. <span class="tag lead">Working lead</span></div></div>
+              <div class="person"><div class="person-name">Possible Barnabas "Barney" Cantwell</div><div class="person-details">FamilySearch and Cantwell forum snippets place Sarah Alice Cantwell with Barnabas/Barney Cantwell, but the exact maternal side is not yet cleanly named from open snippets. Treat this as a target for Coshocton County, Ohio and Iowa records. <span class="tag lead">Working lead</span></div></div>
+              <div class="person"><div class="person-name">Possible John Aissen Rust + Nomdje N. Rust</div><div class="person-details">Only if the John F. Rust and Ethel B. Rupert candidate parentage proves out. Reamsville Cemetery lists John A. Rust, 1842-1916, with Nomdje N. Rust, 1855-1934, and also F. John Rust, 1870-1909. A Find a Grave search result for John Aissen Rust lists F. John Rust among his children. This is a useful Gen 5 Rust target, but it should not be merged into Evelyn's ancestry until Mary Frances is directly tied to John F. Rust. <span class="tag lead">Working lead</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 6</div>
+            <div class="people">
+              <div class="person"><div class="person-name">John Mundell + Deborah Elmore</div><div class="person-details">FamilySearch index and the St. Charles County Historical Society page place Harvey William Mundell as son of John Mundell and Deborah Elmore in the 1850 Clinton County, Indiana household. This is the current open-web edge of Evelyn's Mundell surname line. <span class="tag lead">Working lead</span></div></div>
+              <div class="person"><div class="person-name">Possible Thomas Cantwell Jr. + Jemima Kelley</div><div class="person-details">FamilySearch indexes Barnabas/Barney Cantwell as son of Thomas Cantwell Jr. and Jemima Kelley; a Cantwell forum lead pushes Thomas to William Cantwell and Margaret O'Brien of Dublin, but that is beyond Gen 6 and unproven here. <span class="tag lead">Working lead</span></div></div>
+              <div class="person"><div class="person-name">Earlier Brown, Elmore, Cantwell, Rupert, and Rust ancestors</div><div class="person-details">Open pending original county records, cemetery files, probate, and church/civil records. The Rust side now has a tighter Smith County/Reamsville candidate cluster, but the evidence still has to prove Mary Frances before moving through John F. Rust, Ethel B. Rupert, John Aissen Rust, or Nomdje N. Rust. <span class="tag open">Open edge</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="branch">
+        <div class="branch-title">
+          <h3>Clemans / Flaherty Line</h3>
+          <p class="small">The Marjorie Clemans side has a useful sibling-index lead and now a stronger Flaherty cluster, but it still needs a direct marriage, birth, census, or obituary record tying Marjorie to the Talmadge Clemans household. There is also a separate Indiana Marjorie Opal Clemans who should not be merged into this line without hard proof.</p>
+        </div>
+        <div class="generations">
+          <div class="generation">
+            <div class="gen-label">Gen 1</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Evelyn Delores Mundell Zimmerman</div><div class="person-details">Through mother Marjorie Clemans. <span class="tag documented">Documented</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 2</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Marjorie Clemans Mundell</div><div class="person-details">Named as Evelyn's mother in Evelyn's obituary. Direct proof of Marjorie's parents is still missing. A separate Marjorie Opal Clemans, born 1 Mar 1914 in Liberty Mills, Indiana and married to Clay V. Stamper in South Bend on 23 Oct 1935, appears in FamilySearch and an Eby genealogy; that Indiana profile conflicts with the Colorado/Kansas Mundell context and is best treated as a same-name collision unless a direct record proves otherwise. <span class="tag documented">Documented</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 3</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Likely Talmadge Dewitt Clemans + Margaret Ellen Flaherty</div><div class="person-details">FamilySearch's public page for Genevieve Clemans says Genevieve was born 15 Jan 1925 in Minnesota to Talmadge Dewitt Clemans and Margaret Ellen Flaherty and lists Marjorie Clemans as Genevieve's sibling. Find a Grave adds a Margaret Ellen Flaherty Clemans memorial, born about 1901 and died 1986, with a St. Louis marriage note for Talmage Clemans and Margaret Flaherty on 16 Apr 1921. This fits the Genevieve-age arithmetic better than the separate 1908 Chicago/Prairie View same-name profile, which should not be merged without direct proof. <span class="tag lead">Working lead</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 4</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Possible Roland Clemens + Ella C./Ellen Martin</div><div class="person-details">An Ancestry search-result lead for Talmage D. Clemans/Clemons gives parents Roland Clemens and Ella C./Ellen Martin. This is attached only through the indirect Genevieve-to-Marjorie sibling lead, so it remains provisional. <span class="tag lead">Working lead</span></div></div>
+              <div class="person"><div class="person-name">Likely Martin Flaherty + Kate Flaherty</div><div class="person-details">Working Flaherty parent lead only. Edward J. Flaherty's Find a Grave memorial names parents Martin Flaherty and Kate Flaherty and lists siblings including Margaret Ellen Flaherty Clemans. That makes Martin and Kate the next parent set to test for Margaret, but it still needs a direct Margaret birth, marriage, death, census, or probate record before treating them as proved. <span class="tag lead">Working lead</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 5-6</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Earlier Clemans, Clemens, Flaherty, Martin, and related lines</div><div class="person-details">Open pending Marjorie Clemans direct parentage proof, Talmadge's birth/census trail, the 1921 St. Louis marriage record, and Margaret/Edward Flaherty records that directly prove or disprove Martin and Kate as Margaret's parents. Also exclude or prove any connection to the Indiana Marjorie Opal Clemans / Clay V. Stamper profile before using it. <span class="tag open">Open edge</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>William J. "Bill" Dible Branches</h2>
+
+      <div class="branch">
+        <div class="branch-title">
+          <h3>Dible Surname Line</h3>
+          <p class="small">This branch carries well into early Pennsylvania, then fades into a German/English surname-origin question.</p>
+        </div>
+        <div class="generations">
+          <div class="generation">
+            <div class="gen-label">Gen 1</div>
+            <div class="people">
+              <div class="person"><div class="person-name">William J. "Bill" Dible</div><div class="person-details">1933-2022, Rexford, Kansas. <span class="tag documented">Documented</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 2</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Ray Hershel Dible + Almeda Ora Long</div><div class="person-details">Bill's obituary names Ray and Almeda Long Dible as his parents. <span class="tag documented">Documented</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 3</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Harry H. Dible + Julia Dible</div><div class="person-details">FamilySearch sibling pages place Ray Hershel Dible among children of Harry H. Dible and Julia Dible. Julia's profile says she was daughter of John Heckman Dible and Elizabeth J. Haden and married Harry on 10 Jun 1896 in Trenton, Hitchcock County, Nebraska. <span class="tag strong">Strong lead</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 4</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Zephaniah Dible + Catherine Moore</div><div class="person-details">WikiTree states Harry is son of Zephaniah Dible and Catherine Moore. FamilySearch/Ancestry entries for John Moore Dible also show this couple and point to Kiskiminetas Township, Armstrong County, Pennsylvania, but Catherine's dates conflict across compiled/index sources: Ancestry's John Moore Dible profile shows Catherine Moore 1839-1864, while WikiTree's Harry Dible profile shows Catherine Moore about 1834-6 Jun 1872. Treat Catherine as proved by name but not by exact vital dates until original records are pulled. <span class="tag strong">Strong lead</span></div></div>
+              <div class="person"><div class="person-name">John Heckman Dible + Elizabeth J. Haden</div><div class="person-details">FamilySearch snippet for Julia Dible names John Heckman Dible and Elizabeth J. Haden as parents. <span class="tag strong">Strong lead</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 5</div>
+            <div class="people">
+              <div class="person"><div class="person-name">John Albert Dibler/Dible + Catherine Heckman</div><div class="person-details">FamilySearch pages for Zephaniah's siblings list John Albert Dibler and Catherine Heckman as parents. <span class="tag strong">Strong lead</span></div></div>
+              <div class="person"><div class="person-name">Likely Andrew Jackson Haden + Sophia Reid/Reed</div><div class="person-details">Elizabeth J. Haden Dible's Find a Grave page names parents Andrew Jackson Haden and Sophia Reid. KaysAncestry agrees, gives Sophia as Sophia Reed, places the family in Cumberland County, Kentucky census households, and shows Elizabeth/Betty in an 1880 Nebraska John Dible household with Kentucky-born Richard Hayden likely her brother. The Andrew page adds a Cumberland County deed clue: Andrew J. Haden mortgaged stock and crops to Sally L. Haden, identified there as his mother. Treat the family as a working lead until original census, marriage, deed, probate, or death records are pulled. <span class="tag lead">Working lead</span></div></div>
+              <div class="person"><div class="person-name">Parents of Catherine Moore</div><div class="person-details">Still open. Catherine Moore should be attacked through Kiskiminetas Township, Armstrong County, Pennsylvania church, probate, cemetery, and guardianship records; her vital dates conflict between compiled/index sources. <span class="tag open">Open edge</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 6</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Likely Jacob Dible + Susannah Allshouse</div><div class="person-details">A three-page compiled Dible family paper places John Dible, 1805-1866, husband of Catherine Heckman, as son of Jacob Dible, 1780-1872, and Susannah Allshouse. It identifies Susannah as daughter of Henry Allshouse and a Truxall mother. The same paper points beyond this displayed Gen 6 to Johanne Jacob Dreibelbis, a 1732 immigrant, but that step still needs independent proof. <span class="tag lead">Working lead</span></div></div>
+              <div class="person"><div class="person-name">Philip Heckman + Maria Esther Otterman</div><div class="person-details">FamilySearch indexes Catherine Heckman as daughter of Philip Heckman and Esther/Maria Esther Otterman; sibling pages for George and John Jacob Heckman repeat the same parent pair. A sibling memorial for Ludwig "Louis" Heckman says Philip was son of Albrecht Heckman, immigrant from Boedigheim, Mosbach, Baden, Germany, but that is beyond this displayed Gen 6 and needs original church/probate proof. <span class="tag lead">Working lead</span></div></div>
+              <div class="person"><div class="person-name">Likely Richard D. Haden + Sarah "Sally" Lewis Tompkins</div><div class="person-details">KaysAncestry and FamilySearch identify Andrew Jackson Haden as son of Richard D. Haden and Sarah "Sally" Lewis Tompkins. KaysAncestry gives Richard as born 30 Jun 1776 in Albemarle County, Virginia, married Sally on 7 Mar 1799 in Albemarle County, and died 15 Feb 1837 in Cumberland County, Kentucky; Sally died 15 Oct 1841 in Cumberland County. This is a good Gen 6 Haden layer, but it should be hardened with the Albemarle marriage bond and Cumberland County deed/probate records. <span class="tag lead">Working lead</span></div></div>
+              <div class="person"><div class="person-name">Possible Robert Reid / Edwin Reid cluster for Sophia Reed</div><div class="person-details">Sophia Reed's parents remain open. KaysAncestry notes Robert Reid, age 69, in Andrew and Sophia Haden's 1860 Cumberland County household and says he might be Sophia's father; the 1870 Sophia Haden household includes Edwin Reid, age 50, possibly Sophia's brother. These are useful household clues, not parent proof. <span class="tag open">Open edge</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="branch">
+        <div class="branch-title">
+          <h3>Long / Sleight / McClelland Line</h3>
+          <p class="small">This line has useful Find a Grave biography data and reaches into Lincolnshire, England on the Sleight side.</p>
+        </div>
+        <div class="generations">
+          <div class="generation">
+            <div class="gen-label">Gen 1</div>
+            <div class="people">
+              <div class="person"><div class="person-name">William J. "Bill" Dible</div><div class="person-details">Through mother Almeda Ora Long. <span class="tag documented">Documented</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 2</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Almeda Ora Long Dible</div><div class="person-details">1901-1962. Marriage notice links Almeda Long and Ray H. Dible in 1922 Jackson County, Kansas. <span class="tag documented">Documented</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 3</div>
+            <div class="people">
+              <div class="person"><div class="person-name">William Walker/Wasson Long + Cora Ellie McClelland</div><div class="person-details">FamilySearch sibling page for Nelson Leonard Long identifies William Wasson Long and Cora Ellie McClelland as parents of Almeda's sibling group. Find a Grave has William Walker Long, 1862-1908, spouse Cora Ellie McClellan. <span class="tag strong">Strong lead</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 4</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Robert Nelson Long + Ann Ghent Sleight</div><div class="person-details">Find a Grave biography says Robert Nelson Long married Ann Ghent Sleight on 19 Feb 1857 in Griggsville Township, Pike County, Illinois. <span class="tag strong">Strong lead</span></div></div>
+              <div class="person"><div class="person-name">Dorsey Overturf McClelland + Lovina Parker Love</div><div class="person-details">Find a Grave listing for Cora Ellie McClellan Long gives these parents, and the Selden Cemetery transcription places Dorsey O. McClelland on a matching concrete-base marker with Ora E. McClelland and Almeda O. Dible. Working geography is now much sharper: Dorsey appears in compiled leads as born 26 Sep 1825 in Greene County, Pennsylvania and died 19 May 1904 at Selden, Kansas; Lovina appears as born 28 Oct 1832 in Trimble/Athens County, Ohio, married Dorsey on 18 Nov 1850 at Hartleyville, Athens County, Ohio, and died 23 Dec 1883 in Osborne County, Kansas. Original marriage, census, probate, and cemetery images are still needed. <span class="tag strong">Strong lead</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 5</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Likely Rev. Robert Long + Betsy Wasson</div><div class="person-details">Find a Grave memorial for Rev. Robert Long lists Robert Nelson Long among his children and states Robert and Betsy Wasson had moved to Williamson County, Tennessee by 1805. Still needs a probate, Bible, or land record before proof status. <span class="tag lead">Working lead</span></div></div>
+              <div class="person"><div class="person-name">John Gaunt Sleight + Rebecca Rachel Walker</div><div class="person-details">Find a Grave biography for Robert Nelson Long identifies Ann Ghent Sleight's parents as John Gaunt Sleight and Rebecca Rachel Walker, both associated with Lincolnshire, England. <span class="tag strong">Strong lead</span></div></div>
+              <div class="person"><div class="person-name">Likely Alexander M. McClelland + Sarah Hoge</div><div class="person-details">WikiTree leads identify Dorsey Overturf McClelland as son of Alexander M. McClelland and Sarah Hoge. The working trail puts Alexander about 1801 at Fayette City/Fayette County, Pennsylvania, a marriage to Sarah Hoge about 1822 in Greene County, Pennsylvania, and death about 7 Feb 1863 at Bishopville/Athens County, Ohio; Sarah is shown as born in 1803, died in 1892, and buried at Mount Olive Cemetery near Troy, Doniphan County, Kansas. This needs Pennsylvania/Ohio/Kansas primary confirmation. <span class="tag lead">Working lead</span></div></div>
+              <div class="person"><div class="person-name">Likely Thomas Louis Love + Hannah Ann James</div><div class="person-details">WikiTree, Find a Grave, and FamilySearch leads identify Lovina Parker Love as daughter of Thomas Louis Love and Hannah Ann James. FamilySearch's Thomas Lewis Love profile gives Thomas 1796-1871, Hannah Ann James 1805-1871, a 5 Feb 1828 marriage, and a child list including Lovina Parker Love. This needs Athens County, Ohio marriage, probate, land, or church support before it becomes more than a compiled Gen 5 lead. <span class="tag lead">Working lead</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 6</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Likely John Sleight + Elizabeth Gaunt</div><div class="person-details">FamilySearch sibling-index results for Henry Sleight / John Gaunt Sleight identify John Sleight and Elizabeth Gaunt as parents, pushing the Sleight line one more generation in Lincolnshire. <span class="tag lead">Working lead</span></div></div>
+              <div class="person"><div class="person-name">Earlier Long, Walker, McClelland, Love, Hoge, and James ancestors</div><div class="person-details">Open pending direct probate, church, land, or immigration records. The McClelland/Hoge search should now focus on Greene and Fayette counties, Pennsylvania, Bishopville/Athens County, Ohio, and Troy/Doniphan County, Kansas; the Love/James search should focus on Athens County, Ohio and any Thomas/Hannah probate or church trail. <span class="tag open">Open edge</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Donna Lea Connelly Dible Branches</h2>
+
+      <div class="branch">
+        <div class="branch-title">
+          <h3>Connelly / Durham Line</h3>
+          <p class="small">The Kentucky-to-Kansas Connelly/Durham connection is solid enough to move, but James Connelly's parents remain open.</p>
+        </div>
+        <div class="generations">
+          <div class="generation">
+            <div class="gen-label">Gen 1</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Donna Lea Connelly Dible</div><div class="person-details">1935-2022, Rexford, Kansas. <span class="tag documented">Documented</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 2</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Chester Franklin Connelly + Martha Frances Claar</div><div class="person-details">Donna's obituary names Chester and Martha Claar Connelly as parents. Chester is indexed as 20 Oct 1891-22 Nov 1981, Rexford, Kansas. <span class="tag documented">Documented</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 3</div>
+            <div class="people">
+              <div class="person"><div class="person-name">James Connelly + America Ellen Durham</div><div class="person-details">Find a Grave listings for James Connelly and Laura Inis Connelly Walls, plus the FamilySearch page for Nola Temperance Connelly, place Chester Franklin Connelly in the James Connelly and America Ellen Durham household. WKU's Muhlenberg County Heritage article lists America Ellen Durham as born 25 Aug 1858, died 28 Jan 1947, married James Connelly. <span class="tag strong">Strong lead</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 4</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Parents of James Connelly</div><div class="person-details">Open. James is listed as born 25 Sep 1848 and died 15 Nov 1921, but parents were not located in this pass. <span class="tag open">Open edge</span></div></div>
+              <div class="person"><div class="person-name">David Monroe Durham + Virginia Ann Ford</div><div class="person-details">WKU's Muhlenberg County Heritage family record gives David Monroe Durham, born 28 Dec 1832 in North Carolina, died 24 Aug 1897 in Nebo, Kentucky, married Virginia Ann Ford on 19 Aug 1857 in Menard County, Illinois, and lists America Ellen Durham as their child. A separate 1911 Ford family letter in Muhlenberg County Heritage says Virginia Ann Ford was born 27 Dec 1842 and married David M. Durham in February 1858, so the marriage date/place still needs the original Menard County record. Public child pages also point to this couple, but date/name variants appear: a FamilySearch page for son David Milton Durham calls the father David Monroe Durham Jr., and a Find a Grave index snippet for Mary Isabella Durham Hibbs gives father David Monroe Durham with 1829-1887 dates. Keep the America-to-David/Virginia link, but resolve David's exact identity with original marriage, death, probate, and cemetery records before moving upward. <span class="tag strong">Strong lead</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 5</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Likely John Laborn/Laban Ford + Lucy Ann Staples</div><div class="person-details">A 1911 Muhlenberg Sentinel letter reprinted in WKU's Muhlenberg County Heritage was written by their son Rev. G. W. Ford. It says John Laborn Ford was born 11 Oct 1811 in Caswell County, North Carolina, rode to Greenville, Kentucky in 1839, met Lucy Ann Staples at Friendship church, married her in April 1840, and had children including Virginia Ann Ford. Other compiled/index leads point to a 30 Mar 1842 Kentucky marriage. Treat the couple and child link as strong, but pull the original Muhlenberg/Menard marriage and probate records before treating either marriage date as final. <span class="tag strong">Strong lead</span></div></div>
+              <div class="person"><div class="person-name">Parents of David Monroe Durham</div><div class="person-details">Still open. The WKU query specifically asks for David Monroe Durham's parents, which means the compiled source did not have them in hand. Before testing parent candidates, resolve the 1832/1897 versus 1829/1887 date variants and whether "Jr." reflects a father of the same name or a later tree label. <span class="tag open">Open edge</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 6</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Likely John Burton Staples + Nancy Ann Turner</div><div class="person-details">Rev. G. W. Ford's 1911 letter names Lucy Ann Staples as daughter of John Burton Staples and Nancy Ann Turner. It gives John Burton as born 25 Jun 1785 in Virginia, Nancy Ann as born in November 1782 in Virginia, their marriage in May 1818, a move to East Tennessee about 1830, settlement about three miles southeast of Greenville in fall 1835, and deaths in June 1867 and February 1882. It also places both in Friendship Missionary Baptist Church. This is stronger than a generic tree lead, but probate, land, church minutes, and the marriage record still need pulling. <span class="tag strong">Strong lead</span></div></div>
+              <div class="person"><div class="person-name">Competing Ford parentage: John Laborn Ford Sr. / Levi Ford + Aritta Davis</div><div class="person-details">Rev. G. W. Ford's 1911 family letter says John Laborn Ford's father was John Laborn Ford, born in Scotland in 1767, and mother Aritta Davis, born in Scotland in 1770; it says they married in 1793, came to Caswell County, North Carolina about 1797, and that Aritta died three days after the younger John Laborn Ford's 1811 birth. Later Caswell County Historical Association discussion and a 1983 Muhlenberg County Heritage query raise a Levi Ford + Aritta Davis theory, but both explicitly say empirical proof is still missing. Do not attach Levi as father without Caswell County marriage, deed, guardianship, estate, or court evidence. <span class="tag open">Open edge</span></div></div>
+              <div class="person"><div class="person-name">Earlier Durham, Ford, and Staples ancestors</div><div class="person-details">Open pending Muhlenberg/Hopkins County, Kentucky probate, land, marriage, and church records; Caswell County, North Carolina Ford/Davis guardianship, deed, marriage, and estate records; and Virginia/Tennessee Staples-Turner records. <span class="tag open">Open edge</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="branch">
+        <div class="branch-title">
+          <h3>Claar / White / Stropes Line</h3>
+          <p class="small">This is the deepest open-web branch so far. It reaches the Pennsylvania Claar/Klar compiled genealogy, but older layers should be validated.</p>
+        </div>
+        <div class="generations">
+          <div class="generation">
+            <div class="gen-label">Gen 1</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Donna Lea Connelly Dible</div><div class="person-details">Through mother Martha Frances Claar. <span class="tag documented">Documented</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 2</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Martha Frances Claar Connelly</div><div class="person-details">1896-1984. Find a Grave and Donna's obituary support identity. <span class="tag documented">Documented</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 3</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Samuel Dove Claar + Mary Margaret Hoyle / Maggie M. Hogle</div><div class="person-details">FamilySearch page for Samuel Dove Claar names spouse Mary Margaret Hoyle, gives their marriage as 5 Oct 1895 in Oberlin, Decatur County, Kansas, and lists Martha Frances Claar among children. A Decatur County marriage index gives the same groom, date, and place but lists the bride as Maggie M. Hogle. Treat Hoyle as the working family surname, but the original marriage record is now a required conflict-resolution target. <span class="tag strong">Strong lead</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 4</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Henry Claar + Electa Alice White</div><div class="person-details">FamilySearch and Treespot place Samuel Dove Claar as son of Henry Claar and Electa Alice White. Henry was born 31 Dec 1838 in Jackson County, Ohio and died 28 Dec 1915 in Topeka, Kansas. <span class="tag strong">Strong lead</span></div></div>
+              <div class="person"><div class="person-name">Parents of Mary Margaret Hoyle / Hogle</div><div class="person-details">Not proven. The immediate task is not to jump to Hoyle parents yet; first pull the original Decatur County marriage record for Samuel D. Claar and Maggie M. Hogle / Mary Margaret Hoyle to resolve the bride's surname and any parent, witness, or residence clues. <span class="tag open">Open edge</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 5</div>
+            <div class="people">
+              <div class="person"><div class="person-name">Samuel Claar + Lydia Stropes</div><div class="person-details">Treespot and MotherBedford identify Henry Claar as son of Samuel Claar and Lydia Stropes. MotherBedford gives Samuel born 12 Mar 1800 and married Lydia Stropes on 29 Oct 1827. <span class="tag strong">Strong lead</span></div></div>
+              <div class="person"><div class="person-name">Daniel White + Sarah "Sally" Osborn</div><div class="person-details">FamilySearch snippet for Electa Alice White names father Daniel White and mother Sarah "Sally" Osborn. <span class="tag strong">Strong lead</span></div></div>
+            </div>
+          </div>
+          <div class="generation">
+            <div class="gen-label">Gen 6</div>
+            <div class="people">
+              <div class="person"><div class="person-name">George Washington Claar + Barbara House</div><div class="person-details">FamilySearch, WikiTree, and MotherBedford identify Samuel Claar Sr. as son of George Washington Claar and Barbara House in the Klar/Claar line. This remains compiled-lineage evidence until original Bedford/Jackson County records are checked. <span class="tag lead">Working lead</span></div></div>
+              <div class="person"><div class="person-name">John Stropes + Eleanor Fox</div><div class="person-details">MotherBedford identifies Lydia Stropes as daughter of John Stropes and Eleanor Fox. <span class="tag lead">Working lead</span></div></div>
+              <div class="person"><div class="person-name">Abel White + Rebecca Solace</div><div class="person-details">FamilySearch snippet for Daniel White names father Abel White and mother Rebecca Solace. <span class="tag strong">Strong lead</span></div></div>
+              <div class="person"><div class="person-name">Earlier Osborn and Hoyle/Hogle ancestors</div><div class="person-details">Open pending direct records. Do not extend the Hoyle branch until the Hoyle-vs-Hogle marriage-index conflict is resolved from the original Decatur County record. <span class="tag open">Open edge</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Record Targets That Would Move The Tree</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Priority</th>
+            <th>Branch</th>
+            <th>Record to Pull</th>
+            <th>Why it matters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Zimmerman / Zinkle</td>
+            <td>Archion Mainhardt Familienregister 1808-1918 Band 25, especially Huetten / Parzellen von Huetten / Wuerttemberger Hof.</td>
+            <td>Likely one page names the German household, parents, children, and emigration notes.</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Zimmerman / Zinkle</td>
+            <td>Archion Mainhardt Eheregister 1850-1870 Band 15, marriage around 1864.</td>
+            <td>German marriage records often name both fathers and sometimes mothers.</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Zimmerman</td>
+            <td>1910/1920 census or death certificate corroborating Leonard Henry Zimmerman as son of Michael John Zimmerman Sr. and Elizabeth Nauer.</td>
+            <td>The public cemetery-child list now supports the link, but a primary household or certificate record would harden the American-to-German chain.</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Zodrow / Grams / Baier</td>
+            <td>Leoville, Decatur County, Kansas Catholic records; Marquette County, Wisconsin marriage/naturalization records for John Zodrow and Antonette Grams; Neu Lebehnke / Nowa Lubianka village leads; Lebehnke / Stara Lubianka Catholic/Lutheran parish and civil registry records; Kreis Deutsch Krone county-level records; Lebehnke banns collateral entries for Christoph Zodrow/Rosalia Zaske and Andreas Zodrow/Justina Reinke; Polish archive land/mortgage files for Johann Zodrow's Neu Lebehnke property; Grams parish variants.</td>
+            <td>The Calvary Cemetery transcription gives the first specific Zodrow European place clue. Neu Lebehnke/Nowa Lubianka now supplies a village target, Lebehnke/Stara Lubianka supplies parish and civil-registry targets, and Kreis Deutsch Krone supplies county context; but the Sabanka-to-Lebehnke connection and the parents of John Zodrow, Antonette Grams, and Ernestina Baier remain unproven.</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Mundell / Clemans / Adolph</td>
+            <td>Homer Mundell and Marjorie Clemans marriage/divorce record if any; Evelyn's birth record; 1940/1950 census households; Walter William Mundell and Frances Rust marriage record at Smith Center, Kansas in 1910; Smith County birth/census/probate records for Frances Rust, William Bryan Rust, Clarence Aison Rust, possible parents John F. Rust and Ethel B. Rupert, and the Reamsville/Pleasant Hill Cemetery Rust cluster; Winona/Logan County school, census, guardianship, cemetery, probate, and newspaper records for Evelyn living with grandmother Frances Adolph; Frances Adolph remarriage/death records and any Lyle Strawn/Beloit records; Marjorie Clemans record tying her directly to Talmadge Dewitt Clemans and Margaret Ellen Flaherty; records excluding the Indiana Marjorie Opal Clemans / Clay V. Stamper same-name collision; St. Louis marriage record for Talmage Clemans and Margaret Flaherty on 16 Apr 1921; Margaret and Edward Flaherty birth/death/census records to test Martin Flaherty and Kate Flaherty as Margaret's parents; records resolving Leora Young/Rogers in the sibling group; Sarah Alice Cantwell proof records.</td>
+            <td>The Mundell paternal line now has a usable chain, the Rust side has a specific John F. Rust/Ethel B. Rupert candidate cluster to test, and the Flaherty side has a more specific Martin/Kate parent cluster. The Frances Rust/Adolph/Strawn identity, Clemans parentage, Homer/Marjorie/Leora household structure, and Cantwell maternal line still need direct records.</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>Nauer / Koeberger</td>
+            <td>Waterloo County, Ontario census/church/civil records for Elizabeth Catherine Nauer and siblings; 1871 Waterloo County and 1880 Cawker/Mitchell County census images for Thomas and Catharine; St. Clements Catholic registers; Wilmot Township/New Prussia and Carrick Township/Bruce County records for Johann Lorenz Nauer and Dorothea Meyer/Mary Dorothea Wand; Thomas A. Nauer probate or burial record.</td>
+            <td>Would test the Lorenz/Dorothea possible-parent lead, resolve the Meyer/Wand naming conflict, and may reveal the European parish behind the Ontario Nauer family.</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>Dible / Heckman / Moore / Haden</td>
+            <td>Armstrong and Westmoreland County, Pennsylvania probate, land, church, and cemetery records for John Albert Dibler/Dible, Catherine Heckman, Jacob Dible, Susannah Allshouse, Philip Heckman, Maria Esther Otterman, and Catherine Moore; specifically Kiskiminetas Township records for Catherine Moore and Zephaniah Dible's household. Cumberland County, Kentucky census, marriage, probate, deed, and cemetery records for Elizabeth J. Haden, Andrew Jackson Haden, Sophia Reid/Reed, Richard D. Haden, and Sarah "Sally" Lewis Tompkins; Albemarle County, Virginia marriage bond for Richard D. Haden and Sally Tompkins; Reed/Reid household records for possible Robert Reid and Edwin Reid.</td>
+            <td>Would test the compiled Dible/Allshouse and Heckman/Otterman leads, resolve Catherine Moore's conflicting dates, verify the Haden/Reid parent lead, harden the Richard/Sally Gen 6 Haden layer, and could push the Dible and Heckman lines to their immigrant layers.</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>Long / Sleight / McClelland / Love</td>
+            <td>Pike County, Illinois probate/church records for Rev. Robert Long and Robert Nelson Long; Lincolnshire parish records for John Gaunt Sleight; Greene and Fayette County, Pennsylvania records for Alexander/Sarah and Dorsey McClelland; Athens County, Ohio marriage/probate/church records for Dorsey McClelland, Lovina Love, Thomas Love, Hannah James, and Alexander McClelland; Osborne County, Kansas death/burial records for Lovina; Selden Cemetery records for Dorsey/Ora/Almeda.</td>
+            <td>Would prove or reject the McClelland/Hoge and Love/James Gen 5 leads, and it would convert the current Pennsylvania-Ohio-Kansas route from compiled evidence into record-backed geography.</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td>Connelly / Durham</td>
+            <td>James Connelly probate/death record and Kentucky marriage/census records; David Monroe Durham and Virginia Ann Ford original Menard County, Illinois marriage record; Hopkins/Muhlenberg County, Kentucky death, cemetery, probate, and land records to resolve David's 1832/1897 versus 1829/1887 identity variants; John Laborn Ford/Lucy Ann Staples marriage record; Friendship Missionary Baptist Church records; Ford/Staples/Turner probate and land records in Muhlenberg/Hopkins counties; Caswell County, North Carolina Ford/Davis records for the John Laborn Ford Sr. versus Levi Ford parentage conflict.</td>
+            <td>James Connelly's parents and David Monroe Durham's parents remain major open edges; the Ford/Staples layer now has a 1911 son-authored family letter, but the younger John Laborn Ford's father is still a conflict between family tradition and the later Levi Ford theory.</td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td>Claar / Hoyle / White</td>
+            <td>Decatur County, Kansas original marriage record for Samuel D. Claar and Maggie M. Hogle / Mary Margaret Hoyle, dated 5 Oct 1895 at Oberlin; then Jackson County, Ohio and Bedford County, Pennsylvania original records for Henry Claar, Electa White, Samuel Claar, and Lydia Stropes.</td>
+            <td>The Claar line extends deepest online, but the spouse surname conflict at Mary Margaret Hoyle / Maggie M. Hogle must be resolved before the Hoyle/Hogle parents are attached.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Source Ledger</h2>
+      <ul class="sources">
+        <li><a href="https://www.baalmannmortuary.com/obituaries/evelyn-zimmerman">Evelyn Delores Zimmerman obituary, Baalmann Mortuary</a>. Names Homer and Marjorie Clemans Mundell; states marriage to Doyle J. Zimmerman; says Evelyn was raised by grandmother Frances Adolph and graduated from Winona High School.</li>
+        <li><a href="https://www.fryfuneralhome.com/obituaries/donald-mundell">Donald Lynn Mundell obituary, Fry Funeral Home</a>. Names Homer Claire Mundell in Donald's parent line and places Evelyn Zimmerman, Marilyn Ayer/Ayers, and Judy Bastian in the same sibling group.</li>
+        <li><a href="https://www.baalmannmortuary.com/obituaries/william-dible">William J. "Bill" Dible obituary, Baalmann Mortuary</a>. Names Ray and Almeda Long Dible; gives birth, death, and marriage context.</li>
+        <li><a href="https://www.baalmannmortuary.com/obituaries/donna-dible">Donna Lea Connelly Dible obituary, Baalmann Mortuary</a>. Names Chester and Martha Claar Connelly.</li>
+        <li><a href="https://hayspost.com/posts/bc1e3b37-d4c3-4a69-930e-24b43084c469">Donna Lea Dible notice, Hays Post</a>. Repeats Chester/Martha parentage and Rexford context.</li>
+        <li><a href="https://nb.findagrave.com/memorial/34266662/doyle-jule-zimmerman">Doyle Jule Zimmerman, Find a Grave</a>. Cemetery profile names Leonard Henry Zimmerman and Cecilia Antoinette Zodrow Zimmerman as parents and Evelyn Delores Mundell Zimmerman as spouse.</li>
+        <li><a href="https://negenweb.net/NEMadison/Census/1880/1880_census.pdf">1880 Madison County, Nebraska census index</a>. Lists John Zimmerman household in Norfolk, including Catherine, John, Michael, Paul, Baptist, and Louisa.</li>
+        <li><a href="https://ancestors.familysearch.org/en/LLWL-MJL/michael-john-zimmerman-sr.-1869-1964">Michael John Zimmerman Sr., FamilySearch</a>. Public index gives birth at Wuerttemberger Hof/Mainhardt.</li>
+        <li><a href="https://ancestors.familysearch.org/en/LCPJ-KZV/elizabeth-catherine-nauer-1872-1935">Elizabeth Catherine Nauer, FamilySearch</a>. Public index gives marriage to Michael John Zimmerman Sr. at Cawker City on 19 Nov 1895.</li>
+        <li><a href="https://ancestors.familysearch.org/en/KJZC-FMK/emma-catherine-nauer-1867-1934">Emma Catherine Nauer, FamilySearch</a>. Public sibling index gives Thomas A. Nauer and Catherina Marie Koeberger as parents.</li>
+        <li><a href="https://www.findagrave.com/memorial/48206092/moritz_thomas-nauer">Moritz Thomas Nauer, Find a Grave</a>. Cemetery profile lists Thomas A. Nauer and Catherina Koeberger Nauer and includes Elizabeth Catherine Nauer Zimmerman among siblings.</li>
+        <li><a href="https://www.findagrave.com/memorial/69631173/elizabeth_catherine-zimmerman">Elizabeth Catherine Nauer Zimmerman, Find a Grave</a>. Cemetery profile names Thomas Nauer and Catherine Koeberger as parents and lists Leonard Henry Zimmerman among Michael and Elizabeth's children.</li>
+        <li><a href="https://www.findagrave.com/memorial/48214393/catherina-nauer">Catherina Koeberger Nauer, Find a Grave</a>. Cemetery profile gives birth 4 Mar 1832, death 1 Feb 1906, and burial at Saint Joseph Cemetery, New Almelo, Norton County, Kansas.</li>
+        <li><a href="https://img1.wsimg.com/blobby/go/c0db0dfe-27d2-4632-889f-eeb26fbb14e1/downloads/f7bcaab9-38ae-4388-a9eb-f4fbecb15a21/Waterloo%20German%20Catholic%20Settlers.pdf?ver=1781326202841">The German Catholic Settlers of Waterloo County PDF</a>. Compiled Waterloo-area lead placing Thomas and Catharine Nauer in Waterloo County in 1871 and Cawker, Mitchell County, Kansas by 1880; also proposes Lorenz Nauer and Dorothea Meyer as possible parents for Thomas.</li>
+        <li><a href="https://www.wikitree.com/wiki/Nauer-7">Thomas A. Nauer, WikiTree</a>. Compiled lead naming Thomas as son of Johann Lorenz Nauer and Mary Dorothea Wand; use as a target, not proof, because the Waterloo PDF uses Dorothea Meyer, widow Wand/Wandt.</li>
+        <li><a href="https://en.wikipedia.org/wiki/New_Prussia%2C_Ontario">New Prussia, Ontario locality context</a>. Wilmot Township settlement context for Rhenish Prussian Catholic families and later movement toward Bruce County; useful geographic context for the Nauer search, not a direct proof record.</li>
+        <li><a href="https://www.ksgenweb.org/KSSheridan/cemetery/selden2.html">Selden Cemetery, KSGenWeb</a>. Lists Michael J. and Elizabeth A. Zimmerman on the same stone; also shows Nauer burials nearby. The same transcription lists Dorsey O. McClelland, Ora E. McClelland, and Almeda O. Dible on identical stones/same concrete base, making it an important Long/McClelland collateral-location source.</li>
+        <li><a href="https://ancestors.familysearch.org/en/LTRB-GY1/john-paul-zimmerman-1842-1926">John Paul Zimmerman, FamilySearch</a>. Public index for the likely immigrant ancestor.</li>
+        <li><a href="https://ancestors.familysearch.org/en/LTRB-2C4/paul-michael-zimmerman-1872-1974">Paul Michael Zimmerman, FamilySearch</a>. Public index supports Wuerttemberger Hof/Mainhardt birth locality.</li>
+        <li><a href="https://www.archion.de/de/alle-archive/baden-wuerttemberg/evangelisches-archiv-baden-und-wuerttemberg-wuerttemberg/dekanat-schwaebisch-hall/mainhardt/96441">Archion Mainhardt Familienregister 1808-1918 Band 25</a>. Best next record target for Zimmerman/Zinkle.</li>
+        <li><a href="https://www.archion.de/de/alle-archive/baden-wuerttemberg/evangelisches-archiv-baden-und-wuerttemberg-wuerttemberg/dekanat-schwaebisch-hall/mainhardt/96411">Archion Mainhardt Eheregister 1850-1870 Band 15</a>. Marriage record target for John Paul Zimmerman and Catherine Zinkle/Zinkl.</li>
+        <li><a href="https://www.archion.de/de/alle-archive/baden-wuerttemberg/evangelisches-archiv-baden-und-wuerttemberg-wuerttemberg/dekanat-schwaebisch-hall/mainhardt/96393">Archion Mainhardt Taufregister 1859-1877 Band 9</a>. Baptism target for Michael and Paul Zimmerman.</li>
+        <li><a href="https://www.archion.de/de/alle-archive/baden-wuerttemberg/evangelisches-archiv-baden-und-wuerttemberg-wuerttemberg/dekanat-schwaebisch-hall/mainhardt/96387">Archion Mainhardt Taufregister 1835-1843 Band 7</a>. Possible John Paul Zimmerman baptism target.</li>
+        <li><a href="https://ancestors.familysearch.org/en/GQ83-CVL/albert-l.-zodrow-1908-1957">Albert L. Zodrow, FamilySearch</a>. Public index names Julius Henry Zodrow and Ernestina Baier as parents.</li>
+        <li><a href="https://www.findagrave.com/memorial/111655641/julius-henry-zodrow">Julius Henry Zodrow, Find a Grave</a>. Cemetery profile links Julius to John Zodrow and Antonette Grams.</li>
+        <li><a href="https://ancestors.familysearch.org/en/LRVV-DCB/john-zodrow-1843-1915">John Zodrow, FamilySearch</a>. Public index gives birth in Prussia/Germany and children with Antonia Grams.</li>
+        <li><a href="https://www.findagrave.com/memorial/156365204/antonette-zodrow">Antonette Grams Zodrow, Find a Grave</a>. Cemetery profile gives birth in Poland and burial in Leoville, Decatur County, Kansas.</li>
+        <li><a href="https://www.ksgenweb.org/KSDecatur/cemeteries/leovillecalvarycemetery.htm">Leoville Calvary Cemetery transcription, KSGenWeb</a>. Lists John M. Zodrow, 29 Jun 1843-15 Mar 1915, with birthplace noted as Sabanka, Prussia.</li>
+        <li><a href="http://www.kartenmeister.com/preview/City.asp?CitNum=25032">Neu Lebehnke / Nowa Lubianka, Kartenmeister</a>. Locality candidate for the Sabanka problem; gives Kreis Deutsch Krone, Westpreussen, modern Nowa Lubianka, coordinates, and Catholic/Lutheran parish plus civil registry at Lebehnke.</li>
+        <li><a href="https://www.meyersgaz.org/place/20287016">Neu Lebehnke, Meyers Gazetteer</a>. Gazetteer entry identifies Neu Lebehnke as a village in Deutsch Krone, Marienwerder, Westpreussen, Preussen, with Standesamt at Lebehnke Kr. Deutsch Krone.</li>
+        <li><a href="https://www.meyersgaz.org/place/20036035">Lebehnke Kr. Deutsch Krone, Meyers Gazetteer</a>. Gazetteer entry identifies Lebehnke as village and estate in Kreis Deutsch Krone with Catholic and Protestant parish churches.</li>
+        <li><a href="https://agoff.de/?p=83526">Kreis Deutsch Krone parish/civil registry table, AGOFF</a>. 1885 locality table lists Neu Lebehnke with evangelical church, Catholic church, and Standesamt all at Lebehnke.</li>
+        <li><a href="https://agoff.de/?p=108567">Standesamtsbezirk Lebehnke, AGOFF</a>. Civil registry district overview says Standesamtsbezirk Lebehnke existed 1874-1945 and included Neu-Lebehnke.</li>
+        <li><a href="https://deutschkrone.rosentreterfoundation.org/placesearch.php?psearch=Nowa+Lubianka%2C+Pila+County%2C+Greater+Poland+Voivodeship%2C+Poland&amp;sitever=standard">Nowa Lubianka place page, Deutsch Krone Project</a>. Shows Neu Lebehnke / Nowa Lubianka and a local Zodrow cluster; useful as locality context, not proof that John M. Zodrow was born there.</li>
+        <li><a href="https://www.yumpu.com/de/document/view/8280032/aufgebote-lebehnke-ab-1874-1925-the-roots-in-deutsch-">Lebehnke Catholic banns abstract, 1874-1925</a>. Compiled transcription from the Lebehnke parish banns; includes Neu/Alt Lebehnke Zodrow collateral entries naming Christoph Zodrow, Rosalia Zaske, Andreas Zodrow, and Justina Reinke.</li>
+        <li><a href="https://www.szukajwarchiwach.gov.pl/en/c/portal/update_language?languageId=de_DE&amp;p_l_id=41967&amp;redirect=%2Fen%2Fzespol%2F-%2Fzespol%2F77604%3F_Zespol_javax.portlet.action%3DzmienWidok%26_Zespol_nameofjsp%3Djednostki%26_Zespol_delta%3D45%26_Zespol_resetCur%3Dfalse%26_Zespol_cur%3D10">Szukaj w Archiwach catalog, Neu Lebehnke land file</a>. Catalog search result references a Johann Zodrow property/mortgage and dismemberment file in Neu Lebehnke No. 100, dated 1860-1873; this is a collateral target, not yet John M. Zodrow proof.</li>
+        <li><a href="https://www.findagrave.com/memorial/75485451/hedwig-schroer">Hedwig "Hattie" Zodrow Schroer, Find a Grave</a>. Sibling list includes Julius Henry Zodrow.</li>
+        <li><a href="https://www.findagrave.com/memorial/75480556/albert-zodrow">Albert Zodrow, Find a Grave</a>. Memorial says Albert was son of John Zodrow and Antonette Grams; used here only as indirect evidence for Julius's likely parents.</li>
+        <li><a href="https://ancestors.familysearch.org/en/LV1R-Z1G/walter-william-mundell-1885-1931">Walter William Mundell, FamilySearch</a>. Public index ties Walter to John Pryor Mundell and Sarah Alice Cantwell and lists Homer Clair Mundell among children.</li>
+        <li><a href="https://www.support.genealogy.com/forum/surnames/topics/cantwell/909/">Sarah Alice Cantwell Mundell forum post, Genealogy.com archive</a>. Compiled correspondence lead saying Walter William Mundell married/divorced Mary Frances Rust and their son was Homer Clair Mundell.</li>
+        <li><a href="https://ancestors.familysearch.org/en/LV1R-Z1G/walter-william-mundell-1885-1931">Walter William Mundell, FamilySearch</a>. Public index gives Frances Rust as spouse, 1910 marriage at Smith Center, Kansas, and children Homer Clair, Rex, and Erma.</li>
+        <li><a href="https://ancestors.familysearch.org/en/2ZS8-B73/barnabas-barney-cantwell-1813-1883">Barnabas "Barney" Cantwell, FamilySearch</a>. Public index and snippets connect Sarah Alice Cantwell to the Barnabas Cantwell family and name Thomas Cantwell Jr. and Jemima Kelley as Barnabas's parents.</li>
+        <li><a href="https://www.support.genealogy.com/forum/surnames/topics/cantwell/763/">Cantwell forum thread, Genealogy.com archive</a>. Compiled lead giving Thomas Cantwell Jr. and Jemima Kelley as Barnabas's parents and pushing the line toward William Cantwell and Margaret O'Brien; unproven here.</li>
+        <li><a href="https://www.support.genealogy.com/forum/surnames/topics/rust/482/">Mary Frances Rust forum post, Genealogy.com archive</a>. Gives the clue that Mary Frances Rust went by Frances, was born 6 Jun 1894 possibly in Smith County, Kansas, had a brother William/Bill Rust with wife Viola, divorced Walter William Mundell, married a man surnamed Adolph, then after his death married Lyle Strawn and lived in Beloit, Kansas.</li>
+        <li><a href="https://www.findagrave.com/memorial/124223039/william_bryan-rust">William Bryan Rust, Find a Grave</a>. Search-result sibling list includes Mary Frances Rust Strawn, 1894-1984, and Clarence Aison Rust; useful for testing the William/Bill Rust brother clue.</li>
+        <li><a href="https://www.ancestry.com/genealogy/records/results?firstName=clarence&amp;geo-lang=en&amp;lastName=rust&amp;page=2">Clarence Aison Rust, Ancestry search-result lead</a>. Snippet gives Clarence Aison Rust, born 7 Jan 1896 in Reamsville/Smith County, Kansas, died 6 Aug 1970 at Smith Center, with father John F. Rust and mother Ethel B. Rupert.</li>
+        <li><a href="https://www.interment.net/data/us/ks/smith/reamsville/index.htm">Reamsville Cemetery, Interment.net</a>. Smith County cemetery transcription gives the local Rust cluster, including F. John Rust, 1870-1909, John A. Rust, 1842-1916, and Nomdje N. Rust, 1855-1934.</li>
+        <li><a href="https://fr.findagrave.com/memorial/97845385/john-aissen-rust">John Aissen Rust, Find a Grave</a>. Search-result child list includes F. John Rust; use only as a candidate link until Smith County records prove Mary Frances Rust's parents.</li>
+        <li><a href="https://nces.ed.gov/ccd/schoolsearch/school_list.asp?County=Logan+County&amp;Search=1&amp;State=20">NCES Logan County public school search</a>. Current school locator still lists Winona High in Winona, Logan County, Kansas; useful as a modern locality check for the Frances Adolph / Winona High research target.</li>
+        <li><a href="https://www.findagrave.com/memorial/157801034/john-pryor-mundell">John Pryor Mundell, Find a Grave</a>. Cemetery profile links spouse Sarah Alice Cantwell Mundell and child Walter William Mundell.</li>
+        <li><a href="https://occgs.com/projects/civil_war/Mundell_Harvey.pdf">OCCGS Harvey Mundell Civil War Veterans Project PDF</a>. Four-page compiled profile giving Harvey's April 1837 Clinton County, Indiana birth, parents John Mundell and Deborah Elmore, wife Elizabeth Jane Brown, children including John P. Mundell, Civil War service, and census/source trail.</li>
+        <li><a href="https://stchsgenealogy.com/p213.htm">St. Charles County Historical Society genealogy page 213</a>. Compiled Harvey William Mundell page with John Mundell/Deborah Elmore parentage, Elizabeth Jane Brown marriage, Civil War service, and census trail; use as a pointer to primary records.</li>
+        <li><a href="https://ancestors.familysearch.org/en/K2W7-JRZ/harvey-william-mundell-1821-1901">Harvey William Mundell, FamilySearch</a>. Public index lead naming John Mundell and Deborah Elmore as parents.</li>
+        <li><a href="https://ancestors.familysearch.org/en/G6RD-KWY/genevieve-clemans-1925-2003">Genevieve Clemans, FamilySearch</a>. Public index names Talmadge Dewitt Clemans and Margaret Ellen Flaherty as parents, says Genevieve was born 15 Jan 1925 in Minnesota, and lists Marjorie Clemans as a sibling.</li>
+        <li><a href="https://www.ancestry.com/1940-census/usa/Mississippi/Talmage-Clemons_45mck8/amp">Talmage D. Clemans, Ancestry 1940 census profile</a>. Search-result lead gives parents Roland Clemens and Ella C./Ellen Martin; used only as a provisional lead until Marjorie Clemans is tied directly to the household.</li>
+        <li><a href="https://www.findagrave.com/memorial/113830517/margaret_ellen-clemans">Margaret Ellen Flaherty Clemans, Find a Grave</a>. Memorial gives about 1901-1986 and a St. Louis marriage note for Talmage Clemans and Margaret Flaherty on 16 Apr 1921.</li>
+        <li><a href="https://www.findagrave.com/memorial/36793267/edward_j-flaherty">Edward J. Flaherty, Find a Grave</a>. Cemetery sibling lead listing Margaret Ellen Flaherty Clemans; Edward's page names Martin Flaherty and Kate Flaherty as parents, making them a specific parentage lead for Margaret pending direct proof.</li>
+        <li><a href="https://ancestors.familysearch.org/en/L5K9-Q7H/marjorie-opal-clemans-1914-1991">Marjorie Opal Clemans, FamilySearch</a>. Same-name collision candidate: born in Liberty Mills, Indiana in 1914, not yet connected to Evelyn's Colorado/Kansas Mundell context.</li>
+        <li><a href="https://archive.org/stream/descendantsofchr00minn/descendantsofchr00minn_djvu.txt">Descendants of Christian Eby, Internet Archive text</a>. Compiled genealogy entry for the Indiana Marjorie Clemans who married Clay V. Stamper in South Bend on 23 Oct 1935; use as an exclusion clue unless direct records connect her to Evelyn's mother.</li>
+        <li><a href="https://www.wikitree.com/wiki/Dible-21">Harry Dible, WikiTree</a>. States Harry was son of Zephaniah Dible and Catherine Moore; gives a conflicting Catherine Moore date set versus Ancestry's John Moore Dible profile.</li>
+        <li><a href="https://ancestors.familysearch.org/en/KCBR-YSR/julia-dible-1874-1967">Julia Dible, FamilySearch</a>. Public index names John Heckman Dible and Elizabeth J. Haden as parents and gives marriage to Harry H. Dible in Hitchcock County, Nebraska.</li>
+        <li><a href="https://ancestors.familysearch.org/en/K845-DFL/john-heckman-dible-1836-1913">John Heckman Dible, FamilySearch</a>. Public index gives marriage to Elizabeth J. Haden and supports Julia's paternal line.</li>
+        <li><a href="https://www.findagrave.com/memorial/9609591/john-heckman-dible">John Heckman Dible, Find a Grave</a>. Memorial names John A. Dible and Catherine Heckman as parents and lists Julia among children.</li>
+        <li><a href="https://www.findagrave.com/memorial/9609623/elizabeth-j-dible">Elizabeth J. Haden Dible, Find a Grave</a>. Cemetery profile names Andrew Jackson Haden and Sophia Reid as her parents and lists children with John H. Dible.</li>
+        <li><a href="https://sites.rootsmagic.com/KaysAncestry/individual.php?p=7222">Elizabeth J. "Betty" Haden, KaysAncestry RootsMagic page</a>. Compiled page names Andrew Jackson Haden and Sophia Reed as parents, lists siblings, and cites 1850/1860 Cumberland County, Kentucky census households.</li>
+        <li><a href="https://sites.rootsmagic.com/KaysAncestry/individual.php?p=5328">Andrew Jackson Haden, KaysAncestry RootsMagic page</a>. Compiled page transcribes 1850/1860 Cumberland County household clues, identifies Sophia Reed as spouse, names Richard D. Haden and Sarah "Sally" Lewis Tompkins as parents, and notes a Cumberland County mortgage to Sally L. Haden as Andrew's mother.</li>
+        <li><a href="https://sites.rootsmagic.com/KaysAncestry/individual.php?p=659">Richard D. Haden, KaysAncestry RootsMagic page</a>. Compiled lead for the Gen 6 Haden layer: Albemarle County, Virginia birth/marriage context, marriage to Sarah "Sally" Lewis Tompkins on 7 Mar 1799, and death in Cumberland County, Kentucky.</li>
+        <li><a href="https://sites.rootsmagic.com/KaysAncestry/individual.php?p=1960">Sarah "Sally" Lewis Tompkins, KaysAncestry RootsMagic page</a>. Compiled lead tying Sally to Richard D. Haden and their child cluster including Andrew Jackson Haden.</li>
+        <li><a href="https://sites.rootsmagic.com/KaysAncestry/individual.php?p=7219">Sophia Reed, KaysAncestry RootsMagic page</a>. Compiled/census lead for Sophia Reed Haden; notes possible Reid household clues in 1860 and 1870 but does not prove Sophia's parents.</li>
+        <li><a href="https://ancestors.familysearch.org/en/LVZ6-YGD">John Moore Dible, FamilySearch</a>. Public index shows Zephaniah Dible and Catherine Moore as parents.</li>
+        <li><a href="https://www.ancestry.com/genealogy/records/john-moore-dible-24-1zyhn5">John Moore Dible, Ancestry profile</a>. Compiled/index lead places John Moore Dible's 1860 birth at Kiskiminetas, Armstrong County, Pennsylvania, and gives parents Zephaniah Dible and Catherine Moore.</li>
+        <li><a href="https://ancestors.familysearch.org/en/L6LS-FV3/catherine-heckman-1805-1846">Catherine Heckman, FamilySearch</a>. Public index connects Catherine Heckman to children including Zephaniah and John Heckman Dible.</li>
+        <li><a href="https://ancestors.familysearch.org/en/KHLL-WKM/john-jacob-heckman-1797">John Jacob Heckman, FamilySearch</a>. Sibling-index evidence naming Philip Heckman and Esther Otterman as parents.</li>
+        <li><a href="https://ancestors.familysearch.org/en/GMWC-SZ1/george-heckman-1814-1899">George Heckman, FamilySearch</a>. Sibling-index evidence for the Philip Heckman and Esther Otterman household.</li>
+        <li><a href="https://allshousefamily.org/getperson.php?personID=P6145&amp;tree=Allshouse1">Philip Heckman, Allshouse Family Tree</a>. Compiled lead for Philip Heckman and Maria Esther Otterman; useful as a pointer to Pennsylvania original records.</li>
+        <li><a href="https://www.findagrave.com/memorial/43410689/ludwig-heckman">Ludwig "Louis" Heckman, Find a Grave</a>. Sibling memorial naming Philip Heckman and Esther Otterman and pointing to Albrecht Heckman of Boedigheim/Baden as an immigrant lead.</li>
+        <li><a href="https://www.familiesbyvelmaparsons.com/pdfs/DIBLE.pdf">Dible family paper, Families by Velma Parsons</a>. Three-page compiled Dible family paper placing John Dible and Catherine Heckman under Jacob Dible and Susannah Allshouse.</li>
+        <li><a href="https://books.google.com/books/about/John_Jacob_Dreibelbis_Family_of_America.html?id=ODgZAQAAMAAJ">John Jacob Dreibelbis Family of America, Google Books record</a>. Compiled Dreibelbis lead identifying the immigrant John/Johann Jacob Dreibelbis line from Hassloch, Germany; useful only after the Dible-to-Dreibelbis step is proven.</li>
+        <li><a href="https://www.reichmuthfuneralhomes.com/m/obituaries/Ruth-Haughawout/">Ruth Margaret Dible Haughawout obituary</a>. Names Ray Hershel and Almeda Ora Long Dible.</li>
+        <li><a href="https://www.findagrave.com/memorial/83044722/william_walker-long">William Walker Long, Find a Grave</a>. Links spouse Cora Ellie McClellan and Long family context.</li>
+        <li><a href="https://www.findagrave.com/memorial/83042108/cora_ellie-long">Cora Ellie McClellan Long, Find a Grave</a>. Cemetery profile/search-result context links Cora to Dorsey Overturf McClelland and Lovina Parker Love and notes the Selden Cemetery collateral cluster with Dorsey, Ora, and Almeda.</li>
+        <li><a href="https://www.findagrave.com/memorial/81010414/dorsey_overturf-mcclelland">Dorsey Overturf McClelland, Find a Grave</a>. Cemetery profile target for Dorsey's dates, parents, spouse, and Selden burial context.</li>
+        <li><a href="https://www.findagrave.com/memorial/101356599/robert_nelson-long">Robert Nelson Long, Find a Grave</a>. Biography gives marriage to Ann Ghent Sleight and Sleight parents.</li>
+        <li><a href="https://www.findagrave.com/memorial/68978483/robert-long">Rev. Robert Long, Find a Grave</a>. Memorial lists Robert Nelson Long among children and names Betsy Wasson in the family narrative.</li>
+        <li><a href="https://ancestors.familysearch.org/en/M2HW-VTF/henry-sleight-1828">Henry Sleight, FamilySearch</a>. Public sibling-index result naming John Sleight and Elizabeth Gaunt as parents and listing John Gaunt Sleight among siblings.</li>
+        <li><a href="https://genealogytrails.com/ill/pike/cemgriggsville4.html">Griggsville Cemetery transcription, Genealogy Trails</a>. Lists Sleight burials and parent notes for John Gaunt and Rebecca Walker Sleight descendants.</li>
+        <li><a href="https://www.wikitree.com/wiki/McClelland-1186">Alexander M. McClelland, WikiTree</a>. Compiled lead naming Dorsey Overturf McClelland as a child.</li>
+        <li><a href="https://www.wikitree.com/wiki/Hoge-395">Sarah Hoge McClelland, WikiTree</a>. Compiled lead naming Dorsey Overturf McClelland as a child.</li>
+        <li><a href="https://www.wikitree.com/wiki/Love-4617">Lovina Parker Love McClelland, WikiTree</a>. Compiled lead naming Thomas Louis Love and Hannah Ann James as parents.</li>
+        <li><a href="https://www.findagrave.com/memorial/97905624/lovina_parker-mcclellan">Lovina Parker Love McClellan, Find a Grave</a>. Cemetery profile repeats Thomas Louis Love and Hannah James parentage; use as a lead.</li>
+        <li><a href="https://ancestors.familysearch.org/en/9S5X-B38/thomas-lewis-love-1796-1871">Thomas Lewis Love, FamilySearch</a>. Public index gives Thomas Lewis Love, Hannah Ann James, a 5 Feb 1828 marriage, and a child list including Lovina Parker Love.</li>
+        <li><a href="https://usgenealogyresearch.atwebpages.com/Kansas/Jackson/marriages.html">Jackson County, Kansas marriage index</a>. Lists Almeda Long and Ray H. Dible marriage entry.</li>
+        <li><a href="https://www.findagrave.com/memorial/203438389/laura-inis-walls">Laura Inis Connelly Walls, Find a Grave</a>. Sibling evidence for James Connelly and America Ellen Durham household.</li>
+        <li><a href="https://www.findagrave.com/memorial/60313040/james-connelly">James Connelly, Find a Grave</a>. Cemetery profile links spouse America Ellen Durham Connelly and their children.</li>
+        <li><a href="https://ancestors.familysearch.org/en/MLLM-ZHG/nola-temperance-connelly-1896-1978">Nola Temperance Connelly, FamilySearch</a>. Public index names James Connolly and America Ellen Durham as parents, supporting the sibling group.</li>
+        <li><a href="https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1021&amp;context=muhlenberg_cty_heritage">Muhlenberg County Heritage, Vol. 5 No. 1</a>. Reprinted family-record material gives David Monroe Durham's 28 Dec 1832 North Carolina birth, 24 Aug 1897 death at Nebo, Kentucky, marriage to Virginia Ann Ford on 19 Aug 1857 in Menard County, Illinois, and children including America Ellen Durham, born 25 Aug 1858, died 28 Jan 1947, married James Connelly.</li>
+        <li><a href="https://ancestors.familysearch.org/en/KVP1-L7H/david-milton-durham-1868-1932">David Milton Durham, FamilySearch</a>. Public child-index snippet names David Monroe Durham Jr. and Virginia Ann Ford as parents; useful for the sibling cluster and for flagging the "Jr." identity question.</li>
+        <li><a href="https://nb.findagrave.com/memorial/140303398/mary-isabella-hibbs">Mary Isabella Durham Hibbs, Find a Grave</a>. Index snippet names David M. Durham and Virginia Ann Ford as parents but gives a variant David Monroe Durham date range of 1829-1887; use as a conflict-resolution clue.</li>
+        <li><a href="https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1014&amp;context=muhlenberg_cty_heritage">Muhlenberg County Heritage, Vol. 3 No. 4</a>. Published query lead for Virginia Ann Ford's parents John Laborn/Laban Ford and Lucy Staples, and for Lucy's father John Burton Staples.</li>
+        <li><a href="https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1011&amp;context=muhlenberg_cty_heritage">Muhlenberg County Heritage, Vol. 3 No. 1</a>. Reprints the 1911 Muhlenberg Sentinel "Fords and Allens" letter by Rev. G. W. Ford, son of John Laborn Ford and Lucy Ann Staples; gives the Caswell-to-Greenville/Friendship migration, the Ford/Staples child list, John Burton Staples and Nancy Ann Turner details, and the family-tradition version of John Laborn Ford's parents.</li>
+        <li><a href="https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1026&amp;context=muhlenberg_cty_heritage">Muhlenberg County Heritage, Vol. 6 No. 1</a>. Query says proof is needed that John Laborn Ford, born 1811 in Caswell County, North Carolina, was son of Levi Ford and Aritta Davis; useful for keeping the Ford parentage unresolved.</li>
+        <li><a href="https://ncccha.blogspot.com/2010/06/john-laborn-ford.html">Caswell County Historical Association, John Laborn Ford note</a>. Compiled discussion of two competing family versions: John Laborn Ford Sr. plus Aritta Davis versus Levi Ford plus Aritta Davis; explicitly says empirical documentation is still needed.</li>
+        <li><a href="https://www.wikitree.com/wiki/Staples-3420">Lucy Ann Elizabeth Staples Ford, WikiTree</a>. Compiled lead naming John Laborn Ford as spouse, Virginia Ann Ford Durham as a child, and John Burton Staples/Nancy Ann Turner as parents.</li>
+        <li><a href="https://www.ancestry.it/genealogy/records/lucy-ann-staples-24-1m59w">Lucy Staples, Ancestry public profile</a>. Compiled lead naming John Burton Staples and Nancy Ann Turner as parents, John Laborn Ford as spouse, and Virginia Ann Durham among children.</li>
+        <li><a href="https://www.wikitree.com/wiki/Ford-26893">John Laborn Ford III, WikiTree</a>. Sibling-index lead listing Virginia Ann Ford Durham among the John Laborn Ford and Lucy Ann Staples children.</li>
+        <li><a href="https://ancestors.familysearch.org/en/LRNJ-F2P/charles-richard-staples-1829-1853">Charles Richard Staples, FamilySearch</a>. Sibling-index lead naming John Burton Staples and Nancy Ann Turner as parents and Lucy Ann Elizabeth Staples as a sibling.</li>
+        <li><a href="https://www.findagrave.com/memorial/203438332/martha-frances-connelly">Martha Frances Claar Connelly, Find a Grave</a>. Cemetery identity for Donna's mother.</li>
+        <li><a href="https://ancestors.familysearch.org/en/KN4D-VND/samuel-dove-claar-1873-1952">Samuel Dove Claar, FamilySearch</a>. Public index names Henry Claar and Electa Alice White as parents and Mary Margaret Hoyle as spouse.</li>
+        <li><a href="https://www.ksgenweb.org/KSDecatur/Marriages/groom_c.htm">Decatur County, Kansas groom marriage index C-F, KSGenWeb</a>. Lists Samuel D. Claar marrying Maggie M. Hogle on 5 Oct 1895 in Oberlin; conflicts with the Mary Margaret Hoyle surname in FamilySearch and descendant materials.</li>
+        <li><a href="https://www.ksgenweb.org/KSDecatur/Marriages/bride_g.htm">Decatur County, Kansas bride marriage index G-H, KSGenWeb</a>. Lists Maggie M. Hogle marrying Samuel D. Claar on 5 Oct 1895 in Oberlin and notes that county marriage records are on file with the Decatur County Clerk of the District Court.</li>
+        <li><a href="https://nwkansas.com/obhwebpages/pdf%20pages%20-%20all/obh%20pages-pdfs%202008/obhPages_11_Nov/Week2/8A%20KD%2046.pdf">Lula Claar Thieler obituary page, Oberlin Herald/NWKansas PDF</a>. Search snippet identifies Lula as daughter of Samuel Dove Claar and Mary Margaret (Hoyle) Claar and says she grew up in the Hawkeye area; use as descendant context, not proof of Mary Margaret's parents.</li>
+        <li><a href="https://ancestors.familysearch.org/en/LYQT-6V7/henry-claar-1838-1915">Henry Claar, FamilySearch</a>. Public index gives marriage to Electa Alice White and places Henry in the Claar family group.</li>
+        <li><a href="https://ancestors.familysearch.org/en/L8Q1-FTH/electa-alice-white-1838-1904">Electa Alice White, FamilySearch</a>. Public index names Daniel White and Sarah "Sally" Osborn as parents.</li>
+        <li><a href="https://www.findagrave.com/memorial/16884634/electa_a-claar">Electa A. White Claar, Find a Grave</a>. Cemetery profile repeats Daniel White and Sarah Osborn as parents and links husband Henry Claar.</li>
+        <li><a href="https://ancestors.familysearch.org/en/K864-QRX/daniel-white-1792-1851">Daniel White, FamilySearch</a>. Public index names Abel White and Rebecca Solace as parents.</li>
+        <li><a href="https://ancestors.familysearch.org/en/LKQ6-PWM/samuel-claar-1800-1890">Samuel Claar, FamilySearch</a>. Public index names George Washington Claar and Barbara House as parents and Lydia Stropes as spouse.</li>
+        <li><a href="https://www.wikitree.com/wiki/Claar-51">Samuel Claar, WikiTree</a>. Compiled lead for George Washington Claar, Barbara House, and marriage to Lydia Stropes.</li>
+        <li><a href="https://ancestors.familysearch.org/en/K2Y4-2DP/henry-stropes-1803-1896">Henry Stropes, FamilySearch</a>. Sibling-index support for John Stropes Sr. and Eleanor Fox as parents in the Stropes family.</li>
+        <li><a href="https://www.treespot.net/Dynamic/familygroup.php?familyID=F4045&amp;sitever=standard&amp;tree=Treespot">Henry Claar and Electa A. White family group, Treespot</a>. Names Samuel Claar and Lydia Stropes as Henry's parents.</li>
+        <li><a href="https://www.motherbedford.com/KlarGen05.htm">MotherBedford Klar/Claar genealogy page</a>. Compiled Claar lineage from Samuel Claar and Lydia Stropes back through George Washington Claar; use as a working lead.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    Working artifact. Treat open edges and working leads as research targets, not proof.
+  </footer>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const verifiedEventData = [
+      {"id":"event.durham.david_birth.1832-12-28","date":"1832-12-28","sort":"1832-12-28","person":"David Monroe Durham","type":"birth","place":"North Carolina","anchor":"Donna Lea Connelly Dible","confidence":"strong","coords":[-79.0392919,35.6729639]},
+      {"id":"event.claar.henry_birth.1838-12-31","date":"1838-12-31","sort":"1838-12-31","person":"Henry Claar","type":"birth","place":"Jackson County, Ohio","anchor":"Donna Lea Connelly Dible","confidence":"strong","coords":[-82.6089043,39.0131871]},
+      {"id":"event.zodrow.antonette_grams_birth.1846-05-23","date":"1846-05-23","sort":"1846-05-23","person":"Antonia/Antonette Grams Zodrow","type":"birth","place":"Poland","anchor":"Doyle Jule Zimmerman","confidence":"strong","coords":[19.1451,51.9194]},
+      {"id":"event.long.robert_ann_marriage.1857-02-19","date":"1857-02-19","sort":"1857-02-19","person":"Robert Nelson Long","type":"marriage","place":"Griggsville Township, Pike County, Illinois","anchor":"William J. Dible","confidence":"strong","coords":[-90.7245722,39.7089362]},
+      {"id":"event.durham.david_virginia_marriage.1857-08-19","date":"1857-08-19","sort":"1857-08-19","person":"David Monroe Durham","type":"marriage","place":"Menard County, Illinois","anchor":"Donna Lea Connelly Dible","confidence":"strong","coords":[-89.7858065,40.0166667]},
+      {"id":"event.zimmerman.michael_birth.1869-10-25","date":"1869-10-25","sort":"1869-10-25","person":"Michael John Zimmerman Sr.","type":"birth","place":"Wuerttemberger Hof, Mainhardt, Baden-Wuerttemberg","anchor":"Doyle Jule Zimmerman","confidence":"strong","coords":[9.5830848,49.064658]},
+      {"id":"event.nauer.elizabeth_birth.1872-04-07","date":"1872-04-07","sort":"1872-04-07","person":"Elizabeth Catherine Nauer Zimmerman","type":"birth","place":"Waterloo, Ontario","anchor":"Doyle Jule Zimmerman","confidence":"strong","coords":[-80.5222961,43.4652699]},
+      {"id":"event.zimmerman.john_paul_household.1880","date":"1880","sort":"1880-06-01","person":"John Paul Zimmerman","type":"household","place":"Norfolk, Madison County, Nebraska","anchor":"Doyle Jule Zimmerman","confidence":"strong","coords":[-97.4169964,42.0283379]},
+      {"id":"event.zimmerman.michael_elizabeth_marriage.1895-11-19","date":"1895-11-19","sort":"1895-11-19","person":"Michael John Zimmerman Sr.","type":"marriage","place":"Cawker City, Mitchell County, Kansas","anchor":"Doyle Jule Zimmerman","confidence":"strong","coords":[-98.433672,39.51251]},
+      {"id":"event.dible.harry_julia_marriage.1896-06-10","date":"1896-06-10","sort":"1896-06-10","person":"Harry H. Dible","type":"marriage","place":"Trenton, Hitchcock County, Nebraska","anchor":"William J. Dible","confidence":"strong","coords":[-101.0131604,40.1757537]},
+      {"id":"event.durham.david_death.1897-08-24","date":"1897-08-24","sort":"1897-08-24","person":"David Monroe Durham","type":"death","place":"Nebo, Hopkins County, Kentucky","anchor":"Donna Lea Connelly Dible","confidence":"strong","coords":[-87.6427843,37.383656]},
+      {"id":"event.mcclelland.dorsey_burial_selden.1904","date":"1904-05-19","sort":"1904-05-19","person":"Dorsey Overturf McClelland","type":"death_or_burial","place":"Selden Cemetery, Selden, Sheridan County, Kansas","anchor":"William J. Dible","confidence":"strong","coords":[-100.567644,39.540837]},
+      {"id":"event.nauer.catherina_koeberger_death.1906-02-01","date":"1906-02-01","sort":"1906-02-01","person":"Catherina Marie Koeberger Nauer","type":"death_or_burial","place":"Saint Joseph Cemetery, New Almelo, Norton County, Kansas","anchor":"Doyle Jule Zimmerman","confidence":"strong","coords":[-100.1179098,39.5941707]},
+      {"id":"event.zodrow.john_death.1915-03-15","date":"1915-03-15","sort":"1915-03-15","person":"John Zodrow","type":"death_or_burial","place":"Leoville, Decatur County, Kansas","anchor":"Doyle Jule Zimmerman","confidence":"strong","coords":[-100.4609753,39.5816708]},
+      {"id":"event.claar.henry_death.1915-12-28","date":"1915-12-28","sort":"1915-12-28","person":"Henry Claar","type":"death","place":"Topeka, Kansas","anchor":"Donna Lea Connelly Dible","confidence":"strong","coords":[-95.677556,39.049011]},
+      {"id":"event.long.ray_almeda_marriage.1922","date":"1922","sort":"1922-01-01","person":"Almeda Ora Long Dible","type":"marriage","place":"Jackson County, Kansas","anchor":"William J. Dible","confidence":"documented","coords":[-95.8159647,39.4030917]},
+      {"id":"event.doyle_zimmerman.birth.1930-04-12","date":"1930-04-12","sort":"1930-04-12","person":"Doyle Jule Zimmerman","type":"birth","place":"Selden, Sheridan County, Kansas","anchor":"Doyle Jule Zimmerman","confidence":"documented","coords":[-100.567644,39.540837]},
+      {"id":"event.bill_dible.birth.1933-06-02","date":"1933-06-02","sort":"1933-06-02","person":"William J. \"Bill\" Dible","type":"birth","place":"Rexford, Thomas County, Kansas","anchor":"William J. Dible","confidence":"documented","coords":[-100.743482,39.471671]},
+      {"id":"event.evelyn_mundell.birth.1935-01-16","date":"1935-01-16","sort":"1935-01-16","person":"Evelyn Delores Mundell Zimmerman","type":"birth","place":"Flagler, Kit Carson County, Colorado","anchor":"Evelyn Delores Mundell Zimmerman","confidence":"documented","coords":[-103.067158,39.2930463]},
+      {"id":"event.donna_connelly.birth.1935-04-24","date":"1935-04-24","sort":"1935-04-24","person":"Donna Lea Connelly Dible","type":"birth","place":"Rexford, Thomas County, Kansas","anchor":"Donna Lea Connelly Dible","confidence":"documented","coords":[-100.743482,39.471671]},
+      {"id":"event.doyle_zimmerman.marriage.1953-06-14","date":"1953-06-14","sort":"1953-06-14","person":"Doyle Jule Zimmerman","type":"marriage","place":"Colby, Thomas County, Kansas","anchor":"Doyle Jule Zimmerman","confidence":"documented","coords":[-101.0526881,39.3959655]},
+      {"id":"event.bill_dible.death.2022-08-09","date":"2022-08-09","sort":"2022-08-09","person":"William J. \"Bill\" Dible","type":"death","place":"Lee County, Florida","anchor":"William J. Dible","confidence":"documented","coords":[-81.8823135,26.5999265]},
+      {"id":"event.donna_connelly.death.2022-12-20","date":"2022-12-20","sort":"2022-12-20","person":"Donna Lea Connelly Dible","type":"death","place":"Bonita Springs, Lee County, Florida","anchor":"Donna Lea Connelly Dible","confidence":"documented","coords":[-81.7786972,26.339806]},
+      {"id":"event.evelyn_mundell.death.2023-04-15","date":"2023-04-15","sort":"2023-04-15","person":"Evelyn Delores Mundell Zimmerman","type":"death","place":"Colby, Thomas County, Kansas","anchor":"Evelyn Delores Mundell Zimmerman","confidence":"documented","coords":[-101.0526881,39.3959655]}
+    ];
+
+    const familyLinkData = [
+      {
+        id: "link.zimmerman_nauer_births_to_union",
+        anchor: "Doyle Jule Zimmerman",
+        from: ["event.zimmerman.michael_birth.1869-10-25", "event.nauer.elizabeth_birth.1872-04-07"],
+        to: "event.zimmerman.michael_elizabeth_marriage.1895-11-19",
+        kind: "couple convergence",
+        label: "Michael Zimmerman and Elizabeth Nauer converge at Cawker City"
+      },
+      {
+        id: "link.zimmerman_nauer_union_to_doyle",
+        anchor: "Doyle Jule Zimmerman",
+        from: ["event.zimmerman.michael_elizabeth_marriage.1895-11-19"],
+        to: "event.doyle_zimmerman.birth.1930-04-12",
+        kind: "descendant path",
+        label: "Michael and Elizabeth's line runs through Leonard Henry Zimmerman to Doyle"
+      },
+      {
+        id: "link.doyle_evelyn_births_to_union",
+        anchor: "Doyle Jule Zimmerman",
+        from: ["event.doyle_zimmerman.birth.1930-04-12", "event.evelyn_mundell.birth.1935-01-16"],
+        to: "event.doyle_zimmerman.marriage.1953-06-14",
+        kind: "couple convergence",
+        label: "Doyle Zimmerman and Evelyn Mundell converge at Colby"
+      },
+      {
+        id: "link.john_paul_household_to_michael",
+        anchor: "Doyle Jule Zimmerman",
+        from: ["event.zimmerman.john_paul_household.1880"],
+        to: "event.zimmerman.michael_birth.1869-10-25",
+        kind: "parent evidence",
+        label: "John Paul and Catherine's household anchors Michael's parent generation"
+      },
+      {
+        id: "link.dible_union_to_bill",
+        anchor: "William J. Dible",
+        from: ["event.long.ray_almeda_marriage.1922"],
+        to: "event.bill_dible.birth.1933-06-02",
+        kind: "parents to child",
+        label: "Ray Dible and Almeda Long produce Bill Dible"
+      },
+      {
+        id: "link.harry_julia_to_bill",
+        anchor: "William J. Dible",
+        from: ["event.dible.harry_julia_marriage.1896-06-10"],
+        to: "event.bill_dible.birth.1933-06-02",
+        kind: "descendant path",
+        label: "Harry and Julia Dible's line runs through Ray Hershel Dible to Bill"
+      },
+      {
+        id: "link.long_sleight_to_almeda",
+        anchor: "William J. Dible",
+        from: ["event.long.robert_ann_marriage.1857-02-19"],
+        to: "event.long.ray_almeda_marriage.1922",
+        kind: "descendant path",
+        label: "Robert Long and Ann Sleight's line runs down to Almeda Long"
+      },
+      {
+        id: "link.durham_birth_to_union",
+        anchor: "Donna Lea Connelly Dible",
+        from: ["event.durham.david_birth.1832-12-28"],
+        to: "event.durham.david_virginia_marriage.1857-08-19",
+        kind: "individual to union",
+        label: "David Monroe Durham moves into the Durham/Ford union"
+      },
+      {
+        id: "link.durham_ford_to_donna",
+        anchor: "Donna Lea Connelly Dible",
+        from: ["event.durham.david_virginia_marriage.1857-08-19"],
+        to: "event.donna_connelly.birth.1935-04-24",
+        kind: "descendant path",
+        label: "David Durham and Virginia Ford's line runs through America and Chester to Donna"
+      },
+      {
+        id: "link.claar_to_donna",
+        anchor: "Donna Lea Connelly Dible",
+        from: ["event.claar.henry_birth.1838-12-31", "event.claar.henry_death.1915-12-28"],
+        to: "event.donna_connelly.birth.1935-04-24",
+        kind: "descendant path",
+        label: "Henry Claar's line runs through Samuel and Martha to Donna"
+      }
+    ];
+
+    function renderVerifiedEventMap() {
+      const mapNode = document.getElementById("verified-event-map");
+      const list = document.getElementById("event-map-list");
+      const linkList = document.getElementById("family-link-list");
+      const legend = document.getElementById("event-map-legend");
+      const summary = document.getElementById("event-map-summary");
+      if (!mapNode || !list || !linkList || !legend || !summary) return;
+
+      const anchorColors = {
+        "Doyle Jule Zimmerman": "#1d4f73",
+        "Evelyn Delores Mundell Zimmerman": "#8a5a00",
+        "William J. Dible": "#6f4aa2",
+        "Donna Lea Connelly Dible": "#1f6f55"
+      };
+
+      function typeLabel(event) {
+        return event.type.replaceAll("_", " ");
+      }
+
+      function fillLegend() {
+        const anchorCounts = verifiedEventData.reduce((map, event) => {
+          map.set(event.anchor, (map.get(event.anchor) || 0) + 1);
+          return map;
+        }, new Map());
+        legend.innerHTML = "";
+        Object.entries(anchorColors).forEach(([anchor, color]) => {
+          const item = document.createElement("div");
+          item.className = "event-map-legend-item";
+          item.innerHTML = `<span class="event-map-swatch" style="background:${color}"></span><span>${anchor} (${anchorCounts.get(anchor) || 0})</span>`;
+          legend.appendChild(item);
+        });
+      }
+
+      function fillEventList(itemsById, activate, deactivate) {
+        list.innerHTML = "";
+        verifiedEventData.forEach((event) => {
+          const item = document.createElement("li");
+          item.dataset.eventId = event.id;
+          item.style.borderLeft = `4px solid ${anchorColors[event.anchor] || "#486581"}`;
+          item.innerHTML = `<strong>${event.date} - ${event.person}</strong><span>${typeLabel(event)}; ${event.place}; ${event.anchor}</span>`;
+          if (activate && deactivate) {
+            item.addEventListener("mouseenter", () => activate(event.id));
+            item.addEventListener("mouseleave", () => deactivate(event.id));
+          }
+          list.appendChild(item);
+          if (itemsById) itemsById.set(event.id, item);
+        });
+      }
+
+      function fillLinkList(linkItemsById, activate, deactivate) {
+        linkList.innerHTML = "";
+        familyLinkData.forEach((link) => {
+          const item = document.createElement("div");
+          const inputLabel = link.from.length === 1 ? "1 input" : `${link.from.length} inputs`;
+          item.className = "family-link-item";
+          item.dataset.linkId = link.id;
+          item.style.borderLeft = `4px solid ${anchorColors[link.anchor] || "#486581"}`;
+          item.innerHTML = `<strong>${link.label}</strong><span class="family-link-kind">${link.kind}; ${inputLabel}</span>`;
+          if (activate && deactivate) {
+            item.addEventListener("mouseenter", () => activate(link.id));
+            item.addEventListener("mouseleave", () => deactivate(link.id));
+          }
+          linkList.appendChild(item);
+          if (linkItemsById) linkItemsById.set(link.id, item);
+        });
+      }
+
+      fillLegend();
+      summary.textContent = `${verifiedEventData.length} mapped events, ${familyLinkData.length} family links. Solid lines are direct mapped family joins; dashed lines skip an unmapped intermediate generation.`;
+
+      if (!window.L) {
+        mapNode.innerHTML = "<p class=\"note\">The basemap did not load. The event and family-link lists are still available.</p>";
+        fillLinkList();
+        fillEventList();
+        return;
+      }
+
+      const map = L.map(mapNode, {
+        scrollWheelZoom: false,
+        worldCopyJump: true
+      });
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+
+      const linkLayer = L.layerGroup().addTo(map);
+      const markerLayer = L.layerGroup().addTo(map);
+      const markersById = new Map();
+      const itemsById = new Map();
+      const linkItemsById = new Map();
+      const linkSegmentsById = new Map();
+      const eventLinksById = new Map();
+      const eventById = new Map();
+      const coordinateCounts = verifiedEventData.reduce((counts, event) => {
+        const key = event.coords.join(",");
+        counts.set(key, (counts.get(key) || 0) + 1);
+        return counts;
+      }, new Map());
+      const coordinateSlots = new Map();
+
+      function displayLatLng(event) {
+        const key = event.coords.join(",");
+        const total = coordinateCounts.get(key);
+        const slot = coordinateSlots.get(key) || 0;
+        coordinateSlots.set(key, slot + 1);
+        const [lon, lat] = event.coords;
+        if (total <= 1) return [lat, lon];
+        const angle = (Math.PI * 2 * slot) / total;
+        const offset = 0.09;
+        return [lat + Math.sin(angle) * offset, lon + Math.cos(angle) * offset];
+      }
+
+      const displayedEvents = verifiedEventData.map((event) => ({
+        ...event,
+        latLng: displayLatLng(event)
+      }));
+      displayedEvents.forEach((event) => eventById.set(event.id, event));
+
+      familyLinkData.forEach((link) => {
+        [...link.from, link.to].forEach((eventId) => {
+          const linkIds = eventLinksById.get(eventId) || [];
+          linkIds.push(link.id);
+          eventLinksById.set(eventId, linkIds);
+        });
+      });
+
+      function markerStyle(event, active = false) {
+        return {
+          radius: active ? 9 : event.confidence === "documented" ? 6.5 : 5,
+          color: "#ffffff",
+          weight: active ? 3 : 2,
+          fillColor: anchorColors[event.anchor] || "#486581",
+          fillOpacity: active ? 1 : 0.9
+        };
+      }
+
+      function linkStyle(link, active = false) {
+        const dashed = link.kind === "descendant path" || link.kind === "parent evidence";
+        return {
+          color: anchorColors[link.anchor] || "#486581",
+          weight: active ? 5 : 2.5,
+          opacity: active ? 0.95 : 0.58,
+          dashArray: dashed ? "6 7" : null,
+          lineCap: "round",
+          lineJoin: "round"
+        };
+      }
+
+      function tooltipHtml(event) {
+        return `<div class="map-popup-title">${event.date} - ${event.person}</div><div class="map-popup-meta">${typeLabel(event)}<br>${event.place}<br>${event.confidence}</div>`;
+      }
+
+      function setEventActive(eventId, active) {
+        const event = eventById.get(eventId);
+        const marker = markersById.get(eventId);
+        const item = itemsById.get(eventId);
+        if (!event) return;
+        if (marker) {
+          marker.setStyle(markerStyle(event, active));
+          if (active) {
+            marker.bringToFront();
+            marker.openTooltip();
+          } else {
+            marker.closeTooltip();
+          }
+        }
+        if (item) item.classList.toggle("active", active);
+      }
+
+      function setLinkActive(linkId, active) {
+        const link = familyLinkData.find((candidate) => candidate.id === linkId);
+        const segments = linkSegmentsById.get(linkId) || [];
+        const item = linkItemsById.get(linkId);
+        if (!link) return;
+        segments.forEach((segment) => {
+          segment.setStyle(linkStyle(link, active));
+          if (active) segment.bringToFront();
+        });
+        if (item) item.classList.toggle("active", active);
+      }
+
+      function activateEvent(eventId) {
+        (eventLinksById.get(eventId) || []).forEach((linkId) => setLinkActive(linkId, true));
+        setEventActive(eventId, true);
+      }
+
+      function deactivateEvent(eventId) {
+        (eventLinksById.get(eventId) || []).forEach((linkId) => setLinkActive(linkId, false));
+        setEventActive(eventId, false);
+      }
+
+      function activateLink(linkId) {
+        const link = familyLinkData.find((candidate) => candidate.id === linkId);
+        if (!link) return;
+        setLinkActive(linkId, true);
+        [...link.from, link.to].forEach((eventId) => setEventActive(eventId, true));
+      }
+
+      function deactivateLink(linkId) {
+        const link = familyLinkData.find((candidate) => candidate.id === linkId);
+        if (!link) return;
+        setLinkActive(linkId, false);
+        [...link.from, link.to].forEach((eventId) => setEventActive(eventId, false));
+      }
+
+      familyLinkData.forEach((link) => {
+        const toEvent = eventById.get(link.to);
+        const segments = [];
+        if (!toEvent) return;
+        link.from.forEach((fromId) => {
+          const fromEvent = eventById.get(fromId);
+          if (!fromEvent) return;
+          const segment = L.polyline([fromEvent.latLng, toEvent.latLng], linkStyle(link))
+            .bindTooltip(`<div class="map-popup-title">${link.label}</div><div class="map-popup-meta">${link.kind}</div>`, {
+              sticky: true,
+              className: "event-tooltip"
+            })
+            .on("mouseover", () => activateLink(link.id))
+            .on("mouseout", () => deactivateLink(link.id))
+            .addTo(linkLayer);
+          segments.push(segment);
+        });
+        linkSegmentsById.set(link.id, segments);
+      });
+
+      displayedEvents.forEach((event) => {
+        const marker = L.circleMarker(event.latLng, markerStyle(event))
+          .bindTooltip(tooltipHtml(event), {
+            sticky: true,
+            direction: "top",
+            offset: [0, -8],
+            className: "event-tooltip"
+          })
+          .on("mouseover", () => activateEvent(event.id))
+          .on("mouseout", () => deactivateEvent(event.id))
+          .addTo(markerLayer);
+        markersById.set(event.id, marker);
+      });
+
+      const bounds = L.latLngBounds(displayedEvents.map((event) => event.latLng));
+      map.fitBounds(bounds, { padding: [28, 28], maxZoom: 5 });
+
+      setTimeout(() => map.invalidateSize(), 0);
+      fillLinkList(linkItemsById, activateLink, deactivateLink);
+      fillEventList(itemsById, activateEvent, deactivateEvent);
+    }
+
+    renderVerifiedEventMap();
+  </script>
+</body>
+</html>
