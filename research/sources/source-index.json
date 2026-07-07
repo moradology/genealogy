@@ -41,46 +41,6 @@
       "search_text": "Donald Lynn Mundell obituary, Fry Funeral Home Names Homer Claire Mundell in Donald's parent line and places Evelyn Zimmerman, Marilyn Ayer/Ayers, and Judy Bastian in the same sibling group."
     },
     {
-      "id": "src.william-j-bill-dible-obituary-baalmann-mortuary.4060e574",
-      "title": "William J. \"Bill\" Dible obituary, Baalmann Mortuary",
-      "url": "https://www.baalmannmortuary.com/obituaries/william-dible",
-      "source_type": "obituary",
-      "lineage_tags": [
-        "dible",
-        "long_mcclelland"
-      ],
-      "evidence_role": "evidence",
-      "blurb": "Names Ray and Almeda Long Dible; gives birth, death, and marriage context.",
-      "search_text": "William J. \"Bill\" Dible obituary, Baalmann Mortuary Names Ray and Almeda Long Dible; gives birth, death, and marriage context."
-    },
-    {
-      "id": "src.donna-lea-connelly-dible-obituary-baalmann-mortuary.395e6262",
-      "title": "Donna Lea Connelly Dible obituary, Baalmann Mortuary",
-      "url": "https://www.baalmannmortuary.com/obituaries/donna-dible",
-      "source_type": "obituary",
-      "lineage_tags": [
-        "dible",
-        "connelly_durham",
-        "claar"
-      ],
-      "evidence_role": "evidence",
-      "blurb": "Names Chester and Martha Claar Connelly.",
-      "search_text": "Donna Lea Connelly Dible obituary, Baalmann Mortuary Names Chester and Martha Claar Connelly."
-    },
-    {
-      "id": "src.donna-lea-dible-notice-hays-post.9be41f0b",
-      "title": "Donna Lea Dible notice, Hays Post",
-      "url": "https://hayspost.com/posts/bc1e3b37-d4c3-4a69-930e-24b43084c469",
-      "source_type": "obituary",
-      "lineage_tags": [
-        "dible",
-        "connelly_durham"
-      ],
-      "evidence_role": "reference",
-      "blurb": "Repeats Chester/Martha parentage and Rexford context.",
-      "search_text": "Donna Lea Dible notice, Hays Post Repeats Chester/Martha parentage and Rexford context."
-    },
-    {
       "id": "src.doyle-jule-zimmerman-find-a-grave.a497581d",
       "title": "Doyle Jule Zimmerman, Find a Grave",
       "url": "https://nb.findagrave.com/memorial/34266662/doyle-jule-zimmerman",
@@ -132,18 +92,6 @@
       "search_text": "Elizabeth Catherine Nauer, FamilySearch Public index gives marriage to Michael John Zimmerman Sr. at Cawker City on 19 Nov 1895."
     },
     {
-      "id": "src.emma-catherine-nauer-familysearch.31196486",
-      "title": "Emma Catherine Nauer, FamilySearch",
-      "url": "https://ancestors.familysearch.org/en/KJZC-FMK/emma-catherine-nauer-1867-1934",
-      "source_type": "public_tree_index",
-      "lineage_tags": [
-        "nauer"
-      ],
-      "evidence_role": "evidence",
-      "blurb": "Public sibling index gives Thomas A. Nauer and Catherina Marie Koeberger as parents.",
-      "search_text": "Emma Catherine Nauer, FamilySearch Public sibling index gives Thomas A. Nauer and Catherina Marie Koeberger as parents."
-    },
-    {
       "id": "src.moritz-thomas-nauer-find-a-grave.7fa02f8e",
       "title": "Moritz Thomas Nauer, Find a Grave",
       "url": "https://www.findagrave.com/memorial/48206092/moritz_thomas-nauer",
@@ -168,54 +116,6 @@
       "evidence_role": "evidence",
       "blurb": "Cemetery profile names Thomas Nauer and Catherine Koeberger as parents and lists Leonard Henry Zimmerman among Michael and Elizabeth's children.",
       "search_text": "Elizabeth Catherine Nauer Zimmerman, Find a Grave Cemetery profile names Thomas Nauer and Catherine Koeberger as parents and lists Leonard Henry Zimmerman among Michael and Elizabeth's children."
-    },
-    {
-      "id": "src.catherina-koeberger-nauer-find-a-grave.6324614a",
-      "title": "Catherina Koeberger Nauer, Find a Grave",
-      "url": "https://www.findagrave.com/memorial/48214393/catherina-nauer",
-      "source_type": "cemetery_memorial",
-      "lineage_tags": [
-        "nauer"
-      ],
-      "evidence_role": "evidence",
-      "blurb": "Cemetery profile gives birth 4 Mar 1832, death 1 Feb 1906, and burial at Saint Joseph Cemetery, New Almelo, Norton County, Kansas.",
-      "search_text": "Catherina Koeberger Nauer, Find a Grave Cemetery profile gives birth 4 Mar 1832, death 1 Feb 1906, and burial at Saint Joseph Cemetery, New Almelo, Norton County, Kansas."
-    },
-    {
-      "id": "src.the-german-catholic-settlers-of-waterloo-county-pdf.eead1d38",
-      "title": "The German Catholic Settlers of Waterloo County PDF",
-      "url": "https://img1.wsimg.com/blobby/go/c0db0dfe-27d2-4632-889f-eeb26fbb14e1/downloads/f7bcaab9-38ae-4388-a9eb-f4fbecb15a21/Waterloo%20German%20Catholic%20Settlers.pdf?ver=1781326202841",
-      "source_type": "compiled_pdf_or_journal",
-      "lineage_tags": [
-        "nauer"
-      ],
-      "evidence_role": "lead",
-      "blurb": "Compiled Waterloo-area lead placing Thomas and Catharine Nauer in Waterloo County in 1871 and Cawker, Mitchell County, Kansas by 1880; also proposes Lorenz Nauer and Dorothea Meyer as possible parents for Thomas.",
-      "search_text": "The German Catholic Settlers of Waterloo County PDF Compiled Waterloo-area lead placing Thomas and Catharine Nauer in Waterloo County in 1871 and Cawker, Mitchell County, Kansas by 1880; also proposes Lorenz Nauer and Dorothea Meyer as possible parents for Thomas."
-    },
-    {
-      "id": "src.thomas-a-nauer-wikitree.2826c045",
-      "title": "Thomas A. Nauer, WikiTree",
-      "url": "https://www.wikitree.com/wiki/Nauer-7",
-      "source_type": "compiled_tree_or_profile",
-      "lineage_tags": [
-        "nauer"
-      ],
-      "evidence_role": "research_target",
-      "blurb": "Compiled lead naming Thomas as son of Johann Lorenz Nauer and Mary Dorothea Wand; use as a target, not proof, because the Waterloo PDF uses Dorothea Meyer, widow Wand/Wandt.",
-      "search_text": "Thomas A. Nauer, WikiTree Compiled lead naming Thomas as son of Johann Lorenz Nauer and Mary Dorothea Wand; use as a target, not proof, because the Waterloo PDF uses Dorothea Meyer, widow Wand/Wandt."
-    },
-    {
-      "id": "src.new-prussia-ontario-locality-context.363abf14",
-      "title": "New Prussia, Ontario locality context",
-      "url": "https://en.wikipedia.org/wiki/New_Prussia%2C_Ontario",
-      "source_type": "web_reference",
-      "lineage_tags": [
-        "nauer"
-      ],
-      "evidence_role": "reference",
-      "blurb": "Wilmot Township settlement context for Rhenish Prussian Catholic families and later movement toward Bruce County; useful geographic context for the Nauer search, not a direct proof record.",
-      "search_text": "New Prussia, Ontario locality context Wilmot Township settlement context for Rhenish Prussian Catholic families and later movement toward Bruce County; useful geographic context for the Nauer search, not a direct proof record."
     },
     {
       "id": "src.selden-cemetery-ksgenweb.0cc01791",
@@ -303,6 +203,66 @@
       "evidence_role": "research_target",
       "blurb": "Possible John Paul Zimmerman baptism target.",
       "search_text": "Archion Mainhardt Taufregister 1835-1843 Band 7 Possible John Paul Zimmerman baptism target."
+    },
+    {
+      "id": "src.emma-catherine-nauer-familysearch.31196486",
+      "title": "Emma Catherine Nauer, FamilySearch",
+      "url": "https://ancestors.familysearch.org/en/KJZC-FMK/emma-catherine-nauer-1867-1934",
+      "source_type": "public_tree_index",
+      "lineage_tags": [
+        "nauer"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "Public sibling index gives Thomas A. Nauer and Catherina Marie Koeberger as parents.",
+      "search_text": "Emma Catherine Nauer, FamilySearch Public sibling index gives Thomas A. Nauer and Catherina Marie Koeberger as parents."
+    },
+    {
+      "id": "src.catherina-koeberger-nauer-find-a-grave.6324614a",
+      "title": "Catherina Koeberger Nauer, Find a Grave",
+      "url": "https://www.findagrave.com/memorial/48214393/catherina-nauer",
+      "source_type": "cemetery_memorial",
+      "lineage_tags": [
+        "nauer"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "Cemetery profile gives birth 4 Mar 1832, death 1 Feb 1906, and burial at Saint Joseph Cemetery, New Almelo, Norton County, Kansas.",
+      "search_text": "Catherina Koeberger Nauer, Find a Grave Cemetery profile gives birth 4 Mar 1832, death 1 Feb 1906, and burial at Saint Joseph Cemetery, New Almelo, Norton County, Kansas."
+    },
+    {
+      "id": "src.the-german-catholic-settlers-of-waterloo-county-pdf.eead1d38",
+      "title": "The German Catholic Settlers of Waterloo County PDF",
+      "url": "https://img1.wsimg.com/blobby/go/c0db0dfe-27d2-4632-889f-eeb26fbb14e1/downloads/f7bcaab9-38ae-4388-a9eb-f4fbecb15a21/Waterloo%20German%20Catholic%20Settlers.pdf?ver=1781326202841",
+      "source_type": "compiled_pdf_or_journal",
+      "lineage_tags": [
+        "nauer"
+      ],
+      "evidence_role": "lead",
+      "blurb": "Compiled Waterloo-area lead placing Thomas and Catharine Nauer in Waterloo County in 1871 and Cawker, Mitchell County, Kansas by 1880; also proposes Lorenz Nauer and Dorothea Meyer as possible parents for Thomas.",
+      "search_text": "The German Catholic Settlers of Waterloo County PDF Compiled Waterloo-area lead placing Thomas and Catharine Nauer in Waterloo County in 1871 and Cawker, Mitchell County, Kansas by 1880; also proposes Lorenz Nauer and Dorothea Meyer as possible parents for Thomas."
+    },
+    {
+      "id": "src.thomas-a-nauer-wikitree.2826c045",
+      "title": "Thomas A. Nauer, WikiTree",
+      "url": "https://www.wikitree.com/wiki/Nauer-7",
+      "source_type": "compiled_tree_or_profile",
+      "lineage_tags": [
+        "nauer"
+      ],
+      "evidence_role": "research_target",
+      "blurb": "Compiled lead naming Thomas as son of Johann Lorenz Nauer and Mary Dorothea Wand; use as a target, not proof, because the Waterloo PDF uses Dorothea Meyer, widow Wand/Wandt.",
+      "search_text": "Thomas A. Nauer, WikiTree Compiled lead naming Thomas as son of Johann Lorenz Nauer and Mary Dorothea Wand; use as a target, not proof, because the Waterloo PDF uses Dorothea Meyer, widow Wand/Wandt."
+    },
+    {
+      "id": "src.new-prussia-ontario-locality-context.363abf14",
+      "title": "New Prussia, Ontario locality context",
+      "url": "https://en.wikipedia.org/wiki/New_Prussia%2C_Ontario",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "nauer"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Wilmot Township settlement context for Rhenish Prussian Catholic families and later movement toward Bruce County; useful geographic context for the Nauer search, not a direct proof record.",
+      "search_text": "New Prussia, Ontario locality context Wilmot Township settlement context for Rhenish Prussian Catholic families and later movement toward Bruce County; useful geographic context for the Nauer search, not a direct proof record."
     },
     {
       "id": "src.albert-l-zodrow-familysearch.11d4c670",
@@ -737,6 +697,46 @@
       "search_text": "Descendants of Christian Eby, Internet Archive text Compiled genealogy entry for the Indiana Marjorie Clemans who married Clay V. Stamper in South Bend on 23 Oct 1935; use as an exclusion clue unless direct records connect her to Evelyn's mother."
     },
     {
+      "id": "src.william-j-bill-dible-obituary-baalmann-mortuary.4060e574",
+      "title": "William J. \"Bill\" Dible obituary, Baalmann Mortuary",
+      "url": "https://www.baalmannmortuary.com/obituaries/william-dible",
+      "source_type": "obituary",
+      "lineage_tags": [
+        "dible",
+        "long_mcclelland"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "Names Ray and Almeda Long Dible; gives birth, death, and marriage context.",
+      "search_text": "William J. \"Bill\" Dible obituary, Baalmann Mortuary Names Ray and Almeda Long Dible; gives birth, death, and marriage context."
+    },
+    {
+      "id": "src.donna-lea-connelly-dible-obituary-baalmann-mortuary.395e6262",
+      "title": "Donna Lea Connelly Dible obituary, Baalmann Mortuary",
+      "url": "https://www.baalmannmortuary.com/obituaries/donna-dible",
+      "source_type": "obituary",
+      "lineage_tags": [
+        "dible",
+        "connelly_durham",
+        "claar"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "Names Chester and Martha Claar Connelly.",
+      "search_text": "Donna Lea Connelly Dible obituary, Baalmann Mortuary Names Chester and Martha Claar Connelly."
+    },
+    {
+      "id": "src.donna-lea-dible-notice-hays-post.9be41f0b",
+      "title": "Donna Lea Dible notice, Hays Post",
+      "url": "https://hayspost.com/posts/bc1e3b37-d4c3-4a69-930e-24b43084c469",
+      "source_type": "obituary",
+      "lineage_tags": [
+        "dible",
+        "connelly_durham"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Repeats Chester/Martha parentage and Rexford context.",
+      "search_text": "Donna Lea Dible notice, Hays Post Repeats Chester/Martha parentage and Rexford context."
+    },
+    {
       "id": "src.harry-dible-wikitree.0d63d152",
       "title": "Harry Dible, WikiTree",
       "url": "https://www.wikitree.com/wiki/Dible-21",
@@ -978,6 +978,19 @@
       "search_text": "Ruth Margaret Dible Haughawout obituary Names Ray Hershel and Almeda Ora Long Dible."
     },
     {
+      "id": "src.jackson-county-kansas-marriage-index.6890097a",
+      "title": "Jackson County, Kansas marriage index",
+      "url": "https://usgenealogyresearch.atwebpages.com/Kansas/Jackson/marriages.html",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "dible",
+        "long_mcclelland"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "Lists Almeda Long and Ray H. Dible marriage entry.",
+      "search_text": "Jackson County, Kansas marriage index Lists Almeda Long and Ray H. Dible marriage entry."
+    },
+    {
       "id": "src.william-walker-long-find-a-grave.4886f8dc",
       "title": "William Walker Long, Find a Grave",
       "url": "https://www.findagrave.com/memorial/83044722/william_walker-long",
@@ -1120,19 +1133,6 @@
       "evidence_role": "evidence",
       "blurb": "Public index gives Thomas Lewis Love, Hannah Ann James, a 5 Feb 1828 marriage, and a child list including Lovina Parker Love.",
       "search_text": "Thomas Lewis Love, FamilySearch Public index gives Thomas Lewis Love, Hannah Ann James, a 5 Feb 1828 marriage, and a child list including Lovina Parker Love."
-    },
-    {
-      "id": "src.jackson-county-kansas-marriage-index.6890097a",
-      "title": "Jackson County, Kansas marriage index",
-      "url": "https://usgenealogyresearch.atwebpages.com/Kansas/Jackson/marriages.html",
-      "source_type": "web_reference",
-      "lineage_tags": [
-        "dible",
-        "long_mcclelland"
-      ],
-      "evidence_role": "evidence",
-      "blurb": "Lists Almeda Long and Ray H. Dible marriage entry.",
-      "search_text": "Jackson County, Kansas marriage index Lists Almeda Long and Ray H. Dible marriage entry."
     },
     {
       "id": "src.laura-inis-connelly-walls-find-a-grave.ca1a3046",
@@ -1316,6 +1316,19 @@
       "search_text": "Martha Frances Claar Connelly, Find a Grave Cemetery identity for Donna's mother."
     },
     {
+      "id": "src.motherbedford-klar-claar-genealogy-page.502e00f9",
+      "title": "MotherBedford Klar/Claar genealogy page",
+      "url": "https://www.motherbedford.com/KlarGen05.htm",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "connelly_durham",
+        "claar"
+      ],
+      "evidence_role": "lead",
+      "blurb": "Compiled Claar lineage from Samuel Claar and Lydia Stropes back through George Washington Claar; use as a working lead.",
+      "search_text": "MotherBedford Klar/Claar genealogy page Compiled Claar lineage from Samuel Claar and Lydia Stropes back through George Washington Claar; use as a working lead."
+    },
+    {
       "id": "src.samuel-dove-claar-familysearch.6c57d6bb",
       "title": "Samuel Dove Claar, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/KN4D-VND/samuel-dove-claar-1873-1952",
@@ -1400,18 +1413,6 @@
       "search_text": "Electa A. White Claar, Find a Grave Cemetery profile repeats Daniel White and Sarah Osborn as parents and links husband Henry Claar."
     },
     {
-      "id": "src.daniel-white-familysearch.bde3424b",
-      "title": "Daniel White, FamilySearch",
-      "url": "https://ancestors.familysearch.org/en/K864-QRX/daniel-white-1792-1851",
-      "source_type": "public_tree_index",
-      "lineage_tags": [
-        "claar"
-      ],
-      "evidence_role": "evidence",
-      "blurb": "Public index names Abel White and Rebecca Solace as parents.",
-      "search_text": "Daniel White, FamilySearch Public index names Abel White and Rebecca Solace as parents."
-    },
-    {
       "id": "src.samuel-claar-familysearch.e98ac0b0",
       "title": "Samuel Claar, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/LKQ6-PWM/samuel-claar-1800-1890",
@@ -1460,17 +1461,16 @@
       "search_text": "Henry Claar and Electa A. White family group, Treespot Names Samuel Claar and Lydia Stropes as Henry's parents."
     },
     {
-      "id": "src.motherbedford-klar-claar-genealogy-page.502e00f9",
-      "title": "MotherBedford Klar/Claar genealogy page",
-      "url": "https://www.motherbedford.com/KlarGen05.htm",
-      "source_type": "web_reference",
+      "id": "src.daniel-white-familysearch.bde3424b",
+      "title": "Daniel White, FamilySearch",
+      "url": "https://ancestors.familysearch.org/en/K864-QRX/daniel-white-1792-1851",
+      "source_type": "public_tree_index",
       "lineage_tags": [
-        "connelly_durham",
         "claar"
       ],
-      "evidence_role": "lead",
-      "blurb": "Compiled Claar lineage from Samuel Claar and Lydia Stropes back through George Washington Claar; use as a working lead.",
-      "search_text": "MotherBedford Klar/Claar genealogy page Compiled Claar lineage from Samuel Claar and Lydia Stropes back through George Washington Claar; use as a working lead."
+      "evidence_role": "evidence",
+      "blurb": "Public index names Abel White and Rebecca Solace as parents.",
+      "search_text": "Daniel White, FamilySearch Public index names Abel White and Rebecca Solace as parents."
     }
   ]
 }
