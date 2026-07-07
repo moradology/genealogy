@@ -314,15 +314,14 @@
     /* ---- survey plates ---- */
     figure.plate {
       position: relative;
-      margin: 1.1rem 0 1.5rem;
+      max-width: 880px;
+      margin: 1.1rem auto 1.5rem;
       border: 3px double var(--rule);
       background: var(--map-land);
       cursor: crosshair;
     }
 
-    figure.plate svg { display: block; width: 100%; height: 420px; }
-    .convergence-plate svg { height: 460px; }
-    .line-plate svg { height: 330px; }
+    figure.plate svg { display: block; width: 100%; height: auto; }
 
     .plate-caption {
       font-size: 0.62rem;
@@ -466,6 +465,43 @@
     .detail-links { margin: 0.4rem 0 0; padding-left: 1rem; font-size: 0.8rem; color: var(--ink-soft); }
     .detail-links li { margin-bottom: 0.2rem; }
 
+    /* ---- portrait cameos ---- */
+    .cameo {
+      float: right;
+      width: 96px;
+      margin: 0.1rem 0 0.5rem 1rem;
+    }
+
+    .person .cameo { width: 74px; }
+
+    .cameo img {
+      display: block;
+      width: 100%;
+      height: auto;
+      padding: 3px;
+      border: 1px solid var(--rule);
+      background: var(--panel);
+      filter: grayscale(1) sepia(0.22) contrast(1.03) brightness(1.02);
+      transition: filter 220ms ease;
+    }
+
+    .cameo:hover img { filter: none; }
+
+    .cameo figcaption {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-top: 3px;
+      line-height: 1.5;
+    }
+
+    .cameo figcaption a { color: var(--ink-soft); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cameo img { transition: none; }
+    }
+
     /* ---- branch ledgers ---- */
     .branch {
       display: grid;
@@ -503,7 +539,7 @@
 
     .people {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(330px, 100%), 1fr));
       gap: 0.4rem 1.4rem;
     }
 
@@ -613,9 +649,12 @@
 
     /* ---- responsive ---- */
     @media (max-width: 960px) {
+      .site-nav .wrap {
+        mask-image: linear-gradient(90deg, #000 90%, transparent);
+        -webkit-mask-image: linear-gradient(90deg, #000 90%, transparent);
+      }
       .anchor-grid, .key-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .convergence-plate svg { height: 340px; }
-      .line-plate svg { height: 280px; }
+      .plate-detail { max-height: 150px; }
       .branch { grid-template-columns: 1fr; gap: 0.8rem; }
       .branch-title { position: static; }
       .sources { columns: 1; }
@@ -625,8 +664,10 @@
       body { font-size: 16px; }
       .anchor-grid, .key-grid { grid-template-columns: 1fr; }
       .generation { grid-template-columns: 1fr; gap: 0.25rem; }
+      .cameo { float: none; margin: 0 0 0.5rem; }
       .gen-label { padding-top: 0; }
-      .convergence-plate svg, .line-plate svg { height: 62vw; }
+      th, td { padding: 0.4rem 0.45rem; }
+      table { font-size: 0.8rem; min-width: 560px; }
       g.event-marker .dot { transform: scale(1.25); }
       g.event-marker.hovered .dot, g.event-marker.pinned .dot { transform: scale(1.7); }
     }
@@ -663,25 +704,25 @@
       <div class="anchor-grid">
         <div class="anchor-card anchor-zimmerman">
           <strong>Doyle Jule Zimmerman</strong>
-          <div class="small">Born 12 Apr 1930, Selden, Sheridan County, Kansas. Died 9 Apr 2005. Married Evelyn Delores Mundell on 14 Jun 1953 in Colby, Kansas. Cemetery profile names Leonard Henry Zimmerman and Cecilia Antoinette Zodrow Zimmerman as parents.</div>
+          <div class="small"><figure class="cameo"><img src="images/people/doyle-zimmerman.jpg" alt="Grave marker of Doyle J. Zimmerman, Sgt US Army, Korea" width="480" height="360" loading="lazy"><figcaption><a href="https://nb.findagrave.com/memorial/34266662/doyle-jule-zimmerman">Grave marker: Find a Grave</a></figcaption></figure>Born 12 Apr 1930, Selden, Sheridan County, Kansas. Died 9 Apr 2005. Married Evelyn Delores Mundell on 14 Jun 1953 in Colby, Kansas. Cemetery profile names Leonard Henry Zimmerman and Cecilia Antoinette Zodrow Zimmerman as parents.</div>
           <p><span class="tag documented">Documented</span></p>
           <a href="#branch-doyle">View branch</a>
         </div>
         <div class="anchor-card anchor-mundell">
           <strong>Evelyn Delores Mundell Zimmerman</strong>
-          <div class="small">Born 16 Jan 1935, Flagler, Colorado. Died 15 Apr 2023, Colby, Kansas. Daughter of Homer Mundell and Marjorie Clemans; raised by grandmother Frances Adolph and graduated from Winona High School.</div>
+          <div class="small"><figure class="cameo"><img src="images/people/evelyn-mundell-zimmerman.jpg" alt="Portrait of Evelyn Delores Mundell Zimmerman" width="419" height="480" loading="lazy"><figcaption><a href="https://www.baalmannmortuary.com/obituaries/evelyn-zimmerman">Photo: Baalmann Mortuary</a></figcaption></figure>Born 16 Jan 1935, Flagler, Colorado. Died 15 Apr 2023, Colby, Kansas. Daughter of Homer Mundell and Marjorie Clemans; raised by grandmother Frances Adolph and graduated from Winona High School.</div>
           <p><span class="tag documented">Documented</span></p>
           <a href="#branch-evelyn">View branch</a>
         </div>
         <div class="anchor-card anchor-dible">
           <strong>William J. "Bill" Dible</strong>
-          <div class="small">Born 2 Jun 1933, Rexford, Kansas. Died 9 Aug 2022, Lee County, Florida. Youngest child of Ray Hershel Dible and Almeda Ora Long.</div>
+          <div class="small"><figure class="cameo"><img src="images/people/bill-dible.jpg" alt="Portrait of William J. Bill Dible" width="419" height="480" loading="lazy"><figcaption><a href="https://www.baalmannmortuary.com/obituaries/william-dible">Photo: Baalmann Mortuary</a></figcaption></figure>Born 2 Jun 1933, Rexford, Kansas. Died 9 Aug 2022, Lee County, Florida. Youngest child of Ray Hershel Dible and Almeda Ora Long.</div>
           <p><span class="tag documented">Documented</span></p>
           <a href="#branch-bill">View branch</a>
         </div>
         <div class="anchor-card anchor-connelly">
           <strong>Donna Lea Connelly Dible</strong>
-          <div class="small">Born 24 Apr 1935, Rexford, Kansas. Died 20 Dec 2022, Bonita Springs, Florida. Youngest child of Chester Franklin Connelly and Martha Frances Claar.</div>
+          <div class="small"><figure class="cameo"><img src="images/people/donna-connelly-dible.jpg" alt="Portrait of Donna Lea Connelly Dible" width="419" height="480" loading="lazy"><figcaption><a href="https://www.baalmannmortuary.com/obituaries/donna-dible">Photo: Baalmann Mortuary</a></figcaption></figure>Born 24 Apr 1935, Rexford, Kansas. Died 20 Dec 2022, Bonita Springs, Florida. Youngest child of Chester Franklin Connelly and Martha Frances Claar.</div>
           <p><span class="tag documented">Documented</span></p>
           <a href="#branch-donna">View branch</a>
         </div>
@@ -751,7 +792,7 @@
           <div class="generation">
             <div class="gen-label">Gen 3</div>
             <div class="people">
-              <div class="person"><div class="person-name">Michael John Zimmerman Sr. + Elizabeth Catherine Nauer</div><div class="person-details">Michael born 25 Oct 1869, indexed at Wuerttemberger Hof, Mainhardt. FamilySearch says he married Elizabeth Catherine Nauer, 1872-1935, at Cawker City, Kansas, 19 Nov 1895. Selden Cemetery lists Elizabeth A. Zimmerman, born 4-7-1871, died 9-25-1935, same stone as Michael J. Zimmerman; Elizabeth's Find a Grave profile lists Leonard Henry among their children. <span class="tag strong">Strong lead</span></div></div>
+              <div class="person"><div class="person-name">Michael John Zimmerman Sr. + Elizabeth Catherine Nauer</div><div class="person-details"><figure class="cameo"><img src="images/people/elizabeth-nauer-zimmerman.jpg" alt="Shared Zimmerman headstone for Michael J. and Elizabeth A. at Selden Cemetery" width="480" height="353" loading="lazy"><figcaption><a href="https://www.findagrave.com/memorial/69631173/elizabeth_catherine-zimmerman">Shared stone: Find a Grave</a></figcaption></figure>Michael born 25 Oct 1869, indexed at Wuerttemberger Hof, Mainhardt. FamilySearch says he married Elizabeth Catherine Nauer, 1872-1935, at Cawker City, Kansas, 19 Nov 1895. Selden Cemetery lists Elizabeth A. Zimmerman, born 4-7-1871, died 9-25-1935, same stone as Michael J. Zimmerman; Elizabeth's Find a Grave profile lists Leonard Henry among their children. <span class="tag strong">Strong lead</span></div></div>
             </div>
           </div>
           <div class="generation">
@@ -839,7 +880,7 @@
           <div class="generation">
             <div class="gen-label">Gen 3</div>
             <div class="people">
-              <div class="person"><div class="person-name">Julius Henry Zodrow + Ernestina Baier</div><div class="person-details">Julius 1869-1959; Ernestina 1872-1963. Public FamilySearch sibling indexing supports this household. <span class="tag strong">Strong lead</span></div></div>
+              <div class="person"><div class="person-name">Julius Henry Zodrow + Ernestina Baier</div><div class="person-details"><figure class="cameo"><img src="images/people/julius-zodrow.jpg" alt="Headstone of Julius H. Zodrow, 1869-1959" width="480" height="239" loading="lazy"><figcaption><a href="https://www.findagrave.com/memorial/111655641/julius-henry-zodrow">Headstone: Find a Grave</a></figcaption></figure>Julius 1869-1959; Ernestina 1872-1963. Public FamilySearch sibling indexing supports this household. <span class="tag strong">Strong lead</span></div></div>
             </div>
           </div>
           <div class="generation">
@@ -886,7 +927,7 @@
           <div class="generation">
             <div class="gen-label">Gen 4</div>
             <div class="people">
-              <div class="person"><div class="person-name">Thomas A. Nauer + Catherina Marie Koeberger</div><div class="person-details">FamilySearch indexes Elizabeth's father as Thomas A. Nauer and her mother as Catherine Marie; sibling and cemetery-index evidence gives the fuller name Catherina Marie Koeberger/Koburger. Moritz Thomas Nauer's memorial gives Thomas A. Nauer, 1824-1884, and Catherina Koeberger Nauer, 1832-1906; Catherina's own memorial gives birth 4 Mar 1832 and death 1 Feb 1906. The Waterloo German Catholic Settlers PDF places Thomas and Catharine in Waterloo County in 1871 and Cawker, Mitchell County, Kansas by 1880. <span class="tag strong">Strong lead</span></div></div>
+              <div class="person"><div class="person-name">Thomas A. Nauer + Catherina Marie Koeberger</div><div class="person-details"><figure class="cameo"><img src="images/people/catherina-koeberger-nauer.jpg" alt="Headstone of Catherina Nauer, 1832-1906" width="359" height="480" loading="lazy"><figcaption><a href="https://www.findagrave.com/memorial/48214393/catherina-nauer">Headstone: Find a Grave</a></figcaption></figure>FamilySearch indexes Elizabeth's father as Thomas A. Nauer and her mother as Catherine Marie; sibling and cemetery-index evidence gives the fuller name Catherina Marie Koeberger/Koburger. Moritz Thomas Nauer's memorial gives Thomas A. Nauer, 1824-1884, and Catherina Koeberger Nauer, 1832-1906; Catherina's own memorial gives birth 4 Mar 1832 and death 1 Feb 1906. The Waterloo German Catholic Settlers PDF places Thomas and Catharine in Waterloo County in 1871 and Cawker, Mitchell County, Kansas by 1880. <span class="tag strong">Strong lead</span></div></div>
             </div>
           </div>
           <div class="generation">
@@ -1710,9 +1751,9 @@ const KANSAS_BORDERS_D = "M163.9 364.9l-0.1 -145.9l-138.7 -0M164.6 583.9l-0.6 -2
       if (w / h > 3) {
         const cy = (y0 + y1) / 2;
         h = w / 3; y0 = cy - h / 2; y1 = cy + h / 2;
-      } else if (w / h < 1.5) {
+      } else if (w / h < 1.9) {
         const cx = (x0 + x1) / 2;
-        w = h * 1.5; x0 = cx - w / 2; x1 = cx + w / 2;
+        w = h * 1.9; x0 = cx - w / 2; x1 = cx + w / 2;
       }
       x0 = Math.max(0, Math.min(x0, dims.w - w));
       y0 = Math.max(0, Math.min(y0, dims.h - h));
@@ -1835,6 +1876,7 @@ const KANSAS_BORDERS_D = "M163.9 364.9l-0.1 -145.9l-138.7 -0M164.6 583.9l-0.6 -2
       const s = box.w / 1000;
       svg.setAttribute("viewBox", `${box.x.toFixed(1)} ${box.y.toFixed(1)} ${box.w.toFixed(1)} ${box.h.toFixed(1)}`);
       svg.style.setProperty("--plate-s", String(s));
+      svg.style.aspectRatio = `${box.w.toFixed(1)} / ${box.h.toFixed(1)}`;
       svg.innerHTML = basemapMarkup(cfg.base, !cfg.anchor);
 
       const points = displayPoints(data.events, project, (cfg.base === "kansas" ? 9 : 5.5) * Math.max(s, 0.55));
@@ -1905,7 +1947,10 @@ const KANSAS_BORDERS_D = "M163.9 364.9l-0.1 -145.9l-138.7 -0M164.6 583.9l-0.6 -2
           `<span class="bubble-place">${event.place} · ${event.confidence === "documented" ? "documented" : "strong lead"}</span>`;
       }
 
+      const hoverCapable = window.matchMedia("(hover: hover)").matches;
+
       function showBubbleAt(id, clientX, clientY) {
+        if (!hoverCapable) return;
         const fig = figure.getBoundingClientRect();
         let x = clientX - fig.left;
         let y = clientY - fig.top;
