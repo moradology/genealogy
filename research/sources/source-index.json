@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "updated": "2026-07-07",
   "source": "Extracted from index.html Source Ledger",
-  "record_count": 120,
+  "record_count": 121,
   "fields": {
     "id": "Stable local source id for notes and reasoning traces, generated from source title, URL, and blurb.",
     "title": "Human-readable source title from the artifact ledger.",
@@ -14,6 +14,19 @@
     "search_text": "Concatenated title and blurb for simple full-text search."
   },
   "sources": [
+    {
+      "id": "src.doyle-and-evelyn-zimmerman-50th-anniversary-announcement-colby-free-pr.15dd5c69",
+      "title": "Doyle and Evelyn Zimmerman 50th anniversary announcement, Colby Free Press, 11 Jun 2004",
+      "url": "http://www.nwkansas.com/cfpwebpages/pdf%20pages-all/cfp%20pages-pdfs%202004/cfp%20pages:06%20Jun/Week%202/Friday/fam.pdf",
+      "source_type": "compiled_pdf_or_journal",
+      "lineage_tags": [
+        "zimmerman",
+        "mundell"
+      ],
+      "evidence_role": "lead",
+      "blurb": "Family-supplied announcement establishes marriage on 14 Jun 1954 at Sacred Heart Catholic Church, Colby; documents Doyle in Selden until 1953, Evelyn in Winona until 1954, the couple meeting in January 1954, and the Hi-Plains Implement career from 1953 through retirement in June 1999. Contradicts the compiled 14 Jun 1953 marriage date.",
+      "search_text": "Doyle and Evelyn Zimmerman 50th anniversary announcement, Colby Free Press, 11 Jun 2004 Family-supplied announcement establishes marriage on 14 Jun 1954 at Sacred Heart Catholic Church, Colby; documents Doyle in Selden until 1953, Evelyn in Winona until 1954, the couple meeting in January 1954, and the Hi-Plains Implement career from 1953 through retirement in June 1999. Contradicts the compiled 14 Jun 1953 marriage date."
+    },
     {
       "id": "src.evelyn-delores-zimmerman-obituary-baalmann-mortuary.f090c06a",
       "title": "Evelyn Delores Zimmerman obituary, Baalmann Mortuary",

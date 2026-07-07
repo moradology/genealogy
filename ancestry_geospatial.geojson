@@ -569,7 +569,7 @@
     },
     {
       "type": "Feature",
-      "id": "event.doyle_zimmerman.marriage.1953-06-14",
+      "id": "event.doyle_zimmerman.marriage.1954-06-14",
       "geometry": {"type": "Point", "coordinates": [-101.0526881, 39.3959655]},
       "properties": {
         "feature_kind": "life_event",
@@ -580,12 +580,12 @@
         "anchor": "Doyle Jule Zimmerman",
         "line_ids": ["line.zimmerman_surname", "line.mundell_rust_cantwell"],
         "generation": 1,
-        "date": "1953-06-14",
-        "date_sort": "1953-06-14",
+        "date": "1954-06-14",
+        "date_sort": "1954-06-14",
         "place_id": "place.colby_ks",
-        "place_label": "Colby, Thomas County, Kansas",
+        "place_label": "Sacred Heart Catholic Church, Colby, Thomas County, Kansas",
         "confidence": "documented",
-        "source_refs": ["https://www.baalmannmortuary.com/obituaries/evelyn-zimmerman"]
+        "source_refs": ["https://www.baalmannmortuary.com/obituaries/evelyn-zimmerman", "http://www.nwkansas.com/cfpwebpages/pdf%20pages-all/cfp%20pages-pdfs%202004/cfp%20pages:06%20Jun/Week%202/Friday/fam.pdf"]
       }
     },
     {
@@ -2596,14 +2596,14 @@
         "label": "Zimmerman surname route: Mainhardt/Wuerttemberger Hof to Nebraska to Kansas",
         "anchor": "Doyle Jule Zimmerman",
         "date_start": "1869-10-25",
-        "date_end": "1953-06-14",
+        "date_end": "1954-06-14",
         "confidence": "strong",
         "sequence": [
           {"order": 1, "date_sort": "1869-10-25", "place_id": "place.wuerttemberger_hof_de", "event_id": "event.zimmerman.michael_birth.1869-10-25"},
           {"order": 2, "date_sort": "1880-06-01", "place_id": "place.norfolk_ne", "event_id": "event.zimmerman.john_paul_household.1880"},
           {"order": 3, "date_sort": "1895-11-19", "place_id": "place.cawker_city_ks", "event_id": "event.zimmerman.michael_elizabeth_marriage.1895-11-19"},
           {"order": 4, "date_sort": "1930-04-12", "place_id": "place.selden_ks", "event_id": "event.doyle_zimmerman.birth.1930-04-12"},
-          {"order": 5, "date_sort": "1953-06-14", "place_id": "place.colby_ks", "event_id": "event.doyle_zimmerman.marriage.1953-06-14"}
+          {"order": 5, "date_sort": "1954-06-14", "place_id": "place.colby_ks", "event_id": "event.doyle_zimmerman.marriage.1954-06-14"}
         ]
       }
     },
@@ -2950,15 +2950,15 @@
         "label": "Doyle Zimmerman and Evelyn Mundell converge at Colby",
         "anchor": "Doyle Jule Zimmerman",
         "date_start": "1930-04-12",
-        "date_end": "1953-06-14",
+        "date_end": "1954-06-14",
         "confidence": "documented",
         "style_hint": "solid",
         "from_event_ids": ["event.doyle_zimmerman.birth.1930-04-12", "event.evelyn_mundell.birth.1935-01-16"],
-        "to_event_id": "event.doyle_zimmerman.marriage.1953-06-14",
+        "to_event_id": "event.doyle_zimmerman.marriage.1954-06-14",
         "sequence": [
           {"order": 1, "date_sort": "1930-04-12", "event_id": "event.doyle_zimmerman.birth.1930-04-12", "role": "input"},
           {"order": 2, "date_sort": "1935-01-16", "event_id": "event.evelyn_mundell.birth.1935-01-16", "role": "input"},
-          {"order": 3, "date_sort": "1953-06-14", "event_id": "event.doyle_zimmerman.marriage.1953-06-14", "role": "union"}
+          {"order": 3, "date_sort": "1954-06-14", "event_id": "event.doyle_zimmerman.marriage.1954-06-14", "role": "union"}
         ]
       }
     },
