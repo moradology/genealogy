@@ -1,0 +1,8 @@
+{
+  "name": "genealogy-checks",
+  "private": true,
+  "description": "Pinned tooling for the acceptance spec; the site itself has no dependencies.",
+  "devDependencies": {
+    "playwright": "1.58.2"
+  }
+}

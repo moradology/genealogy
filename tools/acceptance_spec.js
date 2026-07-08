@@ -7,7 +7,8 @@ const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 
-const FILE = '/Users/nzimmerman/Documents/genealogy/index.html';
+const path = require('node:path');
+const FILE = path.join(__dirname, '..', 'index.html');
 const URL = 'file://' + FILE;
 
 // Derived from verifiedEventData/familyLinkData + plate rules:

@@ -82,34 +82,15 @@ rg -n "Frances Adolph|Rust|Winona" research/sources/source-index.json
 
 ## Local Checks
 
-Run these before committing:
+Run the single gate before committing:
 
 ```sh
-python3 -m json.tool ancestry_geospatial.geojson >/dev/null
-python3 -m json.tool research/sources/source-index.json >/dev/null
-python3 tools/build_source_index.py --check
-python3 - <<'PY'
-from html.parser import HTMLParser
-from pathlib import Path
-
-class Parser(HTMLParser):
-    pass
-
-parser = Parser()
-parser.feed(Path("index.html").read_text())
-parser.close()
-print("html parse ok")
-PY
-python3 - <<'PY'
-from pathlib import Path
-import re
-
-html = Path("index.html").read_text()
-scripts = re.findall(r'<script(?:\\s[^>]*)?>(.*?)</script>', html, flags=re.S | re.I)
-Path("/tmp/genealogy_inline.js").write_text("\\n".join(script for script in scripts if script.strip()))
-PY
-node --check /tmp/genealogy_inline.js
+sh tools/check.sh
 ```
+
+It validates both JSON data files, regenerates and freshness-checks the source index,
+verifies every cross-reference id resolves, syntax-checks the inline JavaScript, and runs
+the full Playwright acceptance spec. CI runs the same script on every push.
 
 ## Publishing
 
