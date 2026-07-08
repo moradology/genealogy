@@ -54,11 +54,12 @@ function ok(label, cond, detail) {
   ok('S6 marriage corrected to 1954 everywhere', src.includes('event.doyle_zimmerman.marriage.1954-06-14') && !src.includes('1953-06-14'));
   ok('S7 Colby Free Press source cited', src.includes('Colby Free Press') && src.includes('Sacred Heart Catholic Church'));
   ok('S8 deploy stamp present', /<meta name="deploy-stamp" content="[0-9a-f]{12} \d{4}-\d{2}-\d{2}">/.test(src));
-  // Payload budgets (treaty): set at measured+10% after the Slate 0 diet
-  // and the build_fonts.py subset landing (total 228678, fonts 41048,
-  // paths 19763 on 2026-07-08). Peers bump these only via a declared
-  // SPEC DELTA with byte cost; total never exceeds 327680.
-  ok('S9 total payload within budget', src.length < 251546, src.length);
+  // Payload budgets (treaty): set at measured+10% after Slate 1 W2
+  // (layered entries + Docket stubs): total 251804, fonts 41420, paths
+  // 19763 on 2026-07-08. W2 cost +20.1KB against Slate 1's declared
+  // +30KB allowance. Peers bump these only via a declared SPEC DELTA
+  // with byte cost; total never exceeds 327680.
+  ok('S9 total payload within budget', src.length < 276984, src.length);
   ok('S10 embedded fonts within budget',
     (src.match(/data:font\/woff2;base64,[A-Za-z0-9+\/=]+/g) || []).join('').length < 45153);
   ok('S11 baked path constants within budget',
@@ -195,7 +196,7 @@ function ok(label, cond, detail) {
   });
   for (const h of ['Doyle Julius Zimmerman Branches', 'Evelyn Delores Mundell Zimmerman Branches',
     'William J. "Bill" Dible Branches', 'Donna Lea Connelly Dible Branches',
-    'Record Targets That Would Move The Tree', 'Source Ledger'])
+    'The Docket', 'Source Ledger'])
     assert.ok(content.h2s.includes(h), 'missing h2: ' + h);
   ok('C1 all section headings present', true);
   ok('C2 source ledger count matches', content.sourceCount === SOURCE_ITEMS, content.sourceCount);
@@ -210,6 +211,12 @@ function ok(label, cond, detail) {
     content.personIds.length);
   ok('C6 method note preserved', content.breadth);
   ok('C7 geojson link preserved', content.geojsonLink);
+  const brokenInternalLinks = await page.evaluate(() =>
+    [...document.querySelectorAll('a[href^="#"]')]
+      .map((a) => a.getAttribute('href'))
+      .filter((href) => href && href.length > 1)
+      .filter((href) => !document.getElementById(decodeURIComponent(href.slice(1)))));
+  ok('C9 internal links resolve', brokenInternalLinks.length === 0, brokenInternalLinks.join(', '));
 
   // ---------- theme ----------
   const bgFor = async (scheme, theme) => {
@@ -331,10 +338,11 @@ function ok(label, cond, detail) {
   // Prior single-map layout measured 16,095px; four user-requested line plates add
   // bounded map figures. Budget: still >=19% under the original 23,000px page.
   // Guards against layout regressions (dead voids, letterboxing), not research prose growth.
-  // Content-driven height after the Jul 2026 source-audit additions: ~19,700px; budget = that
-  // + ~500 headroom, still ~12% under the original 23,000px page. Revisit only if a layout
-  // change, not new content, trips it.
-  ok('L2 page height within layout budget (<20200)', desktop.scrollH < 20200, desktop.scrollH);
+  // Content-driven height re-measured after Slate 1 W2 (75 layered person entries: head +
+  // vitals + identity lines, plus 20 Docket stubs): 23,511px; budget = that + ~500 headroom.
+  // Prior measure was 19,700px pre-W2. Revisit only if a layout change, not new content,
+  // trips it.
+  ok('L2 page height within layout budget (<24011)', desktop.scrollH < 24011, desktop.scrollH);
 
   for (const [w, h] of [[320, 700], [390, 844], [768, 1024], [1024, 768]]) {
     await page.setViewportSize({ width: w, height: h });
