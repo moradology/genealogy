@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Zimmerman-Dible Ancestry Working Artifact</title>
-  <meta name="deploy-stamp" content="821a95c24d24 2026-07-08">
+  <meta name="deploy-stamp" content="8b22671dba33 2026-07-08">
   <style>
 /* BEGIN GENERATED fonts -- regenerate with: uv run tools/build_fonts.py --write */
 /* Embedded subsets of Libre Caslon Text and IBM Plex Mono (SIL OFL 1.1, via google/fonts). */
@@ -324,6 +324,9 @@
     figure.plate svg { display: block; width: 100%; height: auto; }
 
     .plate-caption {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 0.2rem 0.7rem;
       font-size: 0.62rem;
       letter-spacing: 0.06em;
       text-transform: uppercase;
@@ -334,6 +337,9 @@
       margin: 0;
       cursor: default;
     }
+    .plate-no,.plate-title{color:var(--ink)}
+    .plate-imprint{justify-self:end;opacity:.75}
+    .plate-sub{grid-column:1/-1;font-family:"Libre Caslon Text",Georgia,serif;font-size:.78rem;line-height:1.35;letter-spacing:0;text-transform:none;color:var(--ink-soft)}
 
     .legend-dot {
       display: inline-block;
@@ -370,6 +376,11 @@
     .key-no,.key-date{font-family:"IBM Plex Mono",monospace;color:var(--ink-soft)}
     .key-no{display:inline-block;width:1.4rem;margin-left:-1.6rem}
     .key-date{margin-right:.35rem}
+    .ledger-table{max-width:880px;margin:-.3rem auto 1.5rem;border:1px solid var(--rule);background:var(--paper);cursor:default}
+    .ledger-table figcaption{padding:.45rem .7rem;border-bottom:1px solid var(--rule);font-size:.72rem}
+    .ledger-table table{font-size:.76rem}
+    .ledger-table td:nth-child(n+2){text-align:right;font-family:"IBM Plex Mono",monospace}
+    .ledger-table tr.conjectural{font-style:italic}
 
     .map-bubble {
       position: absolute;
@@ -429,6 +440,12 @@
     }
     .map-neatline { fill: none; stroke: var(--map-border); stroke-width: calc(1.1px * var(--plate-s, 1)); }
     .map-label { font-size: 15px; letter-spacing: 0.35em; fill: var(--map-label); }
+    .plate-decor,.plate-scalebar{pointer-events:none}
+    .plate-tick,.scale-tick{fill:none;stroke:var(--map-border);stroke-width:calc(1.1px*var(--plate-s,1))}
+    .plate-corner-no,.plate-scalebar text{font-family:"IBM Plex Mono",monospace;fill:var(--ink-soft);stroke:var(--map-land);stroke-width:calc(2px*var(--plate-s,1));paint-order:stroke}
+    .plate-scalebar .back{fill:var(--paper);stroke:var(--rule);opacity:.88}
+    .plate-scalebar .bar-a{fill:var(--ink-soft)}
+    .plate-scalebar .bar-b{fill:var(--paper);stroke:var(--ink-soft);stroke-width:calc(.7px*var(--plate-s,1))}
 
     .anchor-zimmerman { --anchor: var(--anchor-zimmerman); }
     .anchor-mundell { --anchor: var(--anchor-mundell); }
@@ -813,19 +830,22 @@
       <p class="section-note">The map shows only places where the evidence is strong enough to stand on: documented events and high-confidence life events. Each line carries its own plate at the head of its branch below; this shared plate shows the northwest Kansas country where all four lines converge.</p>
       <figure class="plate convergence-plate">
         <svg id="map-convergence" xmlns="http://www.w3.org/2000/svg" aria-label="Northwest Kansas convergence map of all four family lines"></svg>
-        <figcaption class="plate-caption"><span class="legend-dot anchor-zimmerman"></span>Zimmerman <span class="legend-dot anchor-mundell"></span>Mundell <span class="legend-dot anchor-dible"></span>Dible <span class="legend-dot anchor-connelly"></span>Connelly &middot; filled marker documented &middot; hollow marker strong lead &middot; dashed arc skips unmapped generations &middot; <span class="legend-route"></span>journey drawn from records &middot; <span class="legend-route conjectural"></span>conjectural route &middot; Natural Earth basemap</figcaption>
+        <figcaption class="plate-caption"><span class="plate-no">Plate II.</span><span class="plate-title">Where The Family Joins</span><span class="plate-imprint">Drawn 7 July 2026 &middot; Natural Earth base</span><span class="plate-sub"><span class="legend-dot anchor-zimmerman"></span>Zimmerman <span class="legend-dot anchor-mundell"></span>Mundell <span class="legend-dot anchor-dible"></span>Dible <span class="legend-dot anchor-connelly"></span>Connelly. Filled marks=documented events; hollow=strong leads; hairlines=recorded journeys; dashes=conjecture; numbers key below.</span></figcaption>
         <div class="plate-detail" id="detail-convergence"></div>
         <!-- BEGIN plate-key:convergence -->
         <ol class=plate-key aria-label="convergence marker key"><li data-event-id="event.zimmerman.john_paul_household.1880"><span class=key-no>1</span><span class=key-date>1880</span> household · John Paul Zimmerman · Norfolk, Madison County, Nebraska · <em>strong lead</em></li><li data-event-id="event.zimmerman.michael_elizabeth_marriage.1895-11-19"><span class=key-no>2</span><span class=key-date>1895-11-19</span> marriage · Michael John Zimmerman Sr. · Cawker City, Mitchell County, Kansas · <em>strong lead</em></li><li data-event-id="event.dible.harry_julia_marriage.1896-06-10"><span class=key-no>3</span><span class=key-date>1896-06-10</span> marriage · Harry H. Dible · Trenton, Hitchcock County, Nebraska · <em>strong lead</em></li><li data-event-id="event.mcclelland.dorsey_burial_selden.1904"><span class=key-no>4</span><span class=key-date>1904-05-19</span> death or burial · Dorsey Overturf McClelland · Selden Cemetery, Selden, Sheridan County, Kansas · <em>strong lead</em></li><li data-event-id="event.nauer.catherina_koeberger_death.1906-02-01"><span class=key-no>5</span><span class=key-date>1906-02-01</span> death or burial · Catherina Marie Koeberger Nauer · Saint Joseph Cemetery, New Almelo, Norton County, Kansas · <em>strong lead</em></li><li data-event-id="event.zodrow.john_death.1915-03-15"><span class=key-no>6</span><span class=key-date>1915-03-15</span> death or burial · John Zodrow · Leoville, Decatur County, Kansas · <em>strong lead</em></li><li data-event-id="event.claar.henry_death.1915-12-28"><span class=key-no>7</span><span class=key-date>1915-12-28</span> death · Henry Claar · Topeka, Kansas · <em>strong lead</em></li><li data-event-id="event.long.ray_almeda_marriage.1922"><span class=key-no>8</span><span class=key-date>1922</span> marriage · Almeda Ora Long Dible · Jackson County, Kansas · <em>documented</em></li><li data-event-id="event.doyle_zimmerman.birth.1930-04-12"><span class=key-no>9</span><span class=key-date>1930-04-12</span> birth · Doyle Julius Zimmerman · Selden, Sheridan County, Kansas · <em>documented</em></li><li data-event-id="event.bill_dible.birth.1933-06-02"><span class=key-no>10</span><span class=key-date>1933-06-02</span> birth · William J. "Bill" Dible · Rexford, Thomas County, Kansas · <em>documented</em></li><li data-event-id="event.zodrow.antonette_grams_death.1934-08-01"><span class=key-no>11</span><span class=key-date>1934-08-01</span> death · Antonia/Antonette Grams Zodrow · Dresden, Decatur County, Kansas · <em>strong lead</em></li><li data-event-id="event.evelyn_mundell.birth.1935-01-16"><span class=key-no>12</span><span class=key-date>1935-01-16</span> birth · Evelyn Delores Mundell Zimmerman · Flagler, Kit Carson County, Colorado · <em>documented</em></li><li data-event-id="event.donna_connelly.birth.1935-04-24"><span class=key-no>13</span><span class=key-date>1935-04-24</span> birth · Donna Lea Connelly Dible · Rexford, Thomas County, Kansas · <em>documented</em></li><li data-event-id="event.mcclelland.cora_death.1952-03-19"><span class=key-no>14</span><span class=key-date>1952-03-19</span> death · Cora Ellie McClellan Long · Manhattan, Riley County, Kansas · <em>strong lead</em></li><li data-event-id="event.doyle_zimmerman.marriage.1954-06-14"><span class=key-no>15</span><span class=key-date>1954-06-14</span> marriage · Doyle Julius Zimmerman · Sacred Heart Catholic Church, Colby, Thomas County, Kansas · <em>documented</em></li><li data-event-id="event.evelyn_mundell.death.2023-04-15"><span class=key-no>16</span><span class=key-date>2023-04-15</span> death · Evelyn Delores Mundell Zimmerman · Colby, Thomas County, Kansas · <em>documented</em></li></ol>
         <!-- END -->
       </figure>
+      <!-- BEGIN miles-ledger -->
+<figure class=ledger-table><figcaption>Table of Removes · leg distances are great-circle kilometres between recorded waypoints</figcaption><div class=table-scroll><table><thead><tr><th>Route</th><th>Wp</th><th>Km</th><th>Conj. km</th><th>Years</th></tr></thead><tbody><tr><td><span class=anchor-text-zimmerman>Zimmerman</span></td><td>5</td><td>8,158</td><td></td><td>1869-1954</td></tr><tr><td><span class=anchor-text-zimmerman>Nauer</span></td><td>6</td><td>1,735</td><td></td><td>1871-1930</td></tr><tr><td><span class=anchor-text-mundell>Mundell/Rust</span></td><td>8</td><td>4,547</td><td></td><td>1837-2023</td></tr><tr><td><span class=anchor-text-dible>Dible/Heckman</span></td><td>5</td><td>10,779</td><td>~9,100</td><td>1896-2022</td></tr><tr><td><span class=anchor-text-dible>Long/Sleight</span></td><td>5</td><td>8,096</td><td>~1,300</td><td>1805-1933</td></tr><tr><td><span class=anchor-text-connelly>Connelly/Durham</span></td><td>10</td><td>5,029</td><td></td><td>1782-2022</td></tr><tr><td><span class=anchor-text-connelly>Claar</span></td><td>5</td><td>2,771</td><td>~600</td><td>1838-1935</td></tr><tr class=conjectural><td>? <span class=anchor-text-zimmerman>Nauer parentage</span></td><td>4</td><td>1,718</td><td>1,718</td><td>1851-1880</td></tr><tr class=conjectural><td>? <span class=anchor-text-mundell>Rust identity</span></td><td>5</td><td>593</td><td>593</td><td>1894-1910</td></tr><tr class=conjectural><td>? <span class=anchor-text-dible>McClelland/Love</span></td><td>8</td><td>2,635</td><td>2,635</td><td>1801-1933</td></tr><tr class=conjectural><td>? <span class=anchor-text-mundell>Clemans/Flaherty</span></td><td>4</td><td>2,216</td><td>2,216</td><td>1921-2023</td></tr></tbody></table></div></figure>
+      <!-- END -->
       <p class="small">Full coordinates, confidence labels, open targets, and geospatial records live in <a href="ancestry_geospatial.geojson">ancestry_geospatial.geojson</a>.</p>
     </section>
     <section class="sheet" id="branch-doyle">
       <h2>Doyle Julius Zimmerman Branches</h2>
       <figure class="plate line-plate">
         <svg id="map-line-zimmerman" xmlns="http://www.w3.org/2000/svg" aria-label="Doyle Julius Zimmerman Branches event map"></svg>
-        <figcaption class="plate-caption">Zimmerman line geography &middot; Wuerttemberg and West Prussia to the High Plains &middot; hover a point for its date and record</figcaption>
+        <figcaption class="plate-caption"><span class="plate-no">Plate III.</span><span class="plate-title">Geography of the Zimmerman Line</span><span class="plate-imprint">Drawn 7 July 2026 &middot; Natural Earth base</span><span class="plate-sub">Wuerttemberg and West Prussia to the High Plains. Filled marks=documented events; hollow=strong leads; hairlines=recorded journeys; dashes=conjecture; numbers key below.</span></figcaption>
         <div class="plate-detail" id="detail-zimmerman"></div>
         <!-- BEGIN plate-key:zimmerman -->
         <ol class=plate-key aria-label="zimmerman marker key"><li data-event-id="event.zodrow.antonette_grams_birth.1846-05-23"><span class=key-no>1</span><span class=key-date>1846-05-23</span> birth · Antonia/Antonette Grams Zodrow · Prussia, today Poland · <em>strong lead</em></li><li data-event-id="event.zimmerman.michael_birth.1869-10-25"><span class=key-no>2</span><span class=key-date>1869-10-25</span> birth · Michael John Zimmerman Sr. · Wuerttemberger Hof, Mainhardt, Baden-Wuerttemberg · <em>strong lead</em></li><li data-event-id="event.nauer.elizabeth_birth.1872-04-07"><span class=key-no>3</span><span class=key-date>1872-04-07</span> birth · Elizabeth Catherine Nauer Zimmerman · Waterloo, Ontario · <em>strong lead</em></li><li data-event-id="event.zimmerman.john_paul_household.1880"><span class=key-no>4</span><span class=key-date>1880</span> household · John Paul Zimmerman · Norfolk, Madison County, Nebraska · <em>strong lead</em></li><li data-event-id="event.zimmerman.michael_elizabeth_marriage.1895-11-19"><span class=key-no>5</span><span class=key-date>1895-11-19</span> marriage · Michael John Zimmerman Sr. · Cawker City, Mitchell County, Kansas · <em>strong lead</em></li><li data-event-id="event.nauer.catherina_koeberger_death.1906-02-01"><span class=key-no>6</span><span class=key-date>1906-02-01</span> death or burial · Catherina Marie Koeberger Nauer · Saint Joseph Cemetery, New Almelo, Norton County, Kansas · <em>strong lead</em></li><li data-event-id="event.zodrow.john_death.1915-03-15"><span class=key-no>7</span><span class=key-date>1915-03-15</span> death or burial · John Zodrow · Leoville, Decatur County, Kansas · <em>strong lead</em></li><li data-event-id="event.doyle_zimmerman.birth.1930-04-12"><span class=key-no>8</span><span class=key-date>1930-04-12</span> birth · Doyle Julius Zimmerman · Selden, Sheridan County, Kansas · <em>documented</em></li><li data-event-id="event.zodrow.antonette_grams_death.1934-08-01"><span class=key-no>9</span><span class=key-date>1934-08-01</span> death · Antonia/Antonette Grams Zodrow · Dresden, Decatur County, Kansas · <em>strong lead</em></li><li data-event-id="event.evelyn_mundell.birth.1935-01-16"><span class=key-no>10</span><span class=key-date>1935-01-16</span> birth · Evelyn Delores Mundell Zimmerman · Flagler, Kit Carson County, Colorado · <em>documented</em> · <span class=anchor-text-mundell>Mundell line</span></li><li data-event-id="event.doyle_zimmerman.marriage.1954-06-14"><span class=key-no>11</span><span class=key-date>1954-06-14</span> marriage · Doyle Julius Zimmerman · Sacred Heart Catholic Church, Colby, Thomas County, Kansas · <em>documented</em></li></ol>
@@ -1002,7 +1022,7 @@
       <h2>Evelyn Delores Mundell Zimmerman Branches</h2>
       <figure class="plate line-plate">
         <svg id="map-line-mundell" xmlns="http://www.w3.org/2000/svg" aria-label="Evelyn Delores Mundell Zimmerman Branches event map"></svg>
-        <figcaption class="plate-caption">Mundell line geography &middot; eastern Colorado to Thomas County, Kansas &middot; hover a point for its date and record</figcaption>
+        <figcaption class="plate-caption"><span class="plate-no">Plate IV.</span><span class="plate-title">Geography of the Mundell Line</span><span class="plate-imprint">Drawn 7 July 2026 &middot; Natural Earth base</span><span class="plate-sub">Eastern Colorado to Thomas County, Kansas. Filled marks=documented events; hollow=strong leads; hairlines=recorded journeys; dashes=conjecture; numbers key below.</span></figcaption>
         <div class="plate-detail" id="detail-mundell"></div>
         <!-- BEGIN plate-key:mundell -->
         <ol class=plate-key aria-label="mundell marker key"><li data-event-id="event.doyle_zimmerman.birth.1930-04-12"><span class=key-no>1</span><span class=key-date>1930-04-12</span> birth · Doyle Julius Zimmerman · Selden, Sheridan County, Kansas · <em>documented</em> · <span class=anchor-text-zimmerman>Zimmerman line</span></li><li data-event-id="event.evelyn_mundell.birth.1935-01-16"><span class=key-no>2</span><span class=key-date>1935-01-16</span> birth · Evelyn Delores Mundell Zimmerman · Flagler, Kit Carson County, Colorado · <em>documented</em></li><li data-event-id="event.doyle_zimmerman.marriage.1954-06-14"><span class=key-no>3</span><span class=key-date>1954-06-14</span> marriage · Doyle Julius Zimmerman · Sacred Heart Catholic Church, Colby, Thomas County, Kansas · <em>documented</em> · <span class=anchor-text-zimmerman>Zimmerman line</span></li><li data-event-id="event.evelyn_mundell.death.2023-04-15"><span class=key-no>4</span><span class=key-date>2023-04-15</span> death · Evelyn Delores Mundell Zimmerman · Colby, Thomas County, Kansas · <em>documented</em></li></ol>
@@ -1105,7 +1125,7 @@
       <h2>William J. "Bill" Dible Branches</h2>
       <figure class="plate line-plate">
         <svg id="map-line-dible" xmlns="http://www.w3.org/2000/svg" aria-label="William J. "Bill" Dible Branches event map"></svg>
-        <figcaption class="plate-caption">Dible line geography &middot; Illinois and Nebraska to Kansas, ending in Florida &middot; hover a point for its date and record</figcaption>
+        <figcaption class="plate-caption"><span class="plate-no">Plate V.</span><span class="plate-title">Geography of the Dible Line</span><span class="plate-imprint">Drawn 7 July 2026 &middot; Natural Earth base</span><span class="plate-sub">Illinois and Nebraska to Kansas, ending in Florida. Filled marks=documented events; hollow=strong leads; hairlines=recorded journeys; dashes=conjecture; numbers key below.</span></figcaption>
         <div class="plate-detail" id="detail-dible"></div>
         <!-- BEGIN plate-key:dible -->
         <ol class=plate-key aria-label="dible marker key"><li data-event-id="event.long.robert_ann_marriage.1857-02-19"><span class=key-no>1</span><span class=key-date>1857-02-19</span> marriage · Robert Nelson Long · Griggsville Township, Pike County, Illinois · <em>strong lead</em></li><li data-event-id="event.mcclelland.cora_birth.1872-12-08"><span class=key-no>2</span><span class=key-date>1872-12-08</span> birth · Cora Ellie McClellan Long · Fairfield, Jefferson County, Iowa · <em>strong lead</em></li><li data-event-id="event.dible.harry_julia_marriage.1896-06-10"><span class=key-no>3</span><span class=key-date>1896-06-10</span> marriage · Harry H. Dible · Trenton, Hitchcock County, Nebraska · <em>strong lead</em></li><li data-event-id="event.mcclelland.dorsey_burial_selden.1904"><span class=key-no>4</span><span class=key-date>1904-05-19</span> death or burial · Dorsey Overturf McClelland · Selden Cemetery, Selden, Sheridan County, Kansas · <em>strong lead</em></li><li data-event-id="event.long.ray_almeda_marriage.1922"><span class=key-no>5</span><span class=key-date>1922</span> marriage · Almeda Ora Long Dible · Jackson County, Kansas · <em>documented</em></li><li data-event-id="event.bill_dible.birth.1933-06-02"><span class=key-no>6</span><span class=key-date>1933-06-02</span> birth · William J. "Bill" Dible · Rexford, Thomas County, Kansas · <em>documented</em></li><li data-event-id="event.mcclelland.cora_death.1952-03-19"><span class=key-no>7</span><span class=key-date>1952-03-19</span> death · Cora Ellie McClellan Long · Manhattan, Riley County, Kansas · <em>strong lead</em></li><li data-event-id="event.bill_dible.death.2022-08-09"><span class=key-no>8</span><span class=key-date>2022-08-09</span> death · William J. "Bill" Dible · Lee County, Florida · <em>documented</em></li></ol>
@@ -1218,7 +1238,7 @@
       <h2>Donna Lea Connelly Dible Branches</h2>
       <figure class="plate line-plate">
         <svg id="map-line-connelly" xmlns="http://www.w3.org/2000/svg" aria-label="Donna Lea Connelly Dible Branches event map"></svg>
-        <figcaption class="plate-caption">Connelly line geography &middot; Carolina, Ohio, and Kentucky roots to Rexford &middot; hover a point for its date and record</figcaption>
+        <figcaption class="plate-caption"><span class="plate-no">Plate VI.</span><span class="plate-title">Geography of the Connelly Line</span><span class="plate-imprint">Drawn 7 July 2026 &middot; Natural Earth base</span><span class="plate-sub">Carolina, Ohio, and Kentucky roots to Rexford. Filled marks=documented events; hollow=strong leads; hairlines=recorded journeys; dashes=conjecture; numbers key below.</span></figcaption>
         <div class="plate-detail" id="detail-connelly"></div>
         <!-- BEGIN plate-key:connelly -->
         <ol class=plate-key aria-label="connelly marker key"><li data-event-id="event.durham.david_birth.1832-12-28"><span class=key-no>1</span><span class=key-date>1832-12-28</span> birth · David Monroe Durham · North Carolina · <em>strong lead</em></li><li data-event-id="event.claar.henry_birth.1838-12-31"><span class=key-no>2</span><span class=key-date>1838-12-31</span> birth · Henry Claar · Jackson County, Ohio · <em>strong lead</em></li><li data-event-id="event.durham.david_virginia_marriage.1857-08-19"><span class=key-no>3</span><span class=key-date>1857-08-19</span> marriage · David Monroe Durham · Menard County, Illinois · <em>strong lead</em></li><li data-event-id="event.durham.david_death.1897-08-24"><span class=key-no>4</span><span class=key-date>1897-08-24</span> death · David Monroe Durham · Nebo, Hopkins County, Kentucky · <em>strong lead</em></li><li data-event-id="event.claar.henry_death.1915-12-28"><span class=key-no>5</span><span class=key-date>1915-12-28</span> death · Henry Claar · Topeka, Kansas · <em>strong lead</em></li><li data-event-id="event.donna_connelly.birth.1935-04-24"><span class=key-no>6</span><span class=key-date>1935-04-24</span> birth · Donna Lea Connelly Dible · Rexford, Thomas County, Kansas · <em>documented</em></li><li data-event-id="event.donna_connelly.death.2022-12-20"><span class=key-no>7</span><span class=key-date>2022-12-20</span> death · Donna Lea Connelly Dible · Bonita Springs, Lee County, Florida · <em>documented</em></li></ol>
@@ -1807,6 +1827,7 @@ const SCALE_UPK = { migration: 0.080889, kansas: 1.313116 };
       { key: "dible", svgId: "map-line-dible", detailId: "detail-dible", base: "migration", anchor: "William J. Dible" },
       { key: "connelly", svgId: "map-line-connelly", detailId: "detail-connelly", base: "migration", anchor: "Donna Lea Connelly Dible" }
     ];
+    const PLATE_ROMANS = ["II", "III", "IV", "V", "VI"];
 
     function projectMigration(lon, lat) {
       const d = Math.PI / 180;
@@ -2057,6 +2078,23 @@ const SCALE_UPK = { migration: 0.080889, kansas: 1.313116 };
         `<div class="detail-meta"><span class="detail-anchor anchor-text-${anchorSlug[link.anchor]}">${anchorShort[link.anchor]} line</span></div>`;
     }
 
+    function plateFurniture(svg, cfg, box, s) {
+      const roman = PLATE_ROMANS[PLATES.indexOf(cfg)];
+      const f = (v) => (Math.round(v * 10) / 10).toFixed(1);
+      const x = box.x, y = box.y, w = box.w, h = box.h, i = 5 * s, a = 14 * s;
+      const tick = `M${f(x + i)} ${f(y + i + a)}V${f(y + i)}H${f(x + i + a)}M${f(x + w - i - a)} ${f(y + i)}H${f(x + w - i)}V${f(y + i + a)}M${f(x + i)} ${f(y + h - i - a)}V${f(y + h - i)}H${f(x + i + a)}M${f(x + w - i - a)} ${f(y + h - i)}H${f(x + w - i)}V${f(y + h - i - a)}`;
+      let km = 50;
+      [100, 200, 500, 1000, 2000, 4000].forEach((v) => { if (v * SCALE_UPK[cfg.base] <= w * 0.22) km = v; });
+      const bw = km * SCALE_UPK[cfg.base], bh = 3.5 * s, font = 10.5 * Math.max(s, 0.55);
+      const label = `${km} KM · SCALE TRUE AT LAT. ${cfg.base === "kansas" ? "40°27' N" : "40° N"}`;
+      const pad = 4 * s, backW = Math.max(bw, label.length * font * 0.58) + pad * 2, backH = bh + font + pad * 3;
+      const bx = x + w - 12 * s - backW, by = y + h - 12 * s - backH, barX = bx + backW - pad - bw, barY = by + pad;
+      const g = document.createElementNS(SVG_NS, "g");
+      g.setAttribute("class", "plate-decor");
+      g.innerHTML = `<path class="plate-tick" d="${tick}"></path><text class="plate-corner-no" x="${f(x + w - 9 * s)}" y="${f(y + 17 * s)}" text-anchor="end" font-size="${f(font)}">PL. ${roman}.</text><g class="plate-scalebar"><rect class="back" x="${f(bx)}" y="${f(by)}" width="${f(backW)}" height="${f(backH)}"></rect><rect class="bar-a" x="${f(barX)}" y="${f(barY)}" width="${f(bw / 2)}" height="${f(bh)}"></rect><rect class="bar-b" x="${f(barX + bw / 2)}" y="${f(barY)}" width="${f(bw / 2)}" height="${f(bh)}"></rect><path class="scale-tick" d="M${f(barX)} ${f(barY - 2 * s)}V${f(barY + bh + 2 * s)}M${f(barX + bw)} ${f(barY - 2 * s)}V${f(barY + bh + 2 * s)}"></path><text x="${f(bx + backW - pad)}" y="${f(by + backH - pad)}" text-anchor="end" font-size="${f(font)}">${label}</text></g>`;
+      svg.appendChild(g);
+    }
+
     function makePlate(cfg) {
       const svg = document.getElementById(cfg.svgId);
       const detail = document.getElementById(cfg.detailId);
@@ -2136,6 +2174,7 @@ const SCALE_UPK = { migration: 0.080889, kansas: 1.313116 };
         g.appendChild(no);
         markerLayer.appendChild(g);
       });
+      plateFurniture(svg, cfg, box, s);
 
       const bubble = document.createElement("div");
       bubble.className = "map-bubble";

@@ -55,6 +55,7 @@ function ok(label, cond, detail) {
   // page code must address them via getElementById(...)/href="#...", never a
   // bare querySelector('#person.x') (the dot would be parsed as a class selector).
   const src = fs.readFileSync(FILE, 'utf8');
+  const srcBytes = Buffer.byteLength(src, 'utf8');
   ok('S1 no external scripts', !/<script[^>]*\ssrc=/.test(src));
   ok('S2 no external stylesheets', !/<link[^>]+rel="stylesheet"[^>]+href="http/.test(src));
   ok('S3 event data intact', src.includes('verifiedEventData') && src.includes('familyLinkData'));
@@ -75,7 +76,7 @@ function ok(label, cond, detail) {
   // the constraint that never moves. Margin is thin: every wave
   // declares its cost and looks for offsetting cuts. Peers bump
   // budgets only via a declared SPEC DELTA; total never exceeds 327680.
-  ok('S9 total payload within budget', src.length < 335342, src.length);
+  ok('S9 total payload within treaty landing budget', srcBytes <= 324500, srcBytes);
   ok('S10 embedded fonts within budget',
     (src.match(/data:font\/woff2;base64,[A-Za-z0-9+\/=]+/g) || []).join('').length < 45153);
   ok('S11 baked path constants within budget',
@@ -184,6 +185,38 @@ function ok(label, cond, detail) {
     ['map-line-zimmerman', 'map-line-mundell', 'map-line-dible', 'map-line-connelly']
       .every((id) => plates[id].conjecturalRoutePaths > 0));
   ok('P1 routes are noninteractive', Object.keys(ROUTE_EXPECT).every((id) => plates[id].routesPointerNone));
+  const plateCartouches = await page.evaluate(() => [...document.querySelectorAll('figure.plate')].map((fig) => ({
+    no: fig.querySelector('.plate-no')?.textContent.trim() || '',
+    title: fig.querySelector('.plate-title')?.textContent.trim() || '',
+    imprint: fig.querySelector('.plate-imprint')?.textContent.trim() || '',
+    sub: fig.querySelector('.plate-sub')?.textContent.trim() || '',
+    h2: fig.closest('section')?.querySelector('h2')?.textContent.trim() || '',
+    scaleBars: fig.querySelectorAll('.plate-scalebar').length,
+    scaleLabel: fig.querySelector('.plate-scalebar text')?.textContent.trim() || '',
+    cornerNo: fig.querySelector('.plate-corner-no')?.textContent.trim() || '',
+  })));
+  ok('SB1 scale bars carry reference-latitude labels', plateCartouches.length === 5 &&
+    plateCartouches.every((p) => p.scaleBars === 1 && /LAT\. 40°(?: N|27[′'] N)$/.test(p.scaleLabel)),
+    JSON.stringify(plateCartouches));
+  ok('RN1 plate numerals are cartouche-only and document-ordered',
+    plateCartouches.map((p) => p.no).join('|') === 'Plate II.|Plate III.|Plate IV.|Plate V.|Plate VI.' &&
+    plateCartouches.map((p) => p.cornerNo).join('|') === 'PL. II.|PL. III.|PL. IV.|PL. V.|PL. VI.' &&
+    plateCartouches.every((p) => p.title && p.imprint && p.sub && !/\bPlate [IVX]+\b/.test(p.h2)),
+    JSON.stringify(plateCartouches));
+  const removes = await page.evaluate(() => {
+    const table = document.querySelector('.ledger-table table');
+    const rows = table ? [...table.querySelectorAll('tbody tr')] : [];
+    return {
+      caption: document.querySelector('.ledger-table figcaption')?.textContent.trim() || '',
+      rows: rows.length,
+      conjectural: rows.filter((r) => r.classList.contains('conjectural')).length,
+      text: table?.textContent || '',
+    };
+  });
+  ok('TL1 Table of Removes has planned rows and figures',
+    removes.caption.startsWith('Table of Removes') && removes.rows === 11 && removes.conjectural === 4 &&
+    ['8,158', '10,779', '~9,100', '2,216', '1921-2023'].every((token) => removes.text.includes(token)),
+    JSON.stringify(removes));
   ok('B3 ten distinct links across plates', plates._distinctLinks === LINK_TOTAL, plates._distinctLinks);
   ok('B4 detail strip per plate', plates._details === 5, plates._details);
   ok('B5 markers keyboard-ready', plates._keyboardReady);

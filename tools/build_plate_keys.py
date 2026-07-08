@@ -36,6 +36,20 @@ ANCHOR_SHORT = {
     "William J. Dible": "Dible",
     "Donna Lea Connelly Dible": "Connelly",
 }
+PLATE_ROMANS = ["II", "III", "IV", "V", "VI"]
+LEDGER_ROWS = [
+    ("Zimmerman", "zimmerman", 5, "8,158", "", "1869-1954", False),
+    ("Nauer", "zimmerman", 6, "1,735", "", "1871-1930", False),
+    ("Mundell/Rust", "mundell", 8, "4,547", "", "1837-2023", False),
+    ("Dible/Heckman", "dible", 5, "10,779", "~9,100", "1896-2022", False),
+    ("Long/Sleight", "dible", 5, "8,096", "~1,300", "1805-1933", False),
+    ("Connelly/Durham", "connelly", 10, "5,029", "", "1782-2022", False),
+    ("Claar", "connelly", 5, "2,771", "~600", "1838-1935", False),
+    ("Nauer parentage", "zimmerman", 4, "1,718", "1,718", "1851-1880", True),
+    ("Rust identity", "mundell", 5, "593", "593", "1894-1910", True),
+    ("McClelland/Love", "dible", 8, "2,635", "2,635", "1801-1933", True),
+    ("Clemans/Flaherty", "mundell", 4, "2,216", "2,216", "1921-2023", True),
+]
 
 
 def extract_between(text: str, start: str, end: str) -> str:
@@ -212,6 +226,56 @@ def insert_new_block(source: str, detail_id: str, key: str, markup: str) -> str:
     return source.replace(needle, block, 1)
 
 
+def stamp_plate_numbers(source: str) -> str:
+    index = 0
+
+    def replace(match: re.Match[str]) -> str:
+        nonlocal index
+        if index >= len(PLATE_ROMANS):
+            print("build_plate_keys: more plate-no spans than known plate numerals", file=sys.stderr)
+            raise SystemExit(1)
+        roman = PLATE_ROMANS[index]
+        index += 1
+        return f"{match.group(1)}Plate {roman}.{match.group(2)}"
+
+    rendered = re.sub(r'(<span class="plate-no">).*?(</span>)', replace, source)
+    if index != len(PLATE_ROMANS):
+        print(f"build_plate_keys: stamped {index} plate numerals, expected {len(PLATE_ROMANS)}", file=sys.stderr)
+        raise SystemExit(1)
+    return rendered
+
+
+def ledger_markup() -> str:
+    rows = []
+    for name, slug, waypoints, km, conj, years, maybe in LEDGER_ROWS:
+        prefix = "? " if maybe else ""
+        row_class = " class=conjectural" if maybe else ""
+        rows.append(
+            f"<tr{row_class}><td>{prefix}<span class=anchor-text-{slug}>{name}</span></td>"
+            f"<td>{waypoints}</td><td>{km}</td><td>{conj}</td><td>{years}</td></tr>"
+        )
+    return (
+        '<figure class=ledger-table><figcaption>Table of Removes · leg distances are great-circle '
+        'kilometres between recorded waypoints</figcaption><div class=table-scroll><table><thead><tr>'
+        '<th>Route</th><th>Wp</th><th>Km</th><th>Conj. km</th><th>Years</th></tr></thead><tbody>'
+        + "".join(rows) + "</tbody></table></div></figure>"
+    )
+
+
+def replace_or_insert_ledger(source: str) -> str:
+    markup = ledger_markup()
+    pattern = re.compile(r"(      <!-- BEGIN miles-ledger -->\n).*?(\n      <!-- END -->)", re.S)
+    rendered, count = pattern.subn(rf"\1{markup}\2", source)
+    if count:
+        return rendered
+    needle = '      <p class="small">Full coordinates, confidence labels, open targets, and geospatial records live in <a href="ancestry_geospatial.geojson">ancestry_geospatial.geojson</a>.</p>'
+    block = f"      <!-- BEGIN miles-ledger -->\n{markup}\n      <!-- END -->\n{needle}"
+    if needle not in source:
+        print("build_plate_keys: map coordinates paragraph not found for miles ledger", file=sys.stderr)
+        raise SystemExit(1)
+    return source.replace(needle, block, 1)
+
+
 def render(source: str) -> str:
     events = parse_events(source)
     links = parse_links(source)
@@ -224,7 +288,8 @@ def render(source: str) -> str:
         rendered, found = replace_existing_block(rendered, str(cfg["key"]), markup)
         if not found:
             rendered = insert_new_block(rendered, str(cfg["detailId"]), str(cfg["key"]), markup)
-    return rendered
+    rendered = replace_or_insert_ledger(rendered)
+    return stamp_plate_numbers(rendered)
 
 
 def main() -> int:
@@ -236,9 +301,9 @@ def main() -> int:
     rendered = render(original)
     if args.check:
         if original != rendered:
-            print(f"{HTML_PATH} plate keys are out of date; run uv run tools/build_plate_keys.py", file=sys.stderr)
+            print(f"{HTML_PATH} plate keys, ledger, or numerals are out of date; run uv run tools/build_plate_keys.py", file=sys.stderr)
             return 1
-        print(f"{HTML_PATH} plate keys are current")
+        print(f"{HTML_PATH} plate keys, ledger, and numerals are current")
         return 0
 
     HTML_PATH.write_text(rendered)
