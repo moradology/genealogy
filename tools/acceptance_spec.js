@@ -242,14 +242,18 @@ function ok(label, cond, detail) {
       const targetId = href.startsWith('#') ? decodeURIComponent(href.slice(1)) : '';
       const tag = tags[0] || null;
       const tagClasses = tag ? [...tag.classList].filter((c) => c !== 'tag') : [];
+      // confidence class -> visible text -> stem border-left encoding must all agree
+      const borderFor = { documented: 'solid', strong: 'double', lead: 'dashed', open: 'dotted' };
       return {
         text: stem.textContent.trim(),
         linkCount: links.length,
         tagCount: tags.length,
         href,
         targetExists: !!targetId && !!document.getElementById(targetId),
-        tagClass: tagClasses[0] || '',
+        tagClass: tagClasses.length === 1 ? tagClasses[0] : `MULTI:${tagClasses.join('+')}`,
         tagText: tag ? tag.textContent.trim() : '',
+        borderStyle: getComputedStyle(stem).borderLeftStyle,
+        borderExpected: borderFor[tagClasses[0]] || 'dotted',
       };
     });
     const failures = [];
@@ -258,7 +262,8 @@ function ok(label, cond, detail) {
       const e = expected[i];
       if (!e) failures.push(`unexpected stem ${i + 1}`);
       else if (d.linkCount !== 1 || d.tagCount !== 1 || !d.targetExists ||
-        d.href !== e.href || d.tagClass !== e.tagClass || d.tagText !== e.tagText) {
+        d.href !== e.href || d.tagClass !== e.tagClass || d.tagText !== e.tagText ||
+        d.borderStyle !== d.borderExpected) {
         failures.push(`stem ${i + 1}: ${JSON.stringify(d)}`);
       }
     });
