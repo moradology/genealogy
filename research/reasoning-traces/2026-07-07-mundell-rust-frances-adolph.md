@@ -8,15 +8,15 @@ lineage_tags: [mundell]
 people: [Mary Frances Rust, Frances Adolph, Walter William Mundell, Homer Clair Mundell, Evelyn Delores Mundell Zimmerman, Lyle Strawn]
 places: [Smith County Kansas, Reamsville Kansas, Smith Center Kansas, Winona Kansas, Beloit Kansas]
 source_ids:
-  - src.evelyn-delores-zimmerman-obituary-baalmann-mortuary.f090c06a
-  - src.walter-william-mundell-familysearch.660f302f
-  - src.sarah-alice-cantwell-mundell-forum-post-genealogy-com-archive.ff07fce6
-  - src.walter-william-mundell-familysearch.ebf94346
-  - src.mary-frances-rust-forum-post-genealogy-com-archive.28f55412
-  - src.william-bryan-rust-find-a-grave.ddefa570
-  - src.clarence-aison-rust-ancestry-search-result-lead.3ce32b0d
-  - src.reamsville-cemetery-interment-net.133761eb
-  - src.nces-logan-county-public-school-search.e6263617
+  - src.evelyn-delores-zimmerman-obituary-baalmann-mortuary.e1d95407
+  - src.walter-william-mundell-familysearch.bd666c67
+  - src.sarah-alice-cantwell-mundell-forum-post-genealogy-com-archive.c515f29b
+  - src.walter-william-mundell-familysearch.bd666c67
+  - src.mary-frances-rust-forum-post-genealogy-com-archive.0356175c
+  - src.william-bryan-rust-find-a-grave.95e736d4
+  - src.clarence-aison-rust-ancestry-search-result-lead.032fa923
+  - src.reamsville-cemetery-interment-net.656f3e01
+  - src.nces-logan-county-public-school-search.afc503a6
 geojson_ids:
   - event.rust.frances_birth.1894-06-06
   - event.mundell.walter_frances_marriage.1910

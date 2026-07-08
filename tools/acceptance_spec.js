@@ -21,7 +21,7 @@ const PLATE_EXPECT = {
   'map-line-connelly': { markers: 7, edges: 4, guests: 0 },
 };
 const LINK_TOTAL = 10;
-const SOURCE_ITEMS = 125;
+const SOURCE_ITEMS = 126;
 const PERSON_DIVS = 83;
 
 const ISOLATED_ID = 'event.zimmerman.michael_birth.1869-10-25'; // Mainhardt; isolated on the zimmerman plate
@@ -178,10 +178,10 @@ function ok(label, cond, detail) {
     'Record Targets That Would Move The Tree', 'Source Ledger'])
     assert.ok(content.h2s.includes(h), 'missing h2: ' + h);
   ok('C1 all section headings present', true);
-  ok('C2 source ledger has 120 items', content.sourceCount === SOURCE_ITEMS, content.sourceCount);
+  ok('C2 source ledger count matches', content.sourceCount === SOURCE_ITEMS, content.sourceCount);
   ok('C3 every source has a link', content.sourcesWithAnchor === SOURCE_ITEMS, content.sourcesWithAnchor);
   ok('C4 sources grouped, first open', content.groups >= 5 && content.firstOpen, content.groups);
-  ok('C5 83 person entries preserved', content.persons === PERSON_DIVS, content.persons);
+  ok('C5 person entry count matches', content.persons === PERSON_DIVS, content.persons);
   ok('C6 method note preserved', content.breadth);
   ok('C7 geojson link preserved', content.geojsonLink);
 

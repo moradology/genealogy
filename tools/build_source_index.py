@@ -144,10 +144,13 @@ def evidence_role(blurb: str) -> str:
 
 
 def source_id(item: dict[str, str]) -> str:
+    """ID hashes the URL only, so blurb annotations and title fixes never orphan citations.
+
+    (Slug still derives from the title for readability; a title edit changes the slug,
+    which is rare and accepted. Blurbs are the frequently-edited field.)
+    """
     slug = slugify(item["title"])
-    digest = hashlib.sha1(
-        "\n".join([item["title"], item["url"], item["blurb"]]).encode("utf-8")
-    ).hexdigest()[:8]
+    digest = hashlib.sha1(item["url"].encode("utf-8")).hexdigest()[:8]
     return f"src.{slug}.{digest}"
 
 
@@ -171,7 +174,7 @@ def build_index() -> dict[str, object]:
         )
 
     return {
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "updated": "2026-07-07",
         "source": "Extracted from index.html Source Ledger",
         "record_count": len(records),

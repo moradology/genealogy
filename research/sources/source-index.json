@@ -1,8 +1,8 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "updated": "2026-07-07",
   "source": "Extracted from index.html Source Ledger",
-  "record_count": 125,
+  "record_count": 126,
   "fields": {
     "id": "Stable local source id for notes and reasoning traces, generated from source title, URL, and blurb.",
     "title": "Human-readable source title from the artifact ledger.",
@@ -15,7 +15,7 @@
   },
   "sources": [
     {
-      "id": "src.doyle-and-evelyn-zimmerman-50th-anniversary-announcement-colby-free-pr.15dd5c69",
+      "id": "src.doyle-and-evelyn-zimmerman-50th-anniversary-announcement-colby-free-pr.ffe48c56",
       "title": "Doyle and Evelyn Zimmerman 50th anniversary announcement, Colby Free Press, 11 Jun 2004",
       "url": "http://www.nwkansas.com/cfpwebpages/pdf%20pages-all/cfp%20pages-pdfs%202004/cfp%20pages:06%20Jun/Week%202/Friday/fam.pdf",
       "source_type": "compiled_pdf_or_journal",
@@ -28,7 +28,7 @@
       "search_text": "Doyle and Evelyn Zimmerman 50th anniversary announcement, Colby Free Press, 11 Jun 2004 Family-supplied announcement establishes marriage on 14 Jun 1954 at Sacred Heart Catholic Church, Colby; documents Doyle in Selden until 1953, Evelyn in Winona until 1954, the couple meeting in January 1954, and the Hi-Plains Implement career from 1953 through retirement in June 1999. Contradicts the compiled 14 Jun 1953 marriage date."
     },
     {
-      "id": "src.evelyn-delores-zimmerman-obituary-baalmann-mortuary.f090c06a",
+      "id": "src.evelyn-delores-zimmerman-obituary-baalmann-mortuary.e1d95407",
       "title": "Evelyn Delores Zimmerman obituary, Baalmann Mortuary",
       "url": "https://www.baalmannmortuary.com/obituaries/evelyn-zimmerman",
       "source_type": "obituary",
@@ -41,7 +41,7 @@
       "search_text": "Evelyn Delores Zimmerman obituary, Baalmann Mortuary Names Homer and Marjorie Clemans Mundell; states marriage to Doyle J. Zimmerman; says Evelyn was raised by grandmother Frances Adolph and graduated from Winona High School."
     },
     {
-      "id": "src.donald-lynn-mundell-obituary-fry-funeral-home.be63626b",
+      "id": "src.donald-lynn-mundell-obituary-fry-funeral-home.820e326b",
       "title": "Donald Lynn Mundell obituary, Fry Funeral Home",
       "url": "https://www.fryfuneralhome.com/obituaries/donald-mundell",
       "source_type": "obituary",
@@ -54,7 +54,7 @@
       "search_text": "Donald Lynn Mundell obituary, Fry Funeral Home Names Homer Claire Mundell in Donald's parent line and places Evelyn Zimmerman, Marilyn Ayer/Ayers, and Judy Bastian in the same sibling group."
     },
     {
-      "id": "src.doyle-jule-zimmerman-find-a-grave.a497581d",
+      "id": "src.doyle-jule-zimmerman-find-a-grave.a6b1ff2c",
       "title": "Doyle Jule Zimmerman, Find a Grave",
       "url": "https://nb.findagrave.com/memorial/34266662/doyle-jule-zimmerman",
       "source_type": "cemetery_memorial",
@@ -68,7 +68,7 @@
       "search_text": "Doyle Jule Zimmerman, Find a Grave Cemetery profile names Leonard Henry Zimmerman and Cecilia Antoinette Zodrow Zimmerman as parents and Evelyn Delores Mundell Zimmerman as spouse."
     },
     {
-      "id": "src.1880-madison-county-nebraska-census-index.2e6afcb1",
+      "id": "src.1880-madison-county-nebraska-census-index.9d41b03f",
       "title": "1880 Madison County, Nebraska census index",
       "url": "https://negenweb.net/NEMadison/Census/1880/1880_census.pdf",
       "source_type": "compiled_pdf_or_journal",
@@ -80,7 +80,7 @@
       "search_text": "1880 Madison County, Nebraska census index Lists John Zimmerman household in Norfolk, including Catherine, John, Michael, Paul, Baptist, and Louisa."
     },
     {
-      "id": "src.michael-john-zimmerman-sr-familysearch.57d87f15",
+      "id": "src.michael-john-zimmerman-sr-familysearch.8c643069",
       "title": "Michael John Zimmerman Sr., FamilySearch",
       "url": "https://ancestors.familysearch.org/en/LLWL-MJL/michael-john-zimmerman-sr.-1869-1964",
       "source_type": "public_tree_index",
@@ -92,7 +92,7 @@
       "search_text": "Michael John Zimmerman Sr., FamilySearch Public index gives birth at Wuerttemberger Hof/Mainhardt."
     },
     {
-      "id": "src.elizabeth-catherine-nauer-familysearch.165ea254",
+      "id": "src.elizabeth-catherine-nauer-familysearch.66c2d521",
       "title": "Elizabeth Catherine Nauer, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/LCPJ-KZV/elizabeth-catherine-nauer-1872-1935",
       "source_type": "public_tree_index",
@@ -105,7 +105,7 @@
       "search_text": "Elizabeth Catherine Nauer, FamilySearch Public index gives marriage to Michael John Zimmerman Sr. at Cawker City on 19 Nov 1895."
     },
     {
-      "id": "src.moritz-thomas-nauer-find-a-grave.7fa02f8e",
+      "id": "src.moritz-thomas-nauer-find-a-grave.048597c8",
       "title": "Moritz Thomas Nauer, Find a Grave",
       "url": "https://www.findagrave.com/memorial/48206092/moritz_thomas-nauer",
       "source_type": "cemetery_memorial",
@@ -118,7 +118,7 @@
       "search_text": "Moritz Thomas Nauer, Find a Grave Cemetery profile lists Thomas A. Nauer and Catherina Koeberger Nauer and includes Elizabeth Catherine Nauer Zimmerman among siblings."
     },
     {
-      "id": "src.elizabeth-catherine-nauer-zimmerman-find-a-grave.9806acb5",
+      "id": "src.elizabeth-catherine-nauer-zimmerman-find-a-grave.48bab423",
       "title": "Elizabeth Catherine Nauer Zimmerman, Find a Grave",
       "url": "https://www.findagrave.com/memorial/69631173/elizabeth_catherine-zimmerman",
       "source_type": "cemetery_memorial",
@@ -131,7 +131,7 @@
       "search_text": "Elizabeth Catherine Nauer Zimmerman, Find a Grave Cemetery profile names Thomas Nauer and Catherine Koeberger as parents and lists Leonard Henry Zimmerman among Michael and Elizabeth's children."
     },
     {
-      "id": "src.selden-cemetery-ksgenweb.0cc01791",
+      "id": "src.selden-cemetery-ksgenweb.82a81b07",
       "title": "Selden Cemetery, KSGenWeb",
       "url": "https://www.ksgenweb.org/KSSheridan/cemetery/selden2.html",
       "source_type": "local_transcription",
@@ -146,7 +146,7 @@
       "search_text": "Selden Cemetery, KSGenWeb Lists Michael J. and Elizabeth A. Zimmerman on the same stone; also shows Nauer burials nearby. The same transcription lists Dorsey O. McClelland, Ora E. McClelland, and Almeda O. Dible on identical stones/same concrete base, making it an important Long/McClelland collateral-location source."
     },
     {
-      "id": "src.john-paul-zimmerman-familysearch.6c772c23",
+      "id": "src.john-paul-zimmerman-familysearch.68be8f2c",
       "title": "John Paul Zimmerman, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/LTRB-GY1/john-paul-zimmerman-1842-1926",
       "source_type": "public_tree_index",
@@ -158,7 +158,7 @@
       "search_text": "John Paul Zimmerman, FamilySearch Public index for the likely immigrant ancestor."
     },
     {
-      "id": "src.paul-michael-zimmerman-familysearch.27730364",
+      "id": "src.paul-michael-zimmerman-familysearch.e53a9c95",
       "title": "Paul Michael Zimmerman, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/LTRB-2C4/paul-michael-zimmerman-1872-1974",
       "source_type": "public_tree_index",
@@ -170,7 +170,7 @@
       "search_text": "Paul Michael Zimmerman, FamilySearch Public index supports Wuerttemberger Hof/Mainhardt birth locality."
     },
     {
-      "id": "src.archion-mainhardt-familienregister-1808-1918-band-25.df3cd8b1",
+      "id": "src.archion-mainhardt-familienregister-1808-1918-band-25.fe546c15",
       "title": "Archion Mainhardt Familienregister 1808-1918 Band 25",
       "url": "https://www.archion.de/de/alle-archive/baden-wuerttemberg/evangelisches-archiv-baden-und-wuerttemberg-wuerttemberg/dekanat-schwaebisch-hall/mainhardt/96441",
       "source_type": "church_record_target",
@@ -182,7 +182,7 @@
       "search_text": "Archion Mainhardt Familienregister 1808-1918 Band 25 Best next record target for Zimmerman/Zinkle."
     },
     {
-      "id": "src.archion-mainhardt-eheregister-1850-1870-band-15.a05e0ec1",
+      "id": "src.archion-mainhardt-eheregister-1850-1870-band-15.6bdbdcfb",
       "title": "Archion Mainhardt Eheregister 1850-1870 Band 15",
       "url": "https://www.archion.de/de/alle-archive/baden-wuerttemberg/evangelisches-archiv-baden-und-wuerttemberg-wuerttemberg/dekanat-schwaebisch-hall/mainhardt/96411",
       "source_type": "church_record_target",
@@ -194,7 +194,7 @@
       "search_text": "Archion Mainhardt Eheregister 1850-1870 Band 15 Marriage record target for John Paul Zimmerman and Catherine Zinkle/Zinkl."
     },
     {
-      "id": "src.archion-mainhardt-taufregister-1859-1877-band-9.047f8f93",
+      "id": "src.archion-mainhardt-taufregister-1859-1877-band-9.baf3f1e8",
       "title": "Archion Mainhardt Taufregister 1859-1877 Band 9",
       "url": "https://www.archion.de/de/alle-archive/baden-wuerttemberg/evangelisches-archiv-baden-und-wuerttemberg-wuerttemberg/dekanat-schwaebisch-hall/mainhardt/96393",
       "source_type": "church_record_target",
@@ -206,7 +206,7 @@
       "search_text": "Archion Mainhardt Taufregister 1859-1877 Band 9 Baptism target for Michael and Paul Zimmerman."
     },
     {
-      "id": "src.archion-mainhardt-taufregister-1835-1843-band-7.8052fc94",
+      "id": "src.archion-mainhardt-taufregister-1835-1843-band-7.5c81429a",
       "title": "Archion Mainhardt Taufregister 1835-1843 Band 7",
       "url": "https://www.archion.de/de/alle-archive/baden-wuerttemberg/evangelisches-archiv-baden-und-wuerttemberg-wuerttemberg/dekanat-schwaebisch-hall/mainhardt/96387",
       "source_type": "church_record_target",
@@ -218,7 +218,7 @@
       "search_text": "Archion Mainhardt Taufregister 1835-1843 Band 7 Possible John Paul Zimmerman baptism target."
     },
     {
-      "id": "src.emma-catherine-nauer-familysearch.31196486",
+      "id": "src.emma-catherine-nauer-familysearch.df6e45f6",
       "title": "Emma Catherine Nauer, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/KJZC-FMK/emma-catherine-nauer-1867-1934",
       "source_type": "public_tree_index",
@@ -230,7 +230,7 @@
       "search_text": "Emma Catherine Nauer, FamilySearch Public sibling index gives Thomas A. Nauer and Catherina Marie Koeberger as parents."
     },
     {
-      "id": "src.catherina-koeberger-nauer-find-a-grave.6324614a",
+      "id": "src.catherina-koeberger-nauer-find-a-grave.33248488",
       "title": "Catherina Koeberger Nauer, Find a Grave",
       "url": "https://www.findagrave.com/memorial/48214393/catherina-nauer",
       "source_type": "cemetery_memorial",
@@ -242,7 +242,7 @@
       "search_text": "Catherina Koeberger Nauer, Find a Grave Cemetery profile gives birth 4 Mar 1832, death 1 Feb 1906, and burial at Saint Joseph Cemetery, New Almelo, Norton County, Kansas."
     },
     {
-      "id": "src.the-german-catholic-settlers-of-waterloo-county-pdf.eead1d38",
+      "id": "src.the-german-catholic-settlers-of-waterloo-county-pdf.73dd582b",
       "title": "The German Catholic Settlers of Waterloo County PDF",
       "url": "https://img1.wsimg.com/blobby/go/c0db0dfe-27d2-4632-889f-eeb26fbb14e1/downloads/f7bcaab9-38ae-4388-a9eb-f4fbecb15a21/Waterloo%20German%20Catholic%20Settlers.pdf?ver=1781326202841",
       "source_type": "compiled_pdf_or_journal",
@@ -254,7 +254,7 @@
       "search_text": "The German Catholic Settlers of Waterloo County PDF Compiled Waterloo-area lead placing Thomas and Catharine Nauer in Waterloo County in 1871 and Cawker, Mitchell County, Kansas by 1880; also proposes Lorenz Nauer and Dorothea Meyer as possible parents for Thomas."
     },
     {
-      "id": "src.thomas-a-nauer-wikitree.2826c045",
+      "id": "src.thomas-a-nauer-wikitree.4b5b94d5",
       "title": "Thomas A. Nauer, WikiTree",
       "url": "https://www.wikitree.com/wiki/Nauer-7",
       "source_type": "compiled_tree_or_profile",
@@ -266,7 +266,7 @@
       "search_text": "Thomas A. Nauer, WikiTree Compiled lead naming Thomas as son of Johann Lorenz Nauer and Mary Dorothea Wand; use as a target, not proof, because the Waterloo PDF uses Dorothea Meyer, widow Wand/Wandt."
     },
     {
-      "id": "src.new-prussia-ontario-locality-context.363abf14",
+      "id": "src.new-prussia-ontario-locality-context.912a8779",
       "title": "New Prussia, Ontario locality context",
       "url": "https://en.wikipedia.org/wiki/New_Prussia%2C_Ontario",
       "source_type": "web_reference",
@@ -278,7 +278,7 @@
       "search_text": "New Prussia, Ontario locality context Wilmot Township settlement context for Rhenish Prussian Catholic families and later movement toward Bruce County; useful geographic context for the Nauer search, not a direct proof record."
     },
     {
-      "id": "src.standesamt-lebehnke-civil-registration-fond-55-589-0-szukaj-w-archiwac.c3954cea",
+      "id": "src.standesamt-lebehnke-civil-registration-fond-55-589-0-szukaj-w-archiwac.c3d5b6c1",
       "title": "Standesamt Lebehnke civil registration fond 55/589/0, Szukaj w Archiwach",
       "url": "https://www.szukajwarchiwach.gov.pl/en/zespol/-/zespol/23763",
       "source_type": "web_reference",
@@ -290,7 +290,7 @@
       "search_text": "Standesamt Lebehnke civil registration fond 55/589/0, Szukaj w Archiwach Urzad Stanu Cywilnego Lubianka, held at the Poznan State Archive branch in Pila: birth, marriage, and death registers 1875-1930, fully digitized and viewable online without login. Likely the only surviving Lebehnke vital records."
     },
     {
-      "id": "src.lebehnke-evangelical-parish-entry-westpreussen-de-church-book-survey.291f0457",
+      "id": "src.lebehnke-evangelical-parish-entry-westpreussen-de-church-book-survey.348f54b7",
       "title": "Lebehnke Evangelical parish entry, westpreussen.de church-book survey",
       "url": "https://westpreussen.de/pages/forschungshilfen/kirchenbuecher/quellen.php?ID=129",
       "source_type": "web_reference",
@@ -302,7 +302,7 @@
       "search_text": "Lebehnke Evangelical parish entry, westpreussen.de church-book survey States the parish was attached to Schneidemuehl, Kreis Kolmar, until becoming independent in 1839, and that the church books kept from 1846 onward were destroyed in the Second World War - making the civil registers above the primary target."
     },
     {
-      "id": "src.albert-l-zodrow-familysearch.11d4c670",
+      "id": "src.albert-l-zodrow-familysearch.9edd45e2",
       "title": "Albert L. Zodrow, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/GQ83-CVL/albert-l.-zodrow-1908-1957",
       "source_type": "public_tree_index",
@@ -314,7 +314,7 @@
       "search_text": "Albert L. Zodrow, FamilySearch Public index names Julius Henry Zodrow and Ernestina Baier as parents."
     },
     {
-      "id": "src.julius-henry-zodrow-find-a-grave.1414fc23",
+      "id": "src.julius-henry-zodrow-find-a-grave.b2c95ae2",
       "title": "Julius Henry Zodrow, Find a Grave",
       "url": "https://www.findagrave.com/memorial/111655641/julius-henry-zodrow",
       "source_type": "cemetery_memorial",
@@ -326,7 +326,7 @@
       "search_text": "Julius Henry Zodrow, Find a Grave Cemetery profile links Julius to John Zodrow and Antonette Grams."
     },
     {
-      "id": "src.john-zodrow-familysearch.b1579047",
+      "id": "src.john-zodrow-familysearch.35a4f123",
       "title": "John Zodrow, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/LRVV-DCB/john-zodrow-1843-1915",
       "source_type": "public_tree_index",
@@ -338,7 +338,7 @@
       "search_text": "John Zodrow, FamilySearch Public index gives birth in Prussia/Germany and children with Antonia Grams."
     },
     {
-      "id": "src.antonette-grams-zodrow-find-a-grave.6b3b4605",
+      "id": "src.antonette-grams-zodrow-find-a-grave.46e00498",
       "title": "Antonette Grams Zodrow, Find a Grave",
       "url": "https://www.findagrave.com/memorial/156365204/antonette-zodrow",
       "source_type": "cemetery_memorial",
@@ -350,7 +350,7 @@
       "search_text": "Antonette Grams Zodrow, Find a Grave Cemetery profile gives birth in Poland and burial in Leoville, Decatur County, Kansas."
     },
     {
-      "id": "src.leoville-calvary-cemetery-transcription-ksgenweb.ac0f317a",
+      "id": "src.leoville-calvary-cemetery-transcription-ksgenweb.6d88b722",
       "title": "Leoville Calvary Cemetery transcription, KSGenWeb",
       "url": "https://www.ksgenweb.org/KSDecatur/cemeteries/leovillecalvarycemetery.htm",
       "source_type": "local_transcription",
@@ -362,7 +362,7 @@
       "search_text": "Leoville Calvary Cemetery transcription, KSGenWeb Lists John M. Zodrow, 29 Jun 1843-15 Mar 1915, with birthplace noted as Sabanka, Prussia."
     },
     {
-      "id": "src.neu-lebehnke-nowa-lubianka-kartenmeister.88b7553a",
+      "id": "src.neu-lebehnke-nowa-lubianka-kartenmeister.fe6797bf",
       "title": "Neu Lebehnke / Nowa Lubianka, Kartenmeister",
       "url": "http://www.kartenmeister.com/preview/City.asp?CitNum=25032",
       "source_type": "gazetteer_or_registry_context",
@@ -374,7 +374,7 @@
       "search_text": "Neu Lebehnke / Nowa Lubianka, Kartenmeister Locality candidate for the Sabanka problem; gives Kreis Deutsch Krone, Westpreussen, modern Nowa Lubianka, coordinates, and Catholic/Lutheran parish plus civil registry at Lebehnke."
     },
     {
-      "id": "src.neu-lebehnke-meyers-gazetteer.121b1503",
+      "id": "src.neu-lebehnke-meyers-gazetteer.dbd29306",
       "title": "Neu Lebehnke, Meyers Gazetteer",
       "url": "https://www.meyersgaz.org/place/20287016",
       "source_type": "gazetteer_or_registry_context",
@@ -386,7 +386,7 @@
       "search_text": "Neu Lebehnke, Meyers Gazetteer Gazetteer entry identifies Neu Lebehnke as a village in Deutsch Krone, Marienwerder, Westpreussen, Preussen, with Standesamt at Lebehnke Kr. Deutsch Krone."
     },
     {
-      "id": "src.lebehnke-kr-deutsch-krone-meyers-gazetteer.bfd78da5",
+      "id": "src.lebehnke-kr-deutsch-krone-meyers-gazetteer.4c8571d5",
       "title": "Lebehnke Kr. Deutsch Krone, Meyers Gazetteer",
       "url": "https://www.meyersgaz.org/place/20036035",
       "source_type": "gazetteer_or_registry_context",
@@ -398,7 +398,7 @@
       "search_text": "Lebehnke Kr. Deutsch Krone, Meyers Gazetteer Gazetteer entry identifies Lebehnke as village and estate in Kreis Deutsch Krone with Catholic and Protestant parish churches."
     },
     {
-      "id": "src.kreis-deutsch-krone-parish-civil-registry-table-agoff.cfa3c6f6",
+      "id": "src.kreis-deutsch-krone-parish-civil-registry-table-agoff.a66fa650",
       "title": "Kreis Deutsch Krone parish/civil registry table, AGOFF",
       "url": "https://agoff.de/?p=83526",
       "source_type": "gazetteer_or_registry_context",
@@ -410,7 +410,7 @@
       "search_text": "Kreis Deutsch Krone parish/civil registry table, AGOFF 1885 locality table lists Neu Lebehnke with evangelical church, Catholic church, and Standesamt all at Lebehnke."
     },
     {
-      "id": "src.standesamtsbezirk-lebehnke-agoff.b577a9f5",
+      "id": "src.standesamtsbezirk-lebehnke-agoff.6d8cdd05",
       "title": "Standesamtsbezirk Lebehnke, AGOFF",
       "url": "https://agoff.de/?p=108567",
       "source_type": "gazetteer_or_registry_context",
@@ -422,7 +422,7 @@
       "search_text": "Standesamtsbezirk Lebehnke, AGOFF Civil registry district overview says Standesamtsbezirk Lebehnke existed 1874-1945 and included Neu-Lebehnke."
     },
     {
-      "id": "src.nowa-lubianka-place-page-deutsch-krone-project.fd2b6f26",
+      "id": "src.nowa-lubianka-place-page-deutsch-krone-project.3debea66",
       "title": "Nowa Lubianka place page, Deutsch Krone Project",
       "url": "https://deutschkrone.rosentreterfoundation.org/placesearch.php?psearch=Nowa+Lubianka%2C+Pila+County%2C+Greater+Poland+Voivodeship%2C+Poland&sitever=standard",
       "source_type": "web_reference",
@@ -434,7 +434,7 @@
       "search_text": "Nowa Lubianka place page, Deutsch Krone Project Shows Neu Lebehnke / Nowa Lubianka and a local Zodrow cluster; useful as locality context, not proof that John M. Zodrow was born there."
     },
     {
-      "id": "src.lebehnke-catholic-banns-abstract-1874-1925.9c8e824f",
+      "id": "src.lebehnke-catholic-banns-abstract-1874-1925.127337c2",
       "title": "Lebehnke Catholic banns abstract, 1874-1925",
       "url": "https://www.yumpu.com/de/document/view/8280032/aufgebote-lebehnke-ab-1874-1925-the-roots-in-deutsch-",
       "source_type": "web_reference",
@@ -446,7 +446,7 @@
       "search_text": "Lebehnke Catholic banns abstract, 1874-1925 Compiled transcription from the Lebehnke parish banns; includes Neu/Alt Lebehnke Zodrow collateral entries naming Christoph Zodrow, Rosalia Zaske, Andreas Zodrow, and Justina Reinke."
     },
     {
-      "id": "src.szukaj-w-archiwach-catalog-neu-lebehnke-land-file.5b0989bd",
+      "id": "src.szukaj-w-archiwach-catalog-neu-lebehnke-land-file.b15660e6",
       "title": "Szukaj w Archiwach catalog, Neu Lebehnke land file",
       "url": "https://www.szukajwarchiwach.gov.pl/en/c/portal/update_language?languageId=de_DE&p_l_id=41967&redirect=%2Fen%2Fzespol%2F-%2Fzespol%2F77604%3F_Zespol_javax.portlet.action%3DzmienWidok%26_Zespol_nameofjsp%3Djednostki%26_Zespol_delta%3D45%26_Zespol_resetCur%3Dfalse%26_Zespol_cur%3D10",
       "source_type": "web_reference",
@@ -458,7 +458,7 @@
       "search_text": "Szukaj w Archiwach catalog, Neu Lebehnke land file Catalog search result references a Johann Zodrow property/mortgage and dismemberment file in Neu Lebehnke No. 100, dated 1860-1873; this is a collateral target, not yet John M. Zodrow proof."
     },
     {
-      "id": "src.hedwig-hattie-zodrow-schroer-find-a-grave.ddb82233",
+      "id": "src.hedwig-hattie-zodrow-schroer-find-a-grave.8fde6214",
       "title": "Hedwig \"Hattie\" Zodrow Schroer, Find a Grave",
       "url": "https://www.findagrave.com/memorial/75485451/hedwig-schroer",
       "source_type": "cemetery_memorial",
@@ -470,7 +470,7 @@
       "search_text": "Hedwig \"Hattie\" Zodrow Schroer, Find a Grave Sibling list includes Julius Henry Zodrow."
     },
     {
-      "id": "src.albert-zodrow-find-a-grave.db57b508",
+      "id": "src.albert-zodrow-find-a-grave.085a3444",
       "title": "Albert Zodrow, Find a Grave",
       "url": "https://www.findagrave.com/memorial/75480556/albert-zodrow",
       "source_type": "cemetery_memorial",
@@ -482,7 +482,19 @@
       "search_text": "Albert Zodrow, Find a Grave Memorial says Albert was son of John Zodrow and Antonette Grams; used here only as indirect evidence for Julius's likely parents."
     },
     {
-      "id": "src.evelyn-delores-mundell-zimmerman-find-a-grave.be9b17e4",
+      "id": "src.evelyn-delores-zimmerman-obituary-mirror-legacy-com.28114ce2",
+      "title": "Evelyn Delores Zimmerman obituary mirror, Legacy.com",
+      "url": "https://www.legacy.com/us/obituaries/name/evelyn-zimmerman-obituary?id=51665393",
+      "source_type": "obituary",
+      "lineage_tags": [
+        "zimmerman"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Verbatim republication of the Baalmann Mortuary obituary, including the erroneous June 14, 1953 marriage date; cited in the marriage-date analysis as a non-independent copy, not a witness.",
+      "search_text": "Evelyn Delores Zimmerman obituary mirror, Legacy.com Verbatim republication of the Baalmann Mortuary obituary, including the erroneous June 14, 1953 marriage date; cited in the marriage-date analysis as a non-independent copy, not a witness."
+    },
+    {
+      "id": "src.evelyn-delores-mundell-zimmerman-find-a-grave.cd43cde2",
       "title": "Evelyn Delores Mundell Zimmerman, Find a Grave",
       "url": "https://www.findagrave.com/memorial/252413378/evelyn_delores-zimmerman",
       "source_type": "cemetery_memorial",
@@ -495,7 +507,7 @@
       "search_text": "Evelyn Delores Mundell Zimmerman, Find a Grave Cemetery memorial, 1935-2023. Bio text copies the Baalmann obituary verbatim, including the erroneous June 14, 1953 marriage date, so it is not an independent witness for the marriage year."
     },
     {
-      "id": "src.walter-william-mundell-familysearch.660f302f",
+      "id": "src.walter-william-mundell-familysearch.bd666c67",
       "title": "Walter William Mundell, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/LV1R-Z1G/walter-william-mundell-1885-1931",
       "source_type": "public_tree_index",
@@ -507,7 +519,7 @@
       "search_text": "Walter William Mundell, FamilySearch Public index ties Walter to John Pryor Mundell and Sarah Alice Cantwell and lists Homer Clair Mundell among children."
     },
     {
-      "id": "src.sarah-alice-cantwell-mundell-forum-post-genealogy-com-archive.ff07fce6",
+      "id": "src.sarah-alice-cantwell-mundell-forum-post-genealogy-com-archive.c515f29b",
       "title": "Sarah Alice Cantwell Mundell forum post, Genealogy.com archive",
       "url": "https://www.support.genealogy.com/forum/surnames/topics/cantwell/909/",
       "source_type": "web_reference",
@@ -519,7 +531,7 @@
       "search_text": "Sarah Alice Cantwell Mundell forum post, Genealogy.com archive Compiled correspondence lead saying Walter William Mundell married/divorced Mary Frances Rust and their son was Homer Clair Mundell."
     },
     {
-      "id": "src.walter-william-mundell-familysearch.ebf94346",
+      "id": "src.walter-william-mundell-familysearch.bd666c67",
       "title": "Walter William Mundell, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/LV1R-Z1G/walter-william-mundell-1885-1931",
       "source_type": "public_tree_index",
@@ -531,7 +543,7 @@
       "search_text": "Walter William Mundell, FamilySearch Public index gives Frances Rust as spouse, 1910 marriage at Smith Center, Kansas, and children Homer Clair, Rex, and Erma."
     },
     {
-      "id": "src.barnabas-barney-cantwell-familysearch.dcd5a2e3",
+      "id": "src.barnabas-barney-cantwell-familysearch.0fd9613d",
       "title": "Barnabas \"Barney\" Cantwell, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/2ZS8-B73/barnabas-barney-cantwell-1813-1883",
       "source_type": "public_tree_index",
@@ -543,7 +555,7 @@
       "search_text": "Barnabas \"Barney\" Cantwell, FamilySearch Public index and snippets connect Sarah Alice Cantwell to the Barnabas Cantwell family and name Thomas Cantwell Jr. and Jemima Kelley as Barnabas's parents."
     },
     {
-      "id": "src.cantwell-forum-thread-genealogy-com-archive.dde6552d",
+      "id": "src.cantwell-forum-thread-genealogy-com-archive.816a07b9",
       "title": "Cantwell forum thread, Genealogy.com archive",
       "url": "https://www.support.genealogy.com/forum/surnames/topics/cantwell/763/",
       "source_type": "web_reference",
@@ -555,7 +567,7 @@
       "search_text": "Cantwell forum thread, Genealogy.com archive Compiled lead giving Thomas Cantwell Jr. and Jemima Kelley as Barnabas's parents and pushing the line toward William Cantwell and Margaret O'Brien; unproven here."
     },
     {
-      "id": "src.mary-frances-rust-forum-post-genealogy-com-archive.28f55412",
+      "id": "src.mary-frances-rust-forum-post-genealogy-com-archive.0356175c",
       "title": "Mary Frances Rust forum post, Genealogy.com archive",
       "url": "https://www.support.genealogy.com/forum/surnames/topics/rust/482/",
       "source_type": "web_reference",
@@ -567,7 +579,7 @@
       "search_text": "Mary Frances Rust forum post, Genealogy.com archive Gives the clue that Mary Frances Rust went by Frances, was born 6 Jun 1894 possibly in Smith County, Kansas, had a brother William/Bill Rust with wife Viola, divorced Walter William Mundell, married a man surnamed Adolph, then after his death married Lyle Strawn and lived in Beloit, Kansas."
     },
     {
-      "id": "src.william-bryan-rust-find-a-grave.ddefa570",
+      "id": "src.william-bryan-rust-find-a-grave.95e736d4",
       "title": "William Bryan Rust, Find a Grave",
       "url": "https://www.findagrave.com/memorial/124223039/william_bryan-rust",
       "source_type": "cemetery_memorial",
@@ -579,7 +591,7 @@
       "search_text": "William Bryan Rust, Find a Grave Search-result sibling list includes Mary Frances Rust Strawn, 1894-1984, and Clarence Aison Rust; useful for testing the William/Bill Rust brother clue."
     },
     {
-      "id": "src.clarence-aison-rust-ancestry-search-result-lead.3ce32b0d",
+      "id": "src.clarence-aison-rust-ancestry-search-result-lead.032fa923",
       "title": "Clarence Aison Rust, Ancestry search-result lead",
       "url": "https://www.ancestry.com/genealogy/records/results?firstName=clarence&geo-lang=en&lastName=rust&page=2",
       "source_type": "compiled_tree_or_profile",
@@ -591,7 +603,7 @@
       "search_text": "Clarence Aison Rust, Ancestry search-result lead Snippet gives Clarence Aison Rust, born 7 Jan 1896 in Reamsville/Smith County, Kansas, died 6 Aug 1970 at Smith Center, with father John F. Rust and mother Ethel B. Rupert."
     },
     {
-      "id": "src.reamsville-cemetery-interment-net.133761eb",
+      "id": "src.reamsville-cemetery-interment-net.656f3e01",
       "title": "Reamsville Cemetery, Interment.net",
       "url": "https://www.interment.net/data/us/ks/smith/reamsville/index.htm",
       "source_type": "local_transcription",
@@ -603,7 +615,7 @@
       "search_text": "Reamsville Cemetery, Interment.net Smith County cemetery transcription gives the local Rust cluster, including F. John Rust, 1870-1909, John A. Rust, 1842-1916, and Nomdje N. Rust, 1855-1934."
     },
     {
-      "id": "src.john-aissen-rust-find-a-grave.be6b32af",
+      "id": "src.john-aissen-rust-find-a-grave.23615b78",
       "title": "John Aissen Rust, Find a Grave",
       "url": "https://fr.findagrave.com/memorial/97845385/john-aissen-rust",
       "source_type": "cemetery_memorial",
@@ -615,7 +627,7 @@
       "search_text": "John Aissen Rust, Find a Grave Search-result child list includes F. John Rust; use only as a candidate link until Smith County records prove Mary Frances Rust's parents."
     },
     {
-      "id": "src.nces-logan-county-public-school-search.e6263617",
+      "id": "src.nces-logan-county-public-school-search.afc503a6",
       "title": "NCES Logan County public school search",
       "url": "https://nces.ed.gov/ccd/schoolsearch/school_list.asp?County=Logan+County&Search=1&State=20",
       "source_type": "web_reference",
@@ -627,7 +639,7 @@
       "search_text": "NCES Logan County public school search Current school locator still lists Winona High in Winona, Logan County, Kansas; useful as a modern locality check for the Frances Adolph / Winona High research target."
     },
     {
-      "id": "src.john-pryor-mundell-find-a-grave.1f4dfe56",
+      "id": "src.john-pryor-mundell-find-a-grave.e1163e68",
       "title": "John Pryor Mundell, Find a Grave",
       "url": "https://www.findagrave.com/memorial/157801034/john-pryor-mundell",
       "source_type": "cemetery_memorial",
@@ -639,7 +651,7 @@
       "search_text": "John Pryor Mundell, Find a Grave Cemetery profile links spouse Sarah Alice Cantwell Mundell and child Walter William Mundell."
     },
     {
-      "id": "src.occgs-harvey-mundell-civil-war-veterans-project-pdf.0680665c",
+      "id": "src.occgs-harvey-mundell-civil-war-veterans-project-pdf.af694281",
       "title": "OCCGS Harvey Mundell Civil War Veterans Project PDF",
       "url": "https://occgs.com/projects/civil_war/Mundell_Harvey.pdf",
       "source_type": "compiled_pdf_or_journal",
@@ -651,19 +663,19 @@
       "search_text": "OCCGS Harvey Mundell Civil War Veterans Project PDF Four-page compiled profile giving Harvey's April 1837 Clinton County, Indiana birth, parents John Mundell and Deborah Elmore, wife Elizabeth Jane Brown, children including John P. Mundell, Civil War service, and census/source trail."
     },
     {
-      "id": "src.st-charles-county-historical-society-genealogy-page-213.03246fbc",
-      "title": "St. Charles County Historical Society genealogy page 213",
+      "id": "src.southern-tuolumne-county-historical-society-genealogy-page-213.c3fd5886",
+      "title": "Southern Tuolumne County Historical Society genealogy page 213",
       "url": "https://stchsgenealogy.com/p213.htm",
       "source_type": "web_reference",
       "lineage_tags": [
         "mundell"
       ],
       "evidence_role": "lead",
-      "blurb": "Compiled Harvey William Mundell page with John Mundell/Deborah Elmore parentage, Elizabeth Jane Brown marriage, Civil War service, and census trail; use as a pointer to primary records.",
-      "search_text": "St. Charles County Historical Society genealogy page 213 Compiled Harvey William Mundell page with John Mundell/Deborah Elmore parentage, Elizabeth Jane Brown marriage, Civil War service, and census trail; use as a pointer to primary records."
+      "blurb": "Compiled Harvey William Mundell page with John Mundell/Deborah Elmore parentage, Elizabeth Jane Brown marriage, Civil War service, and census trail; use as a pointer to primary records. Site verified July 2026 as the Southern Tuolumne County, California historical society, previously misattributed here to St. Charles County.",
+      "search_text": "Southern Tuolumne County Historical Society genealogy page 213 Compiled Harvey William Mundell page with John Mundell/Deborah Elmore parentage, Elizabeth Jane Brown marriage, Civil War service, and census trail; use as a pointer to primary records. Site verified July 2026 as the Southern Tuolumne County, California historical society, previously misattributed here to St. Charles County."
     },
     {
-      "id": "src.harvey-william-mundell-familysearch.009b7ee4",
+      "id": "src.harvey-william-mundell-familysearch.c7ebf6fb",
       "title": "Harvey William Mundell, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/K2W7-JRZ/harvey-william-mundell-1821-1901",
       "source_type": "public_tree_index",
@@ -675,7 +687,7 @@
       "search_text": "Harvey William Mundell, FamilySearch Public index lead naming John Mundell and Deborah Elmore as parents. A July 2026 automated re-check found this profile ID resolving to an unrelated person, apparently after a tree merge; verify in a browser before relying on it."
     },
     {
-      "id": "src.genevieve-clemans-familysearch.b294f2df",
+      "id": "src.genevieve-clemans-familysearch.c0724795",
       "title": "Genevieve Clemans, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/G6RD-KWY/genevieve-clemans-1925-2003",
       "source_type": "public_tree_index",
@@ -687,7 +699,7 @@
       "search_text": "Genevieve Clemans, FamilySearch Public index names Talmadge Dewitt Clemans and Margaret Ellen Flaherty as parents, says Genevieve was born 15 Jan 1925 in Minnesota, and lists Marjorie Clemans as a sibling."
     },
     {
-      "id": "src.talmage-d-clemans-ancestry-1940-census-profile.96631e39",
+      "id": "src.talmage-d-clemans-ancestry-1940-census-profile.7ae3d678",
       "title": "Talmage D. Clemans, Ancestry 1940 census profile",
       "url": "https://www.ancestry.com/1940-census/usa/Mississippi/Talmage-Clemons_45mck8/amp",
       "source_type": "compiled_tree_or_profile",
@@ -699,7 +711,7 @@
       "search_text": "Talmage D. Clemans, Ancestry 1940 census profile Search-result lead gives parents Roland Clemens and Ella C./Ellen Martin; used only as a provisional lead until Marjorie Clemans is tied directly to the household."
     },
     {
-      "id": "src.margaret-ellen-flaherty-clemans-find-a-grave.1bfe745d",
+      "id": "src.margaret-ellen-flaherty-clemans-find-a-grave.9d4ee797",
       "title": "Margaret Ellen Flaherty Clemans, Find a Grave",
       "url": "https://www.findagrave.com/memorial/113830517/margaret_ellen-clemans",
       "source_type": "cemetery_memorial",
@@ -711,7 +723,7 @@
       "search_text": "Margaret Ellen Flaherty Clemans, Find a Grave Memorial gives about 1901-1986 and a St. Louis marriage note for Talmage Clemans and Margaret Flaherty on 16 Apr 1921."
     },
     {
-      "id": "src.edward-j-flaherty-find-a-grave.abf5de45",
+      "id": "src.edward-j-flaherty-find-a-grave.afbcfd75",
       "title": "Edward J. Flaherty, Find a Grave",
       "url": "https://www.findagrave.com/memorial/36793267/edward_j-flaherty",
       "source_type": "cemetery_memorial",
@@ -723,7 +735,7 @@
       "search_text": "Edward J. Flaherty, Find a Grave Cemetery sibling lead listing Margaret Ellen Flaherty Clemans; Edward's page names Martin Flaherty and Kate Flaherty as parents, making them a specific parentage lead for Margaret pending direct proof."
     },
     {
-      "id": "src.marjorie-opal-clemans-familysearch.93f7b58b",
+      "id": "src.marjorie-opal-clemans-familysearch.f092de64",
       "title": "Marjorie Opal Clemans, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/L5K9-Q7H/marjorie-opal-clemans-1914-1991",
       "source_type": "public_tree_index",
@@ -735,7 +747,7 @@
       "search_text": "Marjorie Opal Clemans, FamilySearch Same-name collision candidate: born in Liberty Mills, Indiana in 1914, not yet connected to Evelyn's Colorado/Kansas Mundell context."
     },
     {
-      "id": "src.descendants-of-christian-eby-internet-archive-text.ad12209d",
+      "id": "src.descendants-of-christian-eby-internet-archive-text.0f8669ad",
       "title": "Descendants of Christian Eby, Internet Archive text",
       "url": "https://archive.org/stream/descendantsofchr00minn/descendantsofchr00minn_djvu.txt",
       "source_type": "web_reference",
@@ -747,7 +759,7 @@
       "search_text": "Descendants of Christian Eby, Internet Archive text Compiled genealogy entry for the Indiana Marjorie Clemans who married Clay V. Stamper in South Bend on 23 Oct 1935; use as an exclusion clue unless direct records connect her to Evelyn's mother."
     },
     {
-      "id": "src.rexford-city-election-coverage-colby-free-press-front-page-4-apr-2005.e433ea62",
+      "id": "src.rexford-city-election-coverage-colby-free-press-front-page-4-apr-2005.be696b22",
       "title": "Rexford city election coverage, Colby Free Press front page, 4 Apr 2005",
       "url": "http://www.nwkansas.com/cfpwebpages/pdf%20pages-all/cfp%20pages-pdfs%202005/cfp%20pages:04%20Apr/Week%202/%20%20Monday/front.pdf",
       "source_type": "compiled_pdf_or_journal",
@@ -760,7 +772,7 @@
       "search_text": "Rexford city election coverage, Colby Free Press front page, 4 Apr 2005 Names incumbent Rexford Mayor William Dible running unopposed and states he had been mayor of Rexford since 1976, with wife Donna, residents of Rexford most of their lives."
     },
     {
-      "id": "src.william-j-bill-dible-obituary-baalmann-mortuary.4060e574",
+      "id": "src.william-j-bill-dible-obituary-baalmann-mortuary.46fec901",
       "title": "William J. \"Bill\" Dible obituary, Baalmann Mortuary",
       "url": "https://www.baalmannmortuary.com/obituaries/william-dible",
       "source_type": "obituary",
@@ -773,7 +785,7 @@
       "search_text": "William J. \"Bill\" Dible obituary, Baalmann Mortuary Names Ray and Almeda Long Dible; gives birth, death, and marriage context."
     },
     {
-      "id": "src.donna-lea-connelly-dible-obituary-baalmann-mortuary.395e6262",
+      "id": "src.donna-lea-connelly-dible-obituary-baalmann-mortuary.a2afb9a6",
       "title": "Donna Lea Connelly Dible obituary, Baalmann Mortuary",
       "url": "https://www.baalmannmortuary.com/obituaries/donna-dible",
       "source_type": "obituary",
@@ -787,7 +799,7 @@
       "search_text": "Donna Lea Connelly Dible obituary, Baalmann Mortuary Names Chester and Martha Claar Connelly."
     },
     {
-      "id": "src.donna-lea-dible-notice-hays-post.9be41f0b",
+      "id": "src.donna-lea-dible-notice-hays-post.427256eb",
       "title": "Donna Lea Dible notice, Hays Post",
       "url": "https://hayspost.com/posts/bc1e3b37-d4c3-4a69-930e-24b43084c469",
       "source_type": "obituary",
@@ -800,7 +812,7 @@
       "search_text": "Donna Lea Dible notice, Hays Post Repeats Chester/Martha parentage and Rexford context."
     },
     {
-      "id": "src.harry-dible-wikitree.0d63d152",
+      "id": "src.harry-dible-wikitree.dc426b01",
       "title": "Harry Dible, WikiTree",
       "url": "https://www.wikitree.com/wiki/Dible-21",
       "source_type": "compiled_tree_or_profile",
@@ -812,7 +824,7 @@
       "search_text": "Harry Dible, WikiTree States Harry was son of Zephaniah Dible and Catherine Moore; gives a conflicting Catherine Moore date set versus Ancestry's John Moore Dible profile."
     },
     {
-      "id": "src.julia-dible-familysearch.412db5b4",
+      "id": "src.julia-dible-familysearch.4e444220",
       "title": "Julia Dible, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/KCBR-YSR/julia-dible-1874-1967",
       "source_type": "public_tree_index",
@@ -824,7 +836,7 @@
       "search_text": "Julia Dible, FamilySearch Public index names John Heckman Dible and Elizabeth J. Haden as parents and gives marriage to Harry H. Dible in Hitchcock County, Nebraska."
     },
     {
-      "id": "src.john-heckman-dible-familysearch.761fd070",
+      "id": "src.john-heckman-dible-familysearch.45ce2091",
       "title": "John Heckman Dible, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/K845-DFL/john-heckman-dible-1836-1913",
       "source_type": "public_tree_index",
@@ -836,7 +848,7 @@
       "search_text": "John Heckman Dible, FamilySearch Public index gives marriage to Elizabeth J. Haden and supports Julia's paternal line."
     },
     {
-      "id": "src.john-heckman-dible-find-a-grave.e283e445",
+      "id": "src.john-heckman-dible-find-a-grave.959d1e08",
       "title": "John Heckman Dible, Find a Grave",
       "url": "https://www.findagrave.com/memorial/9609591/john-heckman-dible",
       "source_type": "cemetery_memorial",
@@ -848,7 +860,7 @@
       "search_text": "John Heckman Dible, Find a Grave Memorial names John A. Dible and Catherine Heckman as parents and lists Julia among children."
     },
     {
-      "id": "src.elizabeth-j-haden-dible-find-a-grave.cf989d18",
+      "id": "src.elizabeth-j-haden-dible-find-a-grave.26a9d103",
       "title": "Elizabeth J. Haden Dible, Find a Grave",
       "url": "https://www.findagrave.com/memorial/9609623/elizabeth-j-dible",
       "source_type": "cemetery_memorial",
@@ -860,7 +872,7 @@
       "search_text": "Elizabeth J. Haden Dible, Find a Grave Cemetery profile names Andrew Jackson Haden and Sophia Reid as her parents and lists children with John H. Dible."
     },
     {
-      "id": "src.elizabeth-j-betty-haden-kaysancestry-rootsmagic-page.ea139baf",
+      "id": "src.elizabeth-j-betty-haden-kaysancestry-rootsmagic-page.afa02188",
       "title": "Elizabeth J. \"Betty\" Haden, KaysAncestry RootsMagic page",
       "url": "https://sites.rootsmagic.com/KaysAncestry/individual.php?p=7222",
       "source_type": "compiled_tree_or_profile",
@@ -872,7 +884,7 @@
       "search_text": "Elizabeth J. \"Betty\" Haden, KaysAncestry RootsMagic page Compiled page names Andrew Jackson Haden and Sophia Reed as parents, lists siblings, and cites 1850/1860 Cumberland County, Kentucky census households."
     },
     {
-      "id": "src.andrew-jackson-haden-kaysancestry-rootsmagic-page.e028ea96",
+      "id": "src.andrew-jackson-haden-kaysancestry-rootsmagic-page.bf1db557",
       "title": "Andrew Jackson Haden, KaysAncestry RootsMagic page",
       "url": "https://sites.rootsmagic.com/KaysAncestry/individual.php?p=5328",
       "source_type": "compiled_tree_or_profile",
@@ -884,7 +896,7 @@
       "search_text": "Andrew Jackson Haden, KaysAncestry RootsMagic page Compiled page transcribes 1850/1860 Cumberland County household clues, identifies Sophia Reed as spouse, names Richard D. Haden and Sarah \"Sally\" Lewis Tompkins as parents, and notes a Cumberland County mortgage to Sally L. Haden as Andrew's mother."
     },
     {
-      "id": "src.richard-d-haden-kaysancestry-rootsmagic-page.7600de4f",
+      "id": "src.richard-d-haden-kaysancestry-rootsmagic-page.dd85ff60",
       "title": "Richard D. Haden, KaysAncestry RootsMagic page",
       "url": "https://sites.rootsmagic.com/KaysAncestry/individual.php?p=659",
       "source_type": "compiled_tree_or_profile",
@@ -896,7 +908,7 @@
       "search_text": "Richard D. Haden, KaysAncestry RootsMagic page Compiled lead for the Gen 6 Haden layer: Albemarle County, Virginia birth/marriage context, marriage to Sarah \"Sally\" Lewis Tompkins on 7 Mar 1799, and death in Cumberland County, Kentucky."
     },
     {
-      "id": "src.sarah-sally-lewis-tompkins-kaysancestry-rootsmagic-page.f1fd9d2b",
+      "id": "src.sarah-sally-lewis-tompkins-kaysancestry-rootsmagic-page.be3b4c26",
       "title": "Sarah \"Sally\" Lewis Tompkins, KaysAncestry RootsMagic page",
       "url": "https://sites.rootsmagic.com/KaysAncestry/individual.php?p=1960",
       "source_type": "compiled_tree_or_profile",
@@ -908,7 +920,7 @@
       "search_text": "Sarah \"Sally\" Lewis Tompkins, KaysAncestry RootsMagic page Compiled lead tying Sally to Richard D. Haden and their child cluster including Andrew Jackson Haden."
     },
     {
-      "id": "src.sophia-reed-kaysancestry-rootsmagic-page.ea6b3de1",
+      "id": "src.sophia-reed-kaysancestry-rootsmagic-page.1c35907f",
       "title": "Sophia Reed, KaysAncestry RootsMagic page",
       "url": "https://sites.rootsmagic.com/KaysAncestry/individual.php?p=7219",
       "source_type": "compiled_tree_or_profile",
@@ -920,7 +932,7 @@
       "search_text": "Sophia Reed, KaysAncestry RootsMagic page Compiled/census lead for Sophia Reed Haden; notes possible Reid household clues in 1860 and 1870 but does not prove Sophia's parents."
     },
     {
-      "id": "src.john-moore-dible-familysearch.70f3c406",
+      "id": "src.john-moore-dible-familysearch.e9b80eb3",
       "title": "John Moore Dible, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/LVZ6-YGD",
       "source_type": "public_tree_index",
@@ -932,7 +944,7 @@
       "search_text": "John Moore Dible, FamilySearch Public index shows Zephaniah Dible and Catherine Moore as parents."
     },
     {
-      "id": "src.john-moore-dible-ancestry-profile.50f694cc",
+      "id": "src.john-moore-dible-ancestry-profile.67e00d3e",
       "title": "John Moore Dible, Ancestry profile",
       "url": "https://www.ancestry.com/genealogy/records/john-moore-dible-24-1zyhn5",
       "source_type": "compiled_tree_or_profile",
@@ -944,7 +956,7 @@
       "search_text": "John Moore Dible, Ancestry profile Compiled/index lead places John Moore Dible's 1860 birth at Kiskiminetas, Armstrong County, Pennsylvania, and gives parents Zephaniah Dible and Catherine Moore."
     },
     {
-      "id": "src.catherine-heckman-familysearch.241bf553",
+      "id": "src.catherine-heckman-familysearch.58eef36d",
       "title": "Catherine Heckman, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/L6LS-FV3/catherine-heckman-1805-1846",
       "source_type": "public_tree_index",
@@ -956,7 +968,7 @@
       "search_text": "Catherine Heckman, FamilySearch Public index connects Catherine Heckman to children including Zephaniah and John Heckman Dible."
     },
     {
-      "id": "src.john-jacob-heckman-familysearch.21d77a97",
+      "id": "src.john-jacob-heckman-familysearch.e26b893d",
       "title": "John Jacob Heckman, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/KHLL-WKM/john-jacob-heckman-1797",
       "source_type": "public_tree_index",
@@ -968,7 +980,7 @@
       "search_text": "John Jacob Heckman, FamilySearch Sibling-index evidence naming Philip Heckman and Esther Otterman as parents."
     },
     {
-      "id": "src.george-heckman-familysearch.9d3d1d13",
+      "id": "src.george-heckman-familysearch.a90e1dd8",
       "title": "George Heckman, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/GMWC-SZ1/george-heckman-1814-1899",
       "source_type": "public_tree_index",
@@ -980,7 +992,7 @@
       "search_text": "George Heckman, FamilySearch Sibling-index evidence for the Philip Heckman and Esther Otterman household."
     },
     {
-      "id": "src.philip-heckman-allshouse-family-tree.5ee562e9",
+      "id": "src.philip-heckman-allshouse-family-tree.86b6950e",
       "title": "Philip Heckman, Allshouse Family Tree",
       "url": "https://allshousefamily.org/getperson.php?personID=P6145&tree=Allshouse1",
       "source_type": "compiled_tree_or_profile",
@@ -992,7 +1004,7 @@
       "search_text": "Philip Heckman, Allshouse Family Tree Compiled lead for Philip Heckman and Maria Esther Otterman; useful as a pointer to Pennsylvania original records."
     },
     {
-      "id": "src.ludwig-louis-heckman-find-a-grave.c81022dc",
+      "id": "src.ludwig-louis-heckman-find-a-grave.7862b63e",
       "title": "Ludwig \"Louis\" Heckman, Find a Grave",
       "url": "https://www.findagrave.com/memorial/43410689/ludwig-heckman",
       "source_type": "cemetery_memorial",
@@ -1004,7 +1016,7 @@
       "search_text": "Ludwig \"Louis\" Heckman, Find a Grave Sibling memorial naming Philip Heckman and Esther Otterman and pointing to Albrecht Heckman of Boedigheim/Baden as an immigrant lead."
     },
     {
-      "id": "src.dible-family-paper-families-by-velma-parsons.cc6e72ef",
+      "id": "src.dible-family-paper-families-by-velma-parsons.c5e3b77b",
       "title": "Dible family paper, Families by Velma Parsons",
       "url": "https://www.familiesbyvelmaparsons.com/pdfs/DIBLE.pdf",
       "source_type": "compiled_pdf_or_journal",
@@ -1016,7 +1028,7 @@
       "search_text": "Dible family paper, Families by Velma Parsons Three-page compiled Dible family paper placing John Dible and Catherine Heckman under Jacob Dible and Susannah Allshouse."
     },
     {
-      "id": "src.john-jacob-dreibelbis-family-of-america-google-books-record.ccd9964e",
+      "id": "src.john-jacob-dreibelbis-family-of-america-google-books-record.73d650a1",
       "title": "John Jacob Dreibelbis Family of America, Google Books record",
       "url": "https://books.google.com/books/about/John_Jacob_Dreibelbis_Family_of_America.html?id=ODgZAQAAMAAJ",
       "source_type": "web_reference",
@@ -1028,7 +1040,7 @@
       "search_text": "John Jacob Dreibelbis Family of America, Google Books record Compiled Dreibelbis lead identifying the immigrant John/Johann Jacob Dreibelbis line from Hassloch, Germany; useful only after the Dible-to-Dreibelbis step is proven."
     },
     {
-      "id": "src.ruth-margaret-dible-haughawout-obituary.b984b0d7",
+      "id": "src.ruth-margaret-dible-haughawout-obituary.88909214",
       "title": "Ruth Margaret Dible Haughawout obituary",
       "url": "https://www.reichmuthfuneralhomes.com/m/obituaries/Ruth-Haughawout/",
       "source_type": "obituary",
@@ -1041,7 +1053,7 @@
       "search_text": "Ruth Margaret Dible Haughawout obituary Names Ray Hershel and Almeda Ora Long Dible."
     },
     {
-      "id": "src.jackson-county-kansas-marriage-index.6890097a",
+      "id": "src.jackson-county-kansas-marriage-index.9c3a5c57",
       "title": "Jackson County, Kansas marriage index",
       "url": "https://usgenealogyresearch.atwebpages.com/Kansas/Jackson/marriages.html",
       "source_type": "web_reference",
@@ -1054,7 +1066,7 @@
       "search_text": "Jackson County, Kansas marriage index Lists Almeda Long and Ray H. Dible marriage entry."
     },
     {
-      "id": "src.william-walker-long-find-a-grave.4886f8dc",
+      "id": "src.william-walker-long-find-a-grave.2dc04924",
       "title": "William Walker Long, Find a Grave",
       "url": "https://www.findagrave.com/memorial/83044722/william_walker-long",
       "source_type": "cemetery_memorial",
@@ -1066,7 +1078,7 @@
       "search_text": "William Walker Long, Find a Grave Links spouse Cora Ellie McClellan and Long family context."
     },
     {
-      "id": "src.cora-ellie-mcclellan-long-find-a-grave.0e87647c",
+      "id": "src.cora-ellie-mcclellan-long-find-a-grave.4819b565",
       "title": "Cora Ellie McClellan Long, Find a Grave",
       "url": "https://www.findagrave.com/memorial/83042108/cora_ellie-long",
       "source_type": "cemetery_memorial",
@@ -1078,7 +1090,7 @@
       "search_text": "Cora Ellie McClellan Long, Find a Grave Cemetery profile/search-result context links Cora to Dorsey Overturf McClelland and Lovina Parker Love and notes the Selden Cemetery collateral cluster with Dorsey, Ora, and Almeda."
     },
     {
-      "id": "src.dorsey-overturf-mcclelland-find-a-grave.7cc38d9a",
+      "id": "src.dorsey-overturf-mcclelland-find-a-grave.99e95448",
       "title": "Dorsey Overturf McClelland, Find a Grave",
       "url": "https://www.findagrave.com/memorial/81010414/dorsey_overturf-mcclelland",
       "source_type": "cemetery_memorial",
@@ -1090,7 +1102,7 @@
       "search_text": "Dorsey Overturf McClelland, Find a Grave Cemetery profile target for Dorsey's dates, parents, spouse, and Selden burial context."
     },
     {
-      "id": "src.robert-nelson-long-find-a-grave.1c92cdfb",
+      "id": "src.robert-nelson-long-find-a-grave.1e583c65",
       "title": "Robert Nelson Long, Find a Grave",
       "url": "https://www.findagrave.com/memorial/101356599/robert_nelson-long",
       "source_type": "cemetery_memorial",
@@ -1102,7 +1114,7 @@
       "search_text": "Robert Nelson Long, Find a Grave Biography gives marriage to Ann Ghent Sleight and Sleight parents."
     },
     {
-      "id": "src.rev-robert-long-find-a-grave.8df2c9ae",
+      "id": "src.rev-robert-long-find-a-grave.3aea8e6c",
       "title": "Rev. Robert Long, Find a Grave",
       "url": "https://www.findagrave.com/memorial/68978483/robert-long",
       "source_type": "cemetery_memorial",
@@ -1114,7 +1126,7 @@
       "search_text": "Rev. Robert Long, Find a Grave Memorial biography names two sons, John Franklin and Abner Nelson Long, and lists Robert Nelson Long as John Franklin's child; an earlier reading here mistook Robert Nelson for a son of Rev. Robert. Gives 1775-1850 with death at Locust Grove Township, Jefferson County, Iowa."
     },
     {
-      "id": "src.henry-sleight-familysearch.f1a4d601",
+      "id": "src.henry-sleight-familysearch.95f5be05",
       "title": "Henry Sleight, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/M2HW-VTF/henry-sleight-1828",
       "source_type": "public_tree_index",
@@ -1126,7 +1138,7 @@
       "search_text": "Henry Sleight, FamilySearch Public sibling-index result naming John Sleight and Elizabeth Gaunt as parents and listing John Gaunt Sleight among siblings. A July 2026 automated re-check rendered this profile with mother Elizabeth Richardson Coulson and no John Gaunt Sleight among siblings, suggesting an unrelated Sleight family; verify in a browser."
     },
     {
-      "id": "src.griggsville-cemetery-transcription-genealogy-trails.2c547eec",
+      "id": "src.griggsville-cemetery-transcription-genealogy-trails.0dc66324",
       "title": "Griggsville Cemetery transcription, Genealogy Trails",
       "url": "https://genealogytrails.com/ill/pike/cemgriggsville4.html",
       "source_type": "local_transcription",
@@ -1138,7 +1150,7 @@
       "search_text": "Griggsville Cemetery transcription, Genealogy Trails Lists Sleight burials and parent notes for John Gaunt and Rebecca Walker Sleight descendants."
     },
     {
-      "id": "src.alexander-m-mcclelland-wikitree.3f9f1cb0",
+      "id": "src.alexander-m-mcclelland-wikitree.ca5f6646",
       "title": "Alexander M. McClelland, WikiTree",
       "url": "https://www.wikitree.com/wiki/McClelland-1186",
       "source_type": "compiled_tree_or_profile",
@@ -1150,7 +1162,7 @@
       "search_text": "Alexander M. McClelland, WikiTree Compiled lead naming Dorsey Overturf McClelland as a child."
     },
     {
-      "id": "src.sarah-hoge-mcclelland-wikitree.5316bcda",
+      "id": "src.sarah-hoge-mcclelland-wikitree.3d30966f",
       "title": "Sarah Hoge McClelland, WikiTree",
       "url": "https://www.wikitree.com/wiki/Hoge-395",
       "source_type": "compiled_tree_or_profile",
@@ -1162,7 +1174,7 @@
       "search_text": "Sarah Hoge McClelland, WikiTree Compiled lead naming Dorsey Overturf McClelland as a child."
     },
     {
-      "id": "src.lovina-parker-love-mcclelland-wikitree.70bf2c0d",
+      "id": "src.lovina-parker-love-mcclelland-wikitree.82537165",
       "title": "Lovina Parker Love McClelland, WikiTree",
       "url": "https://www.wikitree.com/wiki/Love-4617",
       "source_type": "compiled_tree_or_profile",
@@ -1174,7 +1186,7 @@
       "search_text": "Lovina Parker Love McClelland, WikiTree Compiled lead naming Thomas Louis Love and Hannah Ann James as parents."
     },
     {
-      "id": "src.lovina-parker-love-mcclellan-find-a-grave.8de570ff",
+      "id": "src.lovina-parker-love-mcclellan-find-a-grave.1d77ec5e",
       "title": "Lovina Parker Love McClellan, Find a Grave",
       "url": "https://www.findagrave.com/memorial/97905624/lovina_parker-mcclellan",
       "source_type": "cemetery_memorial",
@@ -1186,7 +1198,7 @@
       "search_text": "Lovina Parker Love McClellan, Find a Grave Cemetery profile repeats Thomas Louis Love and Hannah James parentage; use as a lead."
     },
     {
-      "id": "src.thomas-lewis-love-familysearch.5912fa29",
+      "id": "src.thomas-lewis-love-familysearch.3e540b53",
       "title": "Thomas Lewis Love, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/9S5X-B38/thomas-lewis-love-1796-1871",
       "source_type": "public_tree_index",
@@ -1198,7 +1210,7 @@
       "search_text": "Thomas Lewis Love, FamilySearch Public index gives Thomas Lewis Love, Hannah Ann James, a 5 Feb 1828 marriage, and a child list including Lovina Parker Love."
     },
     {
-      "id": "src.laura-inis-connelly-walls-find-a-grave.ca1a3046",
+      "id": "src.laura-inis-connelly-walls-find-a-grave.e22d69be",
       "title": "Laura Inis Connelly Walls, Find a Grave",
       "url": "https://www.findagrave.com/memorial/203438389/laura-inis-walls",
       "source_type": "cemetery_memorial",
@@ -1210,7 +1222,7 @@
       "search_text": "Laura Inis Connelly Walls, Find a Grave Sibling evidence for James Connelly and America Ellen Durham household."
     },
     {
-      "id": "src.james-connelly-find-a-grave.1fe5531d",
+      "id": "src.james-connelly-find-a-grave.1b3c0aa2",
       "title": "James Connelly, Find a Grave",
       "url": "https://www.findagrave.com/memorial/60313040/james-connelly",
       "source_type": "cemetery_memorial",
@@ -1222,7 +1234,7 @@
       "search_text": "James Connelly, Find a Grave Cemetery profile links spouse America Ellen Durham Connelly and their children."
     },
     {
-      "id": "src.nola-temperance-connelly-familysearch.44eea642",
+      "id": "src.nola-temperance-connelly-familysearch.3db19104",
       "title": "Nola Temperance Connelly, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/MLLM-ZHG/nola-temperance-connelly-1896-1978",
       "source_type": "public_tree_index",
@@ -1234,7 +1246,7 @@
       "search_text": "Nola Temperance Connelly, FamilySearch Public index names James Connolly and America Ellen Durham as parents, supporting the sibling group."
     },
     {
-      "id": "src.muhlenberg-county-heritage-vol-5-no-1.9da0dd0c",
+      "id": "src.muhlenberg-county-heritage-vol-5-no-1.3ab8ae71",
       "title": "Muhlenberg County Heritage, Vol. 5 No. 1",
       "url": "https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1021&context=muhlenberg_cty_heritage",
       "source_type": "compiled_pdf_or_journal",
@@ -1246,7 +1258,7 @@
       "search_text": "Muhlenberg County Heritage, Vol. 5 No. 1 Reprinted family-record material gives David Monroe Durham's 28 Dec 1832 North Carolina birth, 24 Aug 1897 death at Nebo, Kentucky, marriage to Virginia Ann Ford on 19 Aug 1857 in Menard County, Illinois, and children including America Ellen Durham, born 25 Aug 1858, died 28 Jan 1947, married James Connelly."
     },
     {
-      "id": "src.david-milton-durham-familysearch.fc00a88a",
+      "id": "src.david-milton-durham-familysearch.36bf63c4",
       "title": "David Milton Durham, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/KVP1-L7H/david-milton-durham-1868-1932",
       "source_type": "public_tree_index",
@@ -1258,7 +1270,7 @@
       "search_text": "David Milton Durham, FamilySearch Public child-index snippet names David Monroe Durham Jr. and Virginia Ann Ford as parents; useful for the sibling cluster and for flagging the \"Jr.\" identity question."
     },
     {
-      "id": "src.mary-isabella-durham-hibbs-find-a-grave.bf461581",
+      "id": "src.mary-isabella-durham-hibbs-find-a-grave.d10f195a",
       "title": "Mary Isabella Durham Hibbs, Find a Grave",
       "url": "https://nb.findagrave.com/memorial/140303398/mary-isabella-hibbs",
       "source_type": "cemetery_memorial",
@@ -1270,7 +1282,7 @@
       "search_text": "Mary Isabella Durham Hibbs, Find a Grave Index snippet names David M. Durham and Virginia Ann Ford as parents but gives a variant David Monroe Durham date range of 1829-1887; use as a conflict-resolution clue."
     },
     {
-      "id": "src.muhlenberg-county-heritage-vol-3-no-4.98df44ca",
+      "id": "src.muhlenberg-county-heritage-vol-3-no-4.cc2bf4db",
       "title": "Muhlenberg County Heritage, Vol. 3 No. 4",
       "url": "https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1014&context=muhlenberg_cty_heritage",
       "source_type": "compiled_pdf_or_journal",
@@ -1282,7 +1294,7 @@
       "search_text": "Muhlenberg County Heritage, Vol. 3 No. 4 Published query lead for Virginia Ann Ford's parents John Laborn/Laban Ford and Lucy Staples, and for Lucy's father John Burton Staples."
     },
     {
-      "id": "src.muhlenberg-county-heritage-vol-3-no-1.c9fd0301",
+      "id": "src.muhlenberg-county-heritage-vol-3-no-1.9f02f87f",
       "title": "Muhlenberg County Heritage, Vol. 3 No. 1",
       "url": "https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1011&context=muhlenberg_cty_heritage",
       "source_type": "compiled_pdf_or_journal",
@@ -1294,7 +1306,7 @@
       "search_text": "Muhlenberg County Heritage, Vol. 3 No. 1 Reprints the 1911 Muhlenberg Sentinel \"Fords and Allens\" letter by Rev. G. W. Ford, son of John Laborn Ford and Lucy Ann Staples; gives the Caswell-to-Greenville/Friendship migration, the Ford/Staples child list, John Burton Staples and Nancy Ann Turner details, and the family-tradition version of John Laborn Ford's parents."
     },
     {
-      "id": "src.muhlenberg-county-heritage-vol-6-no-1.405c39e9",
+      "id": "src.muhlenberg-county-heritage-vol-6-no-1.7c5a02c9",
       "title": "Muhlenberg County Heritage, Vol. 6 No. 1",
       "url": "https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1026&context=muhlenberg_cty_heritage",
       "source_type": "compiled_pdf_or_journal",
@@ -1306,7 +1318,7 @@
       "search_text": "Muhlenberg County Heritage, Vol. 6 No. 1 Query says proof is needed that John Laborn Ford, born 1811 in Caswell County, North Carolina, was son of Levi Ford and Aritta Davis; useful for keeping the Ford parentage unresolved."
     },
     {
-      "id": "src.caswell-county-historical-association-john-laborn-ford-note.098aa5f2",
+      "id": "src.caswell-county-historical-association-john-laborn-ford-note.537a9805",
       "title": "Caswell County Historical Association, John Laborn Ford note",
       "url": "https://ncccha.blogspot.com/2010/06/john-laborn-ford.html",
       "source_type": "web_reference",
@@ -1318,7 +1330,7 @@
       "search_text": "Caswell County Historical Association, John Laborn Ford note Compiled discussion of two competing family versions: John Laborn Ford Sr. plus Aritta Davis versus Levi Ford plus Aritta Davis; explicitly says empirical documentation is still needed."
     },
     {
-      "id": "src.lucy-ann-elizabeth-staples-ford-wikitree.4200c17b",
+      "id": "src.lucy-ann-elizabeth-staples-ford-wikitree.3a2e0b8d",
       "title": "Lucy Ann Elizabeth Staples Ford, WikiTree",
       "url": "https://www.wikitree.com/wiki/Staples-3420",
       "source_type": "compiled_tree_or_profile",
@@ -1330,7 +1342,7 @@
       "search_text": "Lucy Ann Elizabeth Staples Ford, WikiTree Compiled lead naming John Laborn Ford as spouse, Virginia Ann Ford Durham as a child, and John Burton Staples/Nancy Ann Turner as parents."
     },
     {
-      "id": "src.lucy-staples-ancestry-public-profile.434562c7",
+      "id": "src.lucy-staples-ancestry-public-profile.32ae7a7a",
       "title": "Lucy Staples, Ancestry public profile",
       "url": "https://www.ancestry.it/genealogy/records/lucy-ann-staples-24-1m59w",
       "source_type": "compiled_tree_or_profile",
@@ -1342,7 +1354,7 @@
       "search_text": "Lucy Staples, Ancestry public profile Compiled lead naming John Burton Staples and Nancy Ann Turner as parents, John Laborn Ford as spouse, and Virginia Ann Durham among children."
     },
     {
-      "id": "src.john-laborn-ford-iii-wikitree.39c59759",
+      "id": "src.john-laborn-ford-iii-wikitree.4757af2d",
       "title": "John Laborn Ford III, WikiTree",
       "url": "https://www.wikitree.com/wiki/Ford-26893",
       "source_type": "compiled_tree_or_profile",
@@ -1354,7 +1366,7 @@
       "search_text": "John Laborn Ford III, WikiTree Sibling-index lead listing Virginia Ann Ford Durham among the John Laborn Ford and Lucy Ann Staples children."
     },
     {
-      "id": "src.charles-richard-staples-familysearch.9077033a",
+      "id": "src.charles-richard-staples-familysearch.2e363ac4",
       "title": "Charles Richard Staples, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/LRNJ-F2P/charles-richard-staples-1829-1853",
       "source_type": "public_tree_index",
@@ -1366,7 +1378,7 @@
       "search_text": "Charles Richard Staples, FamilySearch Sibling-index lead naming John Burton Staples and Nancy Ann Turner as parents and Lucy Ann Elizabeth Staples as a sibling."
     },
     {
-      "id": "src.martha-frances-claar-connelly-find-a-grave.d3339b29",
+      "id": "src.martha-frances-claar-connelly-find-a-grave.60aea101",
       "title": "Martha Frances Claar Connelly, Find a Grave",
       "url": "https://www.findagrave.com/memorial/203438332/martha-frances-connelly",
       "source_type": "cemetery_memorial",
@@ -1379,7 +1391,7 @@
       "search_text": "Martha Frances Claar Connelly, Find a Grave Cemetery identity for Donna's mother."
     },
     {
-      "id": "src.motherbedford-klar-claar-genealogy-page.502e00f9",
+      "id": "src.motherbedford-klar-claar-genealogy-page.ebad933d",
       "title": "MotherBedford Klar/Claar genealogy page",
       "url": "https://www.motherbedford.com/KlarGen05.htm",
       "source_type": "web_reference",
@@ -1392,7 +1404,7 @@
       "search_text": "MotherBedford Klar/Claar genealogy page Compiled Claar lineage from Samuel Claar and Lydia Stropes back through George Washington Claar; use as a working lead."
     },
     {
-      "id": "src.samuel-dove-claar-familysearch.6c57d6bb",
+      "id": "src.samuel-dove-claar-familysearch.55d8177a",
       "title": "Samuel Dove Claar, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/KN4D-VND/samuel-dove-claar-1873-1952",
       "source_type": "public_tree_index",
@@ -1404,7 +1416,7 @@
       "search_text": "Samuel Dove Claar, FamilySearch Public index names Henry Claar and Electa Alice White as parents and Mary Margaret Hoyle as spouse."
     },
     {
-      "id": "src.decatur-county-kansas-groom-marriage-index-c-f-ksgenweb.fea78ed9",
+      "id": "src.decatur-county-kansas-groom-marriage-index-c-f-ksgenweb.e5ee851c",
       "title": "Decatur County, Kansas groom marriage index C-F, KSGenWeb",
       "url": "https://www.ksgenweb.org/KSDecatur/Marriages/groom_c.htm",
       "source_type": "local_transcription",
@@ -1416,7 +1428,7 @@
       "search_text": "Decatur County, Kansas groom marriage index C-F, KSGenWeb Lists Samuel D. Claar marrying Maggie M. Hogle on 5 Oct 1895 in Oberlin; conflicts with the Mary Margaret Hoyle surname in FamilySearch and descendant materials."
     },
     {
-      "id": "src.decatur-county-kansas-bride-marriage-index-g-h-ksgenweb.2388cd03",
+      "id": "src.decatur-county-kansas-bride-marriage-index-g-h-ksgenweb.7cb90aec",
       "title": "Decatur County, Kansas bride marriage index G-H, KSGenWeb",
       "url": "https://www.ksgenweb.org/KSDecatur/Marriages/bride_g.htm",
       "source_type": "local_transcription",
@@ -1428,7 +1440,7 @@
       "search_text": "Decatur County, Kansas bride marriage index G-H, KSGenWeb Lists Maggie M. Hogle marrying Samuel D. Claar on 5 Oct 1895 in Oberlin and notes that county marriage records are on file with the Decatur County Clerk of the District Court."
     },
     {
-      "id": "src.lula-claar-thieler-obituary-page-oberlin-herald-nwkansas-pdf.573bfd91",
+      "id": "src.lula-claar-thieler-obituary-page-oberlin-herald-nwkansas-pdf.7597fac2",
       "title": "Lula Claar Thieler obituary page, Oberlin Herald/NWKansas PDF",
       "url": "https://nwkansas.com/obhwebpages/pdf%20pages%20-%20all/obh%20pages-pdfs%202008/obhPages_11_Nov/Week2/8A%20KD%2046.pdf",
       "source_type": "compiled_pdf_or_journal",
@@ -1440,7 +1452,7 @@
       "search_text": "Lula Claar Thieler obituary page, Oberlin Herald/NWKansas PDF Search snippet identifies Lula as daughter of Samuel Dove Claar and Mary Margaret (Hoyle) Claar and says she grew up in the Hawkeye area; use as descendant context, not proof of Mary Margaret's parents."
     },
     {
-      "id": "src.henry-claar-familysearch.da8651fd",
+      "id": "src.henry-claar-familysearch.073900d4",
       "title": "Henry Claar, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/LYQT-6V7/henry-claar-1838-1915",
       "source_type": "public_tree_index",
@@ -1452,7 +1464,7 @@
       "search_text": "Henry Claar, FamilySearch Public index gives marriage to Electa Alice White and places Henry in the Claar family group."
     },
     {
-      "id": "src.electa-alice-white-familysearch.77d03fe3",
+      "id": "src.electa-alice-white-familysearch.2c0181b7",
       "title": "Electa Alice White, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/L8Q1-FTH/electa-alice-white-1838-1904",
       "source_type": "public_tree_index",
@@ -1464,7 +1476,7 @@
       "search_text": "Electa Alice White, FamilySearch Public index names Daniel White and Sarah \"Sally\" Osborn as parents."
     },
     {
-      "id": "src.electa-a-white-claar-find-a-grave.073acff6",
+      "id": "src.electa-a-white-claar-find-a-grave.54d10680",
       "title": "Electa A. White Claar, Find a Grave",
       "url": "https://www.findagrave.com/memorial/16884634/electa_a-claar",
       "source_type": "cemetery_memorial",
@@ -1476,7 +1488,7 @@
       "search_text": "Electa A. White Claar, Find a Grave Cemetery profile repeats Daniel White and Sarah Osborn as parents and links husband Henry Claar."
     },
     {
-      "id": "src.samuel-claar-familysearch.e98ac0b0",
+      "id": "src.samuel-claar-familysearch.5a6130ec",
       "title": "Samuel Claar, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/LKQ6-PWM/samuel-claar-1800-1890",
       "source_type": "public_tree_index",
@@ -1488,7 +1500,7 @@
       "search_text": "Samuel Claar, FamilySearch Public index names George Washington Claar and Barbara House as parents and Lydia Stropes as spouse."
     },
     {
-      "id": "src.samuel-claar-wikitree.d1a6d1e0",
+      "id": "src.samuel-claar-wikitree.3b5da31d",
       "title": "Samuel Claar, WikiTree",
       "url": "https://www.wikitree.com/wiki/Claar-51",
       "source_type": "compiled_tree_or_profile",
@@ -1500,7 +1512,7 @@
       "search_text": "Samuel Claar, WikiTree Compiled lead for George Washington Claar, Barbara House, and marriage to Lydia Stropes."
     },
     {
-      "id": "src.henry-stropes-familysearch.cc5d7d86",
+      "id": "src.henry-stropes-familysearch.8f686a83",
       "title": "Henry Stropes, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/K2Y4-2DP/henry-stropes-1803-1896",
       "source_type": "public_tree_index",
@@ -1512,7 +1524,7 @@
       "search_text": "Henry Stropes, FamilySearch Sibling-index support for John Stropes Sr. and Eleanor Fox as parents in the Stropes family."
     },
     {
-      "id": "src.henry-claar-and-electa-a-white-family-group-treespot.e80bad7f",
+      "id": "src.henry-claar-and-electa-a-white-family-group-treespot.84bb1661",
       "title": "Henry Claar and Electa A. White family group, Treespot",
       "url": "https://www.treespot.net/Dynamic/familygroup.php?familyID=F4045&sitever=standard&tree=Treespot",
       "source_type": "compiled_tree_or_profile",
@@ -1524,7 +1536,7 @@
       "search_text": "Henry Claar and Electa A. White family group, Treespot Names Samuel Claar and Lydia Stropes as Henry's parents."
     },
     {
-      "id": "src.daniel-white-familysearch.bde3424b",
+      "id": "src.daniel-white-familysearch.3e0e54eb",
       "title": "Daniel White, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/K864-QRX/daniel-white-1792-1851",
       "source_type": "public_tree_index",

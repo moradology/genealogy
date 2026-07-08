@@ -8,16 +8,16 @@ lineage_tags: [zodrow]
 people: [John M. Zodrow, Antonette Grams Zodrow, Julius Henry Zodrow]
 places: [Sabanka, Neu Lebehnke, Lebehnke, Deutsch Krone, Westpreussen, Nowa Lubianka, Leoville Kansas]
 source_ids:
-  - src.john-zodrow-familysearch.b1579047
-  - src.antonette-grams-zodrow-find-a-grave.6b3b4605
-  - src.leoville-calvary-cemetery-transcription-ksgenweb.ac0f317a
-  - src.neu-lebehnke-nowa-lubianka-kartenmeister.88b7553a
-  - src.neu-lebehnke-meyers-gazetteer.121b1503
-  - src.lebehnke-kr-deutsch-krone-meyers-gazetteer.bfd78da5
-  - src.kreis-deutsch-krone-parish-civil-registry-table-agoff.cfa3c6f6
-  - src.standesamtsbezirk-lebehnke-agoff.b577a9f5
-  - src.nowa-lubianka-place-page-deutsch-krone-project.fd2b6f26
-  - src.lebehnke-catholic-banns-abstract-1874-1925.9c8e824f
+  - src.john-zodrow-familysearch.35a4f123
+  - src.antonette-grams-zodrow-find-a-grave.46e00498
+  - src.leoville-calvary-cemetery-transcription-ksgenweb.6d88b722
+  - src.neu-lebehnke-nowa-lubianka-kartenmeister.fe6797bf
+  - src.neu-lebehnke-meyers-gazetteer.dbd29306
+  - src.lebehnke-kr-deutsch-krone-meyers-gazetteer.4c8571d5
+  - src.kreis-deutsch-krone-parish-civil-registry-table-agoff.a66fa650
+  - src.standesamtsbezirk-lebehnke-agoff.6d8cdd05
+  - src.nowa-lubianka-place-page-deutsch-krone-project.3debea66
+  - src.lebehnke-catholic-banns-abstract-1874-1925.127337c2
 geojson_ids:
   - event.zodrow.john_death.1915-03-15
   - event.zodrow.antonette_grams_birth.1846-05-23
