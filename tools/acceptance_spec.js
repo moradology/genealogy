@@ -212,10 +212,14 @@ function ok(label, cond, detail) {
   ok('C6 method note preserved', content.breadth);
   ok('C7 geojson link preserved', content.geojsonLink);
   const brokenInternalLinks = await page.evaluate(() =>
-    [...document.querySelectorAll('a[href^="#"]')]
+    [...document.querySelectorAll('a[href]')]
       .map((a) => a.getAttribute('href'))
-      .filter((href) => href && href.length > 1)
-      .filter((href) => !document.getElementById(decodeURIComponent(href.slice(1)))));
+      .filter((href) => {
+        const resolvedURL = new URL(href, location.href);
+        return resolvedURL.pathname === location.pathname &&
+          resolvedURL.hash.length > 1 &&
+          !document.getElementById(decodeURIComponent(resolvedURL.hash.slice(1)));
+      }));
   ok('C9 internal links resolve', brokenInternalLinks.length === 0, brokenInternalLinks.join(', '));
 
   // ---------- theme ----------
