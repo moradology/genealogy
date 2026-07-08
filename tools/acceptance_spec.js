@@ -21,7 +21,7 @@ const PLATE_EXPECT = {
   'map-line-connelly': { markers: 7, edges: 4, guests: 0 },
 };
 const LINK_TOTAL = 10;
-const SOURCE_ITEMS = 123;
+const SOURCE_ITEMS = 125;
 const PERSON_DIVS = 83;
 
 const ISOLATED_ID = 'event.zimmerman.michael_birth.1869-10-25'; // Mainhardt; isolated on the zimmerman plate

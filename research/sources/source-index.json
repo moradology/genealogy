@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "updated": "2026-07-07",
   "source": "Extracted from index.html Source Ledger",
-  "record_count": 123,
+  "record_count": 125,
   "fields": {
     "id": "Stable local source id for notes and reasoning traces, generated from source title, URL, and blurb.",
     "title": "Human-readable source title from the artifact ledger.",
@@ -276,6 +276,30 @@
       "evidence_role": "reference",
       "blurb": "Wilmot Township settlement context for Rhenish Prussian Catholic families and later movement toward Bruce County; useful geographic context for the Nauer search, not a direct proof record.",
       "search_text": "New Prussia, Ontario locality context Wilmot Township settlement context for Rhenish Prussian Catholic families and later movement toward Bruce County; useful geographic context for the Nauer search, not a direct proof record."
+    },
+    {
+      "id": "src.standesamt-lebehnke-civil-registration-fond-55-589-0-szukaj-w-archiwac.c3954cea",
+      "title": "Standesamt Lebehnke civil registration fond 55/589/0, Szukaj w Archiwach",
+      "url": "https://www.szukajwarchiwach.gov.pl/en/zespol/-/zespol/23763",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "zodrow"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Urzad Stanu Cywilnego Lubianka, held at the Poznan State Archive branch in Pila: birth, marriage, and death registers 1875-1930, fully digitized and viewable online without login. Likely the only surviving Lebehnke vital records.",
+      "search_text": "Standesamt Lebehnke civil registration fond 55/589/0, Szukaj w Archiwach Urzad Stanu Cywilnego Lubianka, held at the Poznan State Archive branch in Pila: birth, marriage, and death registers 1875-1930, fully digitized and viewable online without login. Likely the only surviving Lebehnke vital records."
+    },
+    {
+      "id": "src.lebehnke-evangelical-parish-entry-westpreussen-de-church-book-survey.291f0457",
+      "title": "Lebehnke Evangelical parish entry, westpreussen.de church-book survey",
+      "url": "https://westpreussen.de/pages/forschungshilfen/kirchenbuecher/quellen.php?ID=129",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "zodrow"
+      ],
+      "evidence_role": "research_target",
+      "blurb": "States the parish was attached to Schneidemuehl, Kreis Kolmar, until becoming independent in 1839, and that the church books kept from 1846 onward were destroyed in the Second World War - making the civil registers above the primary target.",
+      "search_text": "Lebehnke Evangelical parish entry, westpreussen.de church-book survey States the parish was attached to Schneidemuehl, Kreis Kolmar, until becoming independent in 1839, and that the church books kept from 1846 onward were destroyed in the Second World War - making the civil registers above the primary target."
     },
     {
       "id": "src.albert-l-zodrow-familysearch.11d4c670",
