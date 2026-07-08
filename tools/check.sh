@@ -9,7 +9,8 @@ uv run python -c "import json; json.load(open('research/sources/source-index.jso
 uv run tools/build_source_index.py --check
 uv run tools/check_refs.py
 
-INLINE_JS="$(mktemp -t genealogy_inline.XXXXXX.js)"
+INLINE_DIR="$(mktemp -d)"
+INLINE_JS="$INLINE_DIR/inline.js"
 export INLINE_JS
 uv run python - <<'PY'
 import os
@@ -22,7 +23,7 @@ Path(os.environ["INLINE_JS"]).write_text(joined)
 print(f"extracted {len(scripts)} inline script blocks")
 PY
 node --check "$INLINE_JS"
-rm -f "$INLINE_JS"
+rm -rf "$INLINE_DIR"
 echo "inline js parses"
 
 if [ -d node_modules/playwright ]; then
