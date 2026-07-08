@@ -132,7 +132,7 @@ function ok(label, cond, detail) {
       const el = document.elementFromPoint(ox + ux * scale, oy + uy * scale);
       if (!el) return 'none';
       if (el.classList.contains('map-water')) return 'water';
-      if (el.closest('.layer-frame')) return 'frame';
+      if (el.tagName.toLowerCase() === 'svg' || el.classList.contains('map-neatline')) return 'paper';
       if (el.closest('.layer-land')) return 'land';
       return el.getAttribute('class') || el.tagName;
     };
@@ -147,7 +147,7 @@ function ok(label, cond, detail) {
   });
   ok('B8 ocean exposes water rect', polarity.atlantic === 'water' && polarity.gulf === 'water',
     JSON.stringify(polarity));
-  ok('B8b window fan masked above the top parallel', polarity.bandMid === 'frame' && polarity.bandWest === 'frame',
+  ok('B8b nothing painted above the top parallel', polarity.bandMid === 'paper' && polarity.bandWest === 'paper',
     JSON.stringify(polarity));
   ok('B9 continents filled as land', polarity.france === 'land' && polarity.germany === 'land',
     JSON.stringify(polarity));
