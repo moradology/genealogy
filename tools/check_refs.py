@@ -30,7 +30,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 ID_RE = re.compile(r"\b(src|event|person|place|case)\.[A-Za-z0-9_.-]+\b")
-PERSON_GRAMMAR = re.compile(r"person\.[a-z0-9_]+\Z")
+# Anchors are single-segment (person.doyle_zimmerman); everyone else is
+# person.<surname>.<given> — at most one extra dot (Slate 1 id grammar).
+PERSON_GRAMMAR = re.compile(r"person\.[a-z0-9_]+(\.[a-z0-9_]+)?\Z")
 CASE_GRAMMAR = re.compile(r"case\.\d{2}\Z")
 
 
@@ -149,9 +151,20 @@ def main() -> int:
     failures: list[str] = []
     known = collect_definitions(html, geo, ledger, failures)
     references = collect_references(geo)
+    # case.* resolution is dormant until the Docket lands its anchors in
+    # index.html (Slate 1 W5): validation traces legitimately cite future
+    # cases. Once ANY case anchor exists, every case ref must resolve.
+    docket_live = any(k.startswith("case.") for k in known)
+    pending_cases = set()
     for origin, ref in references:
         if ref not in known:
+            if ref.startswith("case.") and not docket_live:
+                pending_cases.add(ref)
+                continue
             failures.append(f"UNRESOLVED {ref} referenced from {origin}")
+    if pending_cases:
+        print(f"check_refs: {len(pending_cases)} case refs pending the Docket "
+              f"({', '.join(sorted(pending_cases))})")
     check_links(html, geo, failures)
     check_source_urls(geo, ledger, failures)
     check_grammar(known | {ref for _, ref in references}, failures)

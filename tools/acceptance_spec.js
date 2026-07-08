@@ -24,6 +24,7 @@ const PLATE_EXPECT = {
 const LINK_TOTAL = 10;
 const SOURCE_ITEMS = 126;
 const PERSON_DIVS = 83;
+const PERSON_IDS = 75;
 
 const ISOLATED_ID = 'event.zimmerman.michael_birth.1869-10-25'; // Mainhardt; isolated on the zimmerman plate
 const COINCIDENT_PAIRS = [
@@ -41,6 +42,9 @@ function ok(label, cond, detail) {
 
 (async () => {
   // ---------- static source checks ----------
+  // person.* ids contain dots (person.<surname>.<given>), so both this spec and
+  // page code must address them via getElementById(...)/href="#...", never a
+  // bare querySelector('#person.x') (the dot would be parsed as a class selector).
   const src = fs.readFileSync(FILE, 'utf8');
   ok('S1 no external scripts', !/<script[^>]*\ssrc=/.test(src));
   ok('S2 no external stylesheets', !/<link[^>]+rel="stylesheet"[^>]+href="http/.test(src));
@@ -184,6 +188,7 @@ function ok(label, cond, detail) {
       groups: sec ? sec.querySelectorAll('details').length : 0,
       firstOpen: sec ? !!sec.querySelector('details[open]') : false,
       persons: document.querySelectorAll('.person').length,
+      personIds: [...document.querySelectorAll('.person[id^="person."]')].map((el) => el.id),
       breadth: document.body.textContent.includes('The goal here is breadth plus honesty'),
       geojsonLink: !!document.querySelector('a[href="ancestry_geospatial.geojson"]'),
     };
@@ -197,6 +202,12 @@ function ok(label, cond, detail) {
   ok('C3 every source has a link', content.sourcesWithAnchor === SOURCE_ITEMS, content.sourcesWithAnchor);
   ok('C4 sources grouped, first open', content.groups >= 5 && content.firstOpen, content.groups);
   ok('C5 person entry count matches', content.persons === PERSON_DIVS, content.persons);
+  const idRe = /^person\.[a-z0-9_.]+$/;
+  ok('C8 person ids stamped and unique',
+    content.personIds.length === PERSON_IDS &&
+    new Set(content.personIds).size === PERSON_IDS &&
+    content.personIds.every((id) => idRe.test(id) && (id.slice('person.'.length).match(/\./g) || []).length <= 1),
+    content.personIds.length);
   ok('C6 method note preserved', content.breadth);
   ok('C7 geojson link preserved', content.geojsonLink);
 
