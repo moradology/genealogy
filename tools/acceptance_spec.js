@@ -143,6 +143,8 @@ function ok(label, cond, detail) {
       germany: hit(12.6, 52.4),
       bandMid: hit(-35, 55.2),
       bandWest: hit(-52, 55.6),
+      polandInterior: hit(16, 53.1),
+      germanyEast: hit(13.2, 52.9),
     };
   });
   ok('B8 ocean exposes water rect', polarity.atlantic === 'water' && polarity.gulf === 'water',
@@ -150,6 +152,8 @@ function ok(label, cond, detail) {
   ok('B8b nothing painted above the top parallel', polarity.bandMid === 'paper' && polarity.bandWest === 'paper',
     JSON.stringify(polarity));
   ok('B9 continents filled as land', polarity.france === 'land' && polarity.germany === 'land',
+    JSON.stringify(polarity));
+  ok('B9b no water slash through Poland', polarity.polandInterior === 'land' && polarity.germanyEast === 'land',
     JSON.stringify(polarity));
 
   // ---------- content preservation ----------
