@@ -190,11 +190,11 @@ def key_markup(cfg: dict[str, str | None], rows: list[dict[str, object]], guest_
     parts = [f'        <ol class=plate-key aria-label="{label}">']
     for index, event in enumerate(rows, start=1):
         parts.append(
-            f'<li data-event-id="{text(event["id"])}">'
-            f'<span class=key-no>{index}</span>'
-            f'<span class=key-date>{text(event["date"])}</span> '
+            f'<li data-e={text(event["id"])}>'
+            f'<b>{index}</b>'
+            f'<time>{text(event["date"])}</time> '
             f'{text(type_label(event))} · {text(event["person"])} · '
-            f'{text(event["place"])} · <em>{confidence_label(event)}</em>'
+            f'{text(event["place"])} · <i>{confidence_label(event)}</i>'
             f'{line_suffix(event, cfg, guest_ids)}</li>'
         )
     parts.append("</ol>")

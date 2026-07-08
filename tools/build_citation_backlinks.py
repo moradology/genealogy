@@ -17,7 +17,7 @@ SOURCE_SECTION_RE = re.compile(r'(<section class="sheet" id="sources">.*?</secti
 LI_RE = re.compile(r"<li(?P<attrs>[^>]*)>(?P<body>.*?)</li>", re.S)
 ID_RE = re.compile(r'\bid=(?:"([^"]+)"|([^\s>]+))')
 SN_RE = re.compile(r"^s[1-9]\d*$")
-GENERATED_RE = re.compile(r'\s*<span class="cited-by mono" data-gen>[^<]*</span>')
+GENERATED_RE = re.compile(r'\s*<span class=mono data-g>[^<]*</span>')
 
 
 def normalize_label(label: str) -> str:
@@ -167,7 +167,7 @@ def recompute(html: str) -> str:
         suffix = ""
         if li_id in citations:
             cited_by = ", ".join(html_lib.escape(label, quote=False) for label in citations[li_id])
-            suffix = f' <span class="cited-by mono" data-gen>→ {cited_by}</span>'
+            suffix = f' <span class=mono data-g>→ {cited_by}</span>'
         return f"<li{attrs}>{body}{suffix}</li>"
 
     fresh_section = LI_RE.sub(replace_li, section)

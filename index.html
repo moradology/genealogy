@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Zimmerman-Dible Ancestry Working Artifact</title>
-  <meta name="deploy-stamp" content="8b22671dba33 2026-07-08">
+  <meta name="deploy-stamp" content="f7b24e668a86 2026-07-08">
   <style>
 /* BEGIN GENERATED fonts -- regenerate with: uv run tools/build_fonts.py --write */
 /* Embedded subsets of Libre Caslon Text and IBM Plex Mono (SIL OFL 1.1, via google/fonts). */
@@ -24,724 +24,604 @@
 }
 /* END GENERATED fonts */
   </style>
-  <style>
-    :root {
-      --paper: #F4F1E9;
-      --panel: #FAF7EF;
-      --ink: #211E1A;
-      --ink-soft: #5C554A;
-      --rule: #C9C2B2;
-      --rule-soft: #DFD9CA;
-      --focus: #1F4B68;
-      --anchor-zimmerman: #2A5674;
-      --anchor-mundell: #8A6210;
-      --anchor-dible: #96382E;
-      --anchor-connelly: #3E6F4F;
-      --map-water: #DCE3DA;
-      --map-land: #EFEBDD;
-      --map-border: #B4AC96;
-      --map-graticule: #C5BFAC;
-      --map-label: #8D8570;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --paper: #1A1712;
-        --panel: #211D17;
-        --ink: #E9E4D4;
-        --ink-soft: #A79E8B;
-        --rule: #423C30;
-        --rule-soft: #322D24;
-        --focus: #9CC3DC;
-        --anchor-zimmerman: #82AECC;
-        --anchor-mundell: #CBA45A;
-        --anchor-dible: #CD8177;
-        --anchor-connelly: #8FBC9C;
-        --map-water: #10141A;
-        --map-land: #2C2720;
-        --map-border: #57503F;
-        --map-graticule: #3A342A;
-        --map-label: #6F6753;
-      }
-    }
-
-    :root[data-theme="dark"] {
-      --paper: #1A1712;
-      --panel: #211D17;
-      --ink: #E9E4D4;
-      --ink-soft: #A79E8B;
-      --rule: #423C30;
-      --rule-soft: #322D24;
-      --focus: #9CC3DC;
-      --anchor-zimmerman: #82AECC;
-      --anchor-mundell: #CBA45A;
-      --anchor-dible: #CD8177;
-      --anchor-connelly: #8FBC9C;
-      --map-water: #10141A;
-      --map-land: #2C2720;
-      --map-border: #57503F;
-      --map-graticule: #3A342A;
-      --map-label: #6F6753;
-    }
-
-    :root[data-theme="light"] {
-      --paper: #F4F1E9;
-      --panel: #FAF7EF;
-      --ink: #211E1A;
-      --ink-soft: #5C554A;
-      --rule: #C9C2B2;
-      --rule-soft: #DFD9CA;
-      --focus: #1F4B68;
-      --anchor-zimmerman: #2A5674;
-      --anchor-mundell: #8A6210;
-      --anchor-dible: #96382E;
-      --anchor-connelly: #3E6F4F;
-      --map-water: #DCE3DA;
-      --map-land: #EFEBDD;
-      --map-border: #B4AC96;
-      --map-graticule: #C5BFAC;
-      --map-label: #8D8570;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: "Libre Caslon Text", Georgia, "Times New Roman", serif;
-      font-size: 17px;
-      line-height: 1.55;
-      color: var(--ink);
-      background: var(--paper);
-    }
-
-    h1, h2, h3 {
-      font-family: "Libre Caslon Text", Georgia, serif;
-      font-weight: 400;
-      line-height: 1.15;
-      text-wrap: balance;
-      margin: 0;
-    }
-
-    h2 { font-size: 1.55rem; margin-bottom: 0.4rem; }
-    h3 { font-size: 1.08rem; margin-bottom: 0.5rem; }
-    p { margin: 0 0 0.75rem; }
-    a { color: var(--ink); text-decoration-color: var(--rule); text-underline-offset: 2px; }
-    a:hover { text-decoration-color: var(--ink-soft); }
-
-    .mono, .gen-label, .side-date, .eyebrow, .meta-line, .tag, .plate-caption, .map-label,
-    .ahnen, .vitals, .case-chip, .case-refs, .stem, .stem-label, .stem-arrow, .stem-note, sup.cite a {
-      font-family: "IBM Plex Mono", "SF Mono", Menlo, monospace;
-      font-variant-numeric: tabular-nums;
-    }
-
-    :focus-visible {
-      outline: 2px solid var(--focus);
-      outline-offset: 2px;
-    }
-
-    .wrap { width: min(1100px, 100% - 40px); margin-inline: auto; }
-
-    /* ---- sticky nav ---- */
-    .site-nav {
-      position: sticky;
-      top: 0;
-      z-index: 40;
-      background: var(--paper);
-      border-bottom: 1px solid var(--rule);
-    }
-
-    .site-nav .wrap {
-      display: flex;
-      align-items: baseline;
-      gap: 1.4rem;
-      overflow-x: auto;
-      padding: 0.55rem 0;
-    }
-
-    .wordmark {
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      white-space: nowrap;
-      color: var(--ink);
-      text-decoration: none;
-    }
-
-    .site-nav a.jump {
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 0.68rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--ink-soft);
-      text-decoration: none;
-      white-space: nowrap;
-    }
-
-    .site-nav a.jump:hover { color: var(--ink); }
-
-    [id] { scroll-margin-top: 64px; }
-
-    /* ---- titling block ---- */
-    .titling { padding: 3.2rem 0 2.2rem; }
-
-    .eyebrow {
-      font-size: 0.7rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--ink-soft);
-      margin-bottom: 1rem;
-    }
-
-    h1 {
-      font-size: clamp(2.1rem, 4.6vw, 3.4rem);
-      margin: 0 0 1rem;
-    }
-
-    .subtitle {
-      max-width: 62ch;
-      font-size: 1.02rem;
-      color: var(--ink-soft);
-    }
-
-    .meta-line {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem 1.6rem;
-      margin-top: 1.3rem;
-      padding-top: 0.9rem;
-      border-top: 1px solid var(--rule);
-      font-size: 0.7rem;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: var(--ink-soft);
-    }
-
-    /* ---- sections as ruled sheets ---- */
-    section.sheet {
-      border-top: 2px solid var(--rule);
-      padding: 2rem 0 2.3rem;
-    }
-
-    .section-note {
-      max-width: 68ch;
-      color: var(--ink-soft);
-      margin-bottom: 1.4rem;
-    }
-
-    .small { font-size: 0.88rem; color: var(--ink-soft); }
-    .note {
-      max-width: 68ch;
-      color: var(--ink-soft);
-      padding: 0;
-      background: none;
-      border: 0;
-    }
-
-    /* ---- confidence stamps ---- */
-    .tag {
-      display: inline-block;
-      padding: 0 0.45em;
-      font-size: 0.62rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--ink-soft);
-      background: none;
-      border: 1px solid var(--rule);
-      border-radius: 2px;
-      vertical-align: 1px;
-    }
-
-    .tag.documented { border-style: solid; border-color: var(--ink-soft); color: var(--ink); }
-    .tag.strong { border-style: double; border-width: 3px; padding: 0 0.35em; }
-    .tag.lead { border-style: dashed; }
-    .tag.open { border-style: dotted; }
-
-    .case { border-top: 1px solid var(--rule-soft); padding: 0.75rem 0; }
-    .case-head { display: flex; align-items: baseline; gap: 0.55rem; flex-wrap: wrap; }
-    .case-head h3 { margin: 0; }
-    .case-body { max-width: 82ch; margin: 0.35rem 0; }
-    .case-refs { font-size: 0.68rem; color: var(--ink-soft); }
-
-    /* ---- anchor index cards ---- */
-    .anchor-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 1.1rem;
-      margin-top: 1.2rem;
-    }
-
-    .anchor-card {
-      border-top: 3px solid var(--rule);
-      padding-top: 0.7rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.45rem;
-    }
-
-    .anchor-card.anchor-zimmerman { border-top-color: var(--anchor-zimmerman); }
-    .anchor-card.anchor-mundell { border-top-color: var(--anchor-mundell); }
-    .anchor-card.anchor-dible { border-top-color: var(--anchor-dible); }
-    .anchor-card.anchor-connelly { border-top-color: var(--anchor-connelly); }
-
-    .anchor-card strong {
-      font-family: "Libre Caslon Text", Georgia, serif;
-      font-weight: 400;
-      font-size: 1.05rem;
-      line-height: 1.25;
-    }
-
-    .anchor-card .small { flex: 1; }
-
-    .anchor-card a {
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 0.66rem;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-      color: var(--ink-soft);
-    }
-
-    /* ---- how-to-read key ---- */
-    .key-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 1.1rem;
-      margin-top: 0.4rem;
-    }
-
-    .key-item p { font-size: 0.85rem; color: var(--ink-soft); margin: 0.45rem 0 0; }
-
-    /* ---- survey plates ---- */
-    figure.plate {
-      position: relative;
-      max-width: 880px;
-      margin: 1.1rem auto 1.5rem;
-      border: 3px double var(--rule);
-      background: var(--map-land);
-      cursor: crosshair;
-    }
-
-    figure.plate svg { display: block; width: 100%; height: auto; }
-
-    .plate-caption {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      gap: 0.2rem 0.7rem;
-      font-size: 0.62rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--ink-soft);
-      border-top: 1px solid var(--rule);
-      background: var(--paper);
-      padding: 0.4rem 0.7rem;
-      margin: 0;
-      cursor: default;
-    }
-    .plate-no,.plate-title{color:var(--ink)}
-    .plate-imprint{justify-self:end;opacity:.75}
-    .plate-sub{grid-column:1/-1;font-family:"Libre Caslon Text",Georgia,serif;font-size:.78rem;line-height:1.35;letter-spacing:0;text-transform:none;color:var(--ink-soft)}
-
-    .legend-dot {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--anchor, var(--rule));
-      margin: 0 0.35em 0 1em;
-      vertical-align: -1px;
-    }
-
-    .plate-caption .legend-dot:first-child { margin-left: 0; }
-    .legend-route {
-      display: inline-block;
-      width: 1.8rem;
-      border-top: 2px solid var(--ink-soft);
-      transform: translateY(-0.18rem);
-      margin: 0 0.25rem 0 0.55rem;
-    }
-    .legend-route.conjectural { border-top-style: dashed; opacity: 0.72; }
-
-    .plate-detail {
-      border-top: 1px solid var(--rule);
-      background: var(--panel);
-      padding: 0.55rem 0.75rem;
-      min-height: 58px;
-      max-height: 170px;
-      overflow-y: auto;
-      font-size: 0.85rem;
-      cursor: default;
-    }
-    .plate-key{columns:2;column-gap:1.4rem;margin:0;padding:.45rem .75rem .5rem 2.3rem;border-top:1px solid var(--rule);background:var(--paper);font-size:.72rem;line-height:1.35;cursor:default}
-    .plate-key li{break-inside:avoid;padding:.12rem 0}
-    .key-no,.key-date{font-family:"IBM Plex Mono",monospace;color:var(--ink-soft)}
-    .key-no{display:inline-block;width:1.4rem;margin-left:-1.6rem}
-    .key-date{margin-right:.35rem}
-    .ledger-table{max-width:880px;margin:-.3rem auto 1.5rem;border:1px solid var(--rule);background:var(--paper);cursor:default}
-    .ledger-table figcaption{padding:.45rem .7rem;border-bottom:1px solid var(--rule);font-size:.72rem}
-    .ledger-table table{font-size:.76rem}
-    .ledger-table td:nth-child(n+2){text-align:right;font-family:"IBM Plex Mono",monospace}
-    .ledger-table tr.conjectural{font-style:italic}
-
-    .map-bubble {
-      position: absolute;
-      z-index: 5;
-      display: none;
-      max-width: 280px;
-      background: var(--panel);
-      border: 1px solid var(--ink-soft);
-      border-radius: 2px;
-      padding: 0.45rem 0.6rem;
-      pointer-events: none;
-      opacity: 0;
-      box-shadow: 0 4px 14px rgba(20, 16, 10, 0.22);
-    }
-
-    .map-bubble.show { display: block; opacity: 1; }
-
-    .bubble-date {
-      display: block;
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 0.63rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--ink-soft);
-      margin-bottom: 0.15rem;
-    }
-
-    .bubble-body { display: block; font-size: 0.82rem; line-height: 1.4; }
-    .bubble-place { display: block; font-size: 0.75rem; color: var(--ink-soft); margin-top: 0.1rem; }
-
-    /* map paint, all through tokens; stroke widths scale with the plate crop */
-    .map-water { fill: var(--map-water); }
-    .map-land { fill: var(--map-land); }
-    .layer-land path { fill: var(--map-land); stroke: var(--map-border); stroke-width: calc(0.7px * var(--plate-s, 1)); }
-    .layer-graticule path { fill: none; stroke: var(--map-graticule); stroke-width: calc(0.5px * var(--plate-s, 1)); opacity: 0.6; }
-    .layer-lakes path { fill: var(--map-water); stroke: var(--map-border); stroke-width: calc(0.5px * var(--plate-s, 1)); }
-    .layer-borders path { fill: none; stroke: var(--map-border); stroke-width: calc(0.8px * var(--plate-s, 1)); stroke-dasharray: 2 2.5; }
-    .layer-routes path {
-      fill: none;
-      stroke: var(--anchor);
-      stroke-width: calc(1.05px * var(--plate-s, 1));
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      opacity: 0.55;
-      pointer-events: none;
-    }
-    .layer-routes path.conjectural { opacity: 0.38; }
-    .route-query {
-      fill: var(--anchor);
-      stroke: var(--map-land);
-      stroke-width: calc(1.8px * var(--plate-s, 1));
-      paint-order: stroke;
-      font-family: "IBM Plex Mono", monospace;
-      font-size: calc(13px * var(--plate-s, 1));
-      font-weight: 700;
-      pointer-events: none;
-    }
-    .map-neatline { fill: none; stroke: var(--map-border); stroke-width: calc(1.1px * var(--plate-s, 1)); }
-    .map-label { font-size: 15px; letter-spacing: 0.35em; fill: var(--map-label); }
-    .plate-decor,.plate-scalebar{pointer-events:none}
-    .plate-tick,.scale-tick{fill:none;stroke:var(--map-border);stroke-width:calc(1.1px*var(--plate-s,1))}
-    .plate-corner-no,.plate-scalebar text{font-family:"IBM Plex Mono",monospace;fill:var(--ink-soft);stroke:var(--map-land);stroke-width:calc(2px*var(--plate-s,1));paint-order:stroke}
-    .plate-scalebar .back{fill:var(--paper);stroke:var(--rule);opacity:.88}
-    .plate-scalebar .bar-a{fill:var(--ink-soft)}
-    .plate-scalebar .bar-b{fill:var(--paper);stroke:var(--ink-soft);stroke-width:calc(.7px*var(--plate-s,1))}
-
-    .anchor-zimmerman { --anchor: var(--anchor-zimmerman); }
-    .anchor-mundell { --anchor: var(--anchor-mundell); }
-    .anchor-dible { --anchor: var(--anchor-dible); }
-    .anchor-connelly { --anchor: var(--anchor-connelly); }
-
-    .arrowhead { fill: var(--anchor); }
-
-    path.family-link {
-      fill: none;
-      stroke: var(--anchor);
-      stroke-width: calc(1.7px * var(--plate-s, 1));
-      stroke-linecap: round;
-      opacity: 0.75;
-      cursor: pointer;
-      transition: opacity 160ms ease;
-    }
-
-    path.family-link.hovered, path.family-link.pinned { stroke-width: calc(3.2px * var(--plate-s, 1)); opacity: 1; }
-    path.family-link.related { opacity: 0.95; stroke-width: calc(2.4px * var(--plate-s, 1)); }
-
-    g.event-marker { cursor: pointer; }
-    g.event-marker .hit { fill: transparent; stroke: none; }
-    g.event-marker .dot {
-      fill: var(--anchor);
-      stroke: var(--paper);
-      stroke-width: calc(1.6px * var(--plate-s, 1));
-      transform-box: fill-box;
-      transform-origin: center;
-      transition: transform 160ms ease;
-    }
-    g.event-marker.conf-strong .dot { fill: var(--paper); stroke: var(--anchor); stroke-width: calc(2.2px * var(--plate-s, 1)); }
-    g.event-marker.guest .dot { opacity: 0.62; }
-    g.event-marker.hovered .dot, g.event-marker.pinned .dot { transform: scale(1.45); }
-    g.event-marker.pinned .hit { stroke: var(--anchor); stroke-width: calc(1.2px * var(--plate-s, 1)); fill: none; }
-    g.event-marker:focus-visible { outline: none; }
-    g.event-marker:focus-visible .hit { stroke: var(--focus); stroke-width: calc(1.6px * var(--plate-s, 1)); }
-    .marker-no{fill:var(--ink);stroke:var(--map-land);stroke-width:calc(2.4px*var(--plate-s,1));paint-order:stroke;pointer-events:none;font-family:"IBM Plex Mono",monospace;font-weight:600}
-
-    .faded { opacity: 0.3; }
-
-    figure.plate:not(.revealed) .layer-links path,
-    figure.plate:not(.revealed) g.event-marker { opacity: 0; }
-
-    figure.plate.revealed .layer-links path,
-    figure.plate.revealed g.event-marker {
-      animation: plate-in 480ms ease backwards;
-    }
-
-    @keyframes plate-in {
-      from { opacity: 0; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      figure.plate .layer-links path, figure.plate g.event-marker { animation: none; opacity: 1; }
-      path.family-link, g.event-marker .dot { transition: none; }
-    }
-
-    .detail-empty { color: var(--ink-soft); font-size: 0.84rem; margin: 0; }
-    .detail-date { font-family: "IBM Plex Mono", monospace; font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
-    .detail-name { font-family: "Libre Caslon Text", Georgia, serif; font-size: 1rem; margin: 0.2rem 0; }
-    .detail-place { color: var(--ink-soft); font-size: 0.85rem; }
-    .detail-meta { display: flex; align-items: center; gap: 0.7rem; margin-top: 0.4rem; }
-    .detail-anchor { font-family: "IBM Plex Mono", monospace; font-size: 0.64rem; letter-spacing: 0.08em; text-transform: uppercase; }
-    .anchor-text-zimmerman { color: var(--anchor-zimmerman); }
-    .anchor-text-mundell { color: var(--anchor-mundell); }
-    .anchor-text-dible { color: var(--anchor-dible); }
-    .anchor-text-connelly { color: var(--anchor-connelly); }
-    .detail-links { margin: 0.4rem 0 0; padding-left: 1rem; font-size: 0.8rem; color: var(--ink-soft); }
-    .detail-links li { margin-bottom: 0.2rem; }
-
-    /* ---- portrait cameos ---- */
-    .cameo {
-      float: right;
-      width: 96px;
-      margin: 0.1rem 0 0.5rem 1rem;
-    }
-
-    .person .cameo { width: 74px; }
-
-    .cameo img {
-      display: block;
-      width: 100%;
-      height: auto;
-      padding: 3px;
-      border: 1px solid var(--rule);
-      background: var(--panel);
-      filter: grayscale(1) sepia(0.22) contrast(1.03) brightness(1.02);
-      transition: filter 220ms ease;
-    }
-
-    .cameo:hover img { filter: none; }
-
-    .cameo figcaption {
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 0.55rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      margin-top: 3px;
-      line-height: 1.5;
-    }
-
-    .cameo figcaption a { color: var(--ink-soft); }
-
-    @media (prefers-reduced-motion: reduce) {
-      .cameo img { transition: none; }
-    }
-
-    /* ---- branch ledgers ---- */
-    .branch {
-      display: grid;
-      grid-template-columns: minmax(150px, 230px) 1fr;
-      gap: 1.5rem;
-      border-top: 1px solid var(--rule);
-      padding-top: 1.1rem;
-      margin-top: 1.2rem;
-    }
-
-    .branch:first-of-type { border-top: 0; padding-top: 0.6rem; margin-top: 0; }
-    .branch-title, .generations { min-width: 0; }
-    .branch-title { position: sticky; top: 52px; align-self: start; }
-    .branch-title .small { max-width: 32ch; }
-
-    .generations { display: block; }
-
-    .generation {
-      display: grid;
-      grid-template-columns: 64px 1fr;
-      gap: 0.9rem;
-      padding: 0.4rem 0;
-      border-top: 1px solid var(--rule-soft);
-    }
-
-    .generation:first-child { border-top: 0; padding-top: 0; }
-
-    .gen-label {
-      font-size: 0.66rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--ink-soft);
-      padding-top: 0.45rem;
-    }
-
-    .people {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(330px, 100%), 1fr));
-      gap: 0.4rem 1.4rem;
-    }
-
-    .person {
-      padding: 0.2rem 0 0.2rem 0.85rem;
-      border-left: 2px solid var(--rule);
-      background: none;
-      border-radius: 0;
-    }
-
-    .person:has(.tag.documented) { border-left: 3px solid var(--ink-soft); }
-    .person:has(.tag.strong) { border-left: 5px double var(--ink-soft); padding-left: 0.75rem; }
-    .person:has(.tag.lead) { border-left: 3px dashed var(--rule); }
-    .person:has(.tag.open) { border-left: 3px dotted var(--rule); }
-
-    .person-name { font-weight: 600; }
-    .person-details { color: var(--ink-soft); font-size: 0.86rem; line-height: 1.48; max-width: 72ch; }
-
-    /* ---- Slate 1 W1: person id grammar entries ---- */
-    .person-head { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
-    .ahnen { font-size: 0.62rem; color: var(--ink-soft); }
-    .vitals { font-size: 0.72rem; color: var(--ink-soft); }
-    .vitals .vs { color: var(--ink); }
-    .identity { font-size: 0.95rem; max-width: 72ch; }
-    .case-chip, sup.cite a { font-size: 0.6rem; }
-    .stem { font-size: 0.74rem; border-left: 2px dotted var(--rule); padding-left: 0.85rem; }
-    .stem-label { color: var(--ink-soft); font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; }
-    .stem-arrow, .stem-note { color: var(--ink-soft); font-size: 0.66rem; }
-    .stem:has(.tag.documented) { border-left-style: solid; }
-    .stem:has(.tag.strong) { border-left-style: double; }
-    .branch-q { font-style: italic; font-size: 0.92rem; max-width: 32ch; }
-    .tag.context { background: var(--rule-soft); border-color: transparent; }
-    .nav-tools { margin-left: auto; }
-    .chart{margin:1rem 0}.chart svg{width:100%;height:auto;display:block;border-top:1px solid var(--rule);font-family:"IBM Plex Mono",monospace}.chart figcaption,.index-letter{font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}.pc rect{fill:var(--panel);stroke:var(--rule);stroke-width:1}.pc text{fill:var(--ink);font-size:7px}.pc .pn,.pe{fill:var(--ink-soft);font-size:5.7px}.pc.documented rect{stroke:var(--ink-soft);stroke-width:1.8}.pc.strong rect{stroke:var(--ink-soft);stroke-width:2.5}.pc.lead rect{stroke-dasharray:4 3}.pc.open rect,.pc.bare rect{stroke-dasharray:1 3}.pl{stroke:var(--rule-soft);fill:none}
-
-    /* ---- tables ---- */
-    .table-scroll { overflow-x: auto; margin-top: 1rem; }
-
-    table {
-      width: 100%;
-      min-width: 640px;
-      border-collapse: collapse;
-      font-size: 0.85rem;
-    }
-
-    th, td {
-      padding: 0.45rem 0.6rem;
-      border-bottom: 1px solid var(--rule-soft);
-      text-align: left;
-      vertical-align: top;
-    }
-
-    th {
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 0.64rem;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-      font-weight: 400;
-      color: var(--ink-soft);
-      border-bottom: 1px solid var(--rule);
-      background: none;
-    }
-
-    td:first-child { font-family: "IBM Plex Mono", monospace; font-size: 0.8rem; }
-
-    .jurisdiction-table { border: 0; background: none; border-radius: 0; }
-
-    /* ---- lists ---- */
-    ul { margin: 0; padding-left: 1.2rem; }
-    li { margin: 0 0 0.35rem; }
-
-    /* ---- source ledger ---- */
-    #sources details { border-top: 1px solid var(--rule-soft); }
-    #sources details:first-of-type { border-top: 0; }
-
-    #sources summary {
-      cursor: pointer;
-      list-style: none;
-      display: flex;
-      align-items: baseline;
-      gap: 0.7rem;
-      padding: 0.85rem 0;
-      font-family: "Libre Caslon Text", Georgia, serif;
-      font-size: 1.05rem;
-    }
-
-    #sources summary::-webkit-details-marker { display: none; }
-
-    #sources summary::before {
-      content: "+";
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 0.8rem;
-      color: var(--ink-soft);
-    }
-
-    #sources details[open] summary::before { content: "\2212"; }
-
-    #sources summary .count {
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 0.66rem;
-      letter-spacing: 0.08em;
-      color: var(--ink-soft);
-    }
-
-    .sources { columns: 2; column-gap: 2.4rem; padding-left: 1.1rem; margin-bottom: 1.2rem; }
-    .sources li { break-inside: avoid; margin-bottom: 0.7rem; font-size: 0.84rem; color: var(--ink-soft); }
-    .sources li a { color: var(--ink); }
-
-    footer {
-      border-top: 2px solid var(--rule);
-      margin-top: 2rem;
-      padding: 1.6rem 0 2.6rem;
-      color: var(--ink-soft);
-      font-size: 0.84rem;
-    }
-
-    footer .credits {
-      font-family: "IBM Plex Mono", monospace;
-      font-size: 0.62rem;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      margin-top: 0.6rem;
-    }
-
-    /* ---- responsive ---- */
-    @media (max-width: 960px) {
-      .site-nav .wrap {
-        mask-image: linear-gradient(90deg, #000 90%, transparent);
-        -webkit-mask-image: linear-gradient(90deg, #000 90%, transparent);
-      }
-      .anchor-grid, .key-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .plate-detail { max-height: 150px; }
-      .branch { grid-template-columns: 1fr; gap: 0.8rem; }
-      .branch-title { position: static; }
-      .sources { columns: 1; }
-    }
-
-    @media (max-width: 600px) {
-      body { font-size: 16px; }
-      .anchor-grid, .key-grid { grid-template-columns: 1fr; }
-      .generation { grid-template-columns: 1fr; gap: 0.25rem; }
-      .cameo { float: none; margin: 0 0 0.5rem; }
-      .gen-label { padding-top: 0; }
-      th, td { padding: 0.4rem 0.45rem; }
-      table { font-size: 0.8rem; min-width: 560px; }
-      g.event-marker .dot { transform: scale(1.25); }
-      g.event-marker.hovered .dot, g.event-marker.pinned .dot { transform: scale(1.7); }
-      .plate-key{columns:1}
-    }
-  </style>
+  <style>:root {
+--paper: #F4F1E9;
+--panel: #FAF7EF;
+--ink: #211E1A;
+--ink-soft: #5C554A;
+--rule: #C9C2B2;
+--rule-soft: #DFD9CA;
+--focus: #1F4B68;
+--anchor-zimmerman: #2A5674;
+--anchor-mundell: #8A6210;
+--anchor-dible: #96382E;
+--anchor-connelly: #3E6F4F;
+--map-water: #DCE3DA;
+--map-land: #EFEBDD;
+--map-border: #B4AC96;
+--map-graticule: #C5BFAC;
+--map-label: #8D8570;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+--paper: #1A1712;
+--panel: #211D17;
+--ink: #E9E4D4;
+--ink-soft: #A79E8B;
+--rule: #423C30;
+--rule-soft: #322D24;
+--focus: #9CC3DC;
+--anchor-zimmerman: #82AECC;
+--anchor-mundell: #CBA45A;
+--anchor-dible: #CD8177;
+--anchor-connelly: #8FBC9C;
+--map-water: #10141A;
+--map-land: #2C2720;
+--map-border: #57503F;
+--map-graticule: #3A342A;
+--map-label: #6F6753;
+}
+}
+:root[data-theme="dark"] {
+--paper: #1A1712;
+--panel: #211D17;
+--ink: #E9E4D4;
+--ink-soft: #A79E8B;
+--rule: #423C30;
+--rule-soft: #322D24;
+--focus: #9CC3DC;
+--anchor-zimmerman: #82AECC;
+--anchor-mundell: #CBA45A;
+--anchor-dible: #CD8177;
+--anchor-connelly: #8FBC9C;
+--map-water: #10141A;
+--map-land: #2C2720;
+--map-border: #57503F;
+--map-graticule: #3A342A;
+--map-label: #6F6753;
+}
+:root[data-theme="light"] {
+--paper: #F4F1E9;
+--panel: #FAF7EF;
+--ink: #211E1A;
+--ink-soft: #5C554A;
+--rule: #C9C2B2;
+--rule-soft: #DFD9CA;
+--focus: #1F4B68;
+--anchor-zimmerman: #2A5674;
+--anchor-mundell: #8A6210;
+--anchor-dible: #96382E;
+--anchor-connelly: #3E6F4F;
+--map-water: #DCE3DA;
+--map-land: #EFEBDD;
+--map-border: #B4AC96;
+--map-graticule: #C5BFAC;
+--map-label: #8D8570;
+}
+* { box-sizing: border-box; }
+body {
+margin: 0;
+font-family: "Libre Caslon Text", Georgia, "Times New Roman", serif;
+font-size: 17px;
+line-height: 1.55;
+color: var(--ink);
+background: var(--paper);
+}
+h1, h2, h3 {
+font-family: "Libre Caslon Text", Georgia, serif;
+font-weight: 400;
+line-height: 1.15;
+text-wrap: balance;
+margin: 0;
+}
+h2 { font-size: 1.55rem; margin-bottom: 0.4rem; }
+h3 { font-size: 1.08rem; margin-bottom: 0.5rem; }
+p { margin: 0 0 0.75rem; }
+a { color: var(--ink); text-decoration-color: var(--rule); text-underline-offset: 2px; }
+a:hover { text-decoration-color: var(--ink-soft); }
+.mono, .gen-label, .eyebrow, .meta-line, .tag, #docket>div>div>b:last-child, .plate-caption, .map-label,
+.ahnen, .vitals, .case-chip, #docket>div>div:last-child, .stem, .stem-label, .stem-arrow, .stem-note, sup.cite a {
+font-family: "IBM Plex Mono", "SF Mono", Menlo, monospace;
+font-variant-numeric: tabular-nums;
+}
+:focus-visible {
+outline: 2px solid var(--focus);
+outline-offset: 2px;
+}
+.wrap { width: min(1100px, 100% - 40px); margin-inline: auto; }
+.site-nav {
+position: sticky;
+top: 0;
+z-index: 40;
+background: var(--paper);
+border-bottom: 1px solid var(--rule);
+}
+.site-nav .wrap {
+display: flex;
+align-items: baseline;
+gap: 1.4rem;
+overflow-x: auto;
+padding: 0.55rem 0;
+}
+.wordmark {
+font-family: "IBM Plex Mono", monospace;
+font-size: 0.72rem;
+letter-spacing: 0.14em;
+text-transform: uppercase;
+white-space: nowrap;
+color: var(--ink);
+text-decoration: none;
+}
+.site-nav a.jump {
+font-family: "IBM Plex Mono", monospace;
+font-size: 0.68rem;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+color: var(--ink-soft);
+text-decoration: none;
+white-space: nowrap;
+}
+.site-nav a.jump:hover { color: var(--ink); }
+[id] { scroll-margin-top: 64px; }
+.titling { padding: 3.2rem 0 2.2rem; }
+.eyebrow {
+font-size: 0.7rem;
+letter-spacing: 0.16em;
+text-transform: uppercase;
+color: var(--ink-soft);
+margin-bottom: 1rem;
+}
+h1 {
+font-size: clamp(2.1rem, 4.6vw, 3.4rem);
+margin: 0 0 1rem;
+}
+.subtitle {
+max-width: 62ch;
+font-size: 1.02rem;
+color: var(--ink-soft);
+}
+.meta-line {
+display: flex;
+flex-wrap: wrap;
+gap: 0.4rem 1.6rem;
+margin-top: 1.3rem;
+padding-top: 0.9rem;
+border-top: 1px solid var(--rule);
+font-size: 0.7rem;
+letter-spacing: 0.07em;
+text-transform: uppercase;
+color: var(--ink-soft);
+}
+section.sheet {
+border-top: 2px solid var(--rule);
+padding: 2rem 0 2.3rem;
+}
+.section-note {
+max-width: 68ch;
+color: var(--ink-soft);
+margin-bottom: 1.4rem;
+}
+.small { font-size: 0.88rem; color: var(--ink-soft); }
+.note {
+max-width: 68ch;
+color: var(--ink-soft);
+padding: 0;
+background: none;
+border: 0;
+}
+.tag,#docket>div>div>b:last-child {
+display: inline-block;
+padding: 0 0.45em;
+font-size: 0.62rem;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+color: var(--ink-soft);
+background: none;
+border: 1px solid var(--rule);
+border-radius: 2px;
+vertical-align: 1px;
+}
+.tag.documented { border-style: solid; border-color: var(--ink-soft); color: var(--ink); }
+.tag.strong { border-style: double; border-width: 3px; padding: 0 0.35em; }
+.tag.lead { border-style: dashed; }
+.tag.open { border-style: dotted; }
+#docket>div{border-top:1px solid var(--rule-soft);padding:.75rem 0}
+#docket>div>div:first-child{display:flex;align-items:baseline;gap:.55rem;flex-wrap:wrap}
+#docket>div h3{margin:0}
+#docket>div>p{max-width:82ch;margin:.35rem 0}
+#docket>div>div:last-child{font-size:.68rem;color:var(--ink-soft)}
+.anchor-grid {
+display: grid;
+grid-template-columns: repeat(4, minmax(0, 1fr));
+gap: 1.1rem;
+margin-top: 1.2rem;
+}
+.anchor-card {
+border-top: 3px solid var(--rule);
+padding-top: 0.7rem;
+display: flex;
+flex-direction: column;
+gap: 0.45rem;
+}
+.anchor-card.anchor-zimmerman { border-top-color: var(--anchor-zimmerman); }
+.anchor-card.anchor-mundell { border-top-color: var(--anchor-mundell); }
+.anchor-card.anchor-dible { border-top-color: var(--anchor-dible); }
+.anchor-card.anchor-connelly { border-top-color: var(--anchor-connelly); }
+.anchor-card strong {
+font-family: "Libre Caslon Text", Georgia, serif;
+font-weight: 400;
+font-size: 1.05rem;
+line-height: 1.25;
+}
+.anchor-card .small { flex: 1; }
+.anchor-card a {
+font-family: "IBM Plex Mono", monospace;
+font-size: 0.66rem;
+letter-spacing: 0.09em;
+text-transform: uppercase;
+color: var(--ink-soft);
+}
+.key-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+gap: 1.1rem;
+margin-top: 0.4rem;
+}
+.key-item p { font-size: 0.85rem; color: var(--ink-soft); margin: 0.45rem 0 0; }
+figure.plate {
+position: relative;
+max-width: 880px;
+margin: 1.1rem auto 1.5rem;
+border: 3px double var(--rule);
+background: var(--map-land);
+cursor: crosshair;
+}
+figure.plate svg { display: block; width: 100%; height: auto; }
+.plate-caption {
+display: grid;
+grid-template-columns: auto 1fr auto;
+gap: 0.2rem 0.7rem;
+font-size: 0.62rem;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+color: var(--ink-soft);
+border-top: 1px solid var(--rule);
+background: var(--paper);
+padding: 0.4rem 0.7rem;
+margin: 0;
+cursor: default;
+}
+.plate-no,.plate-title{color:var(--ink)}
+.plate-imprint{justify-self:end;opacity:.75}
+.plate-sub{grid-column:1/-1;font-family:"Libre Caslon Text",Georgia,serif;font-size:.78rem;line-height:1.35;letter-spacing:0;text-transform:none;color:var(--ink-soft)}
+.legend-dot {
+display: inline-block;
+width: 8px;
+height: 8px;
+border-radius: 50%;
+background: var(--anchor, var(--rule));
+margin: 0 0.35em 0 1em;
+vertical-align: -1px;
+}
+.plate-caption .legend-dot:first-child { margin-left: 0; }
+.plate-detail {
+border-top: 1px solid var(--rule);
+background: var(--panel);
+padding: 0.55rem 0.75rem;
+min-height: 58px;
+max-height: 170px;
+overflow-y: auto;
+font-size: 0.85rem;
+cursor: default;
+}
+.plate-key{columns:2;column-gap:1.4rem;margin:0;padding:.45rem .75rem .5rem 2.3rem;border-top:1px solid var(--rule);background:var(--paper);font-size:.72rem;line-height:1.35;cursor:default}
+.plate-key li{break-inside:avoid;padding:.12rem 0}
+.plate-key b,.plate-key time{font-family:"IBM Plex Mono",monospace;color:var(--ink-soft)}
+.plate-key b{display:inline-block;width:1.4rem;margin-left:-1.6rem;font-weight:400}
+.plate-key time{margin-right:.35rem}
+.ledger-table{max-width:880px;margin:-.3rem auto 1.5rem;border:1px solid var(--rule);background:var(--paper);cursor:default}
+.ledger-table figcaption{padding:.45rem .7rem;border-bottom:1px solid var(--rule);font-size:.72rem}
+.ledger-table table{font-size:.76rem}
+.ledger-table td:nth-child(n+2){text-align:right;font-family:"IBM Plex Mono",monospace}
+.ledger-table tr.conjectural{font-style:italic}
+.map-bubble {
+position: absolute;
+z-index: 5;
+display: none;
+max-width: 280px;
+background: var(--panel);
+border: 1px solid var(--ink-soft);
+border-radius: 2px;
+padding: 0.45rem 0.6rem;
+pointer-events: none;
+opacity: 0;
+box-shadow: 0 4px 14px rgba(20, 16, 10, 0.22);
+}
+.map-bubble.show { display: block; opacity: 1; }
+.bubble-date {
+display: block;
+font-family: "IBM Plex Mono", monospace;
+font-size: 0.63rem;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+color: var(--ink-soft);
+margin-bottom: 0.15rem;
+}
+.bubble-body { display: block; font-size: 0.82rem; line-height: 1.4; }
+.bubble-place { display: block; font-size: 0.75rem; color: var(--ink-soft); margin-top: 0.1rem; }
+.map-water { fill: var(--map-water); }
+.map-land { fill: var(--map-land); }
+.layer-land path { fill: var(--map-land); stroke: var(--map-border); stroke-width: calc(0.7px * var(--plate-s, 1)); }
+.layer-graticule path { fill: none; stroke: var(--map-graticule); stroke-width: calc(0.5px * var(--plate-s, 1)); opacity: 0.6; }
+.layer-lakes path { fill: var(--map-water); stroke: var(--map-border); stroke-width: calc(0.5px * var(--plate-s, 1)); }
+.layer-borders path { fill: none; stroke: var(--map-border); stroke-width: calc(0.8px * var(--plate-s, 1)); stroke-dasharray: 2 2.5; }
+.layer-routes path {
+fill: none;
+stroke: var(--anchor);
+stroke-width: calc(1.05px * var(--plate-s, 1));
+stroke-linecap: round;
+stroke-linejoin: round;
+opacity: 0.55;
+pointer-events: none;
+}
+.layer-routes path.conjectural { opacity: 0.38; }
+.route-query {
+fill: var(--anchor);
+stroke: var(--map-land);
+stroke-width: calc(1.8px * var(--plate-s, 1));
+paint-order: stroke;
+font-family: "IBM Plex Mono", monospace;
+font-size: calc(13px * var(--plate-s, 1));
+font-weight: 700;
+pointer-events: none;
+}
+.map-neatline { fill: none; stroke: var(--map-border); stroke-width: calc(1.1px * var(--plate-s, 1)); }
+.map-label { font-size: 15px; letter-spacing: 0.35em; fill: var(--map-label); }
+.plate-decor,.plate-scalebar{pointer-events:none}
+.plate-tick,.scale-tick{fill:none;stroke:var(--map-border);stroke-width:calc(1.1px*var(--plate-s,1))}
+.plate-corner-no,.plate-scalebar text{font-family:"IBM Plex Mono",monospace;fill:var(--ink-soft);stroke:var(--map-land);stroke-width:calc(2px*var(--plate-s,1));paint-order:stroke}
+.plate-scalebar .back{fill:var(--paper);stroke:var(--rule);opacity:.88}
+.plate-scalebar .bar-a{fill:var(--ink-soft)}
+.plate-scalebar .bar-b{fill:var(--paper);stroke:var(--ink-soft);stroke-width:calc(.7px*var(--plate-s,1))}
+.anchor-zimmerman { --anchor: var(--anchor-zimmerman); }
+.anchor-mundell { --anchor: var(--anchor-mundell); }
+.anchor-dible { --anchor: var(--anchor-dible); }
+.anchor-connelly { --anchor: var(--anchor-connelly); }
+.arrowhead { fill: var(--anchor); }
+path.family-link {
+fill: none;
+stroke: var(--anchor);
+stroke-width: calc(1.7px * var(--plate-s, 1));
+stroke-linecap: round;
+opacity: 0.75;
+cursor: pointer;
+transition: opacity 160ms ease;
+}
+path.family-link.hovered, path.family-link.pinned { stroke-width: calc(3.2px * var(--plate-s, 1)); opacity: 1; }
+path.family-link.related { opacity: 0.95; stroke-width: calc(2.4px * var(--plate-s, 1)); }
+g.event-marker { cursor: pointer; }
+g.event-marker .hit { fill: transparent; stroke: none; }
+g.event-marker .dot {
+fill: var(--anchor);
+stroke: var(--paper);
+stroke-width: calc(1.6px * var(--plate-s, 1));
+transform-box: fill-box;
+transform-origin: center;
+transition: transform 160ms ease;
+}
+g.event-marker.conf-strong .dot { fill: var(--paper); stroke: var(--anchor); stroke-width: calc(2.2px * var(--plate-s, 1)); }
+g.event-marker.guest .dot { opacity: 0.62; }
+g.event-marker.hovered .dot, g.event-marker.pinned .dot { transform: scale(1.45); }
+g.event-marker.pinned .hit { stroke: var(--anchor); stroke-width: calc(1.2px * var(--plate-s, 1)); fill: none; }
+g.event-marker:focus-visible { outline: none; }
+g.event-marker:focus-visible .hit { stroke: var(--focus); stroke-width: calc(1.6px * var(--plate-s, 1)); }
+.marker-no{fill:var(--ink);stroke:var(--map-land);stroke-width:calc(2.4px*var(--plate-s,1));paint-order:stroke;pointer-events:none;font-family:"IBM Plex Mono",monospace;font-weight:600}
+.faded { opacity: 0.3; }
+figure.plate:not(.revealed) .layer-links path,
+figure.plate:not(.revealed) g.event-marker { opacity: 0; }
+figure.plate.revealed .layer-links path,
+figure.plate.revealed g.event-marker {
+animation: plate-in 480ms ease backwards;
+}
+@keyframes plate-in {
+from { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+figure.plate .layer-links path, figure.plate g.event-marker { animation: none; opacity: 1; }
+path.family-link, g.event-marker .dot { transition: none; }
+}
+.detail-empty { color: var(--ink-soft); font-size: 0.84rem; margin: 0; }
+.detail-date { font-family: "IBM Plex Mono", monospace; font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+.detail-name { font-family: "Libre Caslon Text", Georgia, serif; font-size: 1rem; margin: 0.2rem 0; }
+.detail-place { color: var(--ink-soft); font-size: 0.85rem; }
+.detail-meta { display: flex; align-items: center; gap: 0.7rem; margin-top: 0.4rem; }
+.detail-anchor { font-family: "IBM Plex Mono", monospace; font-size: 0.64rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.anchor-text-zimmerman { color: var(--anchor-zimmerman); }
+.anchor-text-mundell { color: var(--anchor-mundell); }
+.anchor-text-dible { color: var(--anchor-dible); }
+.anchor-text-connelly { color: var(--anchor-connelly); }
+.detail-links { margin: 0.4rem 0 0; padding-left: 1rem; font-size: 0.8rem; color: var(--ink-soft); }
+.detail-links li { margin-bottom: 0.2rem; }
+.cameo {
+float: right;
+width: 96px;
+margin: 0.1rem 0 0.5rem 1rem;
+}
+.person .cameo { width: 74px; }
+.cameo img {
+display: block;
+width: 100%;
+height: auto;
+padding: 3px;
+border: 1px solid var(--rule);
+background: var(--panel);
+filter: grayscale(1) sepia(0.22) contrast(1.03) brightness(1.02);
+transition: filter 220ms ease;
+}
+.cameo:hover img { filter: none; }
+.cameo figcaption {
+font-family: "IBM Plex Mono", monospace;
+font-size: 0.55rem;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+margin-top: 3px;
+line-height: 1.5;
+}
+.cameo figcaption a { color: var(--ink-soft); }
+@media (prefers-reduced-motion: reduce) {
+.cameo img { transition: none; }
+}
+.branch {
+display: grid;
+grid-template-columns: minmax(150px, 230px) 1fr;
+gap: 1.5rem;
+border-top: 1px solid var(--rule);
+padding-top: 1.1rem;
+margin-top: 1.2rem;
+}
+.branch:first-of-type { border-top: 0; padding-top: 0.6rem; margin-top: 0; }
+.branch-title, .generations { min-width: 0; }
+.branch-title { position: sticky; top: 52px; align-self: start; }
+.branch-title .small { max-width: 32ch; }
+.generations { display: block; }
+.generation {
+display: grid;
+grid-template-columns: 64px 1fr;
+gap: 0.9rem;
+padding: 0.4rem 0;
+border-top: 1px solid var(--rule-soft);
+}
+.generation:first-child { border-top: 0; padding-top: 0; }
+.gen-label {
+font-size: 0.66rem;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+color: var(--ink-soft);
+padding-top: 0.45rem;
+}
+.people {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(min(330px, 100%), 1fr));
+gap: 0.4rem 1.4rem;
+}
+.person {
+padding: 0.2rem 0 0.2rem 0.85rem;
+border-left: 2px solid var(--rule);
+background: none;
+border-radius: 0;
+}
+.person:has(.tag.documented) { border-left: 3px solid var(--ink-soft); }
+.person:has(.tag.strong) { border-left: 5px double var(--ink-soft); padding-left: 0.75rem; }
+.person:has(.tag.lead) { border-left: 3px dashed var(--rule); }
+.person:has(.tag.open) { border-left: 3px dotted var(--rule); }
+.person-name { font-weight: 600; }
+.person-details { color: var(--ink-soft); font-size: 0.86rem; line-height: 1.48; max-width: 72ch; }
+.person-head { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
+.ahnen { font-size: 0.62rem; color: var(--ink-soft); }
+.vitals { font-size: 0.72rem; color: var(--ink-soft); }
+.vitals .vs { color: var(--ink); }
+.identity { font-size: 0.95rem; max-width: 72ch; }
+.case-chip, sup.cite a { font-size: 0.6rem; }
+.stem { font-size: 0.74rem; border-left: 2px dotted var(--rule); padding-left: 0.85rem; }
+.stem-label { color: var(--ink-soft); font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.stem-arrow, .stem-note { color: var(--ink-soft); font-size: 0.66rem; }
+.stem:has(.tag.documented) { border-left-style: solid; }
+.stem:has(.tag.strong) { border-left-style: double; }
+.tag.context { background: var(--rule-soft); border-color: transparent; }
+.chart{margin:1rem 0}.chart svg{width:100%;height:auto;display:block;border-top:1px solid var(--rule);font-family:"IBM Plex Mono",monospace}.chart figcaption,.index-letter{font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}.pc rect{fill:var(--panel);stroke:var(--rule);stroke-width:1}.pc text{fill:var(--ink);font-size:7px}.pc .pn,.pe{fill:var(--ink-soft);font-size:5.7px}.pc.documented rect{stroke:var(--ink-soft);stroke-width:1.8}.pc.strong rect{stroke:var(--ink-soft);stroke-width:2.5}.pc.lead rect{stroke-dasharray:4 3}.pc.open rect,.pc.bare rect{stroke-dasharray:1 3}.pl{stroke:var(--rule-soft);fill:none}
+.table-scroll { overflow-x: auto; margin-top: 1rem; }
+table {
+width: 100%;
+min-width: 640px;
+border-collapse: collapse;
+font-size: 0.85rem;
+}
+th, td {
+padding: 0.45rem 0.6rem;
+border-bottom: 1px solid var(--rule-soft);
+text-align: left;
+vertical-align: top;
+}
+th {
+font-family: "IBM Plex Mono", monospace;
+font-size: 0.64rem;
+letter-spacing: 0.09em;
+text-transform: uppercase;
+font-weight: 400;
+color: var(--ink-soft);
+border-bottom: 1px solid var(--rule);
+background: none;
+}
+td:first-child { font-family: "IBM Plex Mono", monospace; font-size: 0.8rem; }
+.jurisdiction-table { border: 0; background: none; border-radius: 0; }
+ul { margin: 0; padding-left: 1.2rem; }
+li { margin: 0 0 0.35rem; }
+#sources details { border-top: 1px solid var(--rule-soft); }
+#sources details:first-of-type { border-top: 0; }
+#sources summary {
+cursor: pointer;
+list-style: none;
+display: flex;
+align-items: baseline;
+gap: 0.7rem;
+padding: 0.85rem 0;
+font-family: "Libre Caslon Text", Georgia, serif;
+font-size: 1.05rem;
+}
+#sources summary::-webkit-details-marker { display: none; }
+#sources summary::before {
+content: "+";
+font-family: "IBM Plex Mono", monospace;
+font-size: 0.8rem;
+color: var(--ink-soft);
+}
+#sources details[open] summary::before { content: "\2212"; }
+#sources summary .count {
+font-family: "IBM Plex Mono", monospace;
+font-size: 0.66rem;
+letter-spacing: 0.08em;
+color: var(--ink-soft);
+}
+.sources { columns: 2; column-gap: 2.4rem; padding-left: 1.1rem; margin-bottom: 1.2rem; }
+.sources li { break-inside: avoid; margin-bottom: 0.7rem; font-size: 0.84rem; color: var(--ink-soft); }
+.sources li a { color: var(--ink); }
+footer {
+border-top: 2px solid var(--rule);
+margin-top: 2rem;
+padding: 1.6rem 0 2.6rem;
+color: var(--ink-soft);
+font-size: 0.84rem;
+}
+footer .credits {
+font-family: "IBM Plex Mono", monospace;
+font-size: 0.62rem;
+letter-spacing: 0.07em;
+text-transform: uppercase;
+margin-top: 0.6rem;
+}
+@media (max-width: 960px) {
+.site-nav .wrap {
+mask-image: linear-gradient(90deg, #000 90%, transparent);
+-webkit-mask-image: linear-gradient(90deg, #000 90%, transparent);
+}
+.anchor-grid, .key-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.plate-detail { max-height: 150px; }
+.branch { grid-template-columns: 1fr; gap: 0.8rem; }
+.branch-title { position: static; }
+.sources { columns: 1; }
+}
+@media (max-width: 600px) {
+body { font-size: 16px; }
+.anchor-grid, .key-grid { grid-template-columns: 1fr; }
+.generation { grid-template-columns: 1fr; gap: 0.25rem; }
+.cameo { float: none; margin: 0 0 0.5rem; }
+.gen-label { padding-top: 0; }
+th, td { padding: 0.4rem 0.45rem; }
+table { font-size: 0.8rem; min-width: 560px; }
+g.event-marker .dot { transform: scale(1.25); }
+g.event-marker.hovered .dot, g.event-marker.pinned .dot { transform: scale(1.7); }
+.plate-key{columns:1}
+}</style>
 </head>
 <body>
   <header class="site-nav">
@@ -833,7 +713,7 @@
         <figcaption class="plate-caption"><span class="plate-no">Plate II.</span><span class="plate-title">Where The Family Joins</span><span class="plate-imprint">Drawn 7 July 2026 &middot; Natural Earth base</span><span class="plate-sub"><span class="legend-dot anchor-zimmerman"></span>Zimmerman <span class="legend-dot anchor-mundell"></span>Mundell <span class="legend-dot anchor-dible"></span>Dible <span class="legend-dot anchor-connelly"></span>Connelly. Filled marks=documented events; hollow=strong leads; hairlines=recorded journeys; dashes=conjecture; numbers key below.</span></figcaption>
         <div class="plate-detail" id="detail-convergence"></div>
         <!-- BEGIN plate-key:convergence -->
-        <ol class=plate-key aria-label="convergence marker key"><li data-event-id="event.zimmerman.john_paul_household.1880"><span class=key-no>1</span><span class=key-date>1880</span> household · John Paul Zimmerman · Norfolk, Madison County, Nebraska · <em>strong lead</em></li><li data-event-id="event.zimmerman.michael_elizabeth_marriage.1895-11-19"><span class=key-no>2</span><span class=key-date>1895-11-19</span> marriage · Michael John Zimmerman Sr. · Cawker City, Mitchell County, Kansas · <em>strong lead</em></li><li data-event-id="event.dible.harry_julia_marriage.1896-06-10"><span class=key-no>3</span><span class=key-date>1896-06-10</span> marriage · Harry H. Dible · Trenton, Hitchcock County, Nebraska · <em>strong lead</em></li><li data-event-id="event.mcclelland.dorsey_burial_selden.1904"><span class=key-no>4</span><span class=key-date>1904-05-19</span> death or burial · Dorsey Overturf McClelland · Selden Cemetery, Selden, Sheridan County, Kansas · <em>strong lead</em></li><li data-event-id="event.nauer.catherina_koeberger_death.1906-02-01"><span class=key-no>5</span><span class=key-date>1906-02-01</span> death or burial · Catherina Marie Koeberger Nauer · Saint Joseph Cemetery, New Almelo, Norton County, Kansas · <em>strong lead</em></li><li data-event-id="event.zodrow.john_death.1915-03-15"><span class=key-no>6</span><span class=key-date>1915-03-15</span> death or burial · John Zodrow · Leoville, Decatur County, Kansas · <em>strong lead</em></li><li data-event-id="event.claar.henry_death.1915-12-28"><span class=key-no>7</span><span class=key-date>1915-12-28</span> death · Henry Claar · Topeka, Kansas · <em>strong lead</em></li><li data-event-id="event.long.ray_almeda_marriage.1922"><span class=key-no>8</span><span class=key-date>1922</span> marriage · Almeda Ora Long Dible · Jackson County, Kansas · <em>documented</em></li><li data-event-id="event.doyle_zimmerman.birth.1930-04-12"><span class=key-no>9</span><span class=key-date>1930-04-12</span> birth · Doyle Julius Zimmerman · Selden, Sheridan County, Kansas · <em>documented</em></li><li data-event-id="event.bill_dible.birth.1933-06-02"><span class=key-no>10</span><span class=key-date>1933-06-02</span> birth · William J. "Bill" Dible · Rexford, Thomas County, Kansas · <em>documented</em></li><li data-event-id="event.zodrow.antonette_grams_death.1934-08-01"><span class=key-no>11</span><span class=key-date>1934-08-01</span> death · Antonia/Antonette Grams Zodrow · Dresden, Decatur County, Kansas · <em>strong lead</em></li><li data-event-id="event.evelyn_mundell.birth.1935-01-16"><span class=key-no>12</span><span class=key-date>1935-01-16</span> birth · Evelyn Delores Mundell Zimmerman · Flagler, Kit Carson County, Colorado · <em>documented</em></li><li data-event-id="event.donna_connelly.birth.1935-04-24"><span class=key-no>13</span><span class=key-date>1935-04-24</span> birth · Donna Lea Connelly Dible · Rexford, Thomas County, Kansas · <em>documented</em></li><li data-event-id="event.mcclelland.cora_death.1952-03-19"><span class=key-no>14</span><span class=key-date>1952-03-19</span> death · Cora Ellie McClellan Long · Manhattan, Riley County, Kansas · <em>strong lead</em></li><li data-event-id="event.doyle_zimmerman.marriage.1954-06-14"><span class=key-no>15</span><span class=key-date>1954-06-14</span> marriage · Doyle Julius Zimmerman · Sacred Heart Catholic Church, Colby, Thomas County, Kansas · <em>documented</em></li><li data-event-id="event.evelyn_mundell.death.2023-04-15"><span class=key-no>16</span><span class=key-date>2023-04-15</span> death · Evelyn Delores Mundell Zimmerman · Colby, Thomas County, Kansas · <em>documented</em></li></ol>
+        <ol class=plate-key aria-label="convergence marker key"><li data-e=event.zimmerman.john_paul_household.1880><b>1</b><time>1880</time> household · John Paul Zimmerman · Norfolk, Madison County, Nebraska · <i>strong lead</i></li><li data-e=event.zimmerman.michael_elizabeth_marriage.1895-11-19><b>2</b><time>1895-11-19</time> marriage · Michael John Zimmerman Sr. · Cawker City, Mitchell County, Kansas · <i>strong lead</i></li><li data-e=event.dible.harry_julia_marriage.1896-06-10><b>3</b><time>1896-06-10</time> marriage · Harry H. Dible · Trenton, Hitchcock County, Nebraska · <i>strong lead</i></li><li data-e=event.mcclelland.dorsey_burial_selden.1904><b>4</b><time>1904-05-19</time> death or burial · Dorsey Overturf McClelland · Selden Cemetery, Selden, Sheridan County, Kansas · <i>strong lead</i></li><li data-e=event.nauer.catherina_koeberger_death.1906-02-01><b>5</b><time>1906-02-01</time> death or burial · Catherina Marie Koeberger Nauer · Saint Joseph Cemetery, New Almelo, Norton County, Kansas · <i>strong lead</i></li><li data-e=event.zodrow.john_death.1915-03-15><b>6</b><time>1915-03-15</time> death or burial · John Zodrow · Leoville, Decatur County, Kansas · <i>strong lead</i></li><li data-e=event.claar.henry_death.1915-12-28><b>7</b><time>1915-12-28</time> death · Henry Claar · Topeka, Kansas · <i>strong lead</i></li><li data-e=event.long.ray_almeda_marriage.1922><b>8</b><time>1922</time> marriage · Almeda Ora Long Dible · Jackson County, Kansas · <i>documented</i></li><li data-e=event.doyle_zimmerman.birth.1930-04-12><b>9</b><time>1930-04-12</time> birth · Doyle Julius Zimmerman · Selden, Sheridan County, Kansas · <i>documented</i></li><li data-e=event.bill_dible.birth.1933-06-02><b>10</b><time>1933-06-02</time> birth · William J. "Bill" Dible · Rexford, Thomas County, Kansas · <i>documented</i></li><li data-e=event.zodrow.antonette_grams_death.1934-08-01><b>11</b><time>1934-08-01</time> death · Antonia/Antonette Grams Zodrow · Dresden, Decatur County, Kansas · <i>strong lead</i></li><li data-e=event.evelyn_mundell.birth.1935-01-16><b>12</b><time>1935-01-16</time> birth · Evelyn Delores Mundell Zimmerman · Flagler, Kit Carson County, Colorado · <i>documented</i></li><li data-e=event.donna_connelly.birth.1935-04-24><b>13</b><time>1935-04-24</time> birth · Donna Lea Connelly Dible · Rexford, Thomas County, Kansas · <i>documented</i></li><li data-e=event.mcclelland.cora_death.1952-03-19><b>14</b><time>1952-03-19</time> death · Cora Ellie McClellan Long · Manhattan, Riley County, Kansas · <i>strong lead</i></li><li data-e=event.doyle_zimmerman.marriage.1954-06-14><b>15</b><time>1954-06-14</time> marriage · Doyle Julius Zimmerman · Sacred Heart Catholic Church, Colby, Thomas County, Kansas · <i>documented</i></li><li data-e=event.evelyn_mundell.death.2023-04-15><b>16</b><time>2023-04-15</time> death · Evelyn Delores Mundell Zimmerman · Colby, Thomas County, Kansas · <i>documented</i></li></ol>
         <!-- END -->
       </figure>
       <!-- BEGIN miles-ledger -->
@@ -848,7 +728,7 @@
         <figcaption class="plate-caption"><span class="plate-no">Plate III.</span><span class="plate-title">Geography of the Zimmerman Line</span><span class="plate-imprint">Drawn 7 July 2026 &middot; Natural Earth base</span><span class="plate-sub">Wuerttemberg and West Prussia to the High Plains. Filled marks=documented events; hollow=strong leads; hairlines=recorded journeys; dashes=conjecture; numbers key below.</span></figcaption>
         <div class="plate-detail" id="detail-zimmerman"></div>
         <!-- BEGIN plate-key:zimmerman -->
-        <ol class=plate-key aria-label="zimmerman marker key"><li data-event-id="event.zodrow.antonette_grams_birth.1846-05-23"><span class=key-no>1</span><span class=key-date>1846-05-23</span> birth · Antonia/Antonette Grams Zodrow · Prussia, today Poland · <em>strong lead</em></li><li data-event-id="event.zimmerman.michael_birth.1869-10-25"><span class=key-no>2</span><span class=key-date>1869-10-25</span> birth · Michael John Zimmerman Sr. · Wuerttemberger Hof, Mainhardt, Baden-Wuerttemberg · <em>strong lead</em></li><li data-event-id="event.nauer.elizabeth_birth.1872-04-07"><span class=key-no>3</span><span class=key-date>1872-04-07</span> birth · Elizabeth Catherine Nauer Zimmerman · Waterloo, Ontario · <em>strong lead</em></li><li data-event-id="event.zimmerman.john_paul_household.1880"><span class=key-no>4</span><span class=key-date>1880</span> household · John Paul Zimmerman · Norfolk, Madison County, Nebraska · <em>strong lead</em></li><li data-event-id="event.zimmerman.michael_elizabeth_marriage.1895-11-19"><span class=key-no>5</span><span class=key-date>1895-11-19</span> marriage · Michael John Zimmerman Sr. · Cawker City, Mitchell County, Kansas · <em>strong lead</em></li><li data-event-id="event.nauer.catherina_koeberger_death.1906-02-01"><span class=key-no>6</span><span class=key-date>1906-02-01</span> death or burial · Catherina Marie Koeberger Nauer · Saint Joseph Cemetery, New Almelo, Norton County, Kansas · <em>strong lead</em></li><li data-event-id="event.zodrow.john_death.1915-03-15"><span class=key-no>7</span><span class=key-date>1915-03-15</span> death or burial · John Zodrow · Leoville, Decatur County, Kansas · <em>strong lead</em></li><li data-event-id="event.doyle_zimmerman.birth.1930-04-12"><span class=key-no>8</span><span class=key-date>1930-04-12</span> birth · Doyle Julius Zimmerman · Selden, Sheridan County, Kansas · <em>documented</em></li><li data-event-id="event.zodrow.antonette_grams_death.1934-08-01"><span class=key-no>9</span><span class=key-date>1934-08-01</span> death · Antonia/Antonette Grams Zodrow · Dresden, Decatur County, Kansas · <em>strong lead</em></li><li data-event-id="event.evelyn_mundell.birth.1935-01-16"><span class=key-no>10</span><span class=key-date>1935-01-16</span> birth · Evelyn Delores Mundell Zimmerman · Flagler, Kit Carson County, Colorado · <em>documented</em> · <span class=anchor-text-mundell>Mundell line</span></li><li data-event-id="event.doyle_zimmerman.marriage.1954-06-14"><span class=key-no>11</span><span class=key-date>1954-06-14</span> marriage · Doyle Julius Zimmerman · Sacred Heart Catholic Church, Colby, Thomas County, Kansas · <em>documented</em></li></ol>
+        <ol class=plate-key aria-label="zimmerman marker key"><li data-e=event.zodrow.antonette_grams_birth.1846-05-23><b>1</b><time>1846-05-23</time> birth · Antonia/Antonette Grams Zodrow · Prussia, today Poland · <i>strong lead</i></li><li data-e=event.zimmerman.michael_birth.1869-10-25><b>2</b><time>1869-10-25</time> birth · Michael John Zimmerman Sr. · Wuerttemberger Hof, Mainhardt, Baden-Wuerttemberg · <i>strong lead</i></li><li data-e=event.nauer.elizabeth_birth.1872-04-07><b>3</b><time>1872-04-07</time> birth · Elizabeth Catherine Nauer Zimmerman · Waterloo, Ontario · <i>strong lead</i></li><li data-e=event.zimmerman.john_paul_household.1880><b>4</b><time>1880</time> household · John Paul Zimmerman · Norfolk, Madison County, Nebraska · <i>strong lead</i></li><li data-e=event.zimmerman.michael_elizabeth_marriage.1895-11-19><b>5</b><time>1895-11-19</time> marriage · Michael John Zimmerman Sr. · Cawker City, Mitchell County, Kansas · <i>strong lead</i></li><li data-e=event.nauer.catherina_koeberger_death.1906-02-01><b>6</b><time>1906-02-01</time> death or burial · Catherina Marie Koeberger Nauer · Saint Joseph Cemetery, New Almelo, Norton County, Kansas · <i>strong lead</i></li><li data-e=event.zodrow.john_death.1915-03-15><b>7</b><time>1915-03-15</time> death or burial · John Zodrow · Leoville, Decatur County, Kansas · <i>strong lead</i></li><li data-e=event.doyle_zimmerman.birth.1930-04-12><b>8</b><time>1930-04-12</time> birth · Doyle Julius Zimmerman · Selden, Sheridan County, Kansas · <i>documented</i></li><li data-e=event.zodrow.antonette_grams_death.1934-08-01><b>9</b><time>1934-08-01</time> death · Antonia/Antonette Grams Zodrow · Dresden, Decatur County, Kansas · <i>strong lead</i></li><li data-e=event.evelyn_mundell.birth.1935-01-16><b>10</b><time>1935-01-16</time> birth · Evelyn Delores Mundell Zimmerman · Flagler, Kit Carson County, Colorado · <i>documented</i> · <span class=anchor-text-mundell>Mundell line</span></li><li data-e=event.doyle_zimmerman.marriage.1954-06-14><b>11</b><time>1954-06-14</time> marriage · Doyle Julius Zimmerman · Sacred Heart Catholic Church, Colby, Thomas County, Kansas · <i>documented</i></li></ol>
         <!-- END -->
       </figure>
 
@@ -1025,7 +905,7 @@
         <figcaption class="plate-caption"><span class="plate-no">Plate IV.</span><span class="plate-title">Geography of the Mundell Line</span><span class="plate-imprint">Drawn 7 July 2026 &middot; Natural Earth base</span><span class="plate-sub">Eastern Colorado to Thomas County, Kansas. Filled marks=documented events; hollow=strong leads; hairlines=recorded journeys; dashes=conjecture; numbers key below.</span></figcaption>
         <div class="plate-detail" id="detail-mundell"></div>
         <!-- BEGIN plate-key:mundell -->
-        <ol class=plate-key aria-label="mundell marker key"><li data-event-id="event.doyle_zimmerman.birth.1930-04-12"><span class=key-no>1</span><span class=key-date>1930-04-12</span> birth · Doyle Julius Zimmerman · Selden, Sheridan County, Kansas · <em>documented</em> · <span class=anchor-text-zimmerman>Zimmerman line</span></li><li data-event-id="event.evelyn_mundell.birth.1935-01-16"><span class=key-no>2</span><span class=key-date>1935-01-16</span> birth · Evelyn Delores Mundell Zimmerman · Flagler, Kit Carson County, Colorado · <em>documented</em></li><li data-event-id="event.doyle_zimmerman.marriage.1954-06-14"><span class=key-no>3</span><span class=key-date>1954-06-14</span> marriage · Doyle Julius Zimmerman · Sacred Heart Catholic Church, Colby, Thomas County, Kansas · <em>documented</em> · <span class=anchor-text-zimmerman>Zimmerman line</span></li><li data-event-id="event.evelyn_mundell.death.2023-04-15"><span class=key-no>4</span><span class=key-date>2023-04-15</span> death · Evelyn Delores Mundell Zimmerman · Colby, Thomas County, Kansas · <em>documented</em></li></ol>
+        <ol class=plate-key aria-label="mundell marker key"><li data-e=event.doyle_zimmerman.birth.1930-04-12><b>1</b><time>1930-04-12</time> birth · Doyle Julius Zimmerman · Selden, Sheridan County, Kansas · <i>documented</i> · <span class=anchor-text-zimmerman>Zimmerman line</span></li><li data-e=event.evelyn_mundell.birth.1935-01-16><b>2</b><time>1935-01-16</time> birth · Evelyn Delores Mundell Zimmerman · Flagler, Kit Carson County, Colorado · <i>documented</i></li><li data-e=event.doyle_zimmerman.marriage.1954-06-14><b>3</b><time>1954-06-14</time> marriage · Doyle Julius Zimmerman · Sacred Heart Catholic Church, Colby, Thomas County, Kansas · <i>documented</i> · <span class=anchor-text-zimmerman>Zimmerman line</span></li><li data-e=event.evelyn_mundell.death.2023-04-15><b>4</b><time>2023-04-15</time> death · Evelyn Delores Mundell Zimmerman · Colby, Thomas County, Kansas · <i>documented</i></li></ol>
         <!-- END -->
       </figure>
 
@@ -1128,7 +1008,7 @@
         <figcaption class="plate-caption"><span class="plate-no">Plate V.</span><span class="plate-title">Geography of the Dible Line</span><span class="plate-imprint">Drawn 7 July 2026 &middot; Natural Earth base</span><span class="plate-sub">Illinois and Nebraska to Kansas, ending in Florida. Filled marks=documented events; hollow=strong leads; hairlines=recorded journeys; dashes=conjecture; numbers key below.</span></figcaption>
         <div class="plate-detail" id="detail-dible"></div>
         <!-- BEGIN plate-key:dible -->
-        <ol class=plate-key aria-label="dible marker key"><li data-event-id="event.long.robert_ann_marriage.1857-02-19"><span class=key-no>1</span><span class=key-date>1857-02-19</span> marriage · Robert Nelson Long · Griggsville Township, Pike County, Illinois · <em>strong lead</em></li><li data-event-id="event.mcclelland.cora_birth.1872-12-08"><span class=key-no>2</span><span class=key-date>1872-12-08</span> birth · Cora Ellie McClellan Long · Fairfield, Jefferson County, Iowa · <em>strong lead</em></li><li data-event-id="event.dible.harry_julia_marriage.1896-06-10"><span class=key-no>3</span><span class=key-date>1896-06-10</span> marriage · Harry H. Dible · Trenton, Hitchcock County, Nebraska · <em>strong lead</em></li><li data-event-id="event.mcclelland.dorsey_burial_selden.1904"><span class=key-no>4</span><span class=key-date>1904-05-19</span> death or burial · Dorsey Overturf McClelland · Selden Cemetery, Selden, Sheridan County, Kansas · <em>strong lead</em></li><li data-event-id="event.long.ray_almeda_marriage.1922"><span class=key-no>5</span><span class=key-date>1922</span> marriage · Almeda Ora Long Dible · Jackson County, Kansas · <em>documented</em></li><li data-event-id="event.bill_dible.birth.1933-06-02"><span class=key-no>6</span><span class=key-date>1933-06-02</span> birth · William J. "Bill" Dible · Rexford, Thomas County, Kansas · <em>documented</em></li><li data-event-id="event.mcclelland.cora_death.1952-03-19"><span class=key-no>7</span><span class=key-date>1952-03-19</span> death · Cora Ellie McClellan Long · Manhattan, Riley County, Kansas · <em>strong lead</em></li><li data-event-id="event.bill_dible.death.2022-08-09"><span class=key-no>8</span><span class=key-date>2022-08-09</span> death · William J. "Bill" Dible · Lee County, Florida · <em>documented</em></li></ol>
+        <ol class=plate-key aria-label="dible marker key"><li data-e=event.long.robert_ann_marriage.1857-02-19><b>1</b><time>1857-02-19</time> marriage · Robert Nelson Long · Griggsville Township, Pike County, Illinois · <i>strong lead</i></li><li data-e=event.mcclelland.cora_birth.1872-12-08><b>2</b><time>1872-12-08</time> birth · Cora Ellie McClellan Long · Fairfield, Jefferson County, Iowa · <i>strong lead</i></li><li data-e=event.dible.harry_julia_marriage.1896-06-10><b>3</b><time>1896-06-10</time> marriage · Harry H. Dible · Trenton, Hitchcock County, Nebraska · <i>strong lead</i></li><li data-e=event.mcclelland.dorsey_burial_selden.1904><b>4</b><time>1904-05-19</time> death or burial · Dorsey Overturf McClelland · Selden Cemetery, Selden, Sheridan County, Kansas · <i>strong lead</i></li><li data-e=event.long.ray_almeda_marriage.1922><b>5</b><time>1922</time> marriage · Almeda Ora Long Dible · Jackson County, Kansas · <i>documented</i></li><li data-e=event.bill_dible.birth.1933-06-02><b>6</b><time>1933-06-02</time> birth · William J. "Bill" Dible · Rexford, Thomas County, Kansas · <i>documented</i></li><li data-e=event.mcclelland.cora_death.1952-03-19><b>7</b><time>1952-03-19</time> death · Cora Ellie McClellan Long · Manhattan, Riley County, Kansas · <i>strong lead</i></li><li data-e=event.bill_dible.death.2022-08-09><b>8</b><time>2022-08-09</time> death · William J. "Bill" Dible · Lee County, Florida · <i>documented</i></li></ol>
         <!-- END -->
       </figure>
 
@@ -1241,7 +1121,7 @@
         <figcaption class="plate-caption"><span class="plate-no">Plate VI.</span><span class="plate-title">Geography of the Connelly Line</span><span class="plate-imprint">Drawn 7 July 2026 &middot; Natural Earth base</span><span class="plate-sub">Carolina, Ohio, and Kentucky roots to Rexford. Filled marks=documented events; hollow=strong leads; hairlines=recorded journeys; dashes=conjecture; numbers key below.</span></figcaption>
         <div class="plate-detail" id="detail-connelly"></div>
         <!-- BEGIN plate-key:connelly -->
-        <ol class=plate-key aria-label="connelly marker key"><li data-event-id="event.durham.david_birth.1832-12-28"><span class=key-no>1</span><span class=key-date>1832-12-28</span> birth · David Monroe Durham · North Carolina · <em>strong lead</em></li><li data-event-id="event.claar.henry_birth.1838-12-31"><span class=key-no>2</span><span class=key-date>1838-12-31</span> birth · Henry Claar · Jackson County, Ohio · <em>strong lead</em></li><li data-event-id="event.durham.david_virginia_marriage.1857-08-19"><span class=key-no>3</span><span class=key-date>1857-08-19</span> marriage · David Monroe Durham · Menard County, Illinois · <em>strong lead</em></li><li data-event-id="event.durham.david_death.1897-08-24"><span class=key-no>4</span><span class=key-date>1897-08-24</span> death · David Monroe Durham · Nebo, Hopkins County, Kentucky · <em>strong lead</em></li><li data-event-id="event.claar.henry_death.1915-12-28"><span class=key-no>5</span><span class=key-date>1915-12-28</span> death · Henry Claar · Topeka, Kansas · <em>strong lead</em></li><li data-event-id="event.donna_connelly.birth.1935-04-24"><span class=key-no>6</span><span class=key-date>1935-04-24</span> birth · Donna Lea Connelly Dible · Rexford, Thomas County, Kansas · <em>documented</em></li><li data-event-id="event.donna_connelly.death.2022-12-20"><span class=key-no>7</span><span class=key-date>2022-12-20</span> death · Donna Lea Connelly Dible · Bonita Springs, Lee County, Florida · <em>documented</em></li></ol>
+        <ol class=plate-key aria-label="connelly marker key"><li data-e=event.durham.david_birth.1832-12-28><b>1</b><time>1832-12-28</time> birth · David Monroe Durham · North Carolina · <i>strong lead</i></li><li data-e=event.claar.henry_birth.1838-12-31><b>2</b><time>1838-12-31</time> birth · Henry Claar · Jackson County, Ohio · <i>strong lead</i></li><li data-e=event.durham.david_virginia_marriage.1857-08-19><b>3</b><time>1857-08-19</time> marriage · David Monroe Durham · Menard County, Illinois · <i>strong lead</i></li><li data-e=event.durham.david_death.1897-08-24><b>4</b><time>1897-08-24</time> death · David Monroe Durham · Nebo, Hopkins County, Kentucky · <i>strong lead</i></li><li data-e=event.claar.henry_death.1915-12-28><b>5</b><time>1915-12-28</time> death · Henry Claar · Topeka, Kansas · <i>strong lead</i></li><li data-e=event.donna_connelly.birth.1935-04-24><b>6</b><time>1935-04-24</time> birth · Donna Lea Connelly Dible · Rexford, Thomas County, Kansas · <i>documented</i></li><li data-e=event.donna_connelly.death.2022-12-20><b>7</b><time>2022-12-20</time> death · Donna Lea Connelly Dible · Bonita Springs, Lee County, Florida · <i>documented</i></li></ol>
         <!-- END -->
       </figure>
 
@@ -1351,36 +1231,36 @@
 <h2>The Docket</h2>
 <span id="targets"></span>
 <p class=section-note>Append-only cases; statuses: OPEN, IN CONFLICT, NEEDS PULL, CLOSED.</p>
-<article class=case id="case.01"><div class=case-head><b class=case-no>case.01</b><h3>Sabanka</h3><b class=tag>OPEN</b></div><p class=case-body>Q: identify John Zodrow's Sabanka parish. Evidence favors Lebehnke, but Sabanka, Johann Grams grave, and 1868 Allemannia Zodrow all fail; next pull Lebehnke files and land.</p><div class=case-refs><a href="#person.zodrow.john">Z-12/13</a>|Leoville/Lebehnke|2026-07-08-zodrow-death-certificates-validation.md</div></article>
-<article class=case id="case.02"><div class=case-head><b class=case-no>case.02</b><h3>Zimmerman/Zinkle Mainhardt</h3><b class=tag>NEEDS PULL</b></div><p class=case-body>Q: test Mainhardt parents for John Paul Zimmerman/Catherine Zinkle. Mainhardt has zero Zimmermann/Zink* in 205 births and FS locality is indexer inference; next pull Archion or US Catholic Heimat.</p><div class=case-refs><a href="#person.zimmerman.john_paul">Z-8/9</a>|Mainhardt/DAD|2026-07-08-mainhardt-dible-negatives-validation.md</div></article>
-<article class=case id="case.03"><div class=case-head><b class=case-no>case.03</b><h3>Leonard-&gt;Michael + Doyle obit</h3><b class=tag>NEEDS PULL</b></div><p class=case-body>Q: harden Leonard-to-Michael and find Doyle's Apr 2005 obit. Memorials support the chain but CFP skips 5-20 Apr; next pull obit elsewhere or Leonard primary proof.</p><div class=case-refs><a href="#person.doyle_zimmerman">Z-1</a>|Doyle/Elizabeth memorials</div></article>
-<article class=case id="case.04"><div class=case-head><b class=case-no>case.04</b><h3>Nauer/Koeberger</h3><b class=tag>IN CONFLICT</b></div><p class=case-body>Q: prove Nauer parents and begin Koeberger. Lorenz/Dorothea is compiled, Meyer/Wand and dates conflict; next pull FamilySearch collection 1927566 (Ontario RC records, 1760-1923; St. Agatha/St. Clements coverage unconfirmed &mdash; verify via Browse waypoints).</p><div class=case-refs><a href="#person.nauer.elizabeth">Z-5</a>|Waterloo/Nauer</div></article>
-<article class=case id="case.05"><div class=case-head><b class=case-no>case.05</b><h3>Rust/Adolph/Strawn</h3><b class=tag>OPEN</b></div><p class=case-body>Q: are Frances Rust/Adolph/Strawn one woman? 1950 puts Evelyn with Albert/Mary F. Adolph, while hard Adolph records point Thomas/Osage; next pull vital/probate or Winona school.</p><div class=case-refs><a href="#person.evelyn_mundell">M-1</a>|1950/Evelyn obit</div></article>
-<article class=case id="case.06"><div class=case-head><b class=case-no>case.06</b><h3>Rust parents</h3><b class=tag>OPEN</b></div><p class=case-body>Q: are John F. Rust/Ethel Rupert Mary Frances's parents? Smith/Reamsville fits, but the 1909 obit says three children (two boys, one girl) against four linked memorials &mdash; Nina Frances likely died pre-1909 or is mis-linked; next pull Smith County census/mortality proof. East Frisian chain: endpoints verified-index (tote-punkte OSB refs), middle links compiled.</p><div class=case-refs><a href="#person.rust.john_f">M-10/11</a>|Reamsville/Rust</div></article>
-<article class=case id="case.07"><div class=case-head><b class=case-no>case.07</b><h3>Marjorie Clemans</h3><b class=tag>OPEN</b></div><p class=case-body>Q: prove Marjorie Clemans's parents. Indiana Marjorie is excluded and Barron fits Rollie/Ellen/Michael, but Michael D.=Talmadge and chronology need license, death cert, or census proof.</p><div class=case-refs><a href="#person.clemans.marjorie">M-3</a>|Eby/WHS|2026-07-08-clemans-flaherty-validation.md</div></article>
-<article class=case id="case.08"><div class=case-head><b class=case-no>case.08</b><h3>Leora Young/Rogers</h3><b class=tag>OPEN</b></div><p class=case-body>Q: explain Leora/William Rogers in Donald Mundell's wording. Homer/Marjorie are proved as Evelyn's parents; Rogers needs household, obituary, guardianship, or remarriage records.</p><div class=case-refs><a href="#person.evelyn_mundell">M-1</a>|Donald/Calvary D6|2026-07-08-clemans-flaherty-validation.md</div></article>
-<article class=case id="case.09"><div class=case-head><b class=case-no>case.09</b><h3>Cantwell maternal line</h3><b class=tag>OPEN</b></div><p class=case-body>Q: secure Sarah Alice Cantwell's maternal line. 1888 Henry bio supports Thomas/Jemima, but Sarah Alice-to-Barnabas and Farmer need parent/household records.</p><div class=case-refs><a href="#person.cantwell.barnabas">M-18</a>|Henry bio/Sarah Alice|2026-07-08-haden-cantwell-validation.md</div></article>
-<article class=case id="case.10"><div class=case-head><b class=case-no>case.10</b><h3>Catherine Moore</h3><b class=tag>IN CONFLICT</b></div><p class=case-body>Q: identify Catherine Moore and parents. Her name is stable but dates split 1839-1864 vs. ca. 1834-1872; next pull church, probate, cemetery, guardianship.</p><div class=case-refs><a href="#person.dible.zephaniah">D-8/9</a>|Dible/Moore</div></article>
-<article class=case id="case.11"><div class=case-head><b class=case-no>case.11</b><h3>Dible immigrant layer</h3><b class=tag>OPEN</b></div><p class=case-body>Q: identify Jacob Dible's immigrant layer. Dreibelbis 1761/DeVilbiss 1777 wills disconfirm grafts; next pull Westmoreland wills, deeds, tax context.</p><div class=case-refs><a href="#person.dible.jacob">D-32/33</a>|DeVilbiss/PA Archives|2026-07-08-mainhardt-dible-negatives-validation.md</div></article>
-<article class=case id="case.12"><div class=case-head><b class=case-no>case.12</b><h3>Haden/Reed</h3><b class=tag>OPEN</b></div><p class=case-body>Q: prove Haden/Reed beyond Kay Haden. Christ Church proves Moseley vitals, not Jenny's Haden marriage, and King William burned; next pull deeds, probate, bonds, household proof.</p><div class=case-refs><a href="#person.haden.andrew">D-22/23</a>|Christ Church/LVA|2026-07-08-haden-cantwell-validation.md</div></article>
-<article class=case id="case.13"><div class=case-head><b class=case-no>case.13</b><h3>Long Gen 5-6</h3><b class=tag>OPEN</b></div><p class=case-body>Q: harden Long/Sleight/McClelland/Love Gen 5-6. Chapman, 1757 will, and [1764] deed stand, but Samuel-to-Robert/Pearl Twp need probate, land, Bible proof.</p><div class=case-refs><a href="#person.long.john_franklin">D-24/25</a>|Chapman/Chalkley|2026-07-08-long-patton-validation.md</div></article>
-<article class=case id="case.14"><div class=case-head><b class=case-no>case.14</b><h3>James Connelly parents</h3><b class=tag>OPEN</b></div><p class=case-body>Q: who were James Connelly's parents? James + America works through cemetery/sibling evidence, but no parent set surfaced; next pull death, probate, land, census, church.</p><div class=case-refs><a href="#person.connelly.james">C-4/5</a>|James/Laura memorials</div></article>
-<article class=case id="case.15"><div class=case-head><b class=case-no>case.15</b><h3>Durham one-or-two</h3><b class=tag>IN CONFLICT</b></div><p class=case-body>Q: one David Monroe Durham or two? WKU supports 1832-1897 Nebo man and America link, while child pages add Jr./1829-1887; next pull originals.</p><div class=case-refs><a href="#person.durham.david">C-10/11</a>|WKU/Mary Hibbs</div></article>
-<article class=case id="case.16"><div class=case-head><b class=case-no>case.16</b><h3>Ford father/date</h3><b class=tag>IN CONFLICT</b></div><p class=case-body>Q: was John Laborn Ford's father John Sr. or Levi, and marriage 1840 or 1842? 1911 son letter supports John Sr./Apr 1840; later leads raise Levi/1842; next pull deeds, estates, marriage.</p><div class=case-refs><a href="#person.ford.john_laborn">C-22/23</a>|Ford letter/Caswell</div></article>
-<article class=case id="case.17"><div class=case-head><b class=case-no>case.17</b><h3>Hoyle vs. Hogle</h3><b class=tag>NEEDS PULL</b></div><p class=case-body>Q: was Samuel Dove Claar's bride Hoyle or Hogle? Descendant material says Hoyle while Decatur indexes say Hogle; next pull the 5 Oct 1895 original marriage. Claar depth (2026-07-08): the direct line's documentary end is Balthasar Hans Clar, 1647&ndash;1703, parents unidentified &mdash; WikiTree places him in Canton Bern; the &ldquo;d. Mimbach&rdquo; reading belongs to the compiled motherbedford genealogy only. The 1991 Claar biography exists solely as a scanned-image PDF: its died-at-sea debunking and York County Klee-will citations are not machine-verified pending OCR.</p><div class=case-refs><a href="#person.claar.samuel_dove">C-6/7</a>|Decatur indexes</div></article>
-<article class=case id="case.18"><div class=case-head><b class=case-no>case.18</b><h3>wedding date</h3><b class=tag>CLOSED</b></div><p class=case-body>Verdict: Doyle/Evelyn married 14 Jun 1954; CFP 2004 anniversary beats copied 1953 text.</p><div class=case-refs><a href="#person.doyle_zimmerman">Z-1</a>|CFP anniversary</div></article>
-<article class=case id="case.19"><div class=case-head><b class=case-no>case.19</b><h3>Jule vs. Julius</h3><b class=tag>CLOSED</b></div><p class=case-body>Verdict: Doyle's middle name is Julius; "Jule" is memorial wording and the marker abbreviates Doyle J.</p><div class=case-refs><a href="#person.doyle_zimmerman">Z-1</a>|Doyle memorial</div></article>
-<article class=case id="case.20"><div class=case-head><b class=case-no>case.20</b><h3>Long generation slip</h3><b class=tag>CLOSED</b></div><p class=case-body>Verdict: Rev. Robert Long is Robert Nelson Long's grandfather through John Franklin Long, not his father.</p><div class=case-refs><a href="#person.long.robert_nelson">D-12/13</a>|Rev. Robert/Chapman|2026-07-08-long-patton-validation.md</div></article>
-<article class=case id="case.21"><div class=case-head><b class=case-no>case.21</b><h3>Cecilia parent correction</h3><b class=tag>OPEN</b></div><p class=case-body>Q: prove Cecilia's corrected parents. Memorial grids support Leonard Ferdinand + Catherine; Washington negatives keep Julius + Ernestina collateral; next pull baptism, 1910 household, or 1997 obit.</p><div class=case-refs><a href="#person.zodrow.cecilia">Z-3</a>|Cecilia/Leonard memorials|2026-07-08-cecilia-parents-correction.md</div></article>
+<div id="case.01"><div><b>case.01</b><h3>Sabanka</h3><b>OPEN</b></div><p>Q: identify John Zodrow's Sabanka parish. Evidence favors Lebehnke, but Sabanka, Johann Grams grave, and 1868 Allemannia Zodrow all fail; next pull Lebehnke files and land.</p><div><a href="#person.zodrow.john">Z-12/13</a>|Leoville/Lebehnke|2026-07-08-zodrow-death-certificates-validation.md</div></div>
+<div id="case.02"><div><b>case.02</b><h3>Zimmerman/Zinkle Mainhardt</h3><b>NEEDS PULL</b></div><p>Q: test Mainhardt parents for John Paul Zimmerman/Catherine Zinkle. Mainhardt has zero Zimmermann/Zink* in 205 births and FS locality is indexer inference; next pull Archion or US Catholic Heimat.</p><div><a href="#person.zimmerman.john_paul">Z-8/9</a>|Mainhardt/DAD|2026-07-08-mainhardt-dible-negatives-validation.md</div></div>
+<div id="case.03"><div><b>case.03</b><h3>Leonard-&gt;Michael + Doyle obit</h3><b>NEEDS PULL</b></div><p>Q: harden Leonard-to-Michael and find Doyle's Apr 2005 obit. Memorials support the chain but CFP skips 5-20 Apr; next pull obit elsewhere or Leonard primary proof.</p><div><a href="#person.doyle_zimmerman">Z-1</a>|Doyle/Elizabeth memorials</div></div>
+<div id="case.04"><div><b>case.04</b><h3>Nauer/Koeberger</h3><b>IN CONFLICT</b></div><p>Q: prove Nauer parents and begin Koeberger. Lorenz/Dorothea is compiled, Meyer/Wand and dates conflict; next pull FamilySearch collection 1927566 (Ontario RC records, 1760-1923; St. Agatha/St. Clements coverage unconfirmed &mdash; verify via Browse waypoints).</p><div><a href="#person.nauer.elizabeth">Z-5</a>|Waterloo/Nauer</div></div>
+<div id="case.05"><div><b>case.05</b><h3>Rust/Adolph/Strawn</h3><b>OPEN</b></div><p>Q: are Frances Rust/Adolph/Strawn one woman? 1950 puts Evelyn with Albert/Mary F. Adolph, while hard Adolph records point Thomas/Osage; next pull vital/probate or Winona school.</p><div><a href="#person.evelyn_mundell">M-1</a>|1950/Evelyn obit</div></div>
+<div id="case.06"><div><b>case.06</b><h3>Rust parents</h3><b>OPEN</b></div><p>Q: are John F. Rust/Ethel Rupert Mary Frances's parents? Smith/Reamsville fits, but the 1909 obit says three children (two boys, one girl) against four linked memorials &mdash; Nina Frances likely died pre-1909 or is mis-linked; next pull Smith County census/mortality proof. East Frisian chain: endpoints verified-index (tote-punkte OSB refs), middle links compiled.</p><div><a href="#person.rust.john_f">M-10/11</a>|Reamsville/Rust</div></div>
+<div id="case.07"><div><b>case.07</b><h3>Marjorie Clemans</h3><b>OPEN</b></div><p>Q: prove Marjorie Clemans's parents. Indiana Marjorie is excluded and Barron fits Rollie/Ellen/Michael, but Michael D.=Talmadge and chronology need license, death cert, or census proof.</p><div><a href="#person.clemans.marjorie">M-3</a>|Eby/WHS|2026-07-08-clemans-flaherty-validation.md</div></div>
+<div id="case.08"><div><b>case.08</b><h3>Leora Young/Rogers</h3><b>OPEN</b></div><p>Q: explain Leora/William Rogers in Donald Mundell's wording. Homer/Marjorie are proved as Evelyn's parents; Rogers needs household, obituary, guardianship, or remarriage records.</p><div><a href="#person.evelyn_mundell">M-1</a>|Donald/Calvary D6|2026-07-08-clemans-flaherty-validation.md</div></div>
+<div id="case.09"><div><b>case.09</b><h3>Cantwell maternal line</h3><b>OPEN</b></div><p>Q: secure Sarah Alice Cantwell's maternal line. 1888 Henry bio supports Thomas/Jemima, but Sarah Alice-to-Barnabas and Farmer need parent/household records.</p><div><a href="#person.cantwell.barnabas">M-18</a>|Henry bio/Sarah Alice|2026-07-08-haden-cantwell-validation.md</div></div>
+<div id="case.10"><div><b>case.10</b><h3>Catherine Moore</h3><b>IN CONFLICT</b></div><p>Q: identify Catherine Moore and parents. Her name is stable but dates split 1839-1864 vs. ca. 1834-1872; next pull church, probate, cemetery, guardianship.</p><div><a href="#person.dible.zephaniah">D-8/9</a>|Dible/Moore</div></div>
+<div id="case.11"><div><b>case.11</b><h3>Dible immigrant layer</h3><b>OPEN</b></div><p>Q: identify Jacob Dible's immigrant layer. Dreibelbis 1761/DeVilbiss 1777 wills disconfirm grafts; next pull Westmoreland wills, deeds, tax context.</p><div><a href="#person.dible.jacob">D-32/33</a>|DeVilbiss/PA Archives|2026-07-08-mainhardt-dible-negatives-validation.md</div></div>
+<div id="case.12"><div><b>case.12</b><h3>Haden/Reed</h3><b>OPEN</b></div><p>Q: prove Haden/Reed beyond Kay Haden. Christ Church proves Moseley vitals, not Jenny's Haden marriage, and King William burned; next pull deeds, probate, bonds, household proof.</p><div><a href="#person.haden.andrew">D-22/23</a>|Christ Church/LVA|2026-07-08-haden-cantwell-validation.md</div></div>
+<div id="case.13"><div><b>case.13</b><h3>Long Gen 5-6</h3><b>OPEN</b></div><p>Q: harden Long/Sleight/McClelland/Love Gen 5-6. Chapman, 1757 will, and [1764] deed stand, but Samuel-to-Robert/Pearl Twp need probate, land, Bible proof.</p><div><a href="#person.long.john_franklin">D-24/25</a>|Chapman/Chalkley|2026-07-08-long-patton-validation.md</div></div>
+<div id="case.14"><div><b>case.14</b><h3>James Connelly parents</h3><b>OPEN</b></div><p>Q: who were James Connelly's parents? James + America works through cemetery/sibling evidence, but no parent set surfaced; next pull death, probate, land, census, church.</p><div><a href="#person.connelly.james">C-4/5</a>|James/Laura memorials</div></div>
+<div id="case.15"><div><b>case.15</b><h3>Durham one-or-two</h3><b>IN CONFLICT</b></div><p>Q: one David Monroe Durham or two? WKU supports 1832-1897 Nebo man and America link, while child pages add Jr./1829-1887; next pull originals.</p><div><a href="#person.durham.david">C-10/11</a>|WKU/Mary Hibbs</div></div>
+<div id="case.16"><div><b>case.16</b><h3>Ford father/date</h3><b>IN CONFLICT</b></div><p>Q: was John Laborn Ford's father John Sr. or Levi, and marriage 1840 or 1842? 1911 son letter supports John Sr./Apr 1840; later leads raise Levi/1842; next pull deeds, estates, marriage.</p><div><a href="#person.ford.john_laborn">C-22/23</a>|Ford letter/Caswell</div></div>
+<div id="case.17"><div><b>case.17</b><h3>Hoyle vs. Hogle</h3><b>NEEDS PULL</b></div><p>Q: was Samuel Dove Claar's bride Hoyle or Hogle? Descendant material says Hoyle while Decatur indexes say Hogle; next pull the 5 Oct 1895 original marriage. Claar depth (2026-07-08): the direct line's documentary end is Balthasar Hans Clar, 1647&ndash;1703, parents unidentified &mdash; WikiTree places him in Canton Bern; the &ldquo;d. Mimbach&rdquo; reading belongs to the compiled motherbedford genealogy only. The 1991 Claar biography exists solely as a scanned-image PDF: its died-at-sea debunking and York County Klee-will citations are not machine-verified pending OCR.</p><div><a href="#person.claar.samuel_dove">C-6/7</a>|Decatur indexes</div></div>
+<div id="case.18"><div><b>case.18</b><h3>wedding date</h3><b>CLOSED</b></div><p>Verdict: Doyle/Evelyn married 14 Jun 1954; CFP 2004 anniversary beats copied 1953 text.</p><div><a href="#person.doyle_zimmerman">Z-1</a>|CFP anniversary</div></div>
+<div id="case.19"><div><b>case.19</b><h3>Jule vs. Julius</h3><b>CLOSED</b></div><p>Verdict: Doyle's middle name is Julius; "Jule" is memorial wording and the marker abbreviates Doyle J.</p><div><a href="#person.doyle_zimmerman">Z-1</a>|Doyle memorial</div></div>
+<div id="case.20"><div><b>case.20</b><h3>Long generation slip</h3><b>CLOSED</b></div><p>Verdict: Rev. Robert Long is Robert Nelson Long's grandfather through John Franklin Long, not his father.</p><div><a href="#person.long.robert_nelson">D-12/13</a>|Rev. Robert/Chapman|2026-07-08-long-patton-validation.md</div></div>
+<div id="case.21"><div><b>case.21</b><h3>Cecilia parent correction</h3><b>OPEN</b></div><p>Q: prove Cecilia's corrected parents. Memorial grids support Leonard Ferdinand + Catherine; Washington negatives keep Julius + Ernestina collateral; next pull baptism, 1910 household, or 1997 obit.</p><div><a href="#person.zodrow.cecilia">Z-3</a>|Cecilia/Leonard memorials|2026-07-08-cecilia-parents-correction.md</div></div>
 <h3>Corrigenda</h3>
-<ul class=corrigenda>
+<ul>
 <li>2026-07-08|duplicate stubs -> descent stems; stub tags -> chain-tags; Doyle-Cecilia graded Documented.</li>
 <li>2026-07-08|Cecilia parents corrected to Leonard F. Zodrow + Catherine Fleckenstein, not Julius + Ernestina (<a href="#case.21">case.21</a>).</li>
 <li>2026-07-08|Ernestina death corrected 1963->1940; 14 May/11 May conflict remains (<a href="#case.01">case.01</a>).</li>
 <li>2026-07-08|Harvey Mundell grave-registration parentage dropped; service/date only (<a href="#person.mundell.harvey">Harvey</a>).</li>
 </ul>
 <h3>Negative-Evidence Register</h3>
-<ul class=negative-register>
+<ul>
 <li>2026-07-08|Sabanka absent Meyers/GOV/Nominatim (<a href="#case.01">case.01</a>).</li>
 <li>2026-07-08|Lebehnke Evangelical 1846+ destroyed WWII (<a href="#case.01">case.01</a>).</li>
 <li>2026-07-08|CFP gap 5-20 Apr 2005; Doyle obit unlocatable (<a href="#case.03">case.03</a>).</li>
@@ -1402,17 +1282,17 @@
       <details open>
         <summary>Zimmerman & Zinkle <span class="count">18 sources</span></summary>
         <ul class="sources">
-    <li id=s1><span class="scode mono">s1</span> <a href="http://www.nwkansas.com/cfpwebpages/pdf%20pages-all/cfp%20pages-pdfs%202004/cfp%20pages:06%20Jun/Week%202/Friday/fam.pdf">Doyle and Evelyn Zimmerman 50th anniversary announcement, Colby Free Press, 11 Jun 2004</a>. Family-supplied announcement establishes marriage on 14 Jun 1954 at Sacred Heart Catholic Church, Colby; documents Doyle in Selden until 1953, Evelyn in Winona until 1954, the couple meeting in January 1954, and the Hi-Plains Implement career from 1953 through retirement in June 1999. Contradicts the compiled 14 Jun 1953 marriage date. <span class="cited-by mono" data-gen>→ Z-1</span></li>
-        <li id=s2><span class="scode mono">s2</span> <a href="https://www.baalmannmortuary.com/obituaries/evelyn-zimmerman">Evelyn Delores Zimmerman obituary, Baalmann Mortuary</a>. Names Homer and Marjorie Clemans Mundell; states marriage to Doyle J. Zimmerman; says Evelyn was raised by grandmother Frances Adolph and graduated from Winona High School. <span class="cited-by mono" data-gen>→ M-1, M-2, M-3</span></li>
-        <li id=s3><span class="scode mono">s3</span> <a href="https://www.fryfuneralhome.com/obituaries/donald-mundell">Donald Lynn Mundell obituary, Fry Funeral Home</a>. Names Homer Claire Mundell in Donald's parent line and places Evelyn Zimmerman, Marilyn Ayer/Ayers, and Judy Bastian in the same sibling group. <span class="cited-by mono" data-gen>→ M-2</span></li>
-        <li id=s4><span class="scode mono">s4</span> <a href="https://nb.findagrave.com/memorial/34266662/doyle-jule-zimmerman">Doyle Jule Zimmerman, Find a Grave</a>. Cemetery profile names Leonard Henry Zimmerman and Cecilia Antoinette Zodrow Zimmerman as parents and Evelyn Delores Mundell Zimmerman as spouse. <span class="cited-by mono" data-gen>→ Z-1, Z-2</span></li>
-        <li id=s5><span class="scode mono">s5</span> <a href="https://negenweb.net/NEMadison/Census/1880/1880_census.pdf">1880 Madison County, Nebraska census index</a>. Lists John Zimmerman household in Norfolk, including Catherine, John, Michael, Paul, Baptist, and Louisa. <span class="cited-by mono" data-gen>→ Z-8/9</span></li>
+    <li id=s1><span class="scode mono">s1</span> <a href="http://www.nwkansas.com/cfpwebpages/pdf%20pages-all/cfp%20pages-pdfs%202004/cfp%20pages:06%20Jun/Week%202/Friday/fam.pdf">Doyle and Evelyn Zimmerman 50th anniversary announcement, Colby Free Press, 11 Jun 2004</a>. Family-supplied announcement establishes marriage on 14 Jun 1954 at Sacred Heart Catholic Church, Colby; documents Doyle in Selden until 1953, Evelyn in Winona until 1954, the couple meeting in January 1954, and the Hi-Plains Implement career from 1953 through retirement in June 1999. Contradicts the compiled 14 Jun 1953 marriage date. <span class=mono data-g>→ Z-1</span></li>
+        <li id=s2><span class="scode mono">s2</span> <a href="https://www.baalmannmortuary.com/obituaries/evelyn-zimmerman">Evelyn Delores Zimmerman obituary, Baalmann Mortuary</a>. Names Homer and Marjorie Clemans Mundell; states marriage to Doyle J. Zimmerman; says Evelyn was raised by grandmother Frances Adolph and graduated from Winona High School. <span class=mono data-g>→ M-1, M-2, M-3</span></li>
+        <li id=s3><span class="scode mono">s3</span> <a href="https://www.fryfuneralhome.com/obituaries/donald-mundell">Donald Lynn Mundell obituary, Fry Funeral Home</a>. Names Homer Claire Mundell in Donald's parent line and places Evelyn Zimmerman, Marilyn Ayer/Ayers, and Judy Bastian in the same sibling group. <span class=mono data-g>→ M-2</span></li>
+        <li id=s4><span class="scode mono">s4</span> <a href="https://nb.findagrave.com/memorial/34266662/doyle-jule-zimmerman">Doyle Jule Zimmerman, Find a Grave</a>. Cemetery profile names Leonard Henry Zimmerman and Cecilia Antoinette Zodrow Zimmerman as parents and Evelyn Delores Mundell Zimmerman as spouse. <span class=mono data-g>→ Z-1, Z-2</span></li>
+        <li id=s5><span class="scode mono">s5</span> <a href="https://negenweb.net/NEMadison/Census/1880/1880_census.pdf">1880 Madison County, Nebraska census index</a>. Lists John Zimmerman household in Norfolk, including Catherine, John, Michael, Paul, Baptist, and Louisa. <span class=mono data-g>→ Z-8/9</span></li>
         <li id=s6><span class="scode mono">s6</span> <a href="https://ancestors.familysearch.org/en/LLWL-MJL/michael-john-zimmerman-sr.-1869-1964">Michael John Zimmerman Sr., FamilySearch</a>. Public index gives birth at Wuerttemberger Hof/Mainhardt.</li>
         <li id=s7><span class="scode mono">s7</span> <a href="https://ancestors.familysearch.org/en/LCPJ-KZV/elizabeth-catherine-nauer-1872-1935">Elizabeth Catherine Nauer, FamilySearch</a>. Public index gives marriage to Michael John Zimmerman Sr. at Cawker City on 19 Nov 1895.</li>
         <li id=s8><span class="scode mono">s8</span> <a href="https://www.findagrave.com/memorial/48206092/moritz_thomas-nauer">Moritz Thomas Nauer, Find a Grave</a>. Cemetery profile lists Thomas A. Nauer and Catherina Koeberger Nauer and includes Elizabeth Catherine Nauer Zimmerman among siblings.</li>
-        <li id=s9><span class="scode mono">s9</span> <a href="https://www.findagrave.com/memorial/69631173/elizabeth_catherine-zimmerman">Elizabeth Catherine Nauer Zimmerman, Find a Grave</a>. Cemetery profile names Thomas Nauer and Catherine Koeberger as parents and lists Leonard Henry Zimmerman among Michael and Elizabeth's children. <span class="cited-by mono" data-gen>→ Z-2</span></li>
+        <li id=s9><span class="scode mono">s9</span> <a href="https://www.findagrave.com/memorial/69631173/elizabeth_catherine-zimmerman">Elizabeth Catherine Nauer Zimmerman, Find a Grave</a>. Cemetery profile names Thomas Nauer and Catherine Koeberger as parents and lists Leonard Henry Zimmerman among Michael and Elizabeth's children. <span class=mono data-g>→ Z-2</span></li>
         <li id=s10><span class="scode mono">s10</span> <a href="https://www.ksgenweb.org/KSSheridan/cemetery/selden2.html">Selden Cemetery, KSGenWeb</a>. Lists Michael J. and Elizabeth A. Zimmerman on the same stone; also shows Nauer burials nearby. The same transcription lists Dorsey O. McClelland, Ora E. McClelland, and Almeda O. Dible on identical stones/same concrete base, making it an important Long/McClelland collateral-location source.</li>
-        <li id=s11><span class="scode mono">s11</span> <a href="https://ancestors.familysearch.org/en/LTRB-GY1/john-paul-zimmerman-1842-1926">John Paul Zimmerman, FamilySearch</a>. Public index for the likely immigrant ancestor. <span class="cited-by mono" data-gen>→ Z-8/9</span></li>
+        <li id=s11><span class="scode mono">s11</span> <a href="https://ancestors.familysearch.org/en/LTRB-GY1/john-paul-zimmerman-1842-1926">John Paul Zimmerman, FamilySearch</a>. Public index for the likely immigrant ancestor. <span class=mono data-g>→ Z-8/9</span></li>
         <li id=s12><span class="scode mono">s12</span> <a href="https://ancestors.familysearch.org/en/LTRB-2C4/paul-michael-zimmerman-1872-1974">Paul Michael Zimmerman, FamilySearch</a>. Public index supports Wuerttemberger Hof/Mainhardt birth locality.</li>
         <li id=s13><span class="scode mono">s13</span> <a href="https://www.archion.de/de/alle-archive/baden-wuerttemberg/evangelisches-archiv-baden-und-wuerttemberg-wuerttemberg/dekanat-schwaebisch-hall/mainhardt/96441">Archion Mainhardt Familienregister 1808-1918 Band 25</a>. Best next record target for Zimmerman/Zinkle.</li>
         <li id=s14><span class="scode mono">s14</span> <a href="https://www.archion.de/de/alle-archive/baden-wuerttemberg/evangelisches-archiv-baden-und-wuerttemberg-wuerttemberg/dekanat-schwaebisch-hall/mainhardt/96411">Archion Mainhardt Eheregister 1850-1870 Band 15</a>. Marriage record target for John Paul Zimmerman and Catherine Zinkle/Zinkl.</li>
@@ -1438,9 +1318,9 @@
     <li id=s24><span class="scode mono">s24</span> <a href="https://www.szukajwarchiwach.gov.pl/en/zespol/-/zespol/23763">Standesamt Lebehnke civil registration fond 55/589/0, Szukaj w Archiwach</a>. Urzad Stanu Cywilnego Lubianka, held at the Poznan State Archive branch in Pila: birth, marriage, and death registers 1875-1930, fully digitized and viewable online without login. Likely the only surviving Lebehnke vital records.</li>
     <li id=s25><span class="scode mono">s25</span> <a href="https://westpreussen.de/pages/forschungshilfen/kirchenbuecher/quellen.php?ID=129">Lebehnke Evangelical parish entry, westpreussen.de church-book survey</a>. States the parish was attached to Schneidemuehl, Kreis Kolmar, until becoming independent in 1839, and that the church books kept from 1846 onward were destroyed in the Second World War - making the civil registers above the primary target.</li>
         <li id=s26><span class="scode mono">s26</span> <a href="https://ancestors.familysearch.org/en/GQ83-CVL/albert-l.-zodrow-1908-1957">Albert L. Zodrow, FamilySearch</a>. Public index names Julius Henry Zodrow and Ernestina Baier as parents.</li>
-        <li id=s27><span class="scode mono">s27</span> <a href="https://www.findagrave.com/memorial/104955721">Cecilia Zodrow Zimmerman, Find a Grave</a>. Compiled memorial gives Cecilia's vitals and Leonard Zodrow + Catherine parents, reciprocal with Leonard. <span class="cited-by mono" data-gen>→ Z-3, Z-6/7, Z-14/15</span></li>
-        <li id=s28><span class="scode mono">s28</span> <a href="https://www.findagrave.com/memorial/71839302">Leonard Ferdinand Zodrow, Find a Grave</a>. Compiled memorial gives Leonard's vitals, John Zodrow + Antonette Grams parents, spouse Catherine, and Cecilia. <span class="cited-by mono" data-gen>→ Z-3, Z-6/7, Z-14/15</span></li>
-        <li id=s29><span class="scode mono">s29</span> <a href="https://www.findagrave.com/memorial/111655641/julius-henry-zodrow">Julius Henry Zodrow, Find a Grave</a>. Cemetery profile links Julius to John Zodrow and Antonette Grams; now used for Doyle's great-uncle collateral household, not Cecilia's parents. <span class="cited-by mono" data-gen>→ person.zodrow.julius_collateral</span></li>
+        <li id=s27><span class="scode mono">s27</span> <a href="https://www.findagrave.com/memorial/104955721">Cecilia Zodrow Zimmerman, Find a Grave</a>. Compiled memorial gives Cecilia's vitals and Leonard Zodrow + Catherine parents, reciprocal with Leonard. <span class=mono data-g>→ Z-3, Z-6/7, Z-14/15</span></li>
+        <li id=s28><span class="scode mono">s28</span> <a href="https://www.findagrave.com/memorial/71839302">Leonard Ferdinand Zodrow, Find a Grave</a>. Compiled memorial gives Leonard's vitals, John Zodrow + Antonette Grams parents, spouse Catherine, and Cecilia. <span class=mono data-g>→ Z-3, Z-6/7, Z-14/15</span></li>
+        <li id=s29><span class="scode mono">s29</span> <a href="https://www.findagrave.com/memorial/111655641/julius-henry-zodrow">Julius Henry Zodrow, Find a Grave</a>. Cemetery profile links Julius to John Zodrow and Antonette Grams; now used for Doyle's great-uncle collateral household, not Cecilia's parents. <span class=mono data-g>→ person.zodrow.julius_collateral</span></li>
         <li id=s30><span class="scode mono">s30</span> <a href="https://ancestors.familysearch.org/en/LRVV-DCB/john-zodrow-1843-1915">John Zodrow, FamilySearch</a>. Public index gives birth in Prussia/Germany and children with Antonia Grams.</li>
         <li id=s31><span class="scode mono">s31</span> <a href="https://www.findagrave.com/memorial/156365204/antonette-zodrow">Antonette Grams Zodrow, Find a Grave</a>. Memorial gives Antonette's dates, links mother Rosa Grams, and lists Leonard and Julius among children.</li>
         <li id=s32><span class="scode mono">s32</span> <a href="https://www.ksgenweb.org/KSDecatur/cemeteries/leovillecalvarycemetery.htm">Leoville Calvary Cemetery transcription, KSGenWeb</a>. Lists John M. Zodrow's Sabanka birthplace and Rosa Grams's 7 Feb 1802-30 Mar 1895 dates.</li>
@@ -1454,10 +1334,10 @@
         <li id=s40><span class="scode mono">s40</span> <a href="https://www.szukajwarchiwach.gov.pl/en/c/portal/update_language?languageId=de_DE&amp;p_l_id=41967&amp;redirect=%2Fen%2Fzespol%2F-%2Fzespol%2F77604%3F_Zespol_javax.portlet.action%3DzmienWidok%26_Zespol_nameofjsp%3Djednostki%26_Zespol_delta%3D45%26_Zespol_resetCur%3Dfalse%26_Zespol_cur%3D10">Szukaj w Archiwach catalog, Neu Lebehnke land file</a>. Catalog search result references a Johann Zodrow property/mortgage and dismemberment file in Neu Lebehnke No. 100, dated 1860-1873; this is a collateral target, not yet John M. Zodrow proof.</li>
         <li id=s41><span class="scode mono">s41</span> <a href="https://www.findagrave.com/memorial/75485451/hedwig-schroer">Hedwig "Hattie" Zodrow Schroer, Find a Grave</a>. Memorial carries a Lewiston Tribune obituary naming John Zodrow's daughter and dating her marriage and Idaho move.</li>
         <li id=s42><span class="scode mono">s42</span> <a href="https://www.findagrave.com/memorial/75480556/albert-zodrow">Albert Zodrow, Find a Grave</a>. Memorial says Albert was son of John Zodrow and Antonette Grams; used here only as indirect evidence for Julius's likely parents.</li>
-        <li id=s43><span class="scode mono">s43</span> <a href="https://digitalarchives.wa.gov/DigitalObject/Download/8ec9f01a-d9b3-439c-9d17-76b4aa71e578">Julius Zodrow WA death certificate</a>. Certificate gives Eastern State Hospital death and 9 Jun 1870 birth vs. memorial June 1869. <span class="cited-by mono" data-gen>→ person.zodrow.julius_collateral</span></li>
+        <li id=s43><span class="scode mono">s43</span> <a href="https://digitalarchives.wa.gov/DigitalObject/Download/8ec9f01a-d9b3-439c-9d17-76b4aa71e578">Julius Zodrow WA death certificate</a>. Certificate gives Eastern State Hospital death and 9 Jun 1870 birth vs. memorial June 1869. <span class=mono data-g>→ person.zodrow.julius_collateral</span></li>
         <li id=s44><span class="scode mono">s44</span> <a href="https://digitalarchives.wa.gov/DigitalObject/Download/45ee30d4-cb75-4f01-8960-623e508691a7">Leonard William Zodrow WA death certificate</a>. Certificate gives Kansas birth, Frances Hickey spouse, Ernestine Biaer mother, burial, and sensitive facts.</li>
         <li id=s45><span class="scode mono">s45</span> <a href="https://digitalarchives.wa.gov/DigitalObject/Download/47f7bf19-9f7c-47e0-8c9f-0fdc1a7996ec">August Henry Zodrow WA death certificate</a>. Certificate gives Kansas birth, Julius father, veteran status, V.A. death, burial, and "Augustine" mother discrepancy.</li>
-        <li id=s46><span class="scode mono">s46</span> <a href="https://digitalarchives.wa.gov/Record/View/6DDD34128AF207DE282FD239CB42F43F">Ernestine Zodrow WA death index</a>. DOH index gives 14 May 1940 Chewelah death and father "August Biaer", conflicting with 11 May burial. <span class="cited-by mono" data-gen>→ person.zodrow.julius_collateral</span></li>
+        <li id=s46><span class="scode mono">s46</span> <a href="https://digitalarchives.wa.gov/Record/View/6DDD34128AF207DE282FD239CB42F43F">Ernestine Zodrow WA death index</a>. DOH index gives 14 May 1940 Chewelah death and father "August Biaer", conflicting with 11 May burial. <span class=mono data-g>→ person.zodrow.julius_collateral</span></li>
         <li id=s47><span class="scode mono">s47</span> <a href="https://digitalarchives.wa.gov/Record/View/789B836FE9D97E13A7718CEDF8B3FF98">Albert L. Zodrow WA death index</a>. DOH index gives Albert's Medical Lake death and Julius H. Zodrow + Ernstina parents.</li>
         <li id=s48><span class="scode mono">s48</span> <a href="https://digitalarchives.wa.gov/Record/View/E76DFDD67A5A35A219E45B763D549432">Julius Zodrow Holy Cross burial record</a>. Cemetery register gives Julius's 18 Mar 1959 Holy Cross burial and plot.</li>
         <li id=s49><span class="scode mono">s49</span> <a href="https://digitalarchives.wa.gov/Record/View/A1C69613FA96C82F633AA6596F9CBE14">Ernestina Zodrow Holy Cross burial record</a>. Cemetery register gives Ernestina's 11 May 1940 Holy Cross burial, before the DOH death date.</li>
@@ -1469,7 +1349,7 @@
         <ul class="sources">
     <li id=s51><span class="scode mono">s51</span> <a href="https://www.legacy.com/us/obituaries/name/evelyn-zimmerman-obituary?id=51665393">Evelyn Delores Zimmerman obituary mirror, Legacy.com</a>. Verbatim republication of the Baalmann Mortuary obituary, including the erroneous June 14, 1953 marriage date; cited in the marriage-date analysis as a non-independent copy, not a witness.</li>
     <li id=s52><span class="scode mono">s52</span> <a href="https://www.findagrave.com/memorial/252413378/evelyn_delores-zimmerman">Evelyn Delores Mundell Zimmerman, Find a Grave</a>. Cemetery memorial, 1935-2023. Bio text copies the Baalmann obituary verbatim, including the erroneous June 14, 1953 marriage date, so it is not an independent witness for the marriage year.</li>
-        <li id=s53><span class="scode mono">s53</span> <a href="https://ancestors.familysearch.org/en/LV1R-Z1G/walter-william-mundell-1885-1931">Walter William Mundell, FamilySearch</a>. Public index ties Walter to John Pryor Mundell and Sarah Alice Cantwell, gives Frances Rust as spouse with a 1910 marriage at Smith Center, Kansas, and lists children Homer Clair, Rex, and Erma. <span class="cited-by mono" data-gen>→ M-8/9</span></li>
+        <li id=s53><span class="scode mono">s53</span> <a href="https://ancestors.familysearch.org/en/LV1R-Z1G/walter-william-mundell-1885-1931">Walter William Mundell, FamilySearch</a>. Public index ties Walter to John Pryor Mundell and Sarah Alice Cantwell, gives Frances Rust as spouse with a 1910 marriage at Smith Center, Kansas, and lists children Homer Clair, Rex, and Erma. <span class=mono data-g>→ M-8/9</span></li>
         <li id=s54><span class="scode mono">s54</span> <a href="https://www.support.genealogy.com/forum/surnames/topics/cantwell/909/">Sarah Alice Cantwell Mundell forum post, Genealogy.com archive</a>. Compiled correspondence lead saying Walter William Mundell married/divorced Mary Frances Rust and their son was Homer Clair Mundell.</li>
         <li id=s55><span class="scode mono">s55</span> <a href="https://ancestors.familysearch.org/en/2ZS8-B73/barnabas-barney-cantwell-1813-1883">Barnabas "Barney" Cantwell, FamilySearch</a>. Public index and snippets connect Sarah Alice Cantwell to the Barnabas Cantwell family and name Thomas Cantwell Jr. and Jemima Kelley as Barnabas's parents.</li>
         <li id=s56><span class="scode mono">s56</span> <a href="https://www.support.genealogy.com/forum/surnames/topics/cantwell/763/">Cantwell forum thread, Genealogy.com archive</a>. Compiled lead giving Thomas Cantwell Jr. and Jemima Kelley as Barnabas's parents and pushing the line toward William Cantwell and Margaret O'Brien; unproven here.</li>
@@ -1479,16 +1359,16 @@
         <li id=s60><span class="scode mono">s60</span> <a href="https://www.interment.net/data/us/ks/smith/reamsville/index.htm">Reamsville Cemetery, Interment.net</a>. Smith County cemetery transcription gives the local Rust cluster, including F. John Rust, 1870-1909, John A. Rust, 1842-1916, and Nomdje N. Rust, 1855-1934.</li>
         <li id=s61><span class="scode mono">s61</span> <a href="https://fr.findagrave.com/memorial/97845385/john-aissen-rust">John Aissen Rust, Find a Grave</a>. Search-result child list includes F. John Rust; use only as a candidate link until Smith County records prove Mary Frances Rust's parents.</li>
         <li id=s62><span class="scode mono">s62</span> <a href="https://nces.ed.gov/ccd/schoolsearch/school_list.asp?County=Logan+County&amp;Search=1&amp;State=20">NCES Logan County public school search</a>. Current school locator still lists Winona High in Winona, Logan County, Kansas; useful as a modern locality check for the Frances Adolph / Winona High research target.</li>
-        <li id=s63><span class="scode mono">s63</span> <a href="https://www.findagrave.com/memorial/157801034/john-pryor-mundell">John Pryor Mundell, Find a Grave</a>. Memorial carries Payne County News, 15 Apr 1938, as an obituary carrier with no parents named and Poweshiek County birth fields. <span class="cited-by mono" data-gen>→ M-8/9</span></li>
-        <li id=s64><span class="scode mono">s64</span> <a href="https://occgs.com/projects/civil_war/Mundell_Harvey.pdf">OCCGS Harvey Mundell Civil War Veterans Project PDF</a>. Four-page compiled profile giving Harvey's April 1837 Clinton County, Indiana birth, parents John Mundell and Deborah Elmore, wife Elizabeth Jane Brown, children including John P. Mundell, Civil War service, and census/source trail. <span class="cited-by mono" data-gen>→ M-8/9</span></li>
+        <li id=s63><span class="scode mono">s63</span> <a href="https://www.findagrave.com/memorial/157801034/john-pryor-mundell">John Pryor Mundell, Find a Grave</a>. Memorial carries Payne County News, 15 Apr 1938, as an obituary carrier with no parents named and Poweshiek County birth fields. <span class=mono data-g>→ M-8/9</span></li>
+        <li id=s64><span class="scode mono">s64</span> <a href="https://occgs.com/projects/civil_war/Mundell_Harvey.pdf">OCCGS Harvey Mundell Civil War Veterans Project PDF</a>. Four-page compiled profile giving Harvey's April 1837 Clinton County, Indiana birth, parents John Mundell and Deborah Elmore, wife Elizabeth Jane Brown, children including John P. Mundell, Civil War service, and census/source trail. <span class=mono data-g>→ M-8/9</span></li>
         <li id=s65><span class="scode mono">s65</span> <a href="https://stchsgenealogy.com/p213.htm">Southern Tuolumne County Historical Society genealogy page 213</a>. Compiled Harvey William Mundell page with John Mundell/Deborah Elmore parentage, Elizabeth Jane Brown marriage, Civil War service, and census trail; use as a pointer to primary records. Site verified July 2026 as the Southern Tuolumne County, California historical society, previously misattributed here to St. Charles County.</li>
         <li id=s66><span class="scode mono">s66</span> <a href="https://ancestors.familysearch.org/en/K2W7-JRZ/harvey-william-mundell-1821-1901">Harvey William Mundell, FamilySearch</a>. Public index lead naming John Mundell and Deborah Elmore as parents. A July 2026 automated re-check found this profile ID resolving to an unrelated person, apparently after a tree merge; verify in a browser before relying on it.</li>
-        <li id=s67><span class="scode mono">s67</span> <a href="https://ancestors.familysearch.org/en/G6RD-KWY/genevieve-clemans-1925-2003">Genevieve Clemans, FamilySearch</a>. Public index names Talmadge Dewitt Clemans and Margaret Ellen Flaherty as parents, says Genevieve was born 15 Jan 1925 in Minnesota, and lists Marjorie Clemans as a sibling. <span class="cited-by mono" data-gen>→ M-6/7</span></li>
+        <li id=s67><span class="scode mono">s67</span> <a href="https://ancestors.familysearch.org/en/G6RD-KWY/genevieve-clemans-1925-2003">Genevieve Clemans, FamilySearch</a>. Public index names Talmadge Dewitt Clemans and Margaret Ellen Flaherty as parents, says Genevieve was born 15 Jan 1925 in Minnesota, and lists Marjorie Clemans as a sibling. <span class=mono data-g>→ M-6/7</span></li>
         <li id=s68><span class="scode mono">s68</span> <a href="https://www.ancestry.com/1940-census/usa/Mississippi/Talmage-Clemons_45mck8/amp">Talmage D. Clemans, Ancestry 1940 census profile</a>. Search-result lead gives parents Roland Clemens and Ella C./Ellen Martin; used only as a provisional lead until Marjorie Clemans is tied directly to the household.</li>
-        <li id=s69><span class="scode mono">s69</span> <a href="https://www.findagrave.com/memorial/113830517/margaret_ellen-clemans">Margaret Ellen Flaherty Clemans, Find a Grave</a>. Memorial gives about 1901-1986 and a St. Louis marriage note for Talmage Clemans and Margaret Flaherty on 16 Apr 1921. <span class="cited-by mono" data-gen>→ M-6/7</span></li>
+        <li id=s69><span class="scode mono">s69</span> <a href="https://www.findagrave.com/memorial/113830517/margaret_ellen-clemans">Margaret Ellen Flaherty Clemans, Find a Grave</a>. Memorial gives about 1901-1986 and a St. Louis marriage note for Talmage Clemans and Margaret Flaherty on 16 Apr 1921. <span class=mono data-g>→ M-6/7</span></li>
         <li id=s70><span class="scode mono">s70</span> <a href="https://www.findagrave.com/memorial/36793267/edward_j-flaherty">Edward J. Flaherty, Find a Grave</a>. Cemetery sibling lead listing Margaret Ellen Flaherty Clemans; Edward's page names Martin Flaherty and Kate Flaherty as parents, making them a specific parentage lead for Margaret pending direct proof.</li>
-        <li id=s71><span class="scode mono">s71</span> <a href="https://ancestors.familysearch.org/en/L5K9-Q7H/marjorie-opal-clemans-1914-1991">Marjorie Opal Clemans, FamilySearch</a>. Same-name collision candidate: born in Liberty Mills, Indiana in 1914, not yet connected to Evelyn's Colorado/Kansas Mundell context. <span class="cited-by mono" data-gen>→ M-3</span></li>
-        <li id=s72><span class="scode mono">s72</span> <a href="https://archive.org/stream/descendantsofchr00minn/descendantsofchr00minn_djvu.txt">Descendants of Christian Eby, Internet Archive text</a>. Compiled Eby/Minnich genealogy proves Indiana Marjorie Clemans married Clay V. Stamper in 1935; same-name exclusion. <span class="cited-by mono" data-gen>→ M-3</span></li>
+        <li id=s71><span class="scode mono">s71</span> <a href="https://ancestors.familysearch.org/en/L5K9-Q7H/marjorie-opal-clemans-1914-1991">Marjorie Opal Clemans, FamilySearch</a>. Same-name collision candidate: born in Liberty Mills, Indiana in 1914, not yet connected to Evelyn's Colorado/Kansas Mundell context. <span class=mono data-g>→ M-3</span></li>
+        <li id=s72><span class="scode mono">s72</span> <a href="https://archive.org/stream/descendantsofchr00minn/descendantsofchr00minn_djvu.txt">Descendants of Christian Eby, Internet Archive text</a>. Compiled Eby/Minnich genealogy proves Indiana Marjorie Clemans married Clay V. Stamper in 1935; same-name exclusion. <span class=mono data-g>→ M-3</span></li>
         <li id=s73><span class="scode mono">s73</span> <a href="https://1950census.archives.gov/iiif/2/1950census%2F43290879-Kansas%2F43290879-Kansas-193601%2F43290879-Kansas-193601-0002.jpg/full/2200,/0/default.jpg">1950 census, Kingery Township, Kansas</a>. NARA image documents Evelyn Mundell, 15, as Albert and Mary Adolph's granddaughter; another minor is unnamed.</li>
         <li id=s74><span class="scode mono">s74</span> <a href="https://www.findagrave.com/memorial/45842484/jacob_henry-adolph">Jacob Henry Adolph, Find a Grave</a>. Memorial carries the 1935 obituary naming Charles and Emmeline, Flora Kenyon marriage, son Lon, and conflicts.</li>
         <li id=s75><span class="scode mono">s75</span> <a href="https://www.findagrave.com/memorial/242242358/glenn-howard-adolph">Glenn Howard Adolph, Find a Grave</a>. Memorial carries The Colby Free Press, 24 Aug 1922, clipping placing Lon Adolph in Colby.</li>
@@ -1517,10 +1397,10 @@
         <summary>Dible, Heckman & Haden <span class="count">31 sources</span></summary>
         <ul class="sources">
     <li id=s95><span class="scode mono">s95</span> <a href="http://www.nwkansas.com/cfpwebpages/pdf%20pages-all/cfp%20pages-pdfs%202005/cfp%20pages:04%20Apr/Week%202/%20%20Monday/front.pdf">Rexford city election coverage, Colby Free Press front page, 4 Apr 2005</a>. Names incumbent Rexford Mayor William Dible running unopposed and states he had been mayor of Rexford since 1976, with wife Donna, residents of Rexford most of their lives.</li>
-        <li id=s96><span class="scode mono">s96</span> <a href="https://www.baalmannmortuary.com/obituaries/william-dible">William J. "Bill" Dible obituary, Baalmann Mortuary</a>. Names Ray and Almeda Long Dible; gives birth, death, and marriage context. <span class="cited-by mono" data-gen>→ D-1, D-2/3</span></li>
-        <li id=s97><span class="scode mono">s97</span> <a href="https://www.baalmannmortuary.com/obituaries/donna-dible">Donna Lea Connelly Dible obituary, Baalmann Mortuary</a>. Names Chester and Martha Claar Connelly. <span class="cited-by mono" data-gen>→ C-1, C-2/3, C-3</span></li>
+        <li id=s96><span class="scode mono">s96</span> <a href="https://www.baalmannmortuary.com/obituaries/william-dible">William J. "Bill" Dible obituary, Baalmann Mortuary</a>. Names Ray and Almeda Long Dible; gives birth, death, and marriage context. <span class=mono data-g>→ D-1, D-2/3</span></li>
+        <li id=s97><span class="scode mono">s97</span> <a href="https://www.baalmannmortuary.com/obituaries/donna-dible">Donna Lea Connelly Dible obituary, Baalmann Mortuary</a>. Names Chester and Martha Claar Connelly. <span class=mono data-g>→ C-1, C-2/3, C-3</span></li>
         <li id=s98><span class="scode mono">s98</span> <a href="https://hayspost.com/posts/bc1e3b37-d4c3-4a69-930e-24b43084c469">Donna Lea Dible notice, Hays Post</a>. Repeats Chester/Martha parentage and Rexford context.</li>
-        <li id=s99><span class="scode mono">s99</span> <a href="https://www.wikitree.com/wiki/Dible-21">Harry Dible, WikiTree</a>. States Harry was son of Zephaniah Dible and Catherine Moore; gives a conflicting Catherine Moore date set versus Ancestry's John Moore Dible profile. <span class="cited-by mono" data-gen>→ D-8/9</span></li>
+        <li id=s99><span class="scode mono">s99</span> <a href="https://www.wikitree.com/wiki/Dible-21">Harry Dible, WikiTree</a>. States Harry was son of Zephaniah Dible and Catherine Moore; gives a conflicting Catherine Moore date set versus Ancestry's John Moore Dible profile. <span class=mono data-g>→ D-8/9</span></li>
         <li id=s100><span class="scode mono">s100</span> <a href="https://ancestors.familysearch.org/en/KCBR-YSR/julia-dible-1874-1967">Julia Dible, FamilySearch</a>. Public index names John Heckman Dible and Elizabeth J. Haden as parents and gives marriage to Harry H. Dible in Hitchcock County, Nebraska.</li>
         <li id=s101><span class="scode mono">s101</span> <a href="https://ancestors.familysearch.org/en/K845-DFL/john-heckman-dible-1836-1913">John Heckman Dible, FamilySearch</a>. Public index gives marriage to Elizabeth J. Haden and supports Julia's paternal line.</li>
         <li id=s102><span class="scode mono">s102</span> <a href="https://www.findagrave.com/memorial/9609591/john-heckman-dible">John Heckman Dible, Find a Grave</a>. Memorial names John A. Dible and Catherine Heckman as parents and lists Julia among children.</li>
@@ -1530,8 +1410,8 @@
         <li id=s106><span class="scode mono">s106</span> <a href="https://sites.rootsmagic.com/KaysAncestry/individual.php?p=659">Richard D. Haden, KaysAncestry RootsMagic page</a>. Compiled lead for the Gen 6 Haden layer: Albemarle County, Virginia birth/marriage context, marriage to Sarah "Sally" Lewis Tompkins on 7 Mar 1799, and death in Cumberland County, Kentucky.</li>
         <li id=s107><span class="scode mono">s107</span> <a href="https://sites.rootsmagic.com/KaysAncestry/individual.php?p=1960">Sarah "Sally" Lewis Tompkins, KaysAncestry RootsMagic page</a>. Compiled lead tying Sally to Richard D. Haden and their child cluster including Andrew Jackson Haden.</li>
         <li id=s108><span class="scode mono">s108</span> <a href="https://sites.rootsmagic.com/KaysAncestry/individual.php?p=7219">Sophia Reed, KaysAncestry RootsMagic page</a>. Compiled/census lead for Sophia Reed Haden; notes possible Reid household clues in 1860 and 1870 but does not prove Sophia's parents.</li>
-        <li id=s109><span class="scode mono">s109</span> <a href="https://ancestors.familysearch.org/en/LVZ6-YGD">John Moore Dible, FamilySearch</a>. Public index shows Zephaniah Dible and Catherine Moore as parents. <span class="cited-by mono" data-gen>→ D-8/9</span></li>
-        <li id=s110><span class="scode mono">s110</span> <a href="https://www.ancestry.com/genealogy/records/john-moore-dible-24-1zyhn5">John Moore Dible, Ancestry profile</a>. Compiled/index lead places John Moore Dible's 1860 birth at Kiskiminetas, Armstrong County, Pennsylvania, and gives parents Zephaniah Dible and Catherine Moore. <span class="cited-by mono" data-gen>→ D-8/9</span></li>
+        <li id=s109><span class="scode mono">s109</span> <a href="https://ancestors.familysearch.org/en/LVZ6-YGD">John Moore Dible, FamilySearch</a>. Public index shows Zephaniah Dible and Catherine Moore as parents. <span class=mono data-g>→ D-8/9</span></li>
+        <li id=s110><span class="scode mono">s110</span> <a href="https://www.ancestry.com/genealogy/records/john-moore-dible-24-1zyhn5">John Moore Dible, Ancestry profile</a>. Compiled/index lead places John Moore Dible's 1860 birth at Kiskiminetas, Armstrong County, Pennsylvania, and gives parents Zephaniah Dible and Catherine Moore. <span class=mono data-g>→ D-8/9</span></li>
         <li id=s111><span class="scode mono">s111</span> <a href="https://ancestors.familysearch.org/en/L6LS-FV3/catherine-heckman-1805-1846">Catherine Heckman, FamilySearch</a>. Public index connects Catherine Heckman to children including Zephaniah and John Heckman Dible.</li>
         <li id=s112><span class="scode mono">s112</span> <a href="https://ancestors.familysearch.org/en/KHLL-WKM/john-jacob-heckman-1797">John Jacob Heckman, FamilySearch</a>. Sibling-index evidence naming Philip Heckman and Esther Otterman as parents.</li>
         <li id=s113><span class="scode mono">s113</span> <a href="https://ancestors.familysearch.org/en/GMWC-SZ1/george-heckman-1814-1899">George Heckman, FamilySearch</a>. Sibling-index evidence for the Philip Heckman and Esther Otterman household.</li>
@@ -1540,7 +1420,7 @@
         <li id=s116><span class="scode mono">s116</span> <a href="https://www.familiesbyvelmaparsons.com/pdfs/DIBLE.pdf">Dible family paper, Families by Velma Parsons</a>. Three-page compiled Dible family paper placing John Dible and Catherine Heckman under Jacob Dible and Susannah Allshouse.</li>
         <li id=s117><span class="scode mono">s117</span> <a href="https://books.google.com/books/about/John_Jacob_Dreibelbis_Family_of_America.html?id=ODgZAQAAMAAJ">John Jacob Dreibelbis Family of America, Google Books record</a>. Compiled Dreibelbis lead identifying the immigrant John/Johann Jacob Dreibelbis line from Hassloch, Germany; useful only after the Dible-to-Dreibelbis step is proven.</li>
         <li id=s118><span class="scode mono">s118</span> <a href="https://www.reichmuthfuneralhomes.com/m/obituaries/Ruth-Haughawout/">Ruth Margaret Dible Haughawout obituary</a>. Names Ray Hershel and Almeda Ora Long Dible.</li>
-        <li id=s119><span class="scode mono">s119</span> <a href="https://usgenealogyresearch.atwebpages.com/Kansas/Jackson/marriages.html">Jackson County, Kansas marriage index</a>. Lists Almeda Long and Ray H. Dible marriage entry. <span class="cited-by mono" data-gen>→ D-3</span></li>
+        <li id=s119><span class="scode mono">s119</span> <a href="https://usgenealogyresearch.atwebpages.com/Kansas/Jackson/marriages.html">Jackson County, Kansas marriage index</a>. Lists Almeda Long and Ray H. Dible marriage entry. <span class=mono data-g>→ D-3</span></li>
         <li id=s120><span class="scode mono">s120</span> <a href="https://archive.org/details/historyofdevilbi00devi">History of the DeVilbiss Family in the United States</a>. Quotes Casper Devilbiss's 1777 will and has zero "Dible" occurrences, disconfirming this graft.</li>
         <li id=s121><span class="scode mono">s121</span> <a href="https://archive.org/details/returnsoftaxable00egle">PA Archives, 3rd series, vol. 22</a>. 1783 Westmoreland tax list gives "Dible, Jacob" in Huntingdon Township, with no 1786 recurrence.</li>
         <li id=s122><span class="scode mono">s122</span> <a href="https://www.wikitree.com/wiki/Dreibelbis-13">Johann Jacob Dreibelbis, WikiTree</a>. Compiled Burgert will abstract names seven Berks County children, with no Dible or Westmoreland migrant.</li>
@@ -1557,7 +1437,7 @@
         <li id=s128><span class="scode mono">s128</span> <a href="https://www.findagrave.com/memorial/83042108/cora_ellie-long">Cora Ellie McClellan Long, Find a Grave</a>. Cemetery profile/search-result context links Cora to Dorsey Overturf McClelland and Lovina Parker Love and notes the Selden Cemetery collateral cluster with Dorsey, Ora, and Almeda.</li>
         <li id=s129><span class="scode mono">s129</span> <a href="https://www.findagrave.com/memorial/81010414/dorsey_overturf-mcclelland">Dorsey Overturf McClelland, Find a Grave</a>. Cemetery profile target for Dorsey's dates, parents, spouse, and Selden burial context.</li>
         <li id=s130><span class="scode mono">s130</span> <a href="https://www.findagrave.com/memorial/101356599/robert_nelson-long">Robert Nelson Long, Find a Grave</a>. Biography gives marriage to Ann Ghent Sleight and Sleight parents.</li>
-        <li id=s131><span class="scode mono">s131</span> <a href="https://www.findagrave.com/memorial/68978483/robert-long">Rev. Robert Long, Find a Grave</a>. Memorial biography names two sons, John Franklin and Abner Nelson Long, and lists Robert Nelson Long as John Franklin's child; an earlier reading here mistook Robert Nelson for a son of Rev. Robert. Gives 1775-1850 with death at Locust Grove Township, Jefferson County, Iowa. <span class="cited-by mono" data-gen>→ D-24/25</span></li>
+        <li id=s131><span class="scode mono">s131</span> <a href="https://www.findagrave.com/memorial/68978483/robert-long">Rev. Robert Long, Find a Grave</a>. Memorial biography names two sons, John Franklin and Abner Nelson Long, and lists Robert Nelson Long as John Franklin's child; an earlier reading here mistook Robert Nelson for a son of Rev. Robert. Gives 1775-1850 with death at Locust Grove Township, Jefferson County, Iowa. <span class=mono data-g>→ D-24/25</span></li>
         <li id=s132><span class="scode mono">s132</span> <a href="https://ancestors.familysearch.org/en/M2HW-VTF/henry-sleight-1828">Henry Sleight, FamilySearch</a>. Public sibling-index result naming John Sleight and Elizabeth Gaunt as parents and listing John Gaunt Sleight among siblings. A July 2026 automated re-check rendered this profile with mother Elizabeth Richardson Coulson and no John Gaunt Sleight among siblings, suggesting an unrelated Sleight family; verify in a browser.</li>
         <li id=s133><span class="scode mono">s133</span> <a href="https://genealogytrails.com/ill/pike/cemgriggsville4.html">Griggsville Cemetery transcription, Genealogy Trails</a>. Lists Sleight burials and parent notes for John Gaunt and Rebecca Walker Sleight descendants.</li>
         <li id=s134><span class="scode mono">s134</span> <a href="https://www.wikitree.com/wiki/McClelland-1186">Alexander M. McClelland, WikiTree</a>. Compiled lead naming Dorsey Overturf McClelland as a child.</li>
@@ -1565,7 +1445,7 @@
         <li id=s136><span class="scode mono">s136</span> <a href="https://www.wikitree.com/wiki/Love-4617">Lovina Parker Love McClelland, WikiTree</a>. Compiled lead naming Thomas Louis Love and Hannah Ann James as parents.</li>
         <li id=s137><span class="scode mono">s137</span> <a href="https://www.findagrave.com/memorial/97905624/lovina_parker-mcclellan">Lovina Parker Love McClellan, Find a Grave</a>. Cemetery profile repeats Thomas Louis Love and Hannah James parentage; use as a lead.</li>
         <li id=s138><span class="scode mono">s138</span> <a href="https://ancestors.familysearch.org/en/9S5X-B38/thomas-lewis-love-1796-1871">Thomas Lewis Love, FamilySearch</a>. Public index gives Thomas Lewis Love, Hannah Ann James, a 5 Feb 1828 marriage, and a child list including Lovina Parker Love.</li>
-        <li id=s139><span class="scode mono">s139</span> <a href="https://archive.org/details/historyofpikecou00chap">Chapman Pike County, 1880</a>. Names Sally A. Patton and child Robert N.; Robert Nelson Long remains an inference. <span class="cited-by mono" data-gen>→ D-24/25</span></li>
+        <li id=s139><span class="scode mono">s139</span> <a href="https://archive.org/details/historyofpikecou00chap">Chapman Pike County, 1880</a>. Names Sally A. Patton and child Robert N.; Robert Nelson Long remains an inference. <span class=mono data-g>→ D-24/25</span></li>
         <li id=s140><span class="scode mono">s140</span> <a href="https://archive.org/details/historyofjeffers01fult">Fulton Jefferson County, Iowa, vol. 1</a>. Places Rev. Robert Long at Abingdon in 1843 and as Polk judge, but not as James B. Davis's stepfather.</li>
         <li id=s141><span class="scode mono">s141</span> <a href="https://archive.org/details/cu31924028803406">Goodspeed Posey County, 1886</a>. Documents Robert Long's early mill and Wasonite context without tying him personally to the split.</li>
         <li id=s142><span class="scode mono">s142</span> <a href="https://archive.org/details/bub_gb_wk8PAAAAYAAJ">Chalkley, Chronicles of the Scotch-Irish Settlement, vol. 2</a>. Gives Joseph Long's 1757 will and [1764] deed; Samuel-to-Robert remains unproven.</li>
@@ -1575,28 +1455,28 @@
         <summary>Connelly, Durham & Ford <span class="count">16 sources</span></summary>
         <ul class="sources">
         <li id=s143><span class="scode mono">s143</span> <a href="https://www.findagrave.com/memorial/203438389/laura-inis-walls">Laura Inis Connelly Walls, Find a Grave</a>. Sibling evidence for James Connelly and America Ellen Durham household.</li>
-        <li id=s144><span class="scode mono">s144</span> <a href="https://www.findagrave.com/memorial/60313040/james-connelly">James Connelly, Find a Grave</a>. Cemetery profile links spouse America Ellen Durham Connelly and their children. <span class="cited-by mono" data-gen>→ C-4/5</span></li>
-        <li id=s145><span class="scode mono">s145</span> <a href="https://ancestors.familysearch.org/en/MLLM-ZHG/nola-temperance-connelly-1896-1978">Nola Temperance Connelly, FamilySearch</a>. Public index names James Connolly and America Ellen Durham as parents, supporting the sibling group. <span class="cited-by mono" data-gen>→ C-4/5</span></li>
-        <li id=s146><span class="scode mono">s146</span> <a href="https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1021&amp;context=muhlenberg_cty_heritage">Muhlenberg County Heritage, Vol. 5 No. 1</a>. Reprinted family-record material gives David Monroe Durham's 28 Dec 1832 North Carolina birth, 24 Aug 1897 death at Nebo, Kentucky, marriage to Virginia Ann Ford on 19 Aug 1857 in Menard County, Illinois, and children including America Ellen Durham, born 25 Aug 1858, died 28 Jan 1947, married James Connelly. <span class="cited-by mono" data-gen>→ C-4/5, C-10/11</span></li>
+        <li id=s144><span class="scode mono">s144</span> <a href="https://www.findagrave.com/memorial/60313040/james-connelly">James Connelly, Find a Grave</a>. Cemetery profile links spouse America Ellen Durham Connelly and their children. <span class=mono data-g>→ C-4/5</span></li>
+        <li id=s145><span class="scode mono">s145</span> <a href="https://ancestors.familysearch.org/en/MLLM-ZHG/nola-temperance-connelly-1896-1978">Nola Temperance Connelly, FamilySearch</a>. Public index names James Connolly and America Ellen Durham as parents, supporting the sibling group. <span class=mono data-g>→ C-4/5</span></li>
+        <li id=s146><span class="scode mono">s146</span> <a href="https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1021&amp;context=muhlenberg_cty_heritage">Muhlenberg County Heritage, Vol. 5 No. 1</a>. Reprinted family-record material gives David Monroe Durham's 28 Dec 1832 North Carolina birth, 24 Aug 1897 death at Nebo, Kentucky, marriage to Virginia Ann Ford on 19 Aug 1857 in Menard County, Illinois, and children including America Ellen Durham, born 25 Aug 1858, died 28 Jan 1947, married James Connelly. <span class=mono data-g>→ C-4/5, C-10/11</span></li>
         <li id=s147><span class="scode mono">s147</span> <a href="https://ancestors.familysearch.org/en/KVP1-L7H/david-milton-durham-1868-1932">David Milton Durham, FamilySearch</a>. Public child-index snippet names David Monroe Durham Jr. and Virginia Ann Ford as parents; useful for the sibling cluster and for flagging the "Jr." identity question.</li>
-        <li id=s148><span class="scode mono">s148</span> <a href="https://nb.findagrave.com/memorial/140303398/mary-isabella-hibbs">Mary Isabella Durham Hibbs, Find a Grave</a>. Index snippet names David M. Durham and Virginia Ann Ford as parents but gives a variant David Monroe Durham date range of 1829-1887; use as a conflict-resolution clue. <span class="cited-by mono" data-gen>→ C-10/11</span></li>
+        <li id=s148><span class="scode mono">s148</span> <a href="https://nb.findagrave.com/memorial/140303398/mary-isabella-hibbs">Mary Isabella Durham Hibbs, Find a Grave</a>. Index snippet names David M. Durham and Virginia Ann Ford as parents but gives a variant David Monroe Durham date range of 1829-1887; use as a conflict-resolution clue. <span class=mono data-g>→ C-10/11</span></li>
         <li id=s149><span class="scode mono">s149</span> <a href="https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1014&amp;context=muhlenberg_cty_heritage">Muhlenberg County Heritage, Vol. 3 No. 4</a>. Published query lead for Virginia Ann Ford's parents John Laborn/Laban Ford and Lucy Staples, and for Lucy's father John Burton Staples.</li>
-        <li id=s150><span class="scode mono">s150</span> <a href="https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1011&amp;context=muhlenberg_cty_heritage">Muhlenberg County Heritage, Vol. 3 No. 1</a>. Reprints the 1911 Muhlenberg Sentinel "Fords and Allens" letter by Rev. G. W. Ford, son of John Laborn Ford and Lucy Ann Staples; gives the Caswell-to-Greenville/Friendship migration, the Ford/Staples child list, John Burton Staples and Nancy Ann Turner details, and the family-tradition version of John Laborn Ford's parents. <span class="cited-by mono" data-gen>→ C-10/11, C-22/23</span></li>
+        <li id=s150><span class="scode mono">s150</span> <a href="https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1011&amp;context=muhlenberg_cty_heritage">Muhlenberg County Heritage, Vol. 3 No. 1</a>. Reprints the 1911 Muhlenberg Sentinel "Fords and Allens" letter by Rev. G. W. Ford, son of John Laborn Ford and Lucy Ann Staples; gives the Caswell-to-Greenville/Friendship migration, the Ford/Staples child list, John Burton Staples and Nancy Ann Turner details, and the family-tradition version of John Laborn Ford's parents. <span class=mono data-g>→ C-10/11, C-22/23</span></li>
         <li id=s151><span class="scode mono">s151</span> <a href="https://digitalcommons.wku.edu/cgi/viewcontent.cgi?article=1026&amp;context=muhlenberg_cty_heritage">Muhlenberg County Heritage, Vol. 6 No. 1</a>. Query says proof is needed that John Laborn Ford, born 1811 in Caswell County, North Carolina, was son of Levi Ford and Aritta Davis; useful for keeping the Ford parentage unresolved.</li>
-        <li id=s152><span class="scode mono">s152</span> <a href="https://ncccha.blogspot.com/2010/06/john-laborn-ford.html">Caswell County Historical Association, John Laborn Ford note</a>. Compiled discussion of two competing family versions: John Laborn Ford Sr. plus Aritta Davis versus Levi Ford plus Aritta Davis; explicitly says empirical documentation is still needed. <span class="cited-by mono" data-gen>→ C-22/23</span></li>
+        <li id=s152><span class="scode mono">s152</span> <a href="https://ncccha.blogspot.com/2010/06/john-laborn-ford.html">Caswell County Historical Association, John Laborn Ford note</a>. Compiled discussion of two competing family versions: John Laborn Ford Sr. plus Aritta Davis versus Levi Ford plus Aritta Davis; explicitly says empirical documentation is still needed. <span class=mono data-g>→ C-22/23</span></li>
         <li id=s153><span class="scode mono">s153</span> <a href="https://www.wikitree.com/wiki/Staples-3420">Lucy Ann Elizabeth Staples Ford, WikiTree</a>. Compiled lead naming John Laborn Ford as spouse, Virginia Ann Ford Durham as a child, and John Burton Staples/Nancy Ann Turner as parents.</li>
         <li id=s154><span class="scode mono">s154</span> <a href="https://www.ancestry.it/genealogy/records/lucy-ann-staples-24-1m59w">Lucy Staples, Ancestry public profile</a>. Compiled lead naming John Burton Staples and Nancy Ann Turner as parents, John Laborn Ford as spouse, and Virginia Ann Durham among children.</li>
         <li id=s155><span class="scode mono">s155</span> <a href="https://www.wikitree.com/wiki/Ford-26893">John Laborn Ford III, WikiTree</a>. Sibling-index lead listing Virginia Ann Ford Durham among the John Laborn Ford and Lucy Ann Staples children.</li>
         <li id=s156><span class="scode mono">s156</span> <a href="https://ancestors.familysearch.org/en/LRNJ-F2P/charles-richard-staples-1829-1853">Charles Richard Staples, FamilySearch</a>. Sibling-index lead naming John Burton Staples and Nancy Ann Turner as parents and Lucy Ann Elizabeth Staples as a sibling.</li>
-        <li id=s157><span class="scode mono">s157</span> <a href="https://www.findagrave.com/memorial/203438332/martha-frances-connelly">Martha Frances Claar Connelly, Find a Grave</a>. Cemetery identity for Donna's mother. <span class="cited-by mono" data-gen>→ C-3</span></li>
+        <li id=s157><span class="scode mono">s157</span> <a href="https://www.findagrave.com/memorial/203438332/martha-frances-connelly">Martha Frances Claar Connelly, Find a Grave</a>. Cemetery identity for Donna's mother. <span class=mono data-g>→ C-3</span></li>
         <li id=s158><span class="scode mono">s158</span> <a href="https://www.motherbedford.com/KlarGen05.htm">MotherBedford Klar/Claar genealogy page</a>. Compiled Claar lineage from Samuel Claar and Lydia Stropes back through George Washington Claar; use as a working lead.</li>
         </ul>
       </details>
       <details>
         <summary>Claar, Hoyle & White <span class="count">11 sources</span></summary>
         <ul class="sources">
-        <li id=s159><span class="scode mono">s159</span> <a href="https://ancestors.familysearch.org/en/KN4D-VND/samuel-dove-claar-1873-1952">Samuel Dove Claar, FamilySearch</a>. Public index names Henry Claar and Electa Alice White as parents and Mary Margaret Hoyle as spouse. <span class="cited-by mono" data-gen>→ C-6/7</span></li>
-        <li id=s160><span class="scode mono">s160</span> <a href="https://www.ksgenweb.org/KSDecatur/Marriages/groom_c.htm">Decatur County, Kansas groom marriage index C-F, KSGenWeb</a>. Lists Samuel D. Claar marrying Maggie M. Hogle on 5 Oct 1895 in Oberlin; conflicts with the Mary Margaret Hoyle surname in FamilySearch and descendant materials. <span class="cited-by mono" data-gen>→ C-6/7</span></li>
+        <li id=s159><span class="scode mono">s159</span> <a href="https://ancestors.familysearch.org/en/KN4D-VND/samuel-dove-claar-1873-1952">Samuel Dove Claar, FamilySearch</a>. Public index names Henry Claar and Electa Alice White as parents and Mary Margaret Hoyle as spouse. <span class=mono data-g>→ C-6/7</span></li>
+        <li id=s160><span class="scode mono">s160</span> <a href="https://www.ksgenweb.org/KSDecatur/Marriages/groom_c.htm">Decatur County, Kansas groom marriage index C-F, KSGenWeb</a>. Lists Samuel D. Claar marrying Maggie M. Hogle on 5 Oct 1895 in Oberlin; conflicts with the Mary Margaret Hoyle surname in FamilySearch and descendant materials. <span class=mono data-g>→ C-6/7</span></li>
         <li id=s161><span class="scode mono">s161</span> <a href="https://www.ksgenweb.org/KSDecatur/Marriages/bride_g.htm">Decatur County, Kansas bride marriage index G-H, KSGenWeb</a>. Lists Maggie M. Hogle marrying Samuel D. Claar on 5 Oct 1895 in Oberlin and notes that county marriage records are on file with the Decatur County Clerk of the District Court.</li>
         <li id=s162><span class="scode mono">s162</span> <a href="https://nwkansas.com/obhwebpages/pdf%20pages%20-%20all/obh%20pages-pdfs%202008/obhPages_11_Nov/Week2/8A%20KD%2046.pdf">Lula Claar Thieler obituary page, Oberlin Herald/NWKansas PDF</a>. Search snippet identifies Lula as daughter of Samuel Dove Claar and Mary Margaret (Hoyle) Claar and says she grew up in the Hawkeye area; use as descendant context, not proof of Mary Margaret's parents.</li>
         <li id=s163><span class="scode mono">s163</span> <a href="https://ancestors.familysearch.org/en/LYQT-6V7/henry-claar-1838-1915">Henry Claar, FamilySearch</a>. Public index gives marriage to Electa Alice White and places Henry in the Claar family group.</li>
@@ -2284,7 +2164,7 @@ const SCALE_UPK = { migration: 0.080889, kansas: 1.313116 };
         state.pinnedId = id && id !== state.pinnedId ? id : null;
         render();
       });
-      figure.querySelectorAll(".plate-key li").forEach((r)=>r.onclick=()=>{const id=r.dataset.eventId;state.pinnedId=id===state.pinnedId?null:id;render();});
+      figure.querySelectorAll(".plate-key li").forEach((r)=>r.onclick=()=>{const id=r.dataset.e;state.pinnedId=id===state.pinnedId?null:id;render();});
       svg.addEventListener("mousemove", (e) => {
         const id = pick(e);
         if (id !== state.hoverId) {
@@ -2352,7 +2232,7 @@ const SCALE_UPK = { migration: 0.080889, kansas: 1.313116 };
       revealPlates(figures);
     }
 
-function initPedigrees(){const P=JSON.parse(document.getElementById("people-index").textContent).people,B={},L=["Z","M","D","C"];P.forEach(p=>(p.ah||[]).forEach(n=>((B[p.a]||(B[p.a]={}))[n]=p)));L.forEach(a=>{const f=document.getElementById("chart-"+a.toLowerCase());if(!f)return;let W=160,X=172,H=640,pos={},s='<svg viewBox="0 0 1030 640">';for(let n=1;n<64;n++){let g=Math.floor(Math.log2(n)),i=n-(1<<g),q=H/(1<<g),h=Math.min(42,q-3),x=g*X,y=i*q+(q-h)/2;pos[n]=[x,y,W,h]}for(let n=1;n<32;n++){let c=pos[n],d=pos[n*2],m=pos[n*2+1],mx=c[0]+W+6,cy=c[1]+c[3]/2,fy=d[1]+d[3]/2,my=m[1]+m[3]/2;s+='<path class=pl d="M'+(c[0]+W)+' '+cy+'H'+mx+'M'+mx+' '+fy+'V'+my+'M'+mx+' '+fy+'H'+d[0]+'M'+mx+' '+my+'H'+m[0]+'"/>'}for(let n=1;n<64;n++){let r=pos[n],p=B[a]&&B[a][n],x=r[0],y=r[1],h=r[3],z=h<20,b=p&&p.ah&&Math.max(...p.ah)-Math.min(...p.ah)>p.ah.length-1?' =':'',l=p?(function(){var nm=p.n;if(p.ah&&p.ah.length>1&&nm.indexOf(' + ')>0){var parts=nm.split(' + '),ix=p.ah.indexOf(n);if(ix>0&&parts[1])nm=parts[1];else nm=parts[0]}return z?(p.k=="slot"&&p.c?p.c:nm.slice(0,16)+' '+a+'-'+n+b):nm.slice(0,28)})():'',m=p&&!z?(p.k=="slot"&&p.c?p.c:a+'-'+n+b):'',g='<g class="pc '+(p?p.t:'bare')+'" data-ah="'+n+'"><rect x="'+x+'" y="'+y+'" width="'+W+'" height="'+h+'"></rect><text class="'+(z?'pe':'')+'" x="'+(x+4)+'" y="'+(y+(z?11:9))+'">'+l+'</text>'+(m?'<text class=pn x="'+(x+4)+'" y="'+(y+18)+'">'+m+'</text>':'')+'</g>';s+=p?'<a href="#'+p.h+'">'+g+'</a>':g}f.insertAdjacentHTML('beforeend',s+'</svg>')})}
+function initPedigrees(){const D=document,P=JSON.parse(D.getElementById("people-index").textContent).people,B={};for(const p of P)for(const n of p.ah||[])(B[p.a]||(B[p.a]={}))[n]=p;for(const a of"ZMDC"){const f=D.getElementById("chart-"+a.toLowerCase());if(!f)continue;let W=160,X=172,H=640,o={},s='<svg viewBox="0 0 1030 640">';for(let n=1;n<64;n++){let g=Math.log2(n)|0,i=n-(1<<g),q=H/(1<<g),h=Math.min(42,q-3),x=g*X,y=i*q+(q-h)/2;o[n]=[x,y,W,h]}for(let n=1;n<32;n++){let c=o[n],d=o[n*2],m=o[n*2+1],x=c[0]+W+6,y=c[1]+c[3]/2,u=d[1]+d[3]/2,v=m[1]+m[3]/2;s+='<path class=pl d="M'+(c[0]+W)+' '+y+'H'+x+'M'+x+' '+u+'V'+v+'M'+x+' '+u+'H'+d[0]+'M'+x+' '+v+'H'+m[0]+'"/>'}for(let n=1;n<64;n++){let r=o[n],p=B[a]&&B[a][n],x=r[0],y=r[1],h=r[3],z=h<20,b=p&&p.ah&&Math.max(...p.ah)-Math.min(...p.ah)>p.ah.length-1?' =':'',N=p&&p.n;if(N&&p.ah&&p.ah.length>1&&N.includes(' + ')){let R=N.split(' + ');N=R[p.ah.indexOf(n)>0&&R[1]?1:0]}let l=p?(z?(p.k=="slot"&&p.c?p.c:N.slice(0,16)+' '+a+'-'+n+b):N.slice(0,28)):'',m=p&&!z?(p.k=="slot"&&p.c?p.c:a+'-'+n+b):'',g='<g class="pc '+(p?p.t:'bare')+'" data-ah='+n+'><rect x='+x+' y='+y+' width='+W+' height='+h+'></rect><text '+(z?'class=pe ':'')+'x='+(x+4)+' y='+(y+(z?11:9))+'>'+l+'</text>'+(m?'<text class=pn x='+(x+4)+' y='+(y+18)+'>'+m+'</text>':'')+'</g>';s+=p?'<a href="#'+p.h+'">'+g+'</a>':g}f.insertAdjacentHTML('beforeend',s+'</svg>')}}
     initPedigrees();initMaps();
   </script>
 </body>

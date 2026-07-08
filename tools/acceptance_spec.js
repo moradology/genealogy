@@ -155,12 +155,12 @@ function ok(label, cond, detail) {
     const data = plateData(cfg);
     const expected = data.events.map((e) => e.id);
     const fig = document.getElementById(cfg.svgId).closest('figure');
-    const rows = [...fig.querySelectorAll('.plate-key [data-event-id]')];
+    const rows = [...fig.querySelectorAll('.plate-key [data-e]')];
     return {
       key: cfg.key,
       expected,
-      actual: rows.map((row) => row.dataset.eventId),
-      keyNos: rows.map((row) => row.querySelector('.key-no')?.textContent.trim() || ''),
+      actual: rows.map((row) => row.dataset.e),
+      keyNos: rows.map((row) => row.querySelector('b')?.textContent.trim() || ''),
       markerNos: [...document.getElementById(cfg.svgId).querySelectorAll('g.event-marker .marker-no')]
         .map((node) => node.textContent.trim()),
     };
@@ -454,19 +454,19 @@ function ok(label, cond, detail) {
   const docketCheck = await page.evaluate(({ c, r, n }) => {
     const s = document.getElementById('docket'), f = [];
     if (!s) return ['missing docket'];
-    const a = [...s.querySelectorAll('article.case')], statuses = '|OPEN|IN CONFLICT|NEEDS PULL|CLOSED|';
+    const a = [...s.querySelectorAll(':scope>div[id^="case."]')], statuses = '|OPEN|IN CONFLICT|NEEDS PULL|CLOSED|';
     if (a.length !== c) f.push(`case count ${a.length}`);
     for (const x of a) {
-      const h = x.querySelector(':scope>.case-head'), b = x.querySelector(':scope>.case-body'),
-        q = x.querySelector(':scope>.case-refs'), t = h?.querySelector('.tag')?.textContent.trim();
-      if (!/^case\.\d{2}$/.test(x.id) || !h?.querySelector('.case-no') || !h.querySelector('h3') ||
+      const h = x.querySelector(':scope>div:first-child'), b = x.querySelector(':scope>p'),
+        q = x.querySelector(':scope>div:last-child'), t = h?.querySelector('b:last-child')?.textContent.trim();
+      if (!/^case\.\d{2}$/.test(x.id) || !h?.querySelector('b:first-child') || !h.querySelector('h3') ||
         !statuses.includes(`|${t}|`) || !b?.textContent.trim() || !q?.textContent.trim() ||
         [...(q?.querySelectorAll('a[href^="#"]') || [])].some((l) =>
           !document.getElementById(decodeURIComponent(l.hash.slice(1)))))
         f.push(x.id || 'case without id');
     }
-    if (s.querySelectorAll('ul.corrigenda li').length < r) f.push('corrigenda count');
-    if (s.querySelectorAll('ul.negative-register li').length < n) f.push('negative-register count');
+    if (s.querySelectorAll(':scope>ul:nth-of-type(1) li').length < r) f.push('corrigenda count');
+    if (s.querySelectorAll(':scope>ul:nth-of-type(2) li').length < n) f.push('negative-register count');
     return f;
   }, { c: CASE_ARTICLES, r: CORRIGENDA_ITEMS, n: NEGATIVE_REGISTER_ITEMS });
   ok('C13 docket has 21 structured cases plus registers', docketCheck.length === 0, JSON.stringify(docketCheck));

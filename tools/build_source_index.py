@@ -37,9 +37,7 @@ class SourceLedgerParser(HTMLParser):
         if self.ignore_depth:
             self.ignore_depth += 1
             return
-        if self.in_item and tag == "span" and (
-            "scode" in classes or "cited-by" in classes or "data-gen" in attr_map
-        ):
+        if self.in_item and tag == "span" and ("scode" in classes or "data-g" in attr_map):
             self.ignore_depth = 1
             return
         if tag == "h2":
