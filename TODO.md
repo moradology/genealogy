@@ -282,6 +282,9 @@ Julius) · case.20 Long generation slip (CLOSED).
   *second wife* on a death-record-sourced memorial — keep wife assignments careful.
 
 ### 3.3 Dible origin (`03-dible-origin.md`) — case.11. **Major disconfirmations.**
+**VALIDATED 2026-07-08** (same trace as 3.13) — both wills re-fetched and quoted;
+1783 "Dible, Jacob" tax line re-grepped from the full PA Archives volume (sole
+Dible occurrence in ~120k lines; township printed "Huntington").
 
 - The Dreibelbis hypothesis is effectively closed: Johann Jacob Dreibelbis's own
   1761 Berks County will names all seven children — none went to Westmoreland; he
@@ -318,6 +321,9 @@ Julius) · case.20 Long generation slip (CLOSED).
   or disproven. Record both in case.12.
 
 ### 3.6 Long (`06-long.md`) — case.13, case.20
+**VALIDATED 2026-07-08** (trace: `2026-07-08-long-patton-validation.md`) — all five
+confirmed; Patton→Robert Nelson needs one explicit identity inference (wording in
+the trace); Fulton does NOT say "stepson"; deed year cited as "[1764]".
 
 - Chapman's 1880 Pike County history (primary-adjacent, quoted): John F. Long b.
   Tennessee 1805, son of Robert and Betsy (Wasson) Long, both natives of North
@@ -333,10 +339,12 @@ Julius) · case.20 Long generation slip (CLOSED).
   Chalkley's abstracts verify the 1764 Buffalo Creek Samuel→John Long deed. The
   compiled Samuel→Robert step itself remains UNPROVEN (frames exist: 1790 Iredell
   Co NC census household, Rowan/Iredell probate).
-- "German Long" resolution candidate: Chapman documents a distinct Pearl Township
-  Long family (Thomas S. Long, b. Bucks Co PA, mother Rachel Deemer — a German
-  surname); also catches a compiled bio error (Chapman says Emily who m. Harrison
-  French was daughter of John Long, not Abner).
+- "German Long" candidate WEAKENED by validation (2026-07-08 trace): Chapman's
+  Pearl Township sketch makes Rachel LONG the mother of Thomas S. Long; DEEMER is
+  his wife's family (daughter of Barney and Margaret Deemer) — the German surname
+  enters by marriage, not through the Long line. Wave 1 fused the two. Also
+  confirmed: Chapman says Emily who m. Harrison French was daughter of John Long,
+  not Abner (the compiled bio altered it).
 
 ### 3.7 McClelland, Hoge, Love (`07-mcclelland-love.md`) — case.13
 
@@ -420,6 +428,9 @@ Julius) · case.20 Long generation slip (CLOSED).
   alone. Record in the negative-evidence register.
 
 ### 3.13 Zinkle & Mainhardt (`13-zinkle.md`) — case.02. **The load-bearing negative.**
+**VALIDATED 2026-07-08** (trace: `2026-07-08-mainhardt-dible-negatives-validation.md`) —
+all zeros independently re-run; cite the 205-births density figure, not the
+unquotable "~30k persons" total; note the Zinck-vs-Zink substring subtlety.
 
 - The free, no-login Genealogie Mainhardt database (~30,279 persons, births from
   c. 1450; includes **205 birth records at Württemberger Hof itself**) contains
@@ -465,6 +476,11 @@ Julius) · case.20 Long generation slip (CLOSED).
   paywall** at detail level — an owner-purchasable unlock for case.01.
 
 ### 3.16 Zodrow west (`16-zodrow-west.md`) — case.01/03. **Richest primary haul.**
+**VALIDATED 2026-07-08** (trace: `2026-07-08-zodrow-death-certificates-validation.md`)
+— certificate scans read directly; cautions: record spells "Biaer"; August Henry's
+cert says mother "Augustine" (flag); Gordon-as-brother is inference; Ernestine
+burial 11 May vs death 14 May 1940 is impossible — land as mid-May with conflict;
+"ten burials" aggregate still unverified (reCAPTCHA-gated).
 
 Washington State Digital Archives death certificates (free, primary), all fetched:
 - **Julius Henry Zodrow, d. 1959** (State File 6169): died at **Eastern State
