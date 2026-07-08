@@ -14,6 +14,11 @@ if [ -d tools/basemap-data ]; then
 else
   echo "note: tools/basemap-data absent; skipping basemap byte check (run build_basemap.py --check after basemap edits)"
 fi
+if [ -d tools/font-data ]; then
+  uv run tools/build_fonts.py --check
+else
+  echo "note: tools/font-data absent; skipping font byte check (run build_fonts.py --check after text/font edits)"
+fi
 uv run tools/stamp.py --check
 
 INLINE_DIR="$(mktemp -d)"

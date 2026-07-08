@@ -51,11 +51,12 @@ function ok(label, cond, detail) {
   ok('S7 Colby Free Press source cited', src.includes('Colby Free Press') && src.includes('Sacred Heart Catholic Church'));
   ok('S8 deploy stamp present', /<meta name="deploy-stamp" content="[0-9a-f]{12} \d{4}-\d{2}-\d{2}">/.test(src));
   // Payload budgets (treaty): set at measured+10% after the Slate 0 diet
-  // (total 245823, fonts 58594, paths 19763 on 2026-07-08). Peers bump
-  // these only via a declared SPEC DELTA with byte cost; total never exceeds 327680.
-  ok('S9 total payload within budget', src.length < 270405, src.length);
+  // and the build_fonts.py subset landing (total 228678, fonts 41048,
+  // paths 19763 on 2026-07-08). Peers bump these only via a declared
+  // SPEC DELTA with byte cost; total never exceeds 327680.
+  ok('S9 total payload within budget', src.length < 251546, src.length);
   ok('S10 embedded fonts within budget',
-    (src.match(/data:font\/woff2;base64,[A-Za-z0-9+\/=]+/g) || []).join('').length < 64453);
+    (src.match(/data:font\/woff2;base64,[A-Za-z0-9+\/=]+/g) || []).join('').length < 45153);
   ok('S11 baked path constants within budget',
     (src.match(/const \w+_D = "[^"]*"/g) || []).join('').length < 21739);
   ok('S12 generated-region marker pairs present',
