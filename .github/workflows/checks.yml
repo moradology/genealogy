@@ -13,6 +13,9 @@ jobs:
         with:
           node-version: 22
       - uses: astral-sh/setup-uv@v5
+        with:
+          # no uv.lock here (stdlib + PEP 723 scripts); default cache glob warns
+          enable-cache: false
       - name: Install pinned playwright + chromium
         run: |
           npm ci --no-fund --no-audit
