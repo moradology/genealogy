@@ -14,13 +14,17 @@ Run: uv run tools/check_people_index.py
 from __future__ import annotations
 
 import json
+import importlib.util
 import re
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-# 2026-07-08: case.21 opened for Cecilia's corrected Leonard Ferdinand parentage.
-PLANNED_CASES = frozenset({f"case.{n:02d}" for n in range(1, 22)})
+SPEC = importlib.util.spec_from_file_location("check_refs", Path(__file__).with_name("check_refs.py"))
+assert SPEC is not None and SPEC.loader is not None
+check_refs = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(check_refs)
+PLANNED_CASES = check_refs.PLANNED_CASES
 TAG_CLASSES = frozenset({"documented", "strong", "lead", "open"})
 
 

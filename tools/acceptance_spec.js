@@ -26,6 +26,7 @@ const SOURCE_ITEMS = 170;
 const PERSON_DIVS = 76;
 const PERSON_IDS = 76;
 const STEM_DIVS = 7;
+const CASE_ARTICLES = 21, CORRIGENDA_ITEMS = 4, NEGATIVE_REGISTER_ITEMS = 11;
 
 const ISOLATED_ID = 'event.zimmerman.michael_birth.1869-10-25'; // Mainhardt; isolated on the zimmerman plate
 const COINCIDENT_PAIRS = [
@@ -320,6 +321,25 @@ function ok(label, cond, detail) {
     nameIndex.exists && nameIndex.entries >= nameIndex.registryPeople &&
     nameIndex.ordered && nameIndex.grouped && nameIndex.broken === 0,
     JSON.stringify(nameIndex));
+  const docketCheck = await page.evaluate(({ c, r, n }) => {
+    const s = document.getElementById('docket'), f = [];
+    if (!s) return ['missing docket'];
+    const a = [...s.querySelectorAll('article.case')], statuses = '|OPEN|IN CONFLICT|NEEDS PULL|CLOSED|';
+    if (a.length !== c) f.push(`case count ${a.length}`);
+    for (const x of a) {
+      const h = x.querySelector(':scope>.case-head'), b = x.querySelector(':scope>.case-body'),
+        q = x.querySelector(':scope>.case-refs'), t = h?.querySelector('.tag')?.textContent.trim();
+      if (!/^case\.\d{2}$/.test(x.id) || !h?.querySelector('.case-no') || !h.querySelector('h3') ||
+        !statuses.includes(`|${t}|`) || !b?.textContent.trim() || !q?.textContent.trim() ||
+        [...(q?.querySelectorAll('a[href^="#"]') || [])].some((l) =>
+          !document.getElementById(decodeURIComponent(l.hash.slice(1)))))
+        f.push(x.id || 'case without id');
+    }
+    if (s.querySelectorAll('ul.corrigenda li').length < r) f.push('corrigenda count');
+    if (s.querySelectorAll('ul.negative-register li').length < n) f.push('negative-register count');
+    return f;
+  }, { c: CASE_ARTICLES, r: CORRIGENDA_ITEMS, n: NEGATIVE_REGISTER_ITEMS });
+  ok('C13 docket has 21 structured cases plus registers', docketCheck.length === 0, JSON.stringify(docketCheck));
 
   // ---------- theme ----------
   const bgFor = async (scheme, theme) => {
@@ -446,8 +466,8 @@ function ok(label, cond, detail) {
   // with page height. Budget = larger platform's measure + 500. Re-measure
   // procedure: local measure + 1,200 (covers CI drift + headroom), confirm on the
   // next CI run. Prior local measures: 19,700 pre-W2, 23,511 post-W2, 26,132
-  // post-W4, 26,703 post-correction.
-  ok('L2 page height within layout budget (<27883)', desktop.scrollH < 27883, desktop.scrollH);
+  // post-W4, 26,703 post-correction, 29,725 post-W5 Docket.
+  ok('L2 page height within layout budget (<30925)', desktop.scrollH < 30925, desktop.scrollH);
 
   for (const [w, h] of [[320, 700], [390, 844], [768, 1024], [1024, 768]]) {
     await page.setViewportSize({ width: w, height: h });
