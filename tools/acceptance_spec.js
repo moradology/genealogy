@@ -60,9 +60,12 @@ function ok(label, cond, detail) {
   // paths 19763 on 2026-07-08. TREATY MATH: remaining declared program
   // costs are ~21.6KB (Slate 2) + ~19.3KB (Slate 3) + W5/W6 (~5KB net
   // after the W5 stub-table retirement) -> projected ~323KB against the
-  // hard 327,680 ceiling. Margin is thin: every wave from here declares
-  // its cost and looks for offsetting cuts. Peers bump budgets only via
-  // a declared SPEC DELTA; total never exceeds 327680.
+  // hard 327,680 ceiling. S9 is a per-wave RATCHET (re-measured to
+  // +10% at each landing per the documented procedure), so planned
+  // waves will legitimately re-measure past this value; the ceiling is
+  // the constraint that never moves. Margin is thin: every wave
+  // declares its cost and looks for offsetting cuts. Peers bump
+  // budgets only via a declared SPEC DELTA; total never exceeds 327680.
   ok('S9 total payload within budget', src.length < 304672, src.length);
   ok('S10 embedded fonts within budget',
     (src.match(/data:font\/woff2;base64,[A-Za-z0-9+\/=]+/g) || []).join('').length < 45153);
