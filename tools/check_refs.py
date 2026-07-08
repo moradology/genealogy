@@ -18,7 +18,11 @@ verifiedEventData (the map runtime draws only those); every geojson
 source_refs URL is in the ledger; ledger URLs unique; id grammar for
 person.* and case.*; RESIDUAL_PERSONS is exactly the set of geojson
 person.* tokens with no HTML anchor -- no stale entries, no entries
-that have quietly gained a card.
+that have quietly gained a card; RETIRED_ALIASES (ids renamed away from
+in past slates) may never resurface in a geojson token or a trace/frame
+reference, and can't be laundered back in through RESIDUAL_PERSONS;
+case.* refs must name a case in the bounded PLANNED_CASES manifest, so
+an unopened docket can't be typo'd into silent dormancy.
 
 Run: uv run tools/check_refs.py
 """
@@ -41,6 +45,14 @@ CASE_GRAMMAR = re.compile(r"case\.\d{2}\Z")
 # research_question, exclusion_note, ...), not just id-typed fields, so
 # this is matched against every string value rather than plucked by key.
 PERSON_TOKEN_RE = re.compile(r"\bperson\.[A-Za-z0-9_.-]+\b")
+# Strips URL spans before the person-token scan, so a source_refs URL like
+# ".../person.php?..." stays inert (the whole value is one URL span, so
+# nothing is left to match) while prose combining a URL and a person
+# mention -- "see https://x/y and person.ghost" -- still surfaces the
+# person token. \S* is bounded by whitespace rather than "://", so it
+# consumes the full URL (path, query, fragment) without reaching into
+# separate words on either side.
+URL_SPAN_RE = re.compile(r"\S*://\S*")
 
 # Geojson person.* tokens (person_id, participants, candidate_people,
 # candidate_person, ancestor_person, collateral_persons, or a person.*
@@ -89,19 +101,72 @@ RESIDUAL_PERSONS = frozenset({
     "person.william_bryan_rust",
 })
 
+# Old person.* ids retired by past renames (Slate 1 W1's grammar cutover,
+# 26 ids; plus six ids folded together by later data repairs). A retired
+# id must never resurface as a walked geojson token or a trace/frame
+# reference -- that would silently reintroduce a split identity under an
+# id nothing else points to. RETIRED_TO_CANONICAL names the replacement
+# for the failure message; RESIDUAL_PERSONS and RETIRED_ALIASES must stay
+# disjoint (asserted below) so a stale alias can't be laundered back in
+# by adding it to the residual set instead of fixing the reference.
+RETIRED_TO_CANONICAL = {
+    "person.doyle_jule_zimmerman": "person.doyle_zimmerman",
+    "person.evelyn_delores_mundell": "person.evelyn_mundell",
+    "person.william_j_dible": "person.bill_dible",
+    "person.donna_lea_connelly": "person.donna_connelly",
+    "person.michael_john_zimmerman_sr": "person.zimmerman.michael",
+    "person.elizabeth_catherine_nauer": "person.nauer.elizabeth",
+    "person.john_paul_zimmerman": "person.zimmerman.john_paul",
+    "person.john_zodrow": "person.zodrow.john",
+    "person.thomas_a_nauer": "person.nauer.thomas",
+    "person.lorenz_nauer": "person.nauer.lorenz",
+    "person.walter_william_mundell": "person.mundell.walter",
+    "person.harvey_william_mundell": "person.mundell.harvey",
+    "person.talmadge_dewitt_clemans": "person.clemans.talmadge",
+    "person.martin_flaherty": "person.flaherty.martin",
+    "person.harry_h_dible": "person.dible.harry",
+    "person.ray_hershel_dible": "person.dible.ray",
+    "person.almeda_ora_long": "person.long.almeda",
+    "person.robert_nelson_long": "person.long.robert_nelson",
+    "person.dorsey_overturf_mcclelland": "person.mcclelland.dorsey",
+    "person.david_monroe_durham": "person.durham.david",
+    "person.john_laborn_ford": "person.ford.john_laborn",
+    "person.john_burton_staples": "person.staples.john_burton",
+    "person.henry_claar": "person.claar.henry",
+    "person.samuel_dove_claar": "person.claar.samuel_dove",
+    "person.richard_d_haden": "person.haden.richard",
+    "person.alexander_m_mcclelland": "person.mcclelland.alexander",
+    "person.john_f_rust": "person.rust.john_f",
+    "person.john_aissen_rust": "person.rust.john_aissen",
+    "person.andrew_jackson_haden": "person.haden.andrew",
+    "person.homer_clair_mundell": "person.mundell.homer",
+    "person.marjorie_clemans": "person.clemans.marjorie",
+    "person.marjorie_clemans_mundell": "person.clemans.marjorie",
+}
+RETIRED_ALIASES = frozenset(RETIRED_TO_CANONICAL)
+
+_retired_residual_overlap = RESIDUAL_PERSONS & RETIRED_ALIASES
+assert not _retired_residual_overlap, (
+    f"RESIDUAL_PERSONS and RETIRED_ALIASES overlap: {sorted(_retired_residual_overlap)}")
+
+# Append-only Docket registry: extend this set in the same change that
+# opens a new case. Bounds how far a case ref can pend before the Docket
+# lands -- an id outside this manifest is a typo, not a future case.
+PLANNED_CASES = frozenset({f"case.{n:02d}" for n in range(1, 21)})
+
 
 def iter_person_tokens(value):
     """Recursively yield every person.* token found in string values.
 
     Walks dicts/lists to reach nested strings (e.g. sequence steps,
-    candidate_people arrays). Strings containing "://" are skipped so a
-    URL like ".../person.php?..." (a real getperson.php-style pattern
-    seen on genealogy sites) can't be mistaken for a person.* id.
+    candidate_people arrays). URL spans are stripped from each string
+    first (see URL_SPAN_RE) so a URL like ".../person.php?..." (a real
+    getperson.php-style pattern seen on genealogy sites) can't be
+    mistaken for a person.* id, while a person token elsewhere in the
+    same string still surfaces.
     """
     if isinstance(value, str):
-        if "://" in value:
-            return
-        for match in PERSON_TOKEN_RE.finditer(value):
+        for match in PERSON_TOKEN_RE.finditer(URL_SPAN_RE.sub(" ", value)):
             yield match.group(0).rstrip(".")
     elif isinstance(value, dict):
         for item in value.values():
@@ -240,14 +305,25 @@ def main() -> int:
     # case.* resolution is dormant until the Docket lands its anchors in
     # index.html (Slate 1 W5): validation traces legitimately cite future
     # cases. Once ANY case anchor exists, every case ref must resolve.
+    # Dormancy is bounded by PLANNED_CASES either way: a case ref outside
+    # that manifest is a typo, not a future case, and fails immediately.
     docket_live = any(k.startswith("case.") for k in known)
     pending_cases = set()
     for origin, ref in references:
-        if ref not in known:
-            if ref.startswith("case.") and not docket_live:
+        if ref in known:
+            continue
+        if ref in RETIRED_ALIASES:
+            failures.append(
+                f"retired alias {ref} referenced from {origin}; use {RETIRED_TO_CANONICAL[ref]} instead")
+            continue
+        if ref.startswith("case."):
+            if ref not in PLANNED_CASES:
+                failures.append(f"UNRESOLVED {ref} referenced from {origin}: unknown case id (not in PLANNED_CASES)")
+                continue
+            if not docket_live:
                 pending_cases.add(ref)
                 continue
-            failures.append(f"UNRESOLVED {ref} referenced from {origin}")
+        failures.append(f"UNRESOLVED {ref} referenced from {origin}")
     if pending_cases:
         print(f"check_refs: {len(pending_cases)} case refs pending the Docket "
               f"({', '.join(sorted(pending_cases))})")
