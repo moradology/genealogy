@@ -8,6 +8,7 @@ uv run python -c "import json; json.load(open('ancestry_geospatial.geojson')); p
 uv run python -c "import json; json.load(open('research/sources/source-index.json')); print('source-index ok')"
 uv run tools/build_source_index.py --check
 uv run tools/check_refs.py
+uv run tools/stamp.py --check
 
 INLINE_DIR="$(mktemp -d)"
 INLINE_JS="$INLINE_DIR/inline.js"

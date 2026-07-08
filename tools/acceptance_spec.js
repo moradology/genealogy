@@ -49,6 +49,7 @@ function ok(label, cond, detail) {
   ok('S5 leaflet fully removed', !/leaflet|unpkg|openstreetmap\.org\/\{z\}|tile\.openstreetmap/i.test(src));
   ok('S6 marriage corrected to 1954 everywhere', src.includes('event.doyle_zimmerman.marriage.1954-06-14') && !src.includes('1953-06-14'));
   ok('S7 Colby Free Press source cited', src.includes('Colby Free Press') && src.includes('Sacred Heart Catholic Church'));
+  ok('S8 deploy stamp present', /<meta name="deploy-stamp" content="[0-9a-f]{12} \d{4}-\d{2}-\d{2}">/.test(src));
 
   // ---------- browser ----------
   const browser = await chromium.launch({ headless: true });
