@@ -2,7 +2,7 @@
   "schema_version": "1.1.0",
   "updated": "2026-07-07",
   "source": "Extracted from index.html Source Ledger",
-  "record_count": 126,
+  "record_count": 170,
   "fields": {
     "id": "Stable local source id for notes and reasoning traces, generated from source title, URL, and blurb.",
     "title": "Human-readable source title from the artifact ledger.",
@@ -218,6 +218,30 @@
       "search_text": "Archion Mainhardt Taufregister 1835-1843 Band 7 Possible John Paul Zimmerman baptism target."
     },
     {
+      "id": "src.genealogie-mainhardt-database.05a17439",
+      "title": "Genealogie Mainhardt database",
+      "url": "https://personen.genealogie-mainhardt.de/",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "zimmerman"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Dense local coverage makes Zimmermann/Zink* zero hits meaningful; only an unrelated 1552 Zinck pair appears.",
+      "search_text": "Genealogie Mainhardt database Dense local coverage makes Zimmermann/Zink* zero hits meaningful; only an unrelated 1552 Zinck pair appears."
+    },
+    {
+      "id": "src.dad-bremen-emigrant-search.e1c6671c",
+      "title": "DAD Bremen emigrant search",
+      "url": "https://www.dad-recherche.de/hmb/index.asp",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "zimmerman"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Zimmermann hits in 1872-1880 make the earlier zero a query artifact.",
+      "search_text": "DAD Bremen emigrant search Zimmermann hits in 1872-1880 make the earlier zero a query artifact."
+    },
+    {
       "id": "src.emma-catherine-nauer-familysearch.df6e45f6",
       "title": "Emma Catherine Nauer, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/KJZC-FMK/emma-catherine-nauer-1867-1934",
@@ -314,6 +338,31 @@
       "search_text": "Albert L. Zodrow, FamilySearch Public index names Julius Henry Zodrow and Ernestina Baier as parents."
     },
     {
+      "id": "src.cecilia-zodrow-zimmerman-find-a-grave.5586b816",
+      "title": "Cecilia Zodrow Zimmerman, Find a Grave",
+      "url": "https://www.findagrave.com/memorial/104955721",
+      "source_type": "cemetery_memorial",
+      "lineage_tags": [
+        "zimmerman",
+        "zodrow"
+      ],
+      "evidence_role": "lead",
+      "blurb": "Compiled memorial gives Cecilia's vitals and Leonard Zodrow + Catherine parents, reciprocal with Leonard.",
+      "search_text": "Cecilia Zodrow Zimmerman, Find a Grave Compiled memorial gives Cecilia's vitals and Leonard Zodrow + Catherine parents, reciprocal with Leonard."
+    },
+    {
+      "id": "src.leonard-ferdinand-zodrow-find-a-grave.7870a1b4",
+      "title": "Leonard Ferdinand Zodrow, Find a Grave",
+      "url": "https://www.findagrave.com/memorial/71839302",
+      "source_type": "cemetery_memorial",
+      "lineage_tags": [
+        "zodrow"
+      ],
+      "evidence_role": "lead",
+      "blurb": "Compiled memorial gives Leonard's vitals, John Zodrow + Antonette Grams parents, spouse Catherine, and Cecilia.",
+      "search_text": "Leonard Ferdinand Zodrow, Find a Grave Compiled memorial gives Leonard's vitals, John Zodrow + Antonette Grams parents, spouse Catherine, and Cecilia."
+    },
+    {
       "id": "src.julius-henry-zodrow-find-a-grave.b2c95ae2",
       "title": "Julius Henry Zodrow, Find a Grave",
       "url": "https://www.findagrave.com/memorial/111655641/julius-henry-zodrow",
@@ -322,8 +371,8 @@
         "zodrow"
       ],
       "evidence_role": "reference",
-      "blurb": "Cemetery profile links Julius to John Zodrow and Antonette Grams.",
-      "search_text": "Julius Henry Zodrow, Find a Grave Cemetery profile links Julius to John Zodrow and Antonette Grams."
+      "blurb": "Cemetery profile links Julius to John Zodrow and Antonette Grams; now used for Doyle's great-uncle collateral household, not Cecilia's parents.",
+      "search_text": "Julius Henry Zodrow, Find a Grave Cemetery profile links Julius to John Zodrow and Antonette Grams; now used for Doyle's great-uncle collateral household, not Cecilia's parents."
     },
     {
       "id": "src.john-zodrow-familysearch.35a4f123",
@@ -346,8 +395,8 @@
         "zodrow"
       ],
       "evidence_role": "evidence",
-      "blurb": "Cemetery profile gives birth in Poland and burial in Leoville, Decatur County, Kansas.",
-      "search_text": "Antonette Grams Zodrow, Find a Grave Cemetery profile gives birth in Poland and burial in Leoville, Decatur County, Kansas."
+      "blurb": "Memorial gives Antonette's dates, links mother Rosa Grams, and lists Leonard and Julius among children.",
+      "search_text": "Antonette Grams Zodrow, Find a Grave Memorial gives Antonette's dates, links mother Rosa Grams, and lists Leonard and Julius among children."
     },
     {
       "id": "src.leoville-calvary-cemetery-transcription-ksgenweb.6d88b722",
@@ -358,8 +407,8 @@
         "zodrow"
       ],
       "evidence_role": "evidence",
-      "blurb": "Lists John M. Zodrow, 29 Jun 1843-15 Mar 1915, with birthplace noted as Sabanka, Prussia.",
-      "search_text": "Leoville Calvary Cemetery transcription, KSGenWeb Lists John M. Zodrow, 29 Jun 1843-15 Mar 1915, with birthplace noted as Sabanka, Prussia."
+      "blurb": "Lists John M. Zodrow's Sabanka birthplace and Rosa Grams's 7 Feb 1802-30 Mar 1895 dates.",
+      "search_text": "Leoville Calvary Cemetery transcription, KSGenWeb Lists John M. Zodrow's Sabanka birthplace and Rosa Grams's 7 Feb 1802-30 Mar 1895 dates."
     },
     {
       "id": "src.neu-lebehnke-nowa-lubianka-kartenmeister.fe6797bf",
@@ -466,8 +515,8 @@
         "zodrow"
       ],
       "evidence_role": "reference",
-      "blurb": "Sibling list includes Julius Henry Zodrow.",
-      "search_text": "Hedwig \"Hattie\" Zodrow Schroer, Find a Grave Sibling list includes Julius Henry Zodrow."
+      "blurb": "Memorial carries a Lewiston Tribune obituary naming John Zodrow's daughter and dating her marriage and Idaho move.",
+      "search_text": "Hedwig \"Hattie\" Zodrow Schroer, Find a Grave Memorial carries a Lewiston Tribune obituary naming John Zodrow's daughter and dating her marriage and Idaho move."
     },
     {
       "id": "src.albert-zodrow-find-a-grave.085a3444",
@@ -480,6 +529,102 @@
       "evidence_role": "reference",
       "blurb": "Memorial says Albert was son of John Zodrow and Antonette Grams; used here only as indirect evidence for Julius's likely parents.",
       "search_text": "Albert Zodrow, Find a Grave Memorial says Albert was son of John Zodrow and Antonette Grams; used here only as indirect evidence for Julius's likely parents."
+    },
+    {
+      "id": "src.julius-zodrow-wa-death-certificate.d9291309",
+      "title": "Julius Zodrow WA death certificate",
+      "url": "https://digitalarchives.wa.gov/DigitalObject/Download/8ec9f01a-d9b3-439c-9d17-76b4aa71e578",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "zodrow"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "Certificate gives Eastern State Hospital death and 9 Jun 1870 birth vs. memorial June 1869.",
+      "search_text": "Julius Zodrow WA death certificate Certificate gives Eastern State Hospital death and 9 Jun 1870 birth vs. memorial June 1869."
+    },
+    {
+      "id": "src.leonard-william-zodrow-wa-death-certificate.4207e371",
+      "title": "Leonard William Zodrow WA death certificate",
+      "url": "https://digitalarchives.wa.gov/DigitalObject/Download/45ee30d4-cb75-4f01-8960-623e508691a7",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "zodrow"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "Certificate gives Kansas birth, Frances Hickey spouse, Ernestine Biaer mother, burial, and sensitive facts.",
+      "search_text": "Leonard William Zodrow WA death certificate Certificate gives Kansas birth, Frances Hickey spouse, Ernestine Biaer mother, burial, and sensitive facts."
+    },
+    {
+      "id": "src.august-henry-zodrow-wa-death-certificate.773029eb",
+      "title": "August Henry Zodrow WA death certificate",
+      "url": "https://digitalarchives.wa.gov/DigitalObject/Download/47f7bf19-9f7c-47e0-8c9f-0fdc1a7996ec",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "zodrow"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "Certificate gives Kansas birth, Julius father, veteran status, V.A. death, burial, and \"Augustine\" mother discrepancy.",
+      "search_text": "August Henry Zodrow WA death certificate Certificate gives Kansas birth, Julius father, veteran status, V.A. death, burial, and \"Augustine\" mother discrepancy."
+    },
+    {
+      "id": "src.ernestine-zodrow-wa-death-index.24690954",
+      "title": "Ernestine Zodrow WA death index",
+      "url": "https://digitalarchives.wa.gov/Record/View/6DDD34128AF207DE282FD239CB42F43F",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "zodrow"
+      ],
+      "evidence_role": "conflict_or_disambiguation",
+      "blurb": "DOH index gives 14 May 1940 Chewelah death and father \"August Biaer\", conflicting with 11 May burial.",
+      "search_text": "Ernestine Zodrow WA death index DOH index gives 14 May 1940 Chewelah death and father \"August Biaer\", conflicting with 11 May burial."
+    },
+    {
+      "id": "src.albert-l-zodrow-wa-death-index.2d449e56",
+      "title": "Albert L. Zodrow WA death index",
+      "url": "https://digitalarchives.wa.gov/Record/View/789B836FE9D97E13A7718CEDF8B3FF98",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "zodrow"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "DOH index gives Albert's Medical Lake death and Julius H. Zodrow + Ernstina parents.",
+      "search_text": "Albert L. Zodrow WA death index DOH index gives Albert's Medical Lake death and Julius H. Zodrow + Ernstina parents."
+    },
+    {
+      "id": "src.julius-zodrow-holy-cross-burial-record.5bc82a53",
+      "title": "Julius Zodrow Holy Cross burial record",
+      "url": "https://digitalarchives.wa.gov/Record/View/E76DFDD67A5A35A219E45B763D549432",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "zodrow"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "Cemetery register gives Julius's 18 Mar 1959 Holy Cross burial and plot.",
+      "search_text": "Julius Zodrow Holy Cross burial record Cemetery register gives Julius's 18 Mar 1959 Holy Cross burial and plot."
+    },
+    {
+      "id": "src.ernestina-zodrow-holy-cross-burial-record.471959dc",
+      "title": "Ernestina Zodrow Holy Cross burial record",
+      "url": "https://digitalarchives.wa.gov/Record/View/A1C69613FA96C82F633AA6596F9CBE14",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "zodrow"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "Cemetery register gives Ernestina's 11 May 1940 Holy Cross burial, before the DOH death date.",
+      "search_text": "Ernestina Zodrow Holy Cross burial record Cemetery register gives Ernestina's 11 May 1940 Holy Cross burial, before the DOH death date."
+    },
+    {
+      "id": "src.rosa-grams-find-a-grave.defa5a8a",
+      "title": "Rosa Grams, Find a Grave",
+      "url": "https://www.findagrave.com/memorial/48431935/rosa-grams",
+      "source_type": "cemetery_memorial",
+      "lineage_tags": [
+        "zodrow"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Memorial carries The Sheridan County Democrat, 12 Apr 1895, obituary naming \"Rosa Grim\", immigration, and daughters.",
+      "search_text": "Rosa Grams, Find a Grave Memorial carries The Sheridan County Democrat, 12 Apr 1895, obituary naming \"Rosa Grim\", immigration, and daughters."
     },
     {
       "id": "src.evelyn-delores-zimmerman-obituary-mirror-legacy-com.28114ce2",
@@ -635,8 +780,8 @@
         "mundell"
       ],
       "evidence_role": "reference",
-      "blurb": "Cemetery profile links spouse Sarah Alice Cantwell Mundell and child Walter William Mundell.",
-      "search_text": "John Pryor Mundell, Find a Grave Cemetery profile links spouse Sarah Alice Cantwell Mundell and child Walter William Mundell."
+      "blurb": "Memorial carries Payne County News, 15 Apr 1938, as an obituary carrier with no parents named and Poweshiek County birth fields.",
+      "search_text": "John Pryor Mundell, Find a Grave Memorial carries Payne County News, 15 Apr 1938, as an obituary carrier with no parents named and Poweshiek County birth fields."
     },
     {
       "id": "src.occgs-harvey-mundell-civil-war-veterans-project-pdf.af694281",
@@ -743,8 +888,272 @@
         "mundell"
       ],
       "evidence_role": "lead",
-      "blurb": "Compiled genealogy entry for the Indiana Marjorie Clemans who married Clay V. Stamper in South Bend on 23 Oct 1935; use as an exclusion clue unless direct records connect her to Evelyn's mother.",
-      "search_text": "Descendants of Christian Eby, Internet Archive text Compiled genealogy entry for the Indiana Marjorie Clemans who married Clay V. Stamper in South Bend on 23 Oct 1935; use as an exclusion clue unless direct records connect her to Evelyn's mother."
+      "blurb": "Compiled Eby/Minnich genealogy proves Indiana Marjorie Clemans married Clay V. Stamper in 1935; same-name exclusion.",
+      "search_text": "Descendants of Christian Eby, Internet Archive text Compiled Eby/Minnich genealogy proves Indiana Marjorie Clemans married Clay V. Stamper in 1935; same-name exclusion."
+    },
+    {
+      "id": "src.1950-census-kingery-township-kansas.22501237",
+      "title": "1950 census, Kingery Township, Kansas",
+      "url": "https://1950census.archives.gov/iiif/2/1950census%2F43290879-Kansas%2F43290879-Kansas-193601%2F43290879-Kansas-193601-0002.jpg/full/2200,/0/default.jpg",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "reference",
+      "blurb": "NARA image documents Evelyn Mundell, 15, as Albert and Mary Adolph's granddaughter; another minor is unnamed.",
+      "search_text": "1950 census, Kingery Township, Kansas NARA image documents Evelyn Mundell, 15, as Albert and Mary Adolph's granddaughter; another minor is unnamed."
+    },
+    {
+      "id": "src.jacob-henry-adolph-find-a-grave.ee45bf2b",
+      "title": "Jacob Henry Adolph, Find a Grave",
+      "url": "https://www.findagrave.com/memorial/45842484/jacob_henry-adolph",
+      "source_type": "cemetery_memorial",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "conflict_or_disambiguation",
+      "blurb": "Memorial carries the 1935 obituary naming Charles and Emmeline, Flora Kenyon marriage, son Lon, and conflicts.",
+      "search_text": "Jacob Henry Adolph, Find a Grave Memorial carries the 1935 obituary naming Charles and Emmeline, Flora Kenyon marriage, son Lon, and conflicts."
+    },
+    {
+      "id": "src.glenn-howard-adolph-find-a-grave.05be8223",
+      "title": "Glenn Howard Adolph, Find a Grave",
+      "url": "https://www.findagrave.com/memorial/242242358/glenn-howard-adolph",
+      "source_type": "cemetery_memorial",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Memorial carries The Colby Free Press, 24 Aug 1922, clipping placing Lon Adolph in Colby.",
+      "search_text": "Glenn Howard Adolph, Find a Grave Memorial carries The Colby Free Press, 24 Aug 1922, clipping placing Lon Adolph in Colby."
+    },
+    {
+      "id": "src.charles-adolph-obituary-rootsweb.a4cf57d2",
+      "title": "Charles Adolph obituary, RootsWeb",
+      "url": "https://freepages.rootsweb.com/~carriesfamily/genealogy/adolphcharles.htm",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "Family-historian Pomona Republican transcription gives Germany birth and Scranton death; verified-index tier.",
+      "search_text": "Charles Adolph obituary, RootsWeb Family-historian Pomona Republican transcription gives Germany birth and Scranton death; verified-index tier."
+    },
+    {
+      "id": "src.rollie-c-clemans-marriage-whs.5b6033b2",
+      "title": "Rollie C. Clemans marriage, WHS",
+      "url": "https://www.wisconsinhistory.org/record/vital/MR1985720/clemans-rollie-c",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "WHS index gives a 23 Feb 1902 Barron County marriage and possible spousal match to C. Ellen Martin.",
+      "search_text": "Rollie C. Clemans marriage, WHS WHS index gives a 23 Feb 1902 Barron County marriage and possible spousal match to C. Ellen Martin."
+    },
+    {
+      "id": "src.c-ellen-martin-marriage-whs.af52aaef",
+      "title": "C. Ellen Martin marriage, WHS",
+      "url": "https://www.wisconsinhistory.org/record/vital/MR1530126/martin-c-ellen",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "reference",
+      "blurb": "WHS index is the bride-side match for the 23 Feb 1902 Barron County marriage to Rollie C. Clemans.",
+      "search_text": "C. Ellen Martin marriage, WHS WHS index is the bride-side match for the 23 Feb 1902 Barron County marriage to Rollie C. Clemans."
+    },
+    {
+      "id": "src.michael-d-clemans-birth-whs.08684e8a",
+      "title": "Michael D. Clemans birth, WHS",
+      "url": "https://www.wisconsinhistory.org/record/vital/BR3346424/clemans-michael-d",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "WHS index gives Michael D. Clemans's 8 Sep 1902 Barron County birth but does not close the Michael/Talmadge equation.",
+      "search_text": "Michael D. Clemans birth, WHS WHS index gives Michael D. Clemans's 8 Sep 1902 Barron County birth but does not close the Michael/Talmadge equation."
+    },
+    {
+      "id": "src.edward-flaherty-birth-whs.2c3e473c",
+      "title": "Edward Flaherty birth, WHS",
+      "url": "https://www.wisconsinhistory.org/record/vital/BR2581801/flaherty-edward",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "research_target",
+      "blurb": "WHS index gives an 11 Jan 1897 \"Douglas\" birth; the county field needs the microfilm image before use.",
+      "search_text": "Edward Flaherty birth, WHS WHS index gives an 11 Jan 1897 \"Douglas\" birth; the county field needs the microfilm image before use."
+    },
+    {
+      "id": "src.whs-vital-records-scope-page.e31c5ed9",
+      "title": "WHS vital records scope page",
+      "url": "https://www.wisconsinhistory.org/Records/Article/CS88",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "reference",
+      "blurb": "WHS scope ends owned vital records on 30 Sep 1907, explaining Kate Flaherty's absent 1913 death.",
+      "search_text": "WHS vital records scope page WHS scope ends owned vital records on 30 Sep 1907, explaining Kate Flaherty's absent 1913 death."
+    },
+    {
+      "id": "src.calvary-cemetery-transcription-wayback.a14b1166",
+      "title": "Calvary Cemetery transcription, Wayback",
+      "url": "http://web.archive.org/web/20240905191915/http://wigenweb.org/douglas/cemetery/calvary/calvary_ef.htm",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Wayback capture preserves the link-rotted wigenweb page for Martin and Kate Flaherty's plot D6 stones.",
+      "search_text": "Calvary Cemetery transcription, Wayback Wayback capture preserves the link-rotted wigenweb page for Martin and Kate Flaherty's plot D6 stones."
+    },
+    {
+      "id": "src.samuel-cantwell-biography-1888-henry-county-iowa-history.fd509e80",
+      "title": "Samuel Cantwell biography, 1888 Henry County, Iowa history",
+      "url": "https://iagenweb.org/henry/Bios/hbiosc.htm",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "IAGenWeb names Thomas and Jemima Kelley Cantwell as Samuel's parents and tracks Barnabas to Iowa and Nebraska.",
+      "search_text": "Samuel Cantwell biography, 1888 Henry County, Iowa history IAGenWeb names Thomas and Jemima Kelley Cantwell as Samuel's parents and tracks Barnabas to Iowa and Nebraska."
+    },
+    {
+      "id": "src.sarah-jane-mundell-wilcox-find-a-grave.f8ed8caa",
+      "title": "Sarah Jane Mundell Wilcox, Find a Grave",
+      "url": "https://www.findagrave.com/memorial/43238060/sarah_jane-wilcox",
+      "source_type": "cemetery_memorial",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Memorial carries The Chariton Herald-Patriot, 26 Mar 1931, obituary naming John and Deborah and the 1852 Lucas move.",
+      "search_text": "Sarah Jane Mundell Wilcox, Find a Grave Memorial carries The Chariton Herald-Patriot, 26 Mar 1931, obituary naming John and Deborah and the 1852 Lucas move."
+    },
+    {
+      "id": "src.rev-john-w-mundell-find-a-grave.737a9312",
+      "title": "Rev. John W. Mundell, Find a Grave",
+      "url": "https://www.findagrave.com/memorial/20680003/john_w-mundell",
+      "source_type": "cemetery_memorial",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Memorial carries The Cainsville News, 19 May 1949, obituary naming John and Deborah and youngest-child status.",
+      "search_text": "Rev. John W. Mundell, Find a Grave Memorial carries The Cainsville News, 19 May 1949, obituary naming John and Deborah and youngest-child status."
+    },
+    {
+      "id": "src.sarah-alice-cantwell-mundell-find-a-grave.ee2b20da",
+      "title": "Sarah Alice Cantwell Mundell, Find a Grave",
+      "url": "https://www.findagrave.com/memorial/259688013/sarah_alice-mundell",
+      "source_type": "cemetery_memorial",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Memorial carries Payne County News, 10 Feb 1939, obituary for Hastings marriage and Henry County birth.",
+      "search_text": "Sarah Alice Cantwell Mundell, Find a Grave Memorial carries Payne County News, 10 Feb 1939, obituary for Hastings marriage and Henry County birth."
+    },
+    {
+      "id": "src.mundell-patent-0031-530-blm-glo.d9eff0c9",
+      "title": "Mundell patent 0031-530, BLM GLO",
+      "url": "https://glorecords.blm.gov/details/patent/default.aspx?accession=0031-530&docClass=CV",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Documents the 20 Dec 1816 Sec 6, Twp 5N Rng 2E, Lawrence County, Indiana entry.",
+      "search_text": "Mundell patent 0031-530, BLM GLO Documents the 20 Dec 1816 Sec 6, Twp 5N Rng 2E, Lawrence County, Indiana entry."
+    },
+    {
+      "id": "src.mundell-patent-0053-283-blm-glo.7f7af14e",
+      "title": "Mundell patent 0053-283, BLM GLO",
+      "url": "https://glorecords.blm.gov/details/patent/default.aspx?accession=0053-283&docClass=CV",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Documents the 23 Nov 1820 Lawrence County entry with Polly Brown, Henry Brown, and Robert Brooks.",
+      "search_text": "Mundell patent 0053-283, BLM GLO Documents the 23 Nov 1820 Lawrence County entry with Polly Brown, Henry Brown, and Robert Brooks."
+    },
+    {
+      "id": "src.mundell-patent-in0980-467-blm-glo.3598c84c",
+      "title": "Mundell patent IN0980__.467, BLM GLO",
+      "url": "https://glorecords.blm.gov/details/patent/default.aspx?accession=IN0980__.467&docClass=STA",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Documents the 30 Jan 1828 W1/2SE1/4 Sec 34, Twp 21N Rng 8W Fountain County stop.",
+      "search_text": "Mundell patent IN0980__.467, BLM GLO Documents the 30 Jan 1828 W1/2SE1/4 Sec 34, Twp 21N Rng 8W Fountain County stop."
+    },
+    {
+      "id": "src.mundell-patent-in0980-468-blm-glo.87e9f582",
+      "title": "Mundell patent IN0980__.468, BLM GLO",
+      "url": "https://glorecords.blm.gov/details/patent/default.aspx?accession=IN0980__.468&docClass=STA",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Documents the 30 Jan 1828 N1/2NE1/4 Sec 3, Twp 20N Rng 8W Fountain County stop.",
+      "search_text": "Mundell patent IN0980__.468, BLM GLO Documents the 30 Jan 1828 N1/2NE1/4 Sec 3, Twp 20N Rng 8W Fountain County stop."
+    },
+    {
+      "id": "src.mundell-patent-in1040-291-blm-glo.b55e8832",
+      "title": "Mundell patent IN1040__.291, BLM GLO",
+      "url": "https://glorecords.blm.gov/details/patent/default.aspx?accession=IN1040__.291&docClass=STA",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Documents the 1 Nov 1830 Clinton County entry in Sec 34, Twp 21N Rng 1W.",
+      "search_text": "Mundell patent IN1040__.291, BLM GLO Documents the 1 Nov 1830 Clinton County entry in Sec 34, Twp 21N Rng 1W."
+    },
+    {
+      "id": "src.mundell-patent-in1040-292-blm-glo.96538f93",
+      "title": "Mundell patent IN1040__.292, BLM GLO",
+      "url": "https://glorecords.blm.gov/details/patent/default.aspx?accession=IN1040__.292&docClass=STA",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Documents the paired 1 Nov 1830 Clinton County entry in Sec 34, Twp 21N Rng 1W.",
+      "search_text": "Mundell patent IN1040__.292, BLM GLO Documents the paired 1 Nov 1830 Clinton County entry in Sec 34, Twp 21N Rng 1W."
+    },
+    {
+      "id": "src.mundell-patent-in1050-380-blm-glo.ae0b35ae",
+      "title": "Mundell patent IN1050__.380, BLM GLO",
+      "url": "https://glorecords.blm.gov/details/patent/default.aspx?accession=IN1050__.380&docClass=STA",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Documents the 1 Jan 1831 W1/2E1/2 Sec 3, Twp 20N Rng 1W Clinton County entry.",
+      "search_text": "Mundell patent IN1050__.380, BLM GLO Documents the 1 Jan 1831 W1/2E1/2 Sec 3, Twp 20N Rng 1W Clinton County entry."
+    },
+    {
+      "id": "src.harvey-mundell-find-a-grave.d5b36449",
+      "title": "Harvey Mundell, Find a Grave",
+      "url": "https://www.findagrave.com/memorial/8722487/harvey-mundell",
+      "source_type": "cemetery_memorial",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Memorial documents 1837 birth, 1911 Orange County death, Anaheim burial, and 34th Iowa Infantry service, but no parentage.",
+      "search_text": "Harvey Mundell, Find a Grave Memorial documents 1837 birth, 1911 Orange County death, Anaheim burial, and 34th Iowa Infantry service, but no parentage."
     },
     {
       "id": "src.rexford-city-election-coverage-colby-free-press-front-page-4-apr-2005.be696b22",
@@ -1054,6 +1463,78 @@
       "search_text": "Jackson County, Kansas marriage index Lists Almeda Long and Ray H. Dible marriage entry."
     },
     {
+      "id": "src.history-of-the-devilbiss-family-in-the-united-states.69241716",
+      "title": "History of the DeVilbiss Family in the United States",
+      "url": "https://archive.org/details/historyofdevilbi00devi",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "dible"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Quotes Casper Devilbiss's 1777 will and has zero \"Dible\" occurrences, disconfirming this graft.",
+      "search_text": "History of the DeVilbiss Family in the United States Quotes Casper Devilbiss's 1777 will and has zero \"Dible\" occurrences, disconfirming this graft."
+    },
+    {
+      "id": "src.pa-archives-3rd-series-vol-22.5842163a",
+      "title": "PA Archives, 3rd series, vol. 22",
+      "url": "https://archive.org/details/returnsoftaxable00egle",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "dible"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "1783 Westmoreland tax list gives \"Dible, Jacob\" in Huntingdon Township, with no 1786 recurrence.",
+      "search_text": "PA Archives, 3rd series, vol. 22 1783 Westmoreland tax list gives \"Dible, Jacob\" in Huntingdon Township, with no 1786 recurrence."
+    },
+    {
+      "id": "src.johann-jacob-dreibelbis-wikitree.9e7389b3",
+      "title": "Johann Jacob Dreibelbis, WikiTree",
+      "url": "https://www.wikitree.com/wiki/Dreibelbis-13",
+      "source_type": "compiled_tree_or_profile",
+      "lineage_tags": [
+        "dible"
+      ],
+      "evidence_role": "lead",
+      "blurb": "Compiled Burgert will abstract names seven Berks County children, with no Dible or Westmoreland migrant.",
+      "search_text": "Johann Jacob Dreibelbis, WikiTree Compiled Burgert will abstract names seven Berks County children, with no Dible or Westmoreland migrant."
+    },
+    {
+      "id": "src.christ-church-parish-register-middlesex-county-virginia.f8712f04",
+      "title": "Christ Church Parish Register, Middlesex County, Virginia",
+      "url": "https://archive.org/details/parishregisterof00chri",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "dible"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Primary register proves Moseley/Nichols vitals but not Jenny Moseley's marriage to John Haden.",
+      "search_text": "Christ Church Parish Register, Middlesex County, Virginia Primary register proves Moseley/Nichols vitals but not Jenny Moseley's marriage to John Haden."
+    },
+    {
+      "id": "src.king-william-county-records-scope-library-of-virginia.33f19b12",
+      "title": "King William County records scope, Library of Virginia",
+      "url": "https://www.lva.virginia.gov/collections/ccmf/VA/VA145",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "general"
+      ],
+      "evidence_role": "reference",
+      "blurb": "New LVA URL documents the 1885 courthouse fire behind the John Hayden proof gap.",
+      "search_text": "King William County records scope, Library of Virginia New LVA URL documents the 1885 courthouse fire behind the John Hayden proof gap."
+    },
+    {
+      "id": "src.kay-haden-anthony-haden-descendants-blogspot-page.28f24c5e",
+      "title": "Kay Haden, Anthony Haden descendants blogspot page",
+      "url": "http://moreleaves.blogspot.com/2010/08/anthony-haden-children-of-son-john.html",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "dible"
+      ],
+      "evidence_role": "lead",
+      "blurb": "One compiled Kay Haden source stands for the same narrative across blogspot, KaysAncestry, and rootsweb mirrors.",
+      "search_text": "Kay Haden, Anthony Haden descendants blogspot page One compiled Kay Haden source stands for the same narrative across blogspot, KaysAncestry, and rootsweb mirrors."
+    },
+    {
       "id": "src.dorsey-overturf-mcclelland-wikitree.2a781061",
       "title": "Dorsey Overturf McClelland, WikiTree",
       "url": "https://www.wikitree.com/wiki/McClelland-1174",
@@ -1208,6 +1689,54 @@
       "evidence_role": "evidence",
       "blurb": "Public index gives Thomas Lewis Love, Hannah Ann James, a 5 Feb 1828 marriage, and a child list including Lovina Parker Love.",
       "search_text": "Thomas Lewis Love, FamilySearch Public index gives Thomas Lewis Love, Hannah Ann James, a 5 Feb 1828 marriage, and a child list including Lovina Parker Love."
+    },
+    {
+      "id": "src.chapman-pike-county-1880.6975c649",
+      "title": "Chapman Pike County, 1880",
+      "url": "https://archive.org/details/historyofpikecou00chap",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "long_mcclelland"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "Names Sally A. Patton and child Robert N.; Robert Nelson Long remains an inference.",
+      "search_text": "Chapman Pike County, 1880 Names Sally A. Patton and child Robert N.; Robert Nelson Long remains an inference."
+    },
+    {
+      "id": "src.fulton-jefferson-county-iowa-vol-1.9efd1642",
+      "title": "Fulton Jefferson County, Iowa, vol. 1",
+      "url": "https://archive.org/details/historyofjeffers01fult",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "long_mcclelland"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Places Rev. Robert Long at Abingdon in 1843 and as Polk judge, but not as James B. Davis's stepfather.",
+      "search_text": "Fulton Jefferson County, Iowa, vol. 1 Places Rev. Robert Long at Abingdon in 1843 and as Polk judge, but not as James B. Davis's stepfather."
+    },
+    {
+      "id": "src.goodspeed-posey-county-1886.0f726b9b",
+      "title": "Goodspeed Posey County, 1886",
+      "url": "https://archive.org/details/cu31924028803406",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "long_mcclelland"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Documents Robert Long's early mill and Wasonite context without tying him personally to the split.",
+      "search_text": "Goodspeed Posey County, 1886 Documents Robert Long's early mill and Wasonite context without tying him personally to the split."
+    },
+    {
+      "id": "src.chalkley-chronicles-of-the-scotch-irish-settlement-vol-2.266c0d94",
+      "title": "Chalkley, Chronicles of the Scotch-Irish Settlement, vol. 2",
+      "url": "https://archive.org/details/bub_gb_wk8PAAAAYAAJ",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "long_mcclelland"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "Gives Joseph Long's 1757 will and [1764] deed; Samuel-to-Robert remains unproven.",
+      "search_text": "Chalkley, Chronicles of the Scotch-Irish Settlement, vol. 2 Gives Joseph Long's 1757 will and [1764] deed; Samuel-to-Robert remains unproven."
     },
     {
       "id": "src.laura-inis-connelly-walls-find-a-grave.e22d69be",

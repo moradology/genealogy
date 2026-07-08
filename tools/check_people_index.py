@@ -6,7 +6,7 @@ renderer and the static Index of Names. This checker keeps that registry
 closed against index.html: ids are unique, ahnentafel slots are unique
 within each anchor, href targets resolve, every rendered person row is
 covered by some registry entry, row-owned confidence tags match the
-actual .tag class, and docket case refs stay inside case.01-case.20.
+actual .tag class, and docket case refs stay inside case.01-case.21.
 
 Run: uv run tools/check_people_index.py
 """
@@ -19,7 +19,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-PLANNED_CASES = frozenset({f"case.{n:02d}" for n in range(1, 21)})
+# 2026-07-08: case.21 opened for Cecilia's corrected Leonard Ferdinand parentage.
+PLANNED_CASES = frozenset({f"case.{n:02d}" for n in range(1, 22)})
 TAG_CLASSES = frozenset({"documented", "strong", "lead", "open"})
 
 
@@ -106,7 +107,7 @@ def main() -> int:
             seen_ah[key] = i
         c = entry.get("c")
         if c is not None and c not in PLANNED_CASES:
-            failures.append(f"{i} c is outside case.01-case.20: {c}")
+            failures.append(f"{i} c is outside case.01-case.21: {c}")
 
     for person_id in sorted(tags):
         if person_id not in h_values:

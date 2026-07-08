@@ -22,7 +22,7 @@ const PLATE_EXPECT = {
   'map-line-connelly': { markers: 7, edges: 4, guests: 0 },
 };
 const LINK_TOTAL = 10;
-const SOURCE_ITEMS = 128;
+const SOURCE_ITEMS = 170;
 const PERSON_DIVS = 76;
 const PERSON_IDS = 76;
 const STEM_DIVS = 7;
@@ -55,12 +55,15 @@ function ok(label, cond, detail) {
   ok('S6 marriage corrected to 1954 everywhere', src.includes('event.doyle_zimmerman.marriage.1954-06-14') && !src.includes('1953-06-14'));
   ok('S7 Colby Free Press source cited', src.includes('Colby Free Press') && src.includes('Sacred Heart Catholic Church'));
   ok('S8 deploy stamp present', /<meta name="deploy-stamp" content="[0-9a-f]{12} \d{4}-\d{2}-\d{2}">/.test(src));
-  // Payload budgets (treaty): set at measured+10% after Slate 1 W2
-  // (layered entries + Docket stubs): total 251804, fonts 41420, paths
-  // 19763 on 2026-07-08. W2 cost +20.1KB against Slate 1's declared
-  // +30KB allowance. Peers bump these only via a declared SPEC DELTA
-  // with byte cost; total never exceeds 327680.
-  ok('S9 total payload within budget', src.length < 276984, src.length);
+  // Payload budgets (treaty): set at measured+10% after the Track B
+  // ledger batch (44 new source entries): total 276911, fonts 41783,
+  // paths 19763 on 2026-07-08. TREATY MATH: remaining declared program
+  // costs are ~21.6KB (Slate 2) + ~19.3KB (Slate 3) + W5/W6 (~5KB net
+  // after the W5 stub-table retirement) -> projected ~323KB against the
+  // hard 327,680 ceiling. Margin is thin: every wave from here declares
+  // its cost and looks for offsetting cuts. Peers bump budgets only via
+  // a declared SPEC DELTA; total never exceeds 327680.
+  ok('S9 total payload within budget', src.length < 304672, src.length);
   ok('S10 embedded fonts within budget',
     (src.match(/data:font\/woff2;base64,[A-Za-z0-9+\/=]+/g) || []).join('').length < 45153);
   ok('S11 baked path constants within budget',
