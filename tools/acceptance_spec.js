@@ -21,6 +21,13 @@ const PLATE_EXPECT = {
   'map-line-dible': { markers: 8, edges: 3, guests: 0 },
   'map-line-connelly': { markers: 7, edges: 4, guests: 0 },
 };
+const ROUTE_EXPECT = {
+  'map-convergence': { routes: 7, paths: 9, solidPaths: 9, conjecturalPaths: 0 },
+  'map-line-zimmerman': { routes: 3, paths: 4, solidPaths: 3, conjecturalPaths: 1 },
+  'map-line-mundell': { routes: 3, paths: 4, solidPaths: 2, conjecturalPaths: 2 },
+  'map-line-dible': { routes: 3, paths: 7, solidPaths: 2, conjecturalPaths: 5 },
+  'map-line-connelly': { routes: 2, paths: 3, solidPaths: 2, conjecturalPaths: 1 },
+};
 const LINK_TOTAL = 10;
 const SOURCE_ITEMS = 170;
 const PERSON_DIVS = 76;
@@ -58,7 +65,8 @@ function ok(label, cond, detail) {
   ok('S8 deploy stamp present', /<meta name="deploy-stamp" content="[0-9a-f]{12} \d{4}-\d{2}-\d{2}">/.test(src));
   // Payload budgets (treaty): set at measured+10% after the Track B
   // ledger batch (44 new source entries): total 276911, fonts 41783,
-  // paths 19763 on 2026-07-08. TREATY MATH: remaining declared program
+  // paths 19763 on 2026-07-08; route layer moved S11 to 22642, budget
+  // reset to measured+10% = 24910. TREATY MATH: remaining declared program
   // costs are ~21.6KB (Slate 2) + ~19.3KB (Slate 3) + W5/W6 (~5KB net
   // after the W5 stub-table retirement) -> projected ~323KB against the
   // hard 327,680 ceiling. S9 is a per-wave RATCHET (re-measured to
@@ -71,11 +79,16 @@ function ok(label, cond, detail) {
   ok('S10 embedded fonts within budget',
     (src.match(/data:font\/woff2;base64,[A-Za-z0-9+\/=]+/g) || []).join('').length < 45153);
   ok('S11 baked path constants within budget',
-    (src.match(/const \w+_D = "[^"]*"/g) || []).join('').length < 21739);
+    ((src.match(/const \w+_D = "[^"]*"/g) || []).join('') +
+      (src.match(/const ROUTES_(?:MIG|KS) = \{[^\n]*\};/g) || []).join('')).length < 24910);
   ok('S12 generated-region marker pairs present',
-    ['basemap-proj', 'basemap-paths'].every((tag) =>
+    ['basemap-proj', 'basemap-paths', 'basemap-routes'].every((tag) =>
       src.split('// BEGIN GENERATED ' + tag).length === 2 &&
       src.split('// END GENERATED ' + tag).length === 2));
+  ok('S13 route metadata declares 7 lineage and 4 conjectural routes',
+    (src.match(/id:"route\./g) || []).length === 11 &&
+    (src.match(/grade:"solid"/g) || []).length === 7 &&
+    (src.match(/grade:"conjectural"/g) || []).length === 4);
 
   // ---------- browser ----------
   const browser = await chromium.launch({ headless: true });
@@ -107,6 +120,12 @@ function ok(label, cond, detail) {
         markers: svg.querySelectorAll('g.event-marker[data-event-id]').length,
         edges: svg.querySelectorAll('path.family-link[data-link-id]').length,
         guests: svg.querySelectorAll('g.event-marker.guest').length,
+        routes: new Set([...svg.querySelectorAll('path.route-line[data-route-id]')].map((p) => p.dataset.routeId)).size,
+        routePaths: svg.querySelectorAll('path.route-line[data-route-id]').length,
+        solidRoutePaths: svg.querySelectorAll('path.route-line[data-route-id]:not(.conjectural)').length,
+        conjecturalRoutePaths: svg.querySelectorAll('path.route-line[data-route-id].conjectural').length,
+        routesPointerNone: [...svg.querySelectorAll('path.route-line[data-route-id]')].every(
+          (p) => getComputedStyle(p).pointerEvents === 'none'),
         baseDrawn: (svg.querySelector('.layer-land path, .layer-borders path')?.getAttribute('d') || '').length > 200,
       };
     });
@@ -127,6 +146,19 @@ function ok(label, cond, detail) {
     assert.ok(p.baseDrawn, id + ' basemap empty');
   }
   ok('B2 all five plates render with expected markers/edges/guests', true);
+  for (const [id, expect] of Object.entries(ROUTE_EXPECT)) {
+    const p = plates[id];
+    assert.equal(p.routes, expect.routes, id + ' distinct route ids');
+    assert.equal(p.routePaths, expect.paths, id + ' route paths');
+    assert.equal(p.solidRoutePaths, expect.solidPaths, id + ' solid route paths');
+    assert.equal(p.conjecturalRoutePaths, expect.conjecturalPaths, id + ' conjectural route paths');
+  }
+  ok('R1 route path counts by style match each affected plate', true);
+  ok('R2 conjectural route paths are dashed only off convergence',
+    plates['map-convergence'].conjecturalRoutePaths === 0 &&
+    ['map-line-zimmerman', 'map-line-mundell', 'map-line-dible', 'map-line-connelly']
+      .every((id) => plates[id].conjecturalRoutePaths > 0));
+  ok('P1 routes are noninteractive', Object.keys(ROUTE_EXPECT).every((id) => plates[id].routesPointerNone));
   ok('B3 ten distinct links across plates', plates._distinctLinks === LINK_TOTAL, plates._distinctLinks);
   ok('B4 detail strip per plate', plates._details === 5, plates._details);
   ok('B5 markers keyboard-ready', plates._keyboardReady);

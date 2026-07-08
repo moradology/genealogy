@@ -21,6 +21,7 @@ cross-validation.
 
   uv run tools/build_basemap.py --check      rebuild and byte-compare
   uv run tools/build_basemap.py --write      splice into index.html
+  uv run tools/build_basemap.py --emit-routes
   uv run tools/build_basemap.py --emit-all   print everything to stdout
 """
 
@@ -37,6 +38,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 HTML = ROOT / "index.html"
 CACHE = ROOT / "tools" / "basemap-data"
+GEOJSON = ROOT / "ancestry_geospatial.geojson"
 
 NE_COMMIT = "ca96624a56bd078437bca8184e78163e5039ad19"
 NE_BASE = f"https://raw.githubusercontent.com/nvkelso/natural-earth-vector/{NE_COMMIT}/geojson"
@@ -63,6 +65,8 @@ RHO0 = F / math.tan(math.pi / 4 + LAT0 / 2) ** N
 MIG_WINDOW = (-106.0, 24.0, 22.0, 54.5)
 GEO_CLIP = (-179.9, 5.0, 139.9, 72.0)
 MIG_VB = (1000.0, 540.0)
+EARTH_KM = 6371.0088
+KM_PER_DEG = 111.19508
 
 
 def lcc_raw(lon, lat):
@@ -106,6 +110,20 @@ KS_K = math.cos(40.45 * D)
 KS_VB_W = 1000.0
 KS_S = KS_VB_W / ((KS_WINDOW[2] - KS_WINDOW[0]) * KS_K)
 KS_VB_H = (KS_WINDOW[3] - KS_WINDOW[1]) * KS_S
+
+ROUTE_META = [
+    ("path.zimmerman_surname", "route.zimmerman_surname", "zimmerman", "solid", ["convergence", "zimmerman"]),
+    ("path.nauer", "route.nauer", "zimmerman", "solid", ["convergence", "zimmerman"]),
+    ("path.nauer_candidate_lorenz", "route.nauer_candidate", "zimmerman", "conjectural", ["zimmerman"]),
+    ("path.mundell", "route.mundell_rust", "mundell", "solid", ["convergence", "mundell"]),
+    ("path.rust_candidate_john_f_ethel_b_rupert", "route.rust_candidate", "mundell", "conjectural", ["mundell"]),
+    ("path.clemans_flaherty", "route.clemans_flaherty", "mundell", "conjectural", ["mundell"]),
+    ("path.dible_surname", "route.dible_surname", "dible", "solid", ["convergence", "dible"]),
+    ("path.long_sleight", "route.long_sleight", "dible", "solid", ["convergence", "dible"]),
+    ("path.mcclelland_love", "route.mcclelland_love", "dible", "conjectural", ["dible"]),
+    ("path.connelly_durham", "route.connelly_durham", "connelly", "solid", ["convergence", "connelly"]),
+    ("path.claar_white_stropes", "route.claar_stropes", "connelly", "solid", ["convergence", "connelly"]),
+]
 
 
 def project_kansas(lon, lat):
@@ -254,6 +272,209 @@ def to_path(chains, closed):
     return "".join(parts)
 
 
+def route_meta_js():
+    records = []
+    for _, route_id, anchor, grade, plates in ROUTE_META:
+        plist = "[" + ",".join(f'"{plate}"' for plate in plates) + "]"
+        records.append(f'{{id:"{route_id}",anchor:"{anchor}",grade:"{grade}",plates:{plist}}}')
+    return "const ROUTE_META = [ " + ", ".join(records) + " ];"
+
+
+def lonlat_vec(lon, lat):
+    lon_r, lat_r = lon * D, lat * D
+    c = math.cos(lat_r)
+    return c * math.cos(lon_r), c * math.sin(lon_r), math.sin(lat_r)
+
+
+def vec_lonlat(v):
+    x, y, z = v
+    hyp = math.hypot(x, y)
+    return math.atan2(y, x) / D, math.atan2(z, hyp) / D
+
+
+def slerp(a, b, t):
+    va, vb = lonlat_vec(*a), lonlat_vec(*b)
+    dot = max(-1.0, min(1.0, va[0] * vb[0] + va[1] * vb[1] + va[2] * vb[2]))
+    omega = math.acos(dot)
+    if omega < 1e-9:
+        return (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
+    so = math.sin(omega)
+    wa = math.sin((1 - t) * omega) / so
+    wb = math.sin(t * omega) / so
+    return vec_lonlat((va[0] * wa + vb[0] * wb, va[1] * wa + vb[1] * wb, va[2] * wa + vb[2] * wb))
+
+
+def point_line_distance(p, a, b):
+    px, py = p
+    ax, ay = a
+    bx, by = b
+    dx, dy = bx - ax, by - ay
+    norm = math.hypot(dx, dy)
+    if norm == 0:
+        return math.hypot(px - ax, py - ay)
+    return abs(dx * (ay - py) - dy * (ax - px)) / norm
+
+
+def sample_great_circle(a, b, project, tol=0.6, depth=0):
+    pa, pb = project(*a), project(*b)
+    mid = slerp(a, b, 0.5)
+    pm = project(*mid)
+    if depth >= 16 or point_line_distance(pm, pa, pb) <= tol:
+        return [a, b]
+    left = sample_great_circle(a, mid, project, tol, depth + 1)
+    right = sample_great_circle(mid, b, project, tol, depth + 1)
+    return left[:-1] + right
+
+
+def close_point(a, b, eps=1e-9):
+    return abs(a[0] - b[0]) < eps and abs(a[1] - b[1]) < eps
+
+
+def clip_segment_rect(a, b, lo_x, lo_y, hi_x, hi_y):
+    ax, ay = a
+    bx, by = b
+    dx, dy = bx - ax, by - ay
+    t0, t1 = 0.0, 1.0
+    for p, q in [(-dx, ax - lo_x), (dx, hi_x - ax), (-dy, ay - lo_y), (dy, hi_y - ay)]:
+        if p == 0:
+            if q < 0:
+                return None
+        else:
+            t = q / p
+            if p < 0:
+                if t > t1:
+                    return None
+                if t > t0:
+                    t0 = t
+            else:
+                if t < t0:
+                    return None
+                if t < t1:
+                    t1 = t
+    return (ax + dx * t0, ay + dy * t0), (ax + dx * t1, ay + dy * t1)
+
+
+def clip_polyline_geo(points, window):
+    lo_x, lo_y, hi_x, hi_y = window
+    chains, current = [], []
+    for i in range(len(points) - 1):
+        clipped = clip_segment_rect(points[i], points[i + 1], lo_x, lo_y, hi_x, hi_y)
+        if clipped is None:
+            if len(current) > 1:
+                chains.append(current)
+            current = []
+            continue
+        a, b = clipped
+        if current and close_point(current[-1], a):
+            if not close_point(current[-1], b):
+                current.append(b)
+        else:
+            if len(current) > 1:
+                chains.append(current)
+            current = [a]
+            if not close_point(a, b):
+                current.append(b)
+    if len(current) > 1:
+        chains.append(current)
+    return chains
+
+
+def route_chain_from_sequence(feature, places):
+    props = feature["properties"]
+    steps = sorted(props["sequence"], key=lambda item: item["order"])
+    chain = []
+    for step in steps:
+        coords = places[step["place_id"]]["coordinates"]
+        if coords is None:
+            print(f'{feature["id"]}: sequence place {step["place_id"]} has no coordinates', file=sys.stderr)
+            raise SystemExit(1)
+        chain.append({"coords": (coords[0], coords[1]), "event_id": step["event_id"]})
+    return chain
+
+
+def route_project_segments(chain, project, window, grade):
+    segments = []
+    for i in range(len(chain) - 1):
+        a, b = chain[i], chain[i + 1]
+        if close_point(a["coords"], b["coords"]):
+            continue
+        sampled = sample_great_circle(a["coords"], b["coords"], project)
+        clipped = clip_polyline_geo(sampled, window)
+        conjectural = grade == "conjectural" or a["event_id"].startswith("target.") or b["event_id"].startswith("target.")
+        for part in clipped:
+            projected = [project(lon, lat) for lon, lat in part]
+            slim = simplify(projected, 0.6)
+            if len(slim) >= 2:
+                segments.append({"c": conjectural, "chain": slim, "before": len(projected), "after": len(slim)})
+    return segments
+
+
+def combine_route_segments(segments):
+    combined = []
+    for segment in segments:
+        if not combined or combined[-1]["c"] != segment["c"] or not close_point(combined[-1]["chains"][-1][-1], segment["chain"][0], 0.05):
+            combined.append({"c": segment["c"], "chains": [segment["chain"]], "before": segment["before"], "after": segment["after"]})
+            continue
+        combined[-1]["chains"][-1] = combined[-1]["chains"][-1] + segment["chain"][1:]
+        combined[-1]["before"] += segment["before"] - 1
+        combined[-1]["after"] += segment["after"] - 1
+    return combined
+
+
+def routes_for_base(features, places, project, window):
+    by_path = {feature["id"]: feature for feature in features}
+    routes = {}
+    for path_id, route_id, _, grade, _ in ROUTE_META:
+        if path_id not in by_path:
+            print(f"{path_id}: temporal_path feature missing", file=sys.stderr)
+            raise SystemExit(1)
+        chain = route_chain_from_sequence(by_path[path_id], places)
+        routes[route_id] = combine_route_segments(route_project_segments(chain, project, window, grade))
+    return routes
+
+
+def route_obj_js(item, include_q):
+    fields = [f'd:{json.dumps(to_path(item["chains"], False), separators=(",", ":"))}']
+    if item["c"]:
+        fields.append("c:1")
+    if include_q:
+        x, y = item["chains"][0][0]
+        fields.append(f"q:[{fmt(x)},{fmt(y)}]")
+    return "{" + ",".join(fields) + "}"
+
+
+def routes_js(name, routes):
+    parts = []
+    for _, route_id, _, grade, _ in ROUTE_META:
+        items = []
+        q_done = False
+        for item in routes[route_id]:
+            include_q = grade == "conjectural" and not q_done and item["chains"]
+            items.append(route_obj_js(item, include_q))
+            q_done = q_done or include_q
+        parts.append(f'"{route_id}":[' + ",".join(items) + "]")
+    return f"const {name} = {{" + ",".join(parts) + "};"
+
+
+def build_routes():
+    geo = json.loads(GEOJSON.read_text())
+    features = [f for f in geo["features"] if f["properties"].get("feature_kind") == "temporal_path"]
+    if len(features) != len(ROUTE_META):
+        print(f"expected {len(ROUTE_META)} temporal_path features, found {len(features)}", file=sys.stderr)
+        raise SystemExit(1)
+    routes_mig = routes_for_base(features, geo["place_registry"], project_migration, MIG_WINDOW)
+    routes_ks = routes_for_base(features, geo["place_registry"], project_kansas, KS_WINDOW)
+    mig_scale = (N * RHO0 / math.cos(40 * D)) * MIG_S / EARTH_KM
+    ks_scale = KS_S / KM_PER_DEG
+    return "\n".join([
+        route_meta_js(),
+        routes_js("ROUTES_MIG", routes_mig),
+        routes_js("ROUTES_KS", routes_ks),
+        "// SCALE_UPK is svg units per km at the plate reference latitude.",
+        f"const SCALE_UPK = {{ migration: {mig_scale:.6f}, kansas: {ks_scale:.6f} }};",
+    ])
+
+
 def build_layer(features, project, w, h, tol, closed, pad):
     g_lo_x, g_lo_y, g_hi_x, g_hi_y = GEO_CLIP
     chains = []
@@ -378,7 +599,7 @@ def build():
         f'const MIGRATION_LAKES_D = "{lakes_d}";',
         f'const KANSAS_BORDERS_D = "{ks_borders_d}";',
     ])
-    return {"basemap-proj": proj, "basemap-paths": paths}
+    return {"basemap-proj": proj, "basemap-paths": paths, "basemap-routes": build_routes()}
 
 
 def region_bounds(html, tag):
@@ -426,12 +647,17 @@ def main() -> int:
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--check", action="store_true")
     group.add_argument("--write", action="store_true")
+    group.add_argument("--emit-routes", action="store_true")
     group.add_argument("--emit-all", action="store_true")
     args = parser.parse_args()
+    if args.emit_routes:
+        print(build_routes())
+        return 0
     blocks = build()
     if args.emit_all:
         print(blocks["basemap-proj"])
         print(blocks["basemap-paths"])
+        print(blocks["basemap-routes"])
         print(f'const MIGRATION_GRATICULE_D = "{graticule()}";')
         print(f'const MIGRATION_FAN_D = "{fan_ring()}";')
         return 0
