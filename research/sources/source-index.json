@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "updated": "2026-07-07",
   "source": "Extracted from index.html Source Ledger",
-  "record_count": 121,
+  "record_count": 122,
   "fields": {
     "id": "Stable local source id for notes and reasoning traces, generated from source title, URL, and blurb.",
     "title": "Human-readable source title from the artifact ledger.",
@@ -456,6 +456,19 @@
       "evidence_role": "reference",
       "blurb": "Memorial says Albert was son of John Zodrow and Antonette Grams; used here only as indirect evidence for Julius's likely parents.",
       "search_text": "Albert Zodrow, Find a Grave Memorial says Albert was son of John Zodrow and Antonette Grams; used here only as indirect evidence for Julius's likely parents."
+    },
+    {
+      "id": "src.evelyn-delores-mundell-zimmerman-find-a-grave.be9b17e4",
+      "title": "Evelyn Delores Mundell Zimmerman, Find a Grave",
+      "url": "https://www.findagrave.com/memorial/252413378/evelyn_delores-zimmerman",
+      "source_type": "cemetery_memorial",
+      "lineage_tags": [
+        "zimmerman",
+        "mundell"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Cemetery memorial, 1935-2023. Bio text copies the Baalmann obituary verbatim, including the erroneous June 14, 1953 marriage date, so it is not an independent witness for the marriage year.",
+      "search_text": "Evelyn Delores Mundell Zimmerman, Find a Grave Cemetery memorial, 1935-2023. Bio text copies the Baalmann obituary verbatim, including the erroneous June 14, 1953 marriage date, so it is not an independent witness for the marriage year."
     },
     {
       "id": "src.walter-william-mundell-familysearch.660f302f",
