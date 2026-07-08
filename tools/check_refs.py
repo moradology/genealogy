@@ -70,6 +70,7 @@ RESIDUAL_PERSONS = frozenset({
     "person.catherina_marie_koeberger",
     "person.catherine_zinkle",
     "person.clarence_aison_rust",
+    "person.cora_mcclellan",
     "person.dorothea_meyer",
     "person.edward_j_flaherty",
     "person.edwin_reid",

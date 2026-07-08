@@ -3,7 +3,7 @@
   "name": "zimmerman_dible_ancestry_temporal_geography",
   "metadata": {
     "schema_version": "1.0.0",
-    "updated": "2026-07-07",
+    "updated": "2026-07-08",
     "coordinate_reference_system": "WGS84 longitude/latitude, EPSG:4326",
     "purpose": "Machine-readable temporal geography layer for the Zimmerman-Dible ancestry artifact.",
     "append_policy": "Append new event features, family-link features, and route sequence entries as research advances. Preserve existing ids unless correcting an error.",
@@ -222,6 +222,12 @@
       "precision": "hamlet",
       "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
     },
+    "place.dresden_ks": {
+      "label": "Dresden, Decatur County, Kansas, USA",
+      "coordinates": [-100.4192737, 39.6223582],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim via Slate 2 W1 plan, accepted 2026-07-08"
+    },
     "place.marquette_county_wi": {
       "label": "Marquette County, Wisconsin, USA",
       "coordinates": [-89.3926785, 43.8122244],
@@ -362,6 +368,18 @@
       "coordinates": [-95.8159647, 39.4030917],
       "precision": "county",
       "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
+    },
+    "place.manhattan_ks": {
+      "label": "Manhattan, Riley County, Kansas, USA",
+      "coordinates": [-96.5716694, 39.1836082],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim via Slate 2 W1 plan, accepted 2026-07-08"
+    },
+    "place.fairfield_ia": {
+      "label": "Fairfield, Jefferson County, Iowa, USA",
+      "coordinates": [-91.9629664, 41.008632],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim via Slate 2 W1 plan, accepted 2026-07-08"
     },
     "place.greene_county_pa": {
       "label": "Greene County, Pennsylvania, USA",
@@ -1355,6 +1373,26 @@
     },
     {
       "type": "Feature",
+      "id": "event.zodrow.antonette_grams_death.1934-08-01",
+      "geometry": {"type": "Point", "coordinates": [-100.4192737, 39.6223582]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "death",
+        "person_id": "person.antonette_grams",
+        "person_name": "Antonia/Antonette Grams Zodrow",
+        "anchor": "Doyle Julius Zimmerman",
+        "line_ids": ["line.zodrow_fleckenstein"],
+        "generation": 4,
+        "date": "1934-08-01",
+        "date_sort": "1934-08-01",
+        "place_id": "place.dresden_ks",
+        "place_label": "Dresden, Decatur County, Kansas",
+        "confidence": "strong",
+        "source_refs": ["https://www.findagrave.com/memorial/156365204/antonette-zodrow"]
+      }
+    },
+    {
+      "type": "Feature",
       "id": "event.mundell.harvey_birth.1837-04",
       "geometry": {"type": "Point", "coordinates": [-86.4692735, 40.2992769]},
       "properties": {
@@ -1862,6 +1900,46 @@
         "place_label": "Griggsville Township, Pike County, Illinois",
         "confidence": "strong",
         "source_refs": ["https://www.findagrave.com/memorial/101356599/robert_nelson-long"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.mcclelland.cora_birth.1872-12-08",
+      "geometry": {"type": "Point", "coordinates": [-91.9629664, 41.008632]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "birth",
+        "person_id": "person.cora_mcclellan",
+        "person_name": "Cora Ellie McClellan Long",
+        "anchor": "William J. Dible",
+        "line_ids": ["line.long_sleight_mcclelland"],
+        "generation": 3,
+        "date": "1872-12-08",
+        "date_sort": "1872-12-08",
+        "place_id": "place.fairfield_ia",
+        "place_label": "Fairfield, Jefferson County, Iowa",
+        "confidence": "strong",
+        "source_refs": ["https://www.findagrave.com/memorial/83042108/cora_ellie-long"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.mcclelland.cora_death.1952-03-19",
+      "geometry": {"type": "Point", "coordinates": [-96.5716694, 39.1836082]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "death",
+        "person_id": "person.cora_mcclellan",
+        "person_name": "Cora Ellie McClellan Long",
+        "anchor": "William J. Dible",
+        "line_ids": ["line.long_sleight_mcclelland"],
+        "generation": 3,
+        "date": "1952-03-19",
+        "date_sort": "1952-03-19",
+        "place_id": "place.manhattan_ks",
+        "place_label": "Manhattan, Riley County, Kansas",
+        "confidence": "strong",
+        "source_refs": ["https://www.findagrave.com/memorial/83042108/cora_ellie-long"]
       }
     },
     {

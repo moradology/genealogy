@@ -15,10 +15,10 @@ const URL = 'file://' + FILE;
 // line plate = events of that anchor + links of that anchor or referencing them
 // (referenced non-own events render as guests); convergence = Kansas-window subset.
 const PLATE_EXPECT = {
-  'map-convergence': { markers: 14, edges: 6 },
-  'map-line-zimmerman': { markers: 10, edges: 6, guests: 1 },
+  'map-convergence': { markers: 16, edges: 6 },
+  'map-line-zimmerman': { markers: 11, edges: 6, guests: 1 },
   'map-line-mundell': { markers: 4, edges: 2, guests: 2 },
-  'map-line-dible': { markers: 6, edges: 3, guests: 0 },
+  'map-line-dible': { markers: 8, edges: 3, guests: 0 },
   'map-line-connelly': { markers: 7, edges: 4, guests: 0 },
 };
 const LINK_TOTAL = 10;
