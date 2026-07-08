@@ -296,9 +296,10 @@ function ok(label, cond, detail) {
   // Prior single-map layout measured 16,095px; four user-requested line plates add
   // bounded map figures. Budget: still >=19% under the original 23,000px page.
   // Guards against layout regressions (dead voids, letterboxing), not research prose growth.
-  // Content-driven height Jul 2026: ~19,050px; budget = that + ~500 headroom, still ~15% under
-  // the original 23,000px page. Revisit only if a layout change, not new content, trips it.
-  ok('L2 page height within layout budget (<19600)', desktop.scrollH < 19600, desktop.scrollH);
+  // Content-driven height after the Jul 2026 source-audit additions: ~19,700px; budget = that
+  // + ~500 headroom, still ~12% under the original 23,000px page. Revisit only if a layout
+  // change, not new content, trips it.
+  ok('L2 page height within layout budget (<20200)', desktop.scrollH < 20200, desktop.scrollH);
 
   for (const [w, h] of [[320, 700], [390, 844], [768, 1024], [1024, 768]]) {
     await page.setViewportSize({ width: w, height: h });

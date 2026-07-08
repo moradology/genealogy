@@ -663,7 +663,7 @@
       "search_text": "St. Charles County Historical Society genealogy page 213 Compiled Harvey William Mundell page with John Mundell/Deborah Elmore parentage, Elizabeth Jane Brown marriage, Civil War service, and census trail; use as a pointer to primary records."
     },
     {
-      "id": "src.harvey-william-mundell-familysearch.2079fed3",
+      "id": "src.harvey-william-mundell-familysearch.009b7ee4",
       "title": "Harvey William Mundell, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/K2W7-JRZ/harvey-william-mundell-1821-1901",
       "source_type": "public_tree_index",
@@ -671,8 +671,8 @@
         "mundell"
       ],
       "evidence_role": "lead",
-      "blurb": "Public index lead naming John Mundell and Deborah Elmore as parents.",
-      "search_text": "Harvey William Mundell, FamilySearch Public index lead naming John Mundell and Deborah Elmore as parents."
+      "blurb": "Public index lead naming John Mundell and Deborah Elmore as parents. A July 2026 automated re-check found this profile ID resolving to an unrelated person, apparently after a tree merge; verify in a browser before relying on it.",
+      "search_text": "Harvey William Mundell, FamilySearch Public index lead naming John Mundell and Deborah Elmore as parents. A July 2026 automated re-check found this profile ID resolving to an unrelated person, apparently after a tree merge; verify in a browser before relying on it."
     },
     {
       "id": "src.genevieve-clemans-familysearch.b294f2df",
@@ -1102,7 +1102,7 @@
       "search_text": "Robert Nelson Long, Find a Grave Biography gives marriage to Ann Ghent Sleight and Sleight parents."
     },
     {
-      "id": "src.rev-robert-long-find-a-grave.5240bd77",
+      "id": "src.rev-robert-long-find-a-grave.8df2c9ae",
       "title": "Rev. Robert Long, Find a Grave",
       "url": "https://www.findagrave.com/memorial/68978483/robert-long",
       "source_type": "cemetery_memorial",
@@ -1110,11 +1110,11 @@
         "long_mcclelland"
       ],
       "evidence_role": "evidence",
-      "blurb": "Memorial lists Robert Nelson Long among children and names Betsy Wasson in the family narrative.",
-      "search_text": "Rev. Robert Long, Find a Grave Memorial lists Robert Nelson Long among children and names Betsy Wasson in the family narrative."
+      "blurb": "Memorial biography names two sons, John Franklin and Abner Nelson Long, and lists Robert Nelson Long as John Franklin's child; an earlier reading here mistook Robert Nelson for a son of Rev. Robert. Gives 1775-1850 with death at Locust Grove Township, Jefferson County, Iowa.",
+      "search_text": "Rev. Robert Long, Find a Grave Memorial biography names two sons, John Franklin and Abner Nelson Long, and lists Robert Nelson Long as John Franklin's child; an earlier reading here mistook Robert Nelson for a son of Rev. Robert. Gives 1775-1850 with death at Locust Grove Township, Jefferson County, Iowa."
     },
     {
-      "id": "src.henry-sleight-familysearch.103c8085",
+      "id": "src.henry-sleight-familysearch.f1a4d601",
       "title": "Henry Sleight, FamilySearch",
       "url": "https://ancestors.familysearch.org/en/M2HW-VTF/henry-sleight-1828",
       "source_type": "public_tree_index",
@@ -1122,8 +1122,8 @@
         "long_mcclelland"
       ],
       "evidence_role": "reference",
-      "blurb": "Public sibling-index result naming John Sleight and Elizabeth Gaunt as parents and listing John Gaunt Sleight among siblings.",
-      "search_text": "Henry Sleight, FamilySearch Public sibling-index result naming John Sleight and Elizabeth Gaunt as parents and listing John Gaunt Sleight among siblings."
+      "blurb": "Public sibling-index result naming John Sleight and Elizabeth Gaunt as parents and listing John Gaunt Sleight among siblings. A July 2026 automated re-check rendered this profile with mother Elizabeth Richardson Coulson and no John Gaunt Sleight among siblings, suggesting an unrelated Sleight family; verify in a browser.",
+      "search_text": "Henry Sleight, FamilySearch Public sibling-index result naming John Sleight and Elizabeth Gaunt as parents and listing John Gaunt Sleight among siblings. A July 2026 automated re-check rendered this profile with mother Elizabeth Richardson Coulson and no John Gaunt Sleight among siblings, suggesting an unrelated Sleight family; verify in a browser."
     },
     {
       "id": "src.griggsville-cemetery-transcription-genealogy-trails.2c547eec",
