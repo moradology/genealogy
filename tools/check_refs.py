@@ -118,6 +118,7 @@ RETIRED_TO_CANONICAL = {
     "person.elizabeth_catherine_nauer": "person.nauer.elizabeth",
     "person.john_paul_zimmerman": "person.zimmerman.john_paul",
     "person.john_zodrow": "person.zodrow.john",
+    "person.zodrow.julius": "person.zodrow.julius_collateral",
     "person.thomas_a_nauer": "person.nauer.thomas",
     "person.lorenz_nauer": "person.nauer.lorenz",
     "person.walter_william_mundell": "person.mundell.walter",
@@ -152,7 +153,8 @@ assert not _retired_residual_overlap, (
 # Append-only Docket registry: extend this set in the same change that
 # opens a new case. Bounds how far a case ref can pend before the Docket
 # lands -- an id outside this manifest is a typo, not a future case.
-PLANNED_CASES = frozenset({f"case.{n:02d}" for n in range(1, 21)})
+# 2026-07-08: case.21 opened for Cecilia's corrected Leonard Ferdinand parentage.
+PLANNED_CASES = frozenset({f"case.{n:02d}" for n in range(1, 22)})
 
 
 def iter_person_tokens(value):

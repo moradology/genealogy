@@ -19,7 +19,7 @@ The four "anchors" (the owner's grandparents; the page is organized around them)
 
 | Anchor | Lived | Branch section covers |
 |---|---|---|
-| Doyle Julius Zimmerman | 1930–2005, Selden/Colby KS | Zimmerman, Zodrow/Baier, Nauer/Koeberger, Zinkle |
+| Doyle Julius Zimmerman | 1930–2005, Selden/Colby KS | Zimmerman, Zodrow/Fleckenstein, Nauer/Koeberger, Zinkle |
 | Evelyn Delores Mundell Zimmerman | 1935–2023, Flagler CO / Colby KS | Mundell, Rust/Rupert, Cantwell, Clemans/Flaherty, Adolph (step) |
 | William J. "Bill" Dible | 1933–2022, Rexford KS / Lee Co FL | Dible/Heckman/Moore, Haden, Long/Sleight, McClelland/Love |
 | Donna Lea Connelly Dible | 1935–2022, Rexford KS / Bonita Springs FL | Connelly, Durham, Ford/Staples, Claar/White/Stropes |
@@ -247,7 +247,8 @@ immigrant layers · case.12 Haden/Reed · case.13 Long/Sleight/McClelland Gen 5�
 case.14 James Connelly's parents · case.15 Durham one-man-or-two ·
 case.16 Ford father + marriage date · case.17 Hoyle vs. Hogle ·
 case.18 wedding date (CLOSED: 14 Jun 1954) · case.19 Jule vs. Julius (CLOSED:
-Julius) · case.20 Long generation slip (CLOSED).
+Julius) · case.20 Long generation slip (CLOSED) · case.21 Cecilia parentage
+correction (OPEN).
 
 ### 3.1 Hawkeye (`01-hawkeye.md`) — feeds branch narratives, case.13/17
 
@@ -504,12 +505,17 @@ warning (Leonard Ferdinand b.1874 vs Leonard William b.1897).
   Roloff cluster at Sypniewo, incl. "Rosalia Roloff b. ~1805") is a **$42/yr
   paywall** at detail level — an owner-purchasable unlock for case.01.
 
-### 3.16 Zodrow west (`16-zodrow-west.md`) — case.01/03. **Richest primary haul.**
+### 3.16 Zodrow west (`16-zodrow-west.md`) — case.01/03/21. **Richest primary haul.**
 **VALIDATED 2026-07-08** (trace: `2026-07-08-zodrow-death-certificates-validation.md`)
 — certificate scans read directly; cautions: record spells "Biaer"; August Henry's
 cert says mother "Augustine" (flag); Gordon-as-brother is inference; Ernestine
 burial 11 May vs death 14 May 1940 is impossible — land as mid-May with conflict;
 "ten burials" aggregate still unverified (reCAPTCHA-gated).
+
+**VALIDATED 2026-07-08 correction** (trace: `2026-07-08-cecilia-parents-correction.md`)
+— Julius + Ernestina's household is Doyle's great-uncle collateral, not Cecilia's
+parents; Z-6/7 is Leonard Ferdinand Zodrow + Catherine Fleckenstein, with case.21
+tracking the primary pull.
 
 Washington State Digital Archives death certificates (free, primary), all fetched:
 - **Julius Henry Zodrow, d. 1959** (State File 6169): died at **Eastern State

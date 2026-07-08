@@ -22,9 +22,9 @@ const PLATE_EXPECT = {
   'map-line-connelly': { markers: 7, edges: 4, guests: 0 },
 };
 const LINK_TOTAL = 10;
-const SOURCE_ITEMS = 126;
-const PERSON_DIVS = 75;
-const PERSON_IDS = 75;
+const SOURCE_ITEMS = 128;
+const PERSON_DIVS = 76;
+const PERSON_IDS = 76;
 const STEM_DIVS = 7;
 
 const ISOLATED_ID = 'event.zimmerman.michael_birth.1869-10-25'; // Mainhardt; isolated on the zimmerman plate
@@ -436,9 +436,9 @@ function ok(label, cond, detail) {
   // bounded map figures. Budget: still >=19% under the original 23,000px page.
   // Guards against layout regressions (dead voids, letterboxing), not research prose growth.
   // Content-driven height re-measured after Slate 1 W4 (four pedigree chart figures +
-  // the Index of Names section): 26,132px; budget = that + ~500 headroom. Prior measures:
+  // the Index of Names section, then the 2026-07-08 Cecilia-parentage correction adding the collateral card and case.21): 26,703px; budget = that + ~500 headroom. Prior measures:
   // 19,700 pre-W2, 23,511 post-W2. Revisit only if a layout change, not new content, trips it.
-  ok('L2 page height within layout budget (<26632)', desktop.scrollH < 26632, desktop.scrollH);
+  ok('L2 page height within layout budget (<27203)', desktop.scrollH < 27203, desktop.scrollH);
 
   for (const [w, h] of [[320, 700], [390, 844], [768, 1024], [1024, 768]]) {
     await page.setViewportSize({ width: w, height: h });
