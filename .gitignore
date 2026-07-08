@@ -10,3 +10,6 @@ tools/basemap-data/
 tools/font-data/
 
 .claude/
+
+# Raw record images pulled from subscription services (Ancestry ToS; keep local)
+research/pulls/
