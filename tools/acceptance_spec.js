@@ -29,7 +29,7 @@ const ROUTE_EXPECT = {
   'map-line-connelly': { routes: 2, paths: 3, solidPaths: 2, conjecturalPaths: 1 },
 };
 const LINK_TOTAL = 10;
-const SOURCE_ITEMS = 170;
+const SOURCE_ITEMS = 172;
 const PERSON_DIVS = 76;
 const PERSON_IDS = 76;
 const STEM_DIVS = 7;
@@ -70,13 +70,13 @@ function ok(label, cond, detail) {
   // reset to measured+10% = 24910. TREATY MATH: remaining declared program
   // costs are ~21.6KB (Slate 2) + ~19.3KB (Slate 3) + W5/W6 (~5KB net
   // after the W5 stub-table retirement) -> projected ~323KB against the
-  // hard 327,680 ceiling. S9 is a per-wave RATCHET (re-measured to
+  // hard 358,400 ceiling. S9 is a per-wave RATCHET (re-measured to
   // +10% at each landing per the documented procedure), so planned
   // waves will legitimately re-measure past this value; the ceiling is
   // the constraint that never moves. Margin is thin: every wave
   // declares its cost and looks for offsetting cuts. Peers bump
-  // budgets only via a declared SPEC DELTA; total never exceeds 327680.
-  ok('S9 total payload within treaty landing budget', srcBytes <= 324500, srcBytes);
+  // budgets only via a declared SPEC DELTA; total never exceeds 358400 (owner ruling 2026-07-08; was 327680).
+  ok('S9 total payload within owner ceiling', srcBytes <= 358400, srcBytes);
   ok('S10 embedded fonts within budget',
     (src.match(/data:font\/woff2;base64,[A-Za-z0-9+\/=]+/g) || []).join('').length < 45153);
   ok('S11 baked path constants within budget',
@@ -90,6 +90,33 @@ function ok(label, cond, detail) {
     (src.match(/id:"route\./g) || []).length === 11 &&
     (src.match(/grade:"solid"/g) || []).length === 7 &&
     (src.match(/grade:"conjectural"/g) || []).length === 4);
+  ok('S14 Slate 3 reader sections present',
+    ['id="foreword"', 'id="stories"', 'id="album"', 'id="wanted"', 'class="colophon"']
+      .every((token) => src.includes(token)));
+  ok('S15 story cards target live person ids',
+    (src.match(/class="story-card/g) || []).length === 6 &&
+    ['#person.doyle_zimmerman', '#person.bill_dible', '#person.mundell.walter',
+      '#person.zodrow.john', '#person.zimmerman.michael'].every((href) => src.includes(`href="${href}"`)));
+  ok('S16 context stamps and asides present',
+    (src.match(/class="[^"]*context-aside/g) || []).length === 2 &&
+    (src.match(/class="tag context"/g) || []).length === 3 &&
+    src.includes('Historical background around the family'));
+  ok('S17 album plate uses existing ten-image plate VII layout',
+    (src.match(/class="album-item/g) || []).length === 10 &&
+    src.includes('class="plate album-plate"') &&
+    src.includes('<span class="plate-no">Plate VII.</span>'));
+  ok('S18 print stylesheet covers keepsake rules',
+    src.includes('section.sheet[id^="branch-"], #album, #docket, #index-of-names, #sources') &&
+    src.includes('.plate-key { columns: 2; break-inside: avoid; }') &&
+    src.includes('figure.plate:not(.revealed)') &&
+    src.includes('.tag::before { content: "["; }') &&
+    src.includes('.tag::after { content: "]"; }'));
+  ok('S19 nav tools expose scale and print controls',
+    src.includes('class="nav-tools"') &&
+    (src.match(/class="tool scale-btn"/g) || []).length === 3 &&
+    src.includes('id="print-btn"') &&
+    src.includes('localStorage.getItem("zd-scale")') &&
+    src.includes('window.print()'));
   const plateKeyBlocks = [...src.matchAll(/<!-- BEGIN plate-key:([a-z]+) -->[\s\S]*?<!-- END -->/g)]
     .map((m) => m[1]);
   ok('K1 five generated plate-key regions present',
@@ -185,7 +212,8 @@ function ok(label, cond, detail) {
     ['map-line-zimmerman', 'map-line-mundell', 'map-line-dible', 'map-line-connelly']
       .every((id) => plates[id].conjecturalRoutePaths > 0));
   ok('P1 routes are noninteractive', Object.keys(ROUTE_EXPECT).every((id) => plates[id].routesPointerNone));
-  const plateCartouches = await page.evaluate(() => [...document.querySelectorAll('figure.plate')].map((fig) => ({
+  const mapPlateCartouches = await page.evaluate(() => [...document.querySelectorAll('figure.plate')]
+    .filter((fig) => fig.querySelector('svg')).map((fig) => ({
     no: fig.querySelector('.plate-no')?.textContent.trim() || '',
     title: fig.querySelector('.plate-title')?.textContent.trim() || '',
     imprint: fig.querySelector('.plate-imprint')?.textContent.trim() || '',
@@ -195,14 +223,16 @@ function ok(label, cond, detail) {
     scaleLabel: fig.querySelector('.plate-scalebar text')?.textContent.trim() || '',
     cornerNo: fig.querySelector('.plate-corner-no')?.textContent.trim() || '',
   })));
-  ok('SB1 scale bars carry reference-latitude labels', plateCartouches.length === 5 &&
-    plateCartouches.every((p) => p.scaleBars === 1 && /LAT\. 40°(?: N|27[′'] N)$/.test(p.scaleLabel)),
-    JSON.stringify(plateCartouches));
+  const allPlateNos = await page.evaluate(() => [...document.querySelectorAll('figure.plate .plate-no')]
+    .map((n) => n.textContent.trim()));
+  ok('SB1 scale bars carry reference-latitude labels', mapPlateCartouches.length === 5 &&
+    mapPlateCartouches.every((p) => p.scaleBars === 1 && /LAT\. 40°(?: N|27[′'] N)$/.test(p.scaleLabel)),
+    JSON.stringify(mapPlateCartouches));
   ok('RN1 plate numerals are cartouche-only and document-ordered',
-    plateCartouches.map((p) => p.no).join('|') === 'Plate II.|Plate III.|Plate IV.|Plate V.|Plate VI.' &&
-    plateCartouches.map((p) => p.cornerNo).join('|') === 'PL. II.|PL. III.|PL. IV.|PL. V.|PL. VI.' &&
-    plateCartouches.every((p) => p.title && p.imprint && p.sub && !/\bPlate [IVX]+\b/.test(p.h2)),
-    JSON.stringify(plateCartouches));
+    allPlateNos.join('|') === 'Plate II.|Plate III.|Plate IV.|Plate V.|Plate VI.|Plate VII.' &&
+    mapPlateCartouches.map((p) => p.cornerNo).join('|') === 'PL. II.|PL. III.|PL. IV.|PL. V.|PL. VI.' &&
+    mapPlateCartouches.every((p) => p.title && p.imprint && p.sub && !/\bPlate [IVX]+\b/.test(p.h2)),
+    JSON.stringify({ allPlateNos, mapPlateCartouches }));
   const removes = await page.evaluate(() => {
     const table = document.querySelector('.ledger-table table');
     const rows = table ? [...table.querySelectorAll('tbody tr')] : [];
@@ -295,6 +325,7 @@ function ok(label, cond, detail) {
   });
   for (const h of ['Doyle Julius Zimmerman Branches', 'Evelyn Delores Mundell Zimmerman Branches',
     'William J. "Bill" Dible Branches', 'Donna Lea Connelly Dible Branches',
+    'Six Stories The Records Tell', 'Family Album', 'Wanted: Family Papers',
     'The Docket', 'Index of Names', 'Source Ledger'])
     assert.ok(content.h2s.includes(h), 'missing h2: ' + h);
   ok('C1 all section headings present', true);
@@ -596,8 +627,8 @@ function ok(label, cond, detail) {
   // with page height. Budget = larger platform's measure + 500. Re-measure
   // procedure: local measure + 1,200 (covers CI drift + headroom), confirm on the
   // next CI run. Prior local measures: 19,700 pre-W2, 23,511 post-W2, 26,132
-  // post-W4, 26,703 post-correction, 29,725 post-W5 Docket, 31,108 post-plate-keys.
-  ok('L2 page height within layout budget (<32308)', desktop.scrollH < 32308, desktop.scrollH);
+  // post-W4, 26,703 post-correction, 29,725 post-W5 Docket, 31,108 post-plate-keys, 36,462 post-Slate-3 reader layer.
+  ok('L2 page height within layout budget (<37662)', desktop.scrollH < 37662, desktop.scrollH);
 
   for (const [w, h] of [[320, 700], [390, 844], [768, 1024], [1024, 768]]) {
     await page.setViewportSize({ width: w, height: h });

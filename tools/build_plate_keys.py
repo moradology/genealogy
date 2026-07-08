@@ -36,7 +36,7 @@ ANCHOR_SHORT = {
     "William J. Dible": "Dible",
     "Donna Lea Connelly Dible": "Connelly",
 }
-PLATE_ROMANS = ["II", "III", "IV", "V", "VI"]
+PLATE_ROMANS = ["II", "III", "IV", "V", "VI", "VII"]
 LEDGER_ROWS = [
     ("Zimmerman", "zimmerman", 5, "8,158", "", "1869-1954", False),
     ("Nauer", "zimmerman", 6, "1,735", "", "1871-1930", False),

@@ -2,7 +2,7 @@
   "schema_version": "1.1.0",
   "updated": "2026-07-07",
   "source": "Extracted from index.html Source Ledger",
-  "record_count": 170,
+  "record_count": 172,
   "fields": {
     "id": "Stable local source id for notes and reasoning traces, generated from source title, URL, and blurb.",
     "title": "Human-readable source title from the artifact ledger.",
@@ -21,11 +21,12 @@
       "source_type": "compiled_pdf_or_journal",
       "lineage_tags": [
         "zimmerman",
-        "mundell"
+        "mundell",
+        "long_mcclelland"
       ],
       "evidence_role": "lead",
-      "blurb": "Family-supplied announcement establishes marriage on 14 Jun 1954 at Sacred Heart Catholic Church, Colby; documents Doyle in Selden until 1953, Evelyn in Winona until 1954, the couple meeting in January 1954, and the Hi-Plains Implement career from 1953 through retirement in June 1999. Contradicts the compiled 14 Jun 1953 marriage date.",
-      "search_text": "Doyle and Evelyn Zimmerman 50th anniversary announcement, Colby Free Press, 11 Jun 2004 Family-supplied announcement establishes marriage on 14 Jun 1954 at Sacred Heart Catholic Church, Colby; documents Doyle in Selden until 1953, Evelyn in Winona until 1954, the couple meeting in January 1954, and the Hi-Plains Implement career from 1953 through retirement in June 1999. Contradicts the compiled 14 Jun 1953 marriage date."
+      "blurb": "Family-supplied announcement establishes marriage on 14 Jun 1954 at Sacred Heart Catholic Church, Colby; documents Doyle in Selden until 1953, Evelyn in Winona until 1954, the couple meeting in January 1954, and the Hi-Plains Implement career from 1953 through retirement in June 1999. Also records Evelyn at Winona until the 1954 marriage and working alongside Doyle at Hi-Plains Implement from 1974 until the couple's 1999 retirement. Contradicts the compiled 14 Jun 1953 marriage date.",
+      "search_text": "Doyle and Evelyn Zimmerman 50th anniversary announcement, Colby Free Press, 11 Jun 2004 Family-supplied announcement establishes marriage on 14 Jun 1954 at Sacred Heart Catholic Church, Colby; documents Doyle in Selden until 1953, Evelyn in Winona until 1954, the couple meeting in January 1954, and the Hi-Plains Implement career from 1953 through retirement in June 1999. Also records Evelyn at Winona until the 1954 marriage and working alongside Doyle at Hi-Plains Implement from 1974 until the couple's 1999 retirement. Contradicts the compiled 14 Jun 1953 marriage date."
     },
     {
       "id": "src.evelyn-delores-zimmerman-obituary-baalmann-mortuary.e1d95407",
@@ -1192,8 +1193,8 @@
         "claar"
       ],
       "evidence_role": "evidence",
-      "blurb": "Names Chester and Martha Claar Connelly.",
-      "search_text": "Donna Lea Connelly Dible obituary, Baalmann Mortuary Names Chester and Martha Claar Connelly."
+      "blurb": "Names Chester and Martha Claar Connelly; states Donna married William (Bill) Dible on July 26, 1953.",
+      "search_text": "Donna Lea Connelly Dible obituary, Baalmann Mortuary Names Chester and Martha Claar Connelly; states Donna married William (Bill) Dible on July 26, 1953."
     },
     {
       "id": "src.donna-lea-dible-notice-hays-post.427256eb",
@@ -2075,6 +2076,30 @@
       "evidence_role": "evidence",
       "blurb": "Public index names Abel White and Rebecca Solace as parents.",
       "search_text": "Daniel White, FamilySearch Public index names Abel White and Rebecca Solace as parents."
+    },
+    {
+      "id": "src.personenstandsgesetz-of-6-feb-1875-full-text-wikisource.e429f724",
+      "title": "Personenstandsgesetz of 6 Feb 1875, full text, Wikisource",
+      "url": "https://de.wikisource.org/wiki/Gesetz_%C3%BCber_die_Beurkundung_des_Personenstandes_und_die_Eheschlie%C3%9Fung",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "zodrow"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Context-only source: the Reich law making civil registration and civil marriage obligatory from 1 Jan 1876, following Prussia's 1874 introduction; used for the Kulturkampf aside on the Zodrow jurisdiction stack, not as family evidence.",
+      "search_text": "Personenstandsgesetz of 6 Feb 1875, full text, Wikisource Context-only source: the Reich law making civil registration and civil marriage obligatory from 1 Jan 1876, following Prussia's 1874 introduction; used for the Kulturkampf aside on the Zodrow jurisdiction stack, not as family evidence."
+    },
+    {
+      "id": "src.dust-bowl-kansapedia-kansas-historical-society.3a3f7334",
+      "title": "Dust Bowl, Kansapedia, Kansas Historical Society",
+      "url": "https://www.kansashistory.gov/kansapedia/dust-bowl/12040",
+      "source_type": "web_reference",
+      "lineage_tags": [
+        "general"
+      ],
+      "evidence_role": "reference",
+      "blurb": "Context-only source for the 1930s drought and dust storms on the Kansas High Plains, including the 14 Apr 1935 Black Sunday storm; used for the anchors birth-cohort aside, not as family evidence.",
+      "search_text": "Dust Bowl, Kansapedia, Kansas Historical Society Context-only source for the 1930s drought and dust storms on the Kansas High Plains, including the 14 Apr 1935 Black Sunday storm; used for the anchors birth-cohort aside, not as family evidence."
     }
   ]
 }
