@@ -26,23 +26,36 @@ class SourceLedgerParser(HTMLParser):
         self.in_heading = False
         self.in_item = False
         self.in_anchor = False
+        self.ignore_depth = 0
         self.heading_parts: list[str] = []
         self.current: dict[str, object] | None = None
         self.items: list[dict[str, str]] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         attr_map = dict(attrs)
+        classes = set((attr_map.get("class") or "").split())
+        if self.ignore_depth:
+            self.ignore_depth += 1
+            return
+        if self.in_item and tag == "span" and (
+            "scode" in classes or "cited-by" in classes or "data-gen" in attr_map
+        ):
+            self.ignore_depth = 1
+            return
         if tag == "h2":
             self.in_heading = True
             self.heading_parts = []
         if self.in_source_ledger and tag == "li":
             self.in_item = True
-            self.current = {"url": "", "title_parts": [], "parts": []}
+            self.current = {"url": "", "html_id": attr_map.get("id") or "", "title_parts": [], "parts": []}
         if self.in_item and tag == "a" and self.current is not None:
             self.in_anchor = True
             self.current["url"] = attr_map.get("href") or ""
 
     def handle_endtag(self, tag: str) -> None:
+        if self.ignore_depth:
+            self.ignore_depth -= 1
+            return
         if tag == "h2":
             heading = "".join(self.heading_parts).strip()
             self.in_heading = False
@@ -64,6 +77,7 @@ class SourceLedgerParser(HTMLParser):
             self.items.append(
                 {
                     "url": html_lib.unescape(str(self.current["url"])),
+                    "html_id": html_lib.unescape(str(self.current["html_id"])),
                     "title": html_lib.unescape(title),
                     "blurb": html_lib.unescape(blurb),
                 }
@@ -72,6 +86,8 @@ class SourceLedgerParser(HTMLParser):
             self.current = None
 
     def handle_data(self, data: str) -> None:
+        if self.ignore_depth:
+            return
         if self.in_heading:
             self.heading_parts.append(data)
         if self.in_item and self.current is not None:
@@ -166,11 +182,20 @@ def build_index() -> dict[str, object]:
             print(f"  {url}", file=sys.stderr)
         raise SystemExit(1)
     records: list[dict[str, object]] = []
-    for item in parser.items:
+    for position, item in enumerate(parser.items, start=1):
         search_text = " ".join([item["title"], item["blurb"]])
+        expected_id = source_id(item)
+        expected_html_id = f"s{position}"
+        html_id = item.get("html_id", "")
+        if html_id != expected_html_id:
+            print(
+                f"ledger anchor mismatch for {item['title']}: {html_id or '(missing)'} != {expected_html_id}",
+                file=sys.stderr,
+            )
+            raise SystemExit(1)
         records.append(
             {
-                "id": source_id(item),
+                "id": expected_id,
                 "title": item["title"],
                 "url": item["url"],
                 "source_type": source_type(item["url"], item["title"]),
@@ -209,7 +234,7 @@ def main() -> int:
     if args.check:
         current = OUT_PATH.read_text() if OUT_PATH.exists() else ""
         if current != rendered:
-            print(f"{OUT_PATH} is out of date; run python3 tools/build_source_index.py", file=sys.stderr)
+            print(f"{OUT_PATH} is out of date; run uv run tools/build_source_index.py", file=sys.stderr)
             return 1
         print(f"{OUT_PATH} is current")
         return 0

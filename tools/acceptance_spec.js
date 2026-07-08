@@ -231,6 +231,46 @@ function ok(label, cond, detail) {
           !document.getElementById(decodeURIComponent(resolvedURL.hash.slice(1)));
       }));
   ok('C9 internal links resolve', brokenInternalLinks.length === 0, brokenInternalLinks.join(', '));
+  const citationContract = await page.evaluate((sourceItems) => {
+    const sec = [...document.querySelectorAll('section')].find((s) =>
+      s.querySelector('h2') && s.querySelector('h2').textContent.trim() === 'Source Ledger');
+    const ledgerLis = sec ? [...sec.querySelectorAll('li')] : [];
+    const scodes = ledgerLis.map((li) => li.querySelector(':scope > .scode')?.textContent.trim() || '');
+    const allCiteLinks = [...document.querySelectorAll('sup.cite a[href]')];
+    const citeLinks = allCiteLinks.filter((a) => /^#s[1-9]\d*$/.test(a.getAttribute('href') || ''));
+    const failures = [];
+    const phaseRows = new Set();
+    citeLinks.forEach((a) => {
+      const targetId = decodeURIComponent(a.hash.slice(1));
+      const li = document.getElementById(targetId);
+      const code = li?.querySelector(':scope > .scode')?.textContent.trim();
+      const row = a.closest('.person[id]');
+      if (!li || li.tagName !== 'LI' || !code ||
+        code !== li.id || targetId !== li.id || targetId !== a.textContent.trim()) failures.push(a.outerHTML);
+      if (row) phaseRows.add(row.id);
+    });
+    return {
+      ledgerIds: ledgerLis.filter((li, i) => li.id === `s${i + 1}`).length,
+      scodeCount: scodes.filter(Boolean).length,
+      sequential: scodes.length === sourceItems &&
+        scodes.every((code, i) => code === `s${i + 1}` && ledgerLis[i]?.id === code),
+      pinned: scodes.slice(0, 4).join('|'),
+      chips: citeLinks.length,
+      phaseRows: phaseRows.size,
+      badCites: allCiteLinks.length - citeLinks.length,
+      failures,
+    };
+  }, SOURCE_ITEMS);
+  ok('C14 citation chips target coded ledger rows',
+    citationContract.ledgerIds === SOURCE_ITEMS &&
+    citationContract.scodeCount === SOURCE_ITEMS &&
+    citationContract.sequential &&
+    citationContract.pinned === 's1|s2|s3|s4' &&
+    citationContract.phaseRows >= 22 &&
+    citationContract.chips >= 22 && citationContract.chips <= 80 &&
+    citationContract.badCites === 0 &&
+    citationContract.failures.length === 0,
+    JSON.stringify(citationContract));
   const stemCheck = await page.evaluate((stemDivs) => {
     const expected = [
       { href: '#person.zodrow.cecilia', tagClass: 'documented', tagText: 'Documented' },

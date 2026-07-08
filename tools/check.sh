@@ -7,6 +7,7 @@ cd "$(dirname "$0")/.."
 uv run python -c "import json; json.load(open('ancestry_geospatial.geojson')); print('geojson ok')"
 uv run python -c "import json; json.load(open('research/sources/source-index.json')); print('source-index ok')"
 uv run tools/build_source_index.py --check
+uv run tools/build_citation_backlinks.py --check
 uv run tools/check_refs.py
 uv run tools/check_people_index.py
 uv run tools/check_geo_sync.py
