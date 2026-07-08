@@ -9,6 +9,11 @@ uv run python -c "import json; json.load(open('research/sources/source-index.jso
 uv run tools/build_source_index.py --check
 uv run tools/check_refs.py
 uv run tools/check_geo_sync.py
+if [ -d tools/basemap-data ]; then
+  uv run tools/build_basemap.py --check
+else
+  echo "note: tools/basemap-data absent; skipping basemap byte check (run build_basemap.py --check after basemap edits)"
+fi
 uv run tools/stamp.py --check
 
 INLINE_DIR="$(mktemp -d)"

@@ -58,6 +58,10 @@ function ok(label, cond, detail) {
     (src.match(/data:font\/woff2;base64,[A-Za-z0-9+\/=]+/g) || []).join('').length < 64453);
   ok('S11 baked path constants within budget',
     (src.match(/const \w+_D = "[^"]*"/g) || []).join('').length < 21739);
+  ok('S12 generated-region marker pairs present',
+    ['basemap-proj', 'basemap-paths'].every((tag) =>
+      src.split('// BEGIN GENERATED ' + tag).length === 2 &&
+      src.split('// END GENERATED ' + tag).length === 2));
 
   // ---------- browser ----------
   const browser = await chromium.launch({ headless: true });

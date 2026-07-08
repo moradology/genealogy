@@ -6,4 +6,4 @@ dist/
 tmp/
 __pycache__/
 *.pyc
-node_modules/
+tools/basemap-data/
