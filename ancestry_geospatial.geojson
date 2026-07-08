@@ -554,7 +554,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "birth",
-        "person_id": "person.doyle_jule_zimmerman",
+        "person_id": "person.doyle_zimmerman",
         "person_name": "Doyle Julius Zimmerman",
         "anchor": "Doyle Julius Zimmerman",
         "line_ids": ["line.zimmerman_surname", "line.zodrow_baier", "line.nauer"],
@@ -574,9 +574,9 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "marriage",
-        "person_id": "person.doyle_jule_zimmerman",
+        "person_id": "person.doyle_zimmerman",
         "person_name": "Doyle Julius Zimmerman",
-        "participants": ["person.doyle_jule_zimmerman", "person.evelyn_delores_mundell"],
+        "participants": ["person.doyle_zimmerman", "person.evelyn_mundell"],
         "anchor": "Doyle Julius Zimmerman",
         "line_ids": ["line.zimmerman_surname", "line.mundell_rust_cantwell"],
         "generation": 1,
@@ -595,7 +595,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "birth",
-        "person_id": "person.evelyn_delores_mundell",
+        "person_id": "person.evelyn_mundell",
         "person_name": "Evelyn Delores Mundell Zimmerman",
         "anchor": "Evelyn Delores Mundell Zimmerman",
         "line_ids": ["line.mundell_rust_cantwell", "line.clemans_flaherty"],
@@ -615,7 +615,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "death",
-        "person_id": "person.evelyn_delores_mundell",
+        "person_id": "person.evelyn_mundell",
         "person_name": "Evelyn Delores Mundell Zimmerman",
         "anchor": "Evelyn Delores Mundell Zimmerman",
         "line_ids": ["line.mundell_rust_cantwell", "line.clemans_flaherty"],
@@ -635,10 +635,10 @@
       "properties": {
         "feature_kind": "candidate_life_event",
         "event_type": "marriage",
-        "person_id": "person.talmadge_dewitt_clemans",
+        "person_id": "person.clemans.talmadge",
         "person_name": "Talmadge Dewitt Clemans",
         "name_variants": ["Talmage Clemans", "Talmage D. Clemans", "Talmage D. Clemons"],
-        "participants": ["person.talmadge_dewitt_clemans", "person.margaret_ellen_flaherty"],
+        "participants": ["person.clemans.talmadge", "person.margaret_ellen_flaherty"],
         "participant_name_variants": {
           "person.margaret_ellen_flaherty": ["Margaret Ellen Flaherty", "Margaret Flaherty", "Margaret Ellen Flaherty Clemans"]
         },
@@ -663,7 +663,7 @@
         "event_type": "birth",
         "person_id": "person.genevieve_clemans",
         "person_name": "Genevieve Clemans",
-        "participants": ["person.talmadge_dewitt_clemans", "person.margaret_ellen_flaherty"],
+        "participants": ["person.clemans.talmadge", "person.margaret_ellen_flaherty"],
         "anchor": "Evelyn Delores Mundell Zimmerman",
         "line_ids": ["line.clemans_flaherty"],
         "generation": 2,
@@ -686,7 +686,7 @@
         "event_type": "birth",
         "person_id": "person.edward_j_flaherty",
         "person_name": "Edward J. Flaherty",
-        "participants": ["person.martin_flaherty", "person.kate_flaherty"],
+        "participants": ["person.flaherty.martin", "person.kate_flaherty"],
         "anchor": "Evelyn Delores Mundell Zimmerman",
         "line_ids": ["line.clemans_flaherty"],
         "generation": 3,
@@ -716,7 +716,7 @@
         "date_end": "1925",
         "confidence": "target",
         "candidate_places": ["place.arkansas", "place.st_louis_mo", "place.aurora_mo", "place.minnesota"],
-        "candidate_people": ["person.margaret_ellen_flaherty", "person.edward_j_flaherty", "person.martin_flaherty", "person.kate_flaherty"],
+        "candidate_people": ["person.margaret_ellen_flaherty", "person.edward_j_flaherty", "person.flaherty.martin", "person.kate_flaherty"],
         "research_question": "Does a direct Margaret Ellen Flaherty record prove Martin Flaherty and Kate Flaherty as her parents, and is the 1901/1902 Margaret who married Talmage Clemans distinct from the separate 1908 Chicago/Prairie View FamilySearch same-name profile?",
         "evidence_note": "The 1925 Genevieve Clemans profile and 1921 St. Louis marriage note fit a Margaret born about 1901/1902; Edward J. Flaherty's sibling cluster points to Martin and Kate. Direct records are still required before merging or extending this Flaherty line.",
         "source_refs": ["https://ancestors.familysearch.org/en/G6RD-KWY/genevieve-clemans-1925-2003", "https://www.findagrave.com/memorial/113830517/margaret_ellen-clemans", "https://www.findagrave.com/memorial/36793267/edward_j-flaherty"]
@@ -729,7 +729,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "birth",
-        "person_id": "person.william_j_dible",
+        "person_id": "person.bill_dible",
         "person_name": "William J. \"Bill\" Dible",
         "anchor": "William J. Dible",
         "line_ids": ["line.dible_surname", "line.long_sleight_mcclelland"],
@@ -749,7 +749,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "death",
-        "person_id": "person.william_j_dible",
+        "person_id": "person.bill_dible",
         "person_name": "William J. \"Bill\" Dible",
         "anchor": "William J. Dible",
         "line_ids": ["line.dible_surname", "line.long_sleight_mcclelland"],
@@ -769,7 +769,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "birth",
-        "person_id": "person.donna_lea_connelly",
+        "person_id": "person.donna_connelly",
         "person_name": "Donna Lea Connelly Dible",
         "anchor": "Donna Lea Connelly Dible",
         "line_ids": ["line.connelly_durham", "line.claar_white_stropes"],
@@ -789,7 +789,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "death",
-        "person_id": "person.donna_lea_connelly",
+        "person_id": "person.donna_connelly",
         "person_name": "Donna Lea Connelly Dible",
         "anchor": "Donna Lea Connelly Dible",
         "line_ids": ["line.connelly_durham", "line.claar_white_stropes"],
@@ -809,7 +809,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "birth",
-        "person_id": "person.michael_john_zimmerman_sr",
+        "person_id": "person.zimmerman.michael",
         "person_name": "Michael John Zimmerman Sr.",
         "anchor": "Doyle Julius Zimmerman",
         "line_ids": ["line.zimmerman_surname"],
@@ -829,9 +829,9 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "marriage",
-        "person_id": "person.michael_john_zimmerman_sr",
+        "person_id": "person.zimmerman.michael",
         "person_name": "Michael John Zimmerman Sr.",
-        "participants": ["person.michael_john_zimmerman_sr", "person.elizabeth_catherine_nauer"],
+        "participants": ["person.zimmerman.michael", "person.nauer.elizabeth"],
         "anchor": "Doyle Julius Zimmerman",
         "line_ids": ["line.zimmerman_surname", "line.nauer"],
         "generation": 3,
@@ -850,7 +850,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "birth",
-        "person_id": "person.elizabeth_catherine_nauer",
+        "person_id": "person.nauer.elizabeth",
         "person_name": "Elizabeth Catherine Nauer Zimmerman",
         "anchor": "Doyle Julius Zimmerman",
         "line_ids": ["line.nauer"],
@@ -890,9 +890,9 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "residence",
-        "person_id": "person.thomas_a_nauer",
+        "person_id": "person.nauer.thomas",
         "person_name": "Thomas A. Nauer",
-        "participants": ["person.thomas_a_nauer", "person.catherina_marie_koeberger"],
+        "participants": ["person.nauer.thomas", "person.catherina_marie_koeberger"],
         "anchor": "Doyle Julius Zimmerman",
         "line_ids": ["line.nauer"],
         "generation": 4,
@@ -912,9 +912,9 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "residence",
-        "person_id": "person.thomas_a_nauer",
+        "person_id": "person.nauer.thomas",
         "person_name": "Thomas A. Nauer",
-        "participants": ["person.thomas_a_nauer", "person.catherina_marie_koeberger"],
+        "participants": ["person.nauer.thomas", "person.catherina_marie_koeberger"],
         "anchor": "Doyle Julius Zimmerman",
         "line_ids": ["line.nauer"],
         "generation": 4,
@@ -934,10 +934,10 @@
       "properties": {
         "feature_kind": "candidate_life_event",
         "event_type": "residence",
-        "person_id": "person.lorenz_nauer",
+        "person_id": "person.nauer.lorenz",
         "person_name": "Johann Lorenz Nauer",
         "name_variants": ["Lorenz Nauer"],
-        "participants": ["person.lorenz_nauer", "person.dorothea_meyer"],
+        "participants": ["person.nauer.lorenz", "person.dorothea_meyer"],
         "participant_name_variants": {
           "person.dorothea_meyer": ["Dorothea Meyer", "Mary Dorothea Wand", "Dorothea Wand/Wandt"]
         },
@@ -961,10 +961,10 @@
       "properties": {
         "feature_kind": "candidate_life_event",
         "event_type": "residence",
-        "person_id": "person.lorenz_nauer",
+        "person_id": "person.nauer.lorenz",
         "person_name": "Johann Lorenz Nauer",
         "name_variants": ["Lorenz Nauer"],
-        "participants": ["person.lorenz_nauer", "person.dorothea_meyer"],
+        "participants": ["person.nauer.lorenz", "person.dorothea_meyer"],
         "participant_name_variants": {
           "person.dorothea_meyer": ["Dorothea Meyer", "Mary Dorothea Wand", "Dorothea Wand/Wandt"]
         },
@@ -1025,9 +1025,9 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "household",
-        "person_id": "person.john_paul_zimmerman",
+        "person_id": "person.zimmerman.john_paul",
         "person_name": "John Paul Zimmerman",
-        "participants": ["person.catherine_zinkle", "person.michael_john_zimmerman_sr", "person.paul_michael_zimmerman"],
+        "participants": ["person.catherine_zinkle", "person.zimmerman.michael", "person.paul_michael_zimmerman"],
         "anchor": "Doyle Julius Zimmerman",
         "line_ids": ["line.zimmerman_surname"],
         "generation": 4,
@@ -1068,7 +1068,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "birth",
-        "person_id": "person.john_zodrow",
+        "person_id": "person.zodrow.john",
         "person_name": "John Zodrow",
         "anchor": "Doyle Julius Zimmerman",
         "line_ids": ["line.zodrow_baier"],
@@ -1340,7 +1340,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "death_or_burial",
-        "person_id": "person.john_zodrow",
+        "person_id": "person.zodrow.john",
         "person_name": "John Zodrow",
         "anchor": "Doyle Julius Zimmerman",
         "line_ids": ["line.zodrow_baier"],
@@ -1360,7 +1360,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "birth",
-        "person_id": "person.harvey_william_mundell",
+        "person_id": "person.mundell.harvey",
         "person_name": "Harvey William Mundell",
         "anchor": "Evelyn Delores Mundell Zimmerman",
         "line_ids": ["line.mundell_rust_cantwell"],
@@ -1402,9 +1402,9 @@
       "properties": {
         "feature_kind": "candidate_life_event",
         "event_type": "marriage",
-        "person_id": "person.walter_william_mundell",
+        "person_id": "person.mundell.walter",
         "person_name": "Walter William Mundell",
-        "participants": ["person.walter_william_mundell", "person.mary_frances_rust"],
+        "participants": ["person.mundell.walter", "person.mary_frances_rust"],
         "anchor": "Evelyn Delores Mundell Zimmerman",
         "line_ids": ["line.mundell_rust_cantwell"],
         "generation": 3,
@@ -1482,7 +1482,7 @@
         "place_label": "Beloit, Mitchell County, Kansas",
         "confidence": "open",
         "related_places": ["place.smith_county_ks", "place.smith_center_ks", "place.winona_ks", "place.logan_county_ks"],
-        "candidate_people": ["person.mary_frances_rust", "person.frances_adolph", "person.lyle_strawn", "person.walter_william_mundell", "person.evelyn_delores_mundell"],
+        "candidate_people": ["person.mary_frances_rust", "person.frances_adolph", "person.lyle_strawn", "person.mundell.walter", "person.evelyn_mundell"],
         "evidence_note": "Rust-family forum says Mary Frances Rust married an Adolph and, after he died, married Lyle Strawn and lived in Beloit, Kansas. William Bryan Rust's Find a Grave search result lists a sibling Mary Frances Rust Strawn, 1894-1984. Evelyn's obituary independently says she was raised by grandmother Frances Adolph.",
         "research_question": "Do Beloit/Mitchell County marriage, obituary, cemetery, probate, city directory, or newspaper records prove Frances Adolph and Mary Frances Rust Strawn are the same person?",
         "source_refs": [
@@ -1499,9 +1499,9 @@
       "properties": {
         "feature_kind": "life_context",
         "event_type": "residence_or_school",
-        "person_id": "person.evelyn_delores_mundell",
+        "person_id": "person.evelyn_mundell",
         "person_name": "Evelyn Delores Mundell Zimmerman",
-        "participants": ["person.evelyn_delores_mundell", "person.mary_frances_rust"],
+        "participants": ["person.evelyn_mundell", "person.mary_frances_rust"],
         "participant_name_variants": {
           "person.mary_frances_rust": ["Frances Adolph", "Mary Frances Rust", "Frances Rust"]
         },
@@ -1536,7 +1536,7 @@
         "place_label": "Winona, Logan County, Kansas",
         "confidence": "open",
         "related_places": ["place.logan_county_ks", "place.smith_county_ks", "place.smith_center_ks", "place.flagler_co"],
-        "candidate_people": ["person.mary_frances_rust", "person.frances_adolph", "person.evelyn_delores_mundell", "person.homer_clair_mundell", "person.marjorie_clemans"],
+        "candidate_people": ["person.mary_frances_rust", "person.frances_adolph", "person.evelyn_mundell", "person.homer_clair_mundell", "person.marjorie_clemans"],
         "evidence_note": "Rust-family forum says Mary Frances Rust later married a man surnamed Adolph; Evelyn's obituary says she was raised by grandmother Frances Adolph and graduated from Winona High School. These two clues fit, but same-person proof is still missing.",
         "research_question": "Do Winona and Logan County school, census, guardianship, cemetery, probate, obituary, newspaper, or remarriage records prove that Frances Adolph was Mary Frances Rust Mundell and explain Evelyn's childhood household?",
         "source_refs": [
@@ -1554,9 +1554,9 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "marriage",
-        "person_id": "person.harvey_william_mundell",
+        "person_id": "person.mundell.harvey",
         "person_name": "Harvey William Mundell",
-        "participants": ["person.harvey_william_mundell", "person.elizabeth_jane_brown"],
+        "participants": ["person.mundell.harvey", "person.elizabeth_jane_brown"],
         "anchor": "Evelyn Delores Mundell Zimmerman",
         "line_ids": ["line.mundell_rust_cantwell"],
         "generation": 5,
@@ -1575,7 +1575,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "death",
-        "person_id": "person.harvey_william_mundell",
+        "person_id": "person.mundell.harvey",
         "person_name": "Harvey William Mundell",
         "anchor": "Evelyn Delores Mundell Zimmerman",
         "line_ids": ["line.mundell_rust_cantwell"],
@@ -1645,9 +1645,9 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "marriage",
-        "person_id": "person.harry_h_dible",
+        "person_id": "person.dible.harry",
         "person_name": "Harry H. Dible",
-        "participants": ["person.harry_h_dible", "person.julia_dible"],
+        "participants": ["person.dible.harry", "person.julia_dible"],
         "anchor": "William J. Dible",
         "line_ids": ["line.dible_surname"],
         "generation": 3,
@@ -1716,7 +1716,7 @@
         "place_id": "place.cumberland_county_ky",
         "place_label": "Cumberland County, Kentucky",
         "confidence": "target",
-        "candidate_people": ["person.elizabeth_j_haden", "person.andrew_jackson_haden", "person.sophia_reid", "person.richard_d_haden", "person.sarah_sally_lewis_tompkins"],
+        "candidate_people": ["person.elizabeth_j_haden", "person.andrew_jackson_haden", "person.sophia_reid", "person.haden.richard", "person.sarah_sally_lewis_tompkins"],
         "research_question": "Do Cumberland County census, marriage, deed, probate, cemetery, or Bible records prove Elizabeth J. Haden as daughter of Andrew Jackson Haden and Sophia Reid/Reed, and Andrew as son of Richard D. Haden and Sarah Sally Lewis Tompkins?",
         "evidence_note": "Find a Grave names Andrew Jackson Haden and Sophia Reid as Elizabeth's parents. KaysAncestry agrees, uses Sophia Reed, cites 1850/1860 Cumberland County census households, and its Andrew Jackson Haden page notes a Cumberland County mortgage to Sally L. Haden as Andrew's mother.",
         "source_refs": [
@@ -1735,9 +1735,9 @@
       "properties": {
         "feature_kind": "candidate_life_event",
         "event_type": "marriage",
-        "person_id": "person.richard_d_haden",
+        "person_id": "person.haden.richard",
         "person_name": "Richard D. Haden",
-        "participants": ["person.richard_d_haden", "person.sarah_sally_lewis_tompkins"],
+        "participants": ["person.haden.richard", "person.sarah_sally_lewis_tompkins"],
         "anchor": "William J. Dible",
         "line_ids": ["line.dible_surname"],
         "generation": 6,
@@ -1770,7 +1770,7 @@
         "place_ids": ["place.albemarle_county_va", "place.fluvanna_county_va", "place.bedford_county_va", "place.cumberland_county_ky"],
         "place_label": "Albemarle, Fluvanna, and Bedford Counties, Virginia; Cumberland County, Kentucky",
         "confidence": "open",
-        "candidate_people": ["person.richard_d_haden", "person.sarah_sally_lewis_tompkins", "person.andrew_jackson_haden"],
+        "candidate_people": ["person.haden.richard", "person.sarah_sally_lewis_tompkins", "person.andrew_jackson_haden"],
         "evidence_note": "KaysAncestry places Richard and Sally in Albemarle marriage records, notes possible Richmond/Fluvanna/Bedford tax context, and places their deaths in Cumberland County, Kentucky. The Andrew page names them as Andrew's parents and includes a Sally L. Haden deed clue.",
         "research_question": "Do Albemarle marriage bonds, Virginia tax lists, Cumberland County deeds, and Cumberland probate records prove the Richard/Sally-to-Andrew Jackson Haden connection?",
         "source_refs": [
@@ -1829,9 +1829,9 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "marriage",
-        "person_id": "person.almeda_ora_long",
+        "person_id": "person.long.almeda",
         "person_name": "Almeda Ora Long Dible",
-        "participants": ["person.ray_hershel_dible", "person.almeda_ora_long"],
+        "participants": ["person.dible.ray", "person.long.almeda"],
         "anchor": "William J. Dible",
         "line_ids": ["line.long_sleight_mcclelland", "line.dible_surname"],
         "generation": 2,
@@ -1850,9 +1850,9 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "marriage",
-        "person_id": "person.robert_nelson_long",
+        "person_id": "person.long.robert_nelson",
         "person_name": "Robert Nelson Long",
-        "participants": ["person.robert_nelson_long", "person.ann_ghent_sleight"],
+        "participants": ["person.long.robert_nelson", "person.ann_ghent_sleight"],
         "anchor": "William J. Dible",
         "line_ids": ["line.long_sleight_mcclelland"],
         "generation": 4,
@@ -1911,7 +1911,7 @@
       "properties": {
         "feature_kind": "candidate_life_event",
         "event_type": "birth",
-        "person_id": "person.alexander_m_mcclelland",
+        "person_id": "person.mcclelland.alexander",
         "person_name": "Alexander M. McClelland",
         "anchor": "William J. Dible",
         "line_ids": ["line.long_sleight_mcclelland"],
@@ -1931,9 +1931,9 @@
       "properties": {
         "feature_kind": "candidate_life_event",
         "event_type": "marriage",
-        "person_id": "person.alexander_m_mcclelland",
+        "person_id": "person.mcclelland.alexander",
         "person_name": "Alexander M. McClelland",
-        "participants": ["person.alexander_m_mcclelland", "person.sarah_hoge"],
+        "participants": ["person.mcclelland.alexander", "person.sarah_hoge"],
         "anchor": "William J. Dible",
         "line_ids": ["line.long_sleight_mcclelland"],
         "generation": 5,
@@ -1952,7 +1952,7 @@
       "properties": {
         "feature_kind": "candidate_life_event",
         "event_type": "birth",
-        "person_id": "person.dorsey_overturf_mcclelland",
+        "person_id": "person.mcclelland.dorsey",
         "person_name": "Dorsey Overturf McClelland",
         "anchor": "William J. Dible",
         "line_ids": ["line.long_sleight_mcclelland"],
@@ -1992,9 +1992,9 @@
       "properties": {
         "feature_kind": "candidate_life_event",
         "event_type": "marriage",
-        "person_id": "person.dorsey_overturf_mcclelland",
+        "person_id": "person.mcclelland.dorsey",
         "person_name": "Dorsey Overturf McClelland",
-        "participants": ["person.dorsey_overturf_mcclelland", "person.lovina_parker_love"],
+        "participants": ["person.mcclelland.dorsey", "person.lovina_parker_love"],
         "anchor": "William J. Dible",
         "line_ids": ["line.long_sleight_mcclelland"],
         "generation": 4,
@@ -2013,7 +2013,7 @@
       "properties": {
         "feature_kind": "candidate_life_event",
         "event_type": "death",
-        "person_id": "person.alexander_m_mcclelland",
+        "person_id": "person.mcclelland.alexander",
         "person_name": "Alexander M. McClelland",
         "anchor": "William J. Dible",
         "line_ids": ["line.long_sleight_mcclelland"],
@@ -2073,7 +2073,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "death_or_burial",
-        "person_id": "person.dorsey_overturf_mcclelland",
+        "person_id": "person.mcclelland.dorsey",
         "person_name": "Dorsey Overturf McClelland",
         "anchor": "William J. Dible",
         "line_ids": ["line.long_sleight_mcclelland"],
@@ -2119,7 +2119,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "birth",
-        "person_id": "person.david_monroe_durham",
+        "person_id": "person.durham.david",
         "person_name": "David Monroe Durham",
         "anchor": "Donna Lea Connelly Dible",
         "line_ids": ["line.connelly_durham"],
@@ -2141,9 +2141,9 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "marriage",
-        "person_id": "person.david_monroe_durham",
+        "person_id": "person.durham.david",
         "person_name": "David Monroe Durham",
-        "participants": ["person.david_monroe_durham", "person.virginia_ann_ford"],
+        "participants": ["person.durham.david", "person.virginia_ann_ford"],
         "anchor": "Donna Lea Connelly Dible",
         "line_ids": ["line.connelly_durham"],
         "generation": 4,
@@ -2163,7 +2163,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "death",
-        "person_id": "person.david_monroe_durham",
+        "person_id": "person.durham.david",
         "person_name": "David Monroe Durham",
         "anchor": "Donna Lea Connelly Dible",
         "line_ids": ["line.connelly_durham"],
@@ -2218,7 +2218,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "birth",
-        "person_id": "person.john_laborn_ford",
+        "person_id": "person.ford.john_laborn",
         "person_name": "John Laborn/Laban Ford",
         "anchor": "Donna Lea Connelly Dible",
         "line_ids": ["line.connelly_durham"],
@@ -2239,7 +2239,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "death",
-        "person_id": "person.john_laborn_ford",
+        "person_id": "person.ford.john_laborn",
         "person_name": "John Laborn/Laban Ford",
         "anchor": "Donna Lea Connelly Dible",
         "line_ids": ["line.connelly_durham"],
@@ -2259,7 +2259,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "migration_or_residence",
-        "person_id": "person.john_laborn_ford",
+        "person_id": "person.ford.john_laborn",
         "person_name": "John Laborn/Laban Ford",
         "anchor": "Donna Lea Connelly Dible",
         "line_ids": ["line.connelly_durham"],
@@ -2305,7 +2305,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "birth",
-        "person_id": "person.john_burton_staples",
+        "person_id": "person.staples.john_burton",
         "person_name": "John Burton Staples",
         "anchor": "Donna Lea Connelly Dible",
         "line_ids": ["line.connelly_durham"],
@@ -2326,7 +2326,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "migration_or_residence",
-        "person_id": "person.john_burton_staples",
+        "person_id": "person.staples.john_burton",
         "person_name": "John Burton Staples",
         "participants": ["person.nancy_ann_turner"],
         "anchor": "Donna Lea Connelly Dible",
@@ -2349,7 +2349,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "migration_or_residence",
-        "person_id": "person.john_burton_staples",
+        "person_id": "person.staples.john_burton",
         "person_name": "John Burton Staples",
         "anchor": "Donna Lea Connelly Dible",
         "line_ids": ["line.connelly_durham"],
@@ -2370,7 +2370,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "death",
-        "person_id": "person.john_burton_staples",
+        "person_id": "person.staples.john_burton",
         "person_name": "John Burton Staples",
         "anchor": "Donna Lea Connelly Dible",
         "line_ids": ["line.connelly_durham"],
@@ -2473,7 +2473,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "birth",
-        "person_id": "person.henry_claar",
+        "person_id": "person.claar.henry",
         "person_name": "Henry Claar",
         "anchor": "Donna Lea Connelly Dible",
         "line_ids": ["line.claar_white_stropes"],
@@ -2493,7 +2493,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "death",
-        "person_id": "person.henry_claar",
+        "person_id": "person.claar.henry",
         "person_name": "Henry Claar",
         "anchor": "Donna Lea Connelly Dible",
         "line_ids": ["line.claar_white_stropes"],
@@ -2513,7 +2513,7 @@
       "properties": {
         "feature_kind": "life_event",
         "event_type": "marriage_with_name_conflict",
-        "person_id": "person.samuel_dove_claar",
+        "person_id": "person.claar.samuel_dove",
         "person_name": "Samuel Dove Claar",
         "spouse_name": "Mary Margaret Hoyle / Maggie M. Hogle",
         "anchor": "Donna Lea Connelly Dible",

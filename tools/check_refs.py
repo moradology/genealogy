@@ -6,10 +6,11 @@ reference can no longer define itself (the flaw in the previous version
 of this checker). Definitions: verifiedEventData ids and person./case.
 anchors in index.html, geojson feature-level ids, the geojson top-level
 place_registry (top level, not metadata -- the old path silently read
-nothing), geojson person_id/participants (interim person registry until
-the person anchors land), and the source ledger. References: research
-markdown (reasoning traces and search frames), geojson link endpoints and
-route sequences, and the familyLinkData block in index.html.
+nothing), the frozen RESIDUAL_PERSONS set (union spouses/collaterals with
+no HTML card), and the source ledger. References: research markdown
+(reasoning traces and search frames), geojson link endpoints and route
+sequences, geojson person_id/participants (must resolve to an HTML anchor
+or a residual), and the familyLinkData block in index.html.
 
 Also enforced: geojson feature ids unique; familyLinkData ids match
 geojson link_id set exactly; familyLinkData endpoints resolve to
@@ -35,6 +36,35 @@ ID_RE = re.compile(r"\b(src|event|person|place|case)\.[A-Za-z0-9_.-]+\b")
 PERSON_GRAMMAR = re.compile(r"person\.[a-z0-9_]+(\.[a-z0-9_]+)?\Z")
 CASE_GRAMMAR = re.compile(r"case\.\d{2}\Z")
 
+# Geojson person_id/participants values that resolve to no index.html
+# person.* anchor: union spouses and collaterals named only inside a
+# combined "Person + Spouse" card that belongs to their partner's id, so
+# they never got a card of their own. Shrinks when the people-index (W4)
+# gives them entries; new geojson person ids must either match an HTML
+# anchor or be added here deliberately.
+RESIDUAL_PERSONS = frozenset({
+    "person.ann_ghent_sleight",
+    "person.antonette_grams",
+    "person.betsy_wasson",
+    "person.catherina_marie_koeberger",
+    "person.catherine_zinkle",
+    "person.dorothea_meyer",
+    "person.edward_j_flaherty",
+    "person.elizabeth_jane_brown",
+    "person.genevieve_clemans",
+    "person.julia_dible",
+    "person.kate_flaherty",
+    "person.lovina_parker_love",
+    "person.margaret_ellen_flaherty",
+    "person.mary_frances_rust",
+    "person.nancy_ann_turner",
+    "person.paul_michael_zimmerman",
+    "person.rev_robert_long",
+    "person.sarah_hoge",
+    "person.sarah_sally_lewis_tompkins",
+    "person.virginia_ann_ford",
+})
+
 
 def family_link_block(html: str) -> str:
     start = html.index("const familyLinkData")
@@ -58,17 +88,9 @@ def collect_definitions(html: str, geo: dict, ledger: dict, failures: list[str])
         if fid in seen_fids:
             failures.append(f"duplicate feature id {fid}")
         seen_fids.add(fid)
-        props = feature.get("properties") or {}
-        # person_id/participants are the person registry until index.html
-        # carries person.* anchors for every row; then they become references.
-        value = props.get("person_id")
-        if isinstance(value, str):
-            ids.add(value)
-        for value in props.get("participants") or []:
-            if isinstance(value, str):
-                ids.add(value)
     ids.update(seen_fids)
     ids.update(k for k in geo.get("place_registry") or {} if isinstance(k, str))
+    ids.update(RESIDUAL_PERSONS)
     return ids
 
 
@@ -95,6 +117,12 @@ def collect_references(geo: dict) -> list[tuple[str, str]]:
         value = props.get("place_id")
         if isinstance(value, str):
             refs.append((origin, value))
+        value = props.get("person_id")
+        if isinstance(value, str):
+            refs.append((origin, value))
+        for value in props.get("participants") or []:
+            if isinstance(value, str):
+                refs.append((origin, value))
         for step in props.get("sequence") or []:
             for key in ("event_id", "place_id"):
                 value = step.get(key)

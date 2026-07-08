@@ -356,6 +356,10 @@ the trace); Fulton does NOT say "stepson"; deed year cited as "[1764]".
   do not import it.
 
 ### 3.8 Mundell origin (`08-mundell-origin.md`) — candidate new case
+**PARTIALLY VALIDATED 2026-07-08** (trace: `2026-07-08-mundell-patents-validation.md`)
+— all BLM patents + Harvey's memorial confirmed verbatim; the two parentage
+obituaries are WAF-blocked pending a real-browser capture (in progress); Harvey's
+parentage stays compiled-tier; drop the "grave-registration project" attribution.
 
 - Sarah Jane (Mundell) Wilcox's 1931 obituary names her parents and Clinton Co IN
   birth; her brother Rev. John W. Mundell's obituary independently names parents
@@ -410,6 +414,9 @@ the trace); Fulton does NOT say "stepson"; deed year cited as "[1764]".
   from the WHS index because the index ENDS 30 Sep 1907 — not a mystery.
 
 ### 3.12 Adolph & Winona (`12-adolph-winona.md`) — case.05
+**VALIDATED 2026-07-08** (trace: `2026-07-08-adolph-grams-validation.md`) — census
+schedule read from the image; Charles Adolph obituary re-attributed to rootsweb
+adolphcharles.htm (verified-index tier); cite The Colby Free Press 24 Aug 1922 p.8.
 
 - PRIMARY: the 1 Apr 1950 federal census (Kingery Twp, Thomas Co KS, ED 97-9)
   shows Evelyn Mundell, 15, born Colorado, as *granddaughter* in the household of
@@ -457,6 +464,10 @@ unquotable "~30k persons" total; note the Zinck-vs-Zink substring subtlety.
   under 3.15/3.16.)
 
 ### 3.15 Grams & Rosa Rolof (`15-grams-rolof.md`) — case.01
+**VALIDATED 2026-07-08** (same trace as 3.12) — obituary renders her "Rosa Grim"
+(name-variant finding); "Johann Grams b. 1877" is impossible, never land it;
+St. Mary vs Calvary cemetery naming carried as conflict; two-Leonards collision
+warning (Leonard Ferdinand b.1874 vs Leonard William b.1897).
 
 - Rosa (Rolof) Grams, 1802–1895: her transcribed 1895 Sheridan County Democrat
   obituary (on her memorial) names father **Antonius Roelofs**, husband **Johann
