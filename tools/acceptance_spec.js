@@ -140,9 +140,13 @@ function ok(label, cond, detail) {
       france: hit(2, 47),
       gulf: hit(-89, 26.8),
       germany: hit(12.6, 52.4),
+      bandMid: hit(-35, 55.2),
+      bandWest: hit(-52, 55.6),
     };
   });
   ok('B8 ocean exposes water rect', polarity.atlantic === 'water' && polarity.gulf === 'water',
+    JSON.stringify(polarity));
+  ok('B8b no sliver band above the window top', polarity.bandMid === 'water' && polarity.bandWest === 'water',
     JSON.stringify(polarity));
   ok('B9 continents filled as land', polarity.france === 'land' && polarity.germany === 'land',
     JSON.stringify(polarity));
