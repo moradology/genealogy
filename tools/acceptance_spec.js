@@ -23,8 +23,9 @@ const PLATE_EXPECT = {
 };
 const LINK_TOTAL = 10;
 const SOURCE_ITEMS = 126;
-const PERSON_DIVS = 83;
+const PERSON_DIVS = 75;
 const PERSON_IDS = 75;
+const STEM_DIVS = 7;
 
 const ISOLATED_ID = 'event.zimmerman.michael_birth.1869-10-25'; // Mainhardt; isolated on the zimmerman plate
 const COINCIDENT_PAIRS = [
@@ -189,6 +190,7 @@ function ok(label, cond, detail) {
       groups: sec ? sec.querySelectorAll('details').length : 0,
       firstOpen: sec ? !!sec.querySelector('details[open]') : false,
       persons: document.querySelectorAll('.person').length,
+      personWithoutIds: document.querySelectorAll('.person:not([id])').length,
       personIds: [...document.querySelectorAll('.person[id^="person."]')].map((el) => el.id),
       breadth: document.body.textContent.includes('The goal here is breadth plus honesty'),
       geojsonLink: !!document.querySelector('a[href="ancestry_geospatial.geojson"]'),
@@ -206,9 +208,10 @@ function ok(label, cond, detail) {
   const idRe = /^person\.[a-z0-9_.]+$/;
   ok('C8 person ids stamped and unique',
     content.personIds.length === PERSON_IDS &&
+    content.personWithoutIds === 0 &&
     new Set(content.personIds).size === PERSON_IDS &&
     content.personIds.every((id) => idRe.test(id) && (id.slice('person.'.length).match(/\./g) || []).length <= 1),
-    content.personIds.length);
+    JSON.stringify({ ids: content.personIds.length, bare: content.personWithoutIds }));
   ok('C6 method note preserved', content.breadth);
   ok('C7 geojson link preserved', content.geojsonLink);
   const brokenInternalLinks = await page.evaluate(() =>
@@ -221,6 +224,48 @@ function ok(label, cond, detail) {
           !document.getElementById(decodeURIComponent(resolvedURL.hash.slice(1)));
       }));
   ok('C9 internal links resolve', brokenInternalLinks.length === 0, brokenInternalLinks.join(', '));
+  const stemCheck = await page.evaluate((stemDivs) => {
+    const expected = [
+      { href: '#person.zodrow.cecilia', tagClass: 'documented', tagText: 'Documented' },
+      { href: '#person.zodrow.cecilia', tagClass: 'documented', tagText: 'Documented' },
+      { href: '#person.nauer.elizabeth', tagClass: 'strong', tagText: 'Strong lead' },
+      { href: '#person.clemans.marjorie', tagClass: 'documented', tagText: 'Documented' },
+      { href: '#person.clemans.marjorie', tagClass: 'documented', tagText: 'Documented' },
+      { href: '#person.long.almeda', tagClass: 'documented', tagText: 'Documented' },
+      { href: '#person.claar.martha', tagClass: 'documented', tagText: 'Documented' },
+    ];
+    const stems = [...document.querySelectorAll('.stem')];
+    const details = stems.map((stem) => {
+      const links = [...stem.querySelectorAll('a[href]')];
+      const tags = [...stem.querySelectorAll('.tag')];
+      const href = links[0]?.getAttribute('href') || '';
+      const targetId = href.startsWith('#') ? decodeURIComponent(href.slice(1)) : '';
+      const tag = tags[0] || null;
+      const tagClasses = tag ? [...tag.classList].filter((c) => c !== 'tag') : [];
+      return {
+        text: stem.textContent.trim(),
+        linkCount: links.length,
+        tagCount: tags.length,
+        href,
+        targetExists: !!targetId && !!document.getElementById(targetId),
+        tagClass: tagClasses[0] || '',
+        tagText: tag ? tag.textContent.trim() : '',
+      };
+    });
+    const failures = [];
+    if (stems.length !== stemDivs) failures.push(`stem count ${stems.length}`);
+    details.forEach((d, i) => {
+      const e = expected[i];
+      if (!e) failures.push(`unexpected stem ${i + 1}`);
+      else if (d.linkCount !== 1 || d.tagCount !== 1 || !d.targetExists ||
+        d.href !== e.href || d.tagClass !== e.tagClass || d.tagText !== e.tagText) {
+        failures.push(`stem ${i + 1}: ${JSON.stringify(d)}`);
+      }
+    });
+    return { pass: failures.length === 0, details, failures };
+  }, STEM_DIVS);
+  ok('C10 descent stems resolve and carry expected chain tags',
+    stemCheck.pass, JSON.stringify(stemCheck.failures.length ? stemCheck.failures : stemCheck.details));
 
   // ---------- theme ----------
   const bgFor = async (scheme, theme) => {
