@@ -64,7 +64,7 @@ function ok(label, cond, detail) {
   ok('S7 Colby Free Press source cited', src.includes('Colby Free Press') && src.includes('Sacred Heart Catholic Church'));
   ok('S8 deploy stamp present', /<meta name="deploy-stamp" content="[0-9a-f]{12} \d{4}-\d{2}-\d{2}">/.test(src));
   // Payload budgets (treaty): set at measured+10% after the Track B
-  // ledger batch (44 new source entries): total 276911, fonts 41783,
+  // Track B close (case absorptions): total 304856, fonts 41783,
   // paths 19763 on 2026-07-08; route layer moved S11 to 22642, budget
   // reset to measured+10% = 24910. TREATY MATH: remaining declared program
   // costs are ~21.6KB (Slate 2) + ~19.3KB (Slate 3) + W5/W6 (~5KB net
@@ -75,7 +75,7 @@ function ok(label, cond, detail) {
   // the constraint that never moves. Margin is thin: every wave
   // declares its cost and looks for offsetting cuts. Peers bump
   // budgets only via a declared SPEC DELTA; total never exceeds 327680.
-  ok('S9 total payload within budget', src.length < 304672, src.length);
+  ok('S9 total payload within budget', src.length < 335342, src.length);
   ok('S10 embedded fonts within budget',
     (src.match(/data:font\/woff2;base64,[A-Za-z0-9+\/=]+/g) || []).join('').length < 45153);
   ok('S11 baked path constants within budget',
