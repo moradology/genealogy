@@ -1431,7 +1431,7 @@
         "date_start": "1894",
         "date_end": "1910",
         "confidence": "target",
-        "candidate_people": ["person.mary_frances_rust", "person.william_bryan_rust", "person.clarence_aison_rust", "person.mary_viola_beach", "person.john_f_rust", "person.ethel_b_rupert"],
+        "candidate_people": ["person.mary_frances_rust", "person.william_bryan_rust", "person.clarence_aison_rust", "person.mary_viola_beach", "person.rust.john_f", "person.ethel_b_rupert"],
         "research_question": "Do Smith County birth, school, census, probate, marriage, cemetery, or newspaper records prove Mary Frances Rust as sister of William Bryan Rust and Clarence Aison Rust, and daughter of John F. Rust and Ethel B. Rupert?",
         "evidence_note": "The forum clue names Frances's birth date, possible Smith County birthplace, and a brother William/Bill whose wife was Viola. Public search snippets for William Bryan Rust and Clarence Aison Rust point to Smith County, Kansas, and name parents John F. Rust and Ethel B. Rupert; William Bryan Rust's Find a Grave search result lists Mary Frances Rust Strawn, 1894-1984, as a sibling. This is a candidate cluster, not parent proof.",
         "source_refs": ["https://www.support.genealogy.com/forum/surnames/topics/rust/482/", "https://ancestors.familysearch.org/en/LV1R-Z1G/walter-william-mundell-1885-1931", "https://www.findagrave.com/memorial/124223039/william_bryan-rust", "https://www.ancestry.com/genealogy/records/results?firstName=clarence&geo-lang=en&lastName=rust&page=2"]
@@ -1453,7 +1453,7 @@
         "date_end": "1984",
         "confidence": "candidate",
         "related_places": ["place.smith_county_ks", "place.smith_center_ks"],
-        "candidate_people": ["person.john_f_rust", "person.ethel_b_rupert", "person.mary_frances_rust", "person.william_bryan_rust", "person.clarence_aison_rust", "person.john_aissen_rust", "person.nomdje_n_rust"],
+        "candidate_people": ["person.rust.john_f", "person.ethel_b_rupert", "person.mary_frances_rust", "person.william_bryan_rust", "person.clarence_aison_rust", "person.rust.john_aissen", "person.nomdje_n_rust"],
         "evidence_note": "Reamsville Cemetery transcription lists F. John Rust, 1870-1909, and a nearby Smith County Rust cluster including John A. Rust and Nomdje N. Rust. Search snippets for William Bryan Rust and Clarence Aison Rust point to John F. Rust and Ethel B. Rupert as parents, while the William Bryan Rust Find a Grave search result lists Mary Frances Rust Strawn as a sibling.",
         "research_question": "Do Smith County census, cemetery, marriage, guardianship, probate, and newspaper records prove this Reamsville John F. Rust/Ethel B. Rupert family as Mary Frances Rust's birth household?",
         "source_refs": [
@@ -1536,7 +1536,7 @@
         "place_label": "Winona, Logan County, Kansas",
         "confidence": "open",
         "related_places": ["place.logan_county_ks", "place.smith_county_ks", "place.smith_center_ks", "place.flagler_co"],
-        "candidate_people": ["person.mary_frances_rust", "person.frances_adolph", "person.evelyn_mundell", "person.homer_clair_mundell", "person.marjorie_clemans"],
+        "candidate_people": ["person.mary_frances_rust", "person.frances_adolph", "person.evelyn_mundell", "person.mundell.homer", "person.clemans.marjorie"],
         "evidence_note": "Rust-family forum says Mary Frances Rust later married a man surnamed Adolph; Evelyn's obituary says she was raised by grandmother Frances Adolph and graduated from Winona High School. These two clues fit, but same-person proof is still missing.",
         "research_question": "Do Winona and Logan County school, census, guardianship, cemetery, probate, obituary, newspaper, or remarriage records prove that Frances Adolph was Mary Frances Rust Mundell and explain Evelyn's childhood household?",
         "source_refs": [
@@ -1628,7 +1628,7 @@
         "place_label": "Liberty Mills and South Bend, Indiana",
         "confidence": "lead",
         "candidate_person": "person.marjorie_opal_clemans",
-        "ancestor_person": "person.marjorie_clemans_mundell",
+        "ancestor_person": "person.clemans.marjorie",
         "exclusion_note": "FamilySearch and a compiled Eby genealogy describe Marjorie Opal Clemans as an Indiana woman born in Liberty Mills on 1 Mar 1914 and married to Clay V. Stamper in South Bend on 23 Oct 1935. This conflicts with the working Colorado/Kansas context for Evelyn's mother Marjorie Clemans Mundell and should not be merged without direct proof.",
         "research_question": "Do Evelyn's birth, Homer/Marjorie marriage/divorce, census, or obituary records prove Marjorie's parents and exclude the Indiana Marjorie Opal Clemans profile?",
         "source_refs": [
@@ -1716,7 +1716,7 @@
         "place_id": "place.cumberland_county_ky",
         "place_label": "Cumberland County, Kentucky",
         "confidence": "target",
-        "candidate_people": ["person.elizabeth_j_haden", "person.andrew_jackson_haden", "person.sophia_reid", "person.haden.richard", "person.sarah_sally_lewis_tompkins"],
+        "candidate_people": ["person.elizabeth_j_haden", "person.haden.andrew", "person.sophia_reid", "person.haden.richard", "person.sarah_sally_lewis_tompkins"],
         "research_question": "Do Cumberland County census, marriage, deed, probate, cemetery, or Bible records prove Elizabeth J. Haden as daughter of Andrew Jackson Haden and Sophia Reid/Reed, and Andrew as son of Richard D. Haden and Sarah Sally Lewis Tompkins?",
         "evidence_note": "Find a Grave names Andrew Jackson Haden and Sophia Reid as Elizabeth's parents. KaysAncestry agrees, uses Sophia Reed, cites 1850/1860 Cumberland County census households, and its Andrew Jackson Haden page notes a Cumberland County mortgage to Sally L. Haden as Andrew's mother.",
         "source_refs": [
@@ -1770,7 +1770,7 @@
         "place_ids": ["place.albemarle_county_va", "place.fluvanna_county_va", "place.bedford_county_va", "place.cumberland_county_ky"],
         "place_label": "Albemarle, Fluvanna, and Bedford Counties, Virginia; Cumberland County, Kentucky",
         "confidence": "open",
-        "candidate_people": ["person.haden.richard", "person.sarah_sally_lewis_tompkins", "person.andrew_jackson_haden"],
+        "candidate_people": ["person.haden.richard", "person.sarah_sally_lewis_tompkins", "person.haden.andrew"],
         "evidence_note": "KaysAncestry places Richard and Sally in Albemarle marriage records, notes possible Richmond/Fluvanna/Bedford tax context, and places their deaths in Cumberland County, Kentucky. The Andrew page names them as Andrew's parents and includes a Sally L. Haden deed clue.",
         "research_question": "Do Albemarle marriage bonds, Virginia tax lists, Cumberland County deeds, and Cumberland probate records prove the Richard/Sally-to-Andrew Jackson Haden connection?",
         "source_refs": [

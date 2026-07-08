@@ -310,6 +310,10 @@ Dible occurrence in ~120k lines; township printed "Huntington").
   before landing chart rows D-8/9 vs D-16/17.
 
 ### 3.5 Haden (`05-haden.md`) — case.12
+**VALIDATED 2026-07-08** (trace: `2026-07-08-haden-cantwell-validation.md`) —
+register quotes verbatim; the Jenny→John Haden bridge stays compiled; LVA URL
+moved (update citation); compiler identity is Kay Haden, not "Angela Kay Mayer";
+rootsweb now fully Cloudflare-gated (cite Wayback).
 
 - Genuine primary upgrade: the Christ Church Parish Register (Middlesex Co VA)
   directly records the Moseley links (John Moseley m. Mary Nichols; birth of Jean
@@ -356,10 +360,14 @@ the trace); Fulton does NOT say "stepson"; deed year cited as "[1764]".
   do not import it.
 
 ### 3.8 Mundell origin (`08-mundell-origin.md`) — candidate new case
-**PARTIALLY VALIDATED 2026-07-08** (trace: `2026-07-08-mundell-patents-validation.md`)
-— all BLM patents + Harvey's memorial confirmed verbatim; the two parentage
-obituaries are WAF-blocked pending a real-browser capture (in progress); Harvey's
-parentage stays compiled-tier; drop the "grave-registration project" attribution.
+**VALIDATED 2026-07-08** (traces: `2026-07-08-mundell-patents-validation.md` +
+`2026-07-08-mundell-obituaries-capture.md`) — patents + memorial verbatim; all
+four blocked obituaries later captured via real Chrome: John + Deborah (Ann
+Elmore, editor-tier) directly documented as parents of Sarah Jane and John W.
+with an 11-child sibling set and the 1852 Lucas County migration; chronology
+guard: John W. "youngest of 11" (b. Nov 1860) excludes John Pryor (b. Oct 1861,
+Poweshiek Co — Harvey's son, new Iowa waypoint). Harvey's own membership in the
+sibling set REMAINS compiled-tier.
 
 - Sarah Jane (Mundell) Wilcox's 1931 obituary names her parents and Clinton Co IN
   birth; her brother Rev. John W. Mundell's obituary independently names parents
@@ -377,6 +385,11 @@ parentage stays compiled-tier; drop the "grave-registration project" attribution
   merged-away FamilySearch profile.
 
 ### 3.9 Cantwell (`09-cantwell.md`) — case.09
+**VALIDATED 2026-07-08** (same trace as 3.5) — the 1888 iagenweb bio is the
+strongest source (land it); wave-3's "resolved/pushed back" was OVERSTATED:
+no generation added above Thomas; Sarah Alice→Barnabas remains a hedged lead —
+chart slots M-18/M-36·37 must render lead-tier, never proven; two-Hezekiahs
+collision documented; Farmer re-linking unverified (Cloudflare).
 
 - Sarah Alice (Cantwell) Mundell's own 1939 obituary: born Iowa, moved young to
   Hastings NE, married John P. Mundell 1885, 11 children (5 surviving 1939,
@@ -397,6 +410,11 @@ parentage stays compiled-tier; drop the "grave-registration project" attribution
   (1854–1923) is the practical instrument for the 1910 marriage announcement.
 
 ### 3.11 Clemans & Flaherty (`11-clemans-flaherty.md`) — case.07, case.08
+**VALIDATED 2026-07-08** (trace: `2026-07-08-clemans-flaherty-validation.md`) —
+7/7 confirmed, both spousal records pulled; cautions: WHS "Douglas" field vs
+Marquette Town-of-Douglas unresolved; the Michael D. = Talmadge identity equation
+is the load-bearing unproven link (three closers listed in trace); Marjorie's
+chronology problem keeps case.07 open; wigenweb domain now parked (link-rot).
 
 - Wisconsin Historical Society pre-1907 vital index (near-primary), all fetched
   directly: Rollie C. Clemans m. 23 Feb 1902 Barron Co WI with spousal match

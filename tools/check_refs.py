@@ -9,14 +9,16 @@ place_registry (top level, not metadata -- the old path silently read
 nothing), the frozen RESIDUAL_PERSONS set (union spouses/collaterals with
 no HTML card), and the source ledger. References: research markdown
 (reasoning traces and search frames), geojson link endpoints and route
-sequences, geojson person_id/participants (must resolve to an HTML anchor
+sequences, every geojson person.* token (must resolve to an HTML anchor
 or a residual), and the familyLinkData block in index.html.
 
 Also enforced: geojson feature ids unique; familyLinkData ids match
 geojson link_id set exactly; familyLinkData endpoints resolve to
 verifiedEventData (the map runtime draws only those); every geojson
 source_refs URL is in the ledger; ledger URLs unique; id grammar for
-person.* and case.*.
+person.* and case.*; RESIDUAL_PERSONS is exactly the set of geojson
+person.* tokens with no HTML anchor -- no stale entries, no entries
+that have quietly gained a card.
 
 Run: uv run tools/check_refs.py
 """
@@ -35,11 +37,18 @@ ID_RE = re.compile(r"\b(src|event|person|place|case)\.[A-Za-z0-9_.-]+\b")
 # person.<surname>.<given> — at most one extra dot (Slate 1 id grammar).
 PERSON_GRAMMAR = re.compile(r"person\.[a-z0-9_]+(\.[a-z0-9_]+)?\Z")
 CASE_GRAMMAR = re.compile(r"case\.\d{2}\Z")
+# Person tokens can appear inside prose fields (evidence_note,
+# research_question, exclusion_note, ...), not just id-typed fields, so
+# this is matched against every string value rather than plucked by key.
+PERSON_TOKEN_RE = re.compile(r"\bperson\.[A-Za-z0-9_.-]+\b")
 
-# Geojson person_id/participants values that resolve to no index.html
-# person.* anchor: union spouses and collaterals named only inside a
-# combined "Person + Spouse" card that belongs to their partner's id, so
-# they never got a card of their own. Shrinks when the people-index (W4)
+# Geojson person.* tokens (person_id, participants, candidate_people,
+# candidate_person, ancestor_person, collateral_persons, or a person.*
+# mention anywhere else in a feature's properties) that resolve to no
+# index.html person.* anchor: union spouses and collaterals named only
+# inside a combined "Person + Spouse" card that belongs to their
+# partner's id, so they never got a card of their own, plus candidate
+# identities still under research. Shrinks when the people-index (W4)
 # gives them entries; new geojson person ids must either match an HTML
 # anchor or be added here deliberately.
 RESIDUAL_PERSONS = frozenset({
@@ -48,22 +57,58 @@ RESIDUAL_PERSONS = frozenset({
     "person.betsy_wasson",
     "person.catherina_marie_koeberger",
     "person.catherine_zinkle",
+    "person.clarence_aison_rust",
     "person.dorothea_meyer",
     "person.edward_j_flaherty",
+    "person.edwin_reid",
+    "person.elizabeth_j_haden",
     "person.elizabeth_jane_brown",
+    "person.ethel_b_rupert",
+    # candidate identity of person.mary_frances_rust pending case.05 --
+    # deliberately distinct id while the identity question is open.
+    "person.frances_adolph",
     "person.genevieve_clemans",
     "person.julia_dible",
     "person.kate_flaherty",
     "person.lovina_parker_love",
+    "person.lyle_strawn",
     "person.margaret_ellen_flaherty",
+    # EXCLUDED same-name individual, referenced by the exclusion target.
+    "person.marjorie_opal_clemans",
     "person.mary_frances_rust",
+    "person.mary_viola_beach",
     "person.nancy_ann_turner",
+    "person.nomdje_n_rust",
     "person.paul_michael_zimmerman",
     "person.rev_robert_long",
+    "person.robert_reid",
     "person.sarah_hoge",
     "person.sarah_sally_lewis_tompkins",
+    "person.sophia_reid",
     "person.virginia_ann_ford",
+    "person.william_bryan_rust",
 })
+
+
+def iter_person_tokens(value):
+    """Recursively yield every person.* token found in string values.
+
+    Walks dicts/lists to reach nested strings (e.g. sequence steps,
+    candidate_people arrays). Strings containing "://" are skipped so a
+    URL like ".../person.php?..." (a real getperson.php-style pattern
+    seen on genealogy sites) can't be mistaken for a person.* id.
+    """
+    if isinstance(value, str):
+        if "://" in value:
+            return
+        for match in PERSON_TOKEN_RE.finditer(value):
+            yield match.group(0).rstrip(".")
+    elif isinstance(value, dict):
+        for item in value.values():
+            yield from iter_person_tokens(item)
+    elif isinstance(value, list):
+        for item in value:
+            yield from iter_person_tokens(item)
 
 
 def family_link_block(html: str) -> str:
@@ -117,12 +162,8 @@ def collect_references(geo: dict) -> list[tuple[str, str]]:
         value = props.get("place_id")
         if isinstance(value, str):
             refs.append((origin, value))
-        value = props.get("person_id")
-        if isinstance(value, str):
-            refs.append((origin, value))
-        for value in props.get("participants") or []:
-            if isinstance(value, str):
-                refs.append((origin, value))
+        for token in iter_person_tokens(props):
+            refs.append((origin, token))
         for step in props.get("sequence") or []:
             for key in ("event_id", "place_id"):
                 value = step.get(key)
@@ -171,6 +212,23 @@ def check_grammar(ids: set[str], failures: list[str]) -> None:
             failures.append(f"case id violates grammar case.NN: {value}")
 
 
+def check_residuals(html: str, geo: dict, failures: list[str]) -> None:
+    """RESIDUAL_PERSONS must track reality in both directions, so it can't
+    drift into a second, unreviewed identity list: every entry must still
+    be cited somewhere in the geojson, and none may have gained an
+    index.html card (that's a forced cutover, not an addition -- the
+    residual entry is removed the same change the card lands)."""
+    geo_person_tokens: set[str] = set()
+    for feature in geo["features"]:
+        geo_person_tokens.update(iter_person_tokens(feature.get("properties") or {}))
+    html_anchors = set(re.findall(r'id="(person\.[A-Za-z0-9_.-]+)"', html))
+    for value in sorted(RESIDUAL_PERSONS):
+        if value not in geo_person_tokens:
+            failures.append(f"RESIDUAL_PERSONS {value} no longer occurs in geojson; delete it")
+        if value in html_anchors:
+            failures.append(f"RESIDUAL_PERSONS {value} now has an index.html anchor; remove it from RESIDUAL_PERSONS")
+
+
 def main() -> int:
     html = (ROOT / "index.html").read_text()
     geo = json.loads((ROOT / "ancestry_geospatial.geojson").read_text())
@@ -196,6 +254,7 @@ def main() -> int:
     check_links(html, geo, failures)
     check_source_urls(geo, ledger, failures)
     check_grammar(known | {ref for _, ref in references}, failures)
+    check_residuals(html, geo, failures)
 
     if failures:
         for line in failures:
