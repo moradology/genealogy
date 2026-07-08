@@ -11,6 +11,7 @@ uv run tools/build_citation_backlinks.py --check
 uv run tools/check_refs.py
 uv run tools/check_people_index.py
 uv run tools/check_geo_sync.py
+uv run tools/build_plate_keys.py --check
 if [ -d tools/basemap-data ]; then
   uv run tools/build_basemap.py --check
 else

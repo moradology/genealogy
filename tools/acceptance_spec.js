@@ -89,6 +89,10 @@ function ok(label, cond, detail) {
     (src.match(/id:"route\./g) || []).length === 11 &&
     (src.match(/grade:"solid"/g) || []).length === 7 &&
     (src.match(/grade:"conjectural"/g) || []).length === 4);
+  const plateKeyBlocks = [...src.matchAll(/<!-- BEGIN plate-key:([a-z]+) -->[\s\S]*?<!-- END -->/g)]
+    .map((m) => m[1]);
+  ok('K1 five generated plate-key regions present',
+    plateKeyBlocks.join('|') === 'convergence|zimmerman|mundell|dible|connelly');
 
   // ---------- browser ----------
   const browser = await chromium.launch({ headless: true });
@@ -146,6 +150,27 @@ function ok(label, cond, detail) {
     assert.ok(p.baseDrawn, id + ' basemap empty');
   }
   ok('B2 all five plates render with expected markers/edges/guests', true);
+  const keyAudit = await page.evaluate(() => PLATES.map((cfg) => {
+    const data = plateData(cfg);
+    const expected = data.events.map((e) => e.id);
+    const fig = document.getElementById(cfg.svgId).closest('figure');
+    const rows = [...fig.querySelectorAll('.plate-key [data-event-id]')];
+    return {
+      key: cfg.key,
+      expected,
+      actual: rows.map((row) => row.dataset.eventId),
+      keyNos: rows.map((row) => row.querySelector('.key-no')?.textContent.trim() || ''),
+      markerNos: [...document.getElementById(cfg.svgId).querySelectorAll('g.event-marker .marker-no')]
+        .map((node) => node.textContent.trim()),
+    };
+  }));
+  ok('K2 static plate keys match computed order and count', keyAudit.every((plate) =>
+    JSON.stringify(plate.actual) === JSON.stringify(plate.expected) &&
+    plate.keyNos.join('|') === plate.expected.map((_, i) => String(i + 1)).join('|')),
+    JSON.stringify(keyAudit));
+  ok('N1 marker numerals are present and unique per plate', keyAudit.every((plate) =>
+    plate.markerNos.join('|') === plate.expected.map((_, i) => String(i + 1)).join('|')),
+    JSON.stringify(keyAudit));
   for (const [id, expect] of Object.entries(ROUTE_EXPECT)) {
     const p = plates[id];
     assert.equal(p.routes, expect.routes, id + ' distinct route ids');
@@ -538,8 +563,8 @@ function ok(label, cond, detail) {
   // with page height. Budget = larger platform's measure + 500. Re-measure
   // procedure: local measure + 1,200 (covers CI drift + headroom), confirm on the
   // next CI run. Prior local measures: 19,700 pre-W2, 23,511 post-W2, 26,132
-  // post-W4, 26,703 post-correction, 29,725 post-W5 Docket.
-  ok('L2 page height within layout budget (<30925)', desktop.scrollH < 30925, desktop.scrollH);
+  // post-W4, 26,703 post-correction, 29,725 post-W5 Docket, 31,108 post-plate-keys.
+  ok('L2 page height within layout budget (<32308)', desktop.scrollH < 32308, desktop.scrollH);
 
   for (const [w, h] of [[320, 700], [390, 844], [768, 1024], [1024, 768]]) {
     await page.setViewportSize({ width: w, height: h });
