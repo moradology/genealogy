@@ -157,6 +157,14 @@ def source_id(item: dict[str, str]) -> str:
 def build_index() -> dict[str, object]:
     parser = SourceLedgerParser()
     parser.feed(HTML_PATH.read_text())
+    urls = [item["url"] for item in parser.items]
+    duplicates = sorted({u for u in urls if urls.count(u) > 1})
+    if duplicates:
+        # Policy: one ledger entry per URL; multiple facts share one blurb.
+        print("duplicate ledger URLs (merge these entries):", file=sys.stderr)
+        for url in duplicates:
+            print(f"  {url}", file=sys.stderr)
+        raise SystemExit(1)
     records: list[dict[str, object]] = []
     for item in parser.items:
         search_text = " ".join([item["title"], item["blurb"]])

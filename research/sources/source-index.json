@@ -515,8 +515,8 @@
         "mundell"
       ],
       "evidence_role": "evidence",
-      "blurb": "Public index ties Walter to John Pryor Mundell and Sarah Alice Cantwell and lists Homer Clair Mundell among children.",
-      "search_text": "Walter William Mundell, FamilySearch Public index ties Walter to John Pryor Mundell and Sarah Alice Cantwell and lists Homer Clair Mundell among children."
+      "blurb": "Public index ties Walter to John Pryor Mundell and Sarah Alice Cantwell, gives Frances Rust as spouse with a 1910 marriage at Smith Center, Kansas, and lists children Homer Clair, Rex, and Erma.",
+      "search_text": "Walter William Mundell, FamilySearch Public index ties Walter to John Pryor Mundell and Sarah Alice Cantwell, gives Frances Rust as spouse with a 1910 marriage at Smith Center, Kansas, and lists children Homer Clair, Rex, and Erma."
     },
     {
       "id": "src.sarah-alice-cantwell-mundell-forum-post-genealogy-com-archive.c515f29b",
@@ -529,18 +529,6 @@
       "evidence_role": "lead",
       "blurb": "Compiled correspondence lead saying Walter William Mundell married/divorced Mary Frances Rust and their son was Homer Clair Mundell.",
       "search_text": "Sarah Alice Cantwell Mundell forum post, Genealogy.com archive Compiled correspondence lead saying Walter William Mundell married/divorced Mary Frances Rust and their son was Homer Clair Mundell."
-    },
-    {
-      "id": "src.walter-william-mundell-familysearch.bd666c67",
-      "title": "Walter William Mundell, FamilySearch",
-      "url": "https://ancestors.familysearch.org/en/LV1R-Z1G/walter-william-mundell-1885-1931",
-      "source_type": "public_tree_index",
-      "lineage_tags": [
-        "mundell"
-      ],
-      "evidence_role": "evidence",
-      "blurb": "Public index gives Frances Rust as spouse, 1910 marriage at Smith Center, Kansas, and children Homer Clair, Rex, and Erma.",
-      "search_text": "Walter William Mundell, FamilySearch Public index gives Frances Rust as spouse, 1910 marriage at Smith Center, Kansas, and children Homer Clair, Rex, and Erma."
     },
     {
       "id": "src.barnabas-barney-cantwell-familysearch.0fd9613d",
@@ -1064,6 +1052,18 @@
       "evidence_role": "evidence",
       "blurb": "Lists Almeda Long and Ray H. Dible marriage entry.",
       "search_text": "Jackson County, Kansas marriage index Lists Almeda Long and Ray H. Dible marriage entry."
+    },
+    {
+      "id": "src.dorsey-overturf-mcclelland-wikitree.2a781061",
+      "title": "Dorsey Overturf McClelland, WikiTree",
+      "url": "https://www.wikitree.com/wiki/McClelland-1174",
+      "source_type": "compiled_tree_or_profile",
+      "lineage_tags": [
+        "long_mcclelland"
+      ],
+      "evidence_role": "lead",
+      "blurb": "Compiled profile behind the Alexander M. McClelland and Sarah Hoge parent lead; already cited by the geospatial layer, entered here so every geojson source reference resolves to a ledger entry.",
+      "search_text": "Dorsey Overturf McClelland, WikiTree Compiled profile behind the Alexander M. McClelland and Sarah Hoge parent lead; already cited by the geospatial layer, entered here so every geojson source reference resolves to a ledger entry."
     },
     {
       "id": "src.william-walker-long-find-a-grave.2dc04924",

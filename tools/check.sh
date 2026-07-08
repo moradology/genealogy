@@ -9,16 +9,25 @@ uv run python -c "import json; json.load(open('research/sources/source-index.jso
 uv run tools/build_source_index.py --check
 uv run tools/check_refs.py
 
+INLINE_JS="$(mktemp -t genealogy_inline.XXXXXX.js)"
+export INLINE_JS
 uv run python - <<'PY'
+import os
 import re
 from pathlib import Path
 html = Path("index.html").read_text()
 scripts = re.findall(r"<script(?:\s[^>]*)?>(.*?)</script>", html, flags=re.S | re.I)
 joined = "\n;\n".join(block for block in scripts if block.strip())
-Path("/tmp/genealogy_inline.js").write_text(joined)
+Path(os.environ["INLINE_JS"]).write_text(joined)
 print(f"extracted {len(scripts)} inline script blocks")
 PY
-node --check /tmp/genealogy_inline.js
+node --check "$INLINE_JS"
+rm -f "$INLINE_JS"
 echo "inline js parses"
 
-node tools/acceptance_spec.js
+if [ -d node_modules/playwright ]; then
+  node tools/acceptance_spec.js
+else
+  echo "SKIPPED acceptance spec: run 'npm ci' first to install pinned playwright" >&2
+  exit 1
+fi

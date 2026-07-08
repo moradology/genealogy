@@ -64,3 +64,7 @@ With `jq`:
 jq -r '.sources[] | select(.lineage_tags[] == "zimmerman") | [.id, .title, .evidence_role] | @tsv' research/sources/source-index.json
 jq -r '.sources[] | select(.evidence_role == "research_target") | [.id, .title, .blurb] | @tsv' research/sources/source-index.json
 ```
+
+## Id stability
+
+Source ids hash the URL only (slug derives from the title). Blurb edits never change ids; a title or URL change moves the id, and the migration pattern in `id-migration-2026-07.json` (old-to-new map committed alongside the change) should be repeated.
