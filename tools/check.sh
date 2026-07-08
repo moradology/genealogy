@@ -8,6 +8,7 @@ uv run python -c "import json; json.load(open('ancestry_geospatial.geojson')); p
 uv run python -c "import json; json.load(open('research/sources/source-index.json')); print('source-index ok')"
 uv run tools/build_source_index.py --check
 uv run tools/check_refs.py
+uv run tools/check_people_index.py
 uv run tools/check_geo_sync.py
 if [ -d tools/basemap-data ]; then
   uv run tools/build_basemap.py --check
@@ -29,7 +30,9 @@ import os
 import re
 from pathlib import Path
 html = Path("index.html").read_text()
-scripts = re.findall(r"<script(?:\s[^>]*)?>(.*?)</script>", html, flags=re.S | re.I)
+scripts = [content for attrs, content in
+           re.findall(r"<script([^>]*)>(.*?)</script>", html, flags=re.S | re.I)
+           if 'type="application/json"' not in attrs.lower()]
 joined = "\n;\n".join(block for block in scripts if block.strip())
 Path(os.environ["INLINE_JS"]).write_text(joined)
 print(f"extracted {len(scripts)} inline script blocks")

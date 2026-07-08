@@ -198,7 +198,7 @@ function ok(label, cond, detail) {
   });
   for (const h of ['Doyle Julius Zimmerman Branches', 'Evelyn Delores Mundell Zimmerman Branches',
     'William J. "Bill" Dible Branches', 'Donna Lea Connelly Dible Branches',
-    'The Docket', 'Source Ledger'])
+    'The Docket', 'Index of Names', 'Source Ledger'])
     assert.ok(content.h2s.includes(h), 'missing h2: ' + h);
   ok('C1 all section headings present', true);
   ok('C2 source ledger count matches', content.sourceCount === SOURCE_ITEMS, content.sourceCount);
@@ -271,6 +271,49 @@ function ok(label, cond, detail) {
   }, STEM_DIVS);
   ok('C10 descent stems resolve and carry expected chain tags',
     stemCheck.pass, JSON.stringify(stemCheck.failures.length ? stemCheck.failures : stemCheck.details));
+  const chartCheck = await page.evaluate(() => {
+    const charts = [...document.querySelectorAll('figure.chart svg')].map((svg) => {
+      const broken = [...svg.querySelectorAll('a[href]')]
+        .map((a) => a.getAttribute('href'))
+        .filter((href) => !href || !href.startsWith('#') || !document.getElementById(decodeURIComponent(href.slice(1))));
+      return {
+        id: svg.closest('figure.chart').id,
+        cells: svg.querySelectorAll('g.pc[data-ah]').length,
+        broken,
+      };
+    });
+    return { charts };
+  });
+  ok('C11 pedigree charts render 63 cells each and links resolve',
+    chartCheck.charts.length === 4 &&
+    chartCheck.charts.every((c) => c.cells === 63 && c.broken.length === 0),
+    JSON.stringify(chartCheck));
+  const nameIndex = await page.evaluate(() => {
+    const sec = document.getElementById('index-of-names');
+    if (!sec) return { exists: false };
+    const links = [...sec.querySelectorAll('li a[href]')];
+    const names = links.map((a) => a.textContent.trim());
+    const sorted = [...names].sort((a, b) => a.localeCompare(b));
+    const letters = [...sec.querySelectorAll('.index-letter')].map((li) => li.textContent.trim());
+    const expectedLetters = [...new Set(names.map((n) => n.split(',')[0].trim()[0].toUpperCase()))];
+    const broken = links
+      .map((a) => a.getAttribute('href'))
+      .filter((href) => !href || !href.startsWith('#') || !document.getElementById(decodeURIComponent(href.slice(1))));
+    const registryPeople = JSON.parse(document.getElementById('people-index').textContent)
+      .people.filter((p) => p.k !== 'slot').length;
+    return {
+      exists: true,
+      entries: links.length,
+      registryPeople,
+      ordered: names.every((n, i) => n === sorted[i]),
+      grouped: letters.join('|') === expectedLetters.join('|'),
+      broken: broken.length,
+    };
+  });
+  ok('C12 Index of Names exists, is grouped, ordered, and linked',
+    nameIndex.exists && nameIndex.entries >= nameIndex.registryPeople &&
+    nameIndex.ordered && nameIndex.grouped && nameIndex.broken === 0,
+    JSON.stringify(nameIndex));
 
   // ---------- theme ----------
   const bgFor = async (scheme, theme) => {
@@ -392,11 +435,10 @@ function ok(label, cond, detail) {
   // Prior single-map layout measured 16,095px; four user-requested line plates add
   // bounded map figures. Budget: still >=19% under the original 23,000px page.
   // Guards against layout regressions (dead voids, letterboxing), not research prose growth.
-  // Content-driven height re-measured after Slate 1 W2 (75 layered person entries: head +
-  // vitals + identity lines, plus 20 Docket stubs): 23,511px; budget = that + ~500 headroom.
-  // Prior measure was 19,700px pre-W2. Revisit only if a layout change, not new content,
-  // trips it.
-  ok('L2 page height within layout budget (<24011)', desktop.scrollH < 24011, desktop.scrollH);
+  // Content-driven height re-measured after Slate 1 W4 (four pedigree chart figures +
+  // the Index of Names section): 26,132px; budget = that + ~500 headroom. Prior measures:
+  // 19,700 pre-W2, 23,511 post-W2. Revisit only if a layout change, not new content, trips it.
+  ok('L2 page height within layout budget (<26632)', desktop.scrollH < 26632, desktop.scrollH);
 
   for (const [w, h] of [[320, 700], [390, 844], [768, 1024], [1024, 768]]) {
     await page.setViewportSize({ width: w, height: h });
