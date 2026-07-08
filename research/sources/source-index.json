@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "updated": "2026-07-07",
   "source": "Extracted from index.html Source Ledger",
-  "record_count": 122,
+  "record_count": 123,
   "fields": {
     "id": "Stable local source id for notes and reasoning traces, generated from source title, URL, and blurb.",
     "title": "Human-readable source title from the artifact ledger.",
@@ -721,6 +721,19 @@
       "evidence_role": "lead",
       "blurb": "Compiled genealogy entry for the Indiana Marjorie Clemans who married Clay V. Stamper in South Bend on 23 Oct 1935; use as an exclusion clue unless direct records connect her to Evelyn's mother.",
       "search_text": "Descendants of Christian Eby, Internet Archive text Compiled genealogy entry for the Indiana Marjorie Clemans who married Clay V. Stamper in South Bend on 23 Oct 1935; use as an exclusion clue unless direct records connect her to Evelyn's mother."
+    },
+    {
+      "id": "src.rexford-city-election-coverage-colby-free-press-front-page-4-apr-2005.e433ea62",
+      "title": "Rexford city election coverage, Colby Free Press front page, 4 Apr 2005",
+      "url": "http://www.nwkansas.com/cfpwebpages/pdf%20pages-all/cfp%20pages-pdfs%202005/cfp%20pages:04%20Apr/Week%202/%20%20Monday/front.pdf",
+      "source_type": "compiled_pdf_or_journal",
+      "lineage_tags": [
+        "dible",
+        "connelly_durham"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "Names incumbent Rexford Mayor William Dible running unopposed and states he had been mayor of Rexford since 1976, with wife Donna, residents of Rexford most of their lives.",
+      "search_text": "Rexford city election coverage, Colby Free Press front page, 4 Apr 2005 Names incumbent Rexford Mayor William Dible running unopposed and states he had been mayor of Rexford since 1976, with wife Donna, residents of Rexford most of their lives."
     },
     {
       "id": "src.william-j-bill-dible-obituary-baalmann-mortuary.4060e574",
