@@ -441,10 +441,13 @@ function ok(label, cond, detail) {
   // Prior single-map layout measured 16,095px; four user-requested line plates add
   // bounded map figures. Budget: still >=19% under the original 23,000px page.
   // Guards against layout regressions (dead voids, letterboxing), not research prose growth.
-  // Content-driven height re-measured after Slate 1 W4 (four pedigree chart figures +
-  // the Index of Names section, then the 2026-07-08 Cecilia-parentage correction adding the collateral card and case.21): 26,703px; budget = that + ~500 headroom. Prior measures:
-  // 19,700 pre-W2, 23,511 post-W2. Revisit only if a layout change, not new content, trips it.
-  ok('L2 page height within layout budget (<27203)', desktop.scrollH < 27203, desktop.scrollH);
+  // Content-driven height guard, PLATFORM-AWARE: Ubuntu CI renders ~2.5% taller
+  // than macOS (27,383 vs 26,703 after the Cecilia correction) and the delta grows
+  // with page height. Budget = larger platform's measure + 500. Re-measure
+  // procedure: local measure + 1,200 (covers CI drift + headroom), confirm on the
+  // next CI run. Prior local measures: 19,700 pre-W2, 23,511 post-W2, 26,132
+  // post-W4, 26,703 post-correction.
+  ok('L2 page height within layout budget (<27883)', desktop.scrollH < 27883, desktop.scrollH);
 
   for (const [w, h] of [[320, 700], [390, 844], [768, 1024], [1024, 768]]) {
     await page.setViewportSize({ width: w, height: h });
