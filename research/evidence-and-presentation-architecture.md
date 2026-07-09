@@ -259,6 +259,38 @@ have rich queryability than git-diffable hand-editing. Given how this project is
 worked — hand-edited text, versioned reasoning, the gate as integrity — text-as-truth +
 SQLite-as-derived-index is the better fit. But it's your call, and it's the one real fork.)
 
+### A *dedicated* graph DB — the fair version
+
+Worth splitting into two categories, because they get different answers:
+
+- **Server graph DBs (Neo4j, Memgraph, ArangoDB).** Most powerful — Cypher, mature tooling,
+  built-in graph *visualization/exploration*. But a server: breaks static/offline/archival/
+  no-ops for anything shipped, and running a Neo4j instance to reason over ~85 nodes is
+  overkill by three orders of magnitude. As the artifact's store: no. As a research-side
+  toy for exploring the graph visually: possible, but heavy for what a notebook does.
+- **Embedded graph DBs (KùzuDB; or Oxigraph for RDF/SPARQL).** This is the category I under-
+  credited. Embeddable, in-process, **serverless**, single storage directory — "SQLite, but
+  graph-native," with real Cypher and fast variable-length traversal. It removes the server
+  objection *and* gives a proper graph query language, which SQLite's recursive CTEs only
+  approximate. If the reasoning layer's queries are dominantly graph-shaped (ancestors,
+  paths, subgraph patterns — for genealogy they are), an embedded graph DB is a *better*
+  derived index than SQLite.
+
+What a dedicated graph DB uniquely gives that `networkx`-over-text does not: a **declarative
+query language** (`MATCH (p:Person)-[:CHILD_OF]->(x) WHERE x IS NULL AND p.birth < 1880`)
+that's genuinely nicer for the automated-search "opinions" than ad-hoc Python, plus
+exploration tooling. Those are real but modest wins at this scale.
+
+So the honest position: **if you want a graph DB, have an *embedded* one as a derived
+build-time reasoning index** (KùzuDB generated from the plain-text truth, queried by the
+search agent, never shipped) — same materialized-view pattern as SQLite, just graph-native,
+and the right pick if graph queries dominate. Keep text as the source of truth (diffable,
+hand-editable, archival). Don't ship it to the browser; don't run a server; and — YAGNI —
+don't build the index at all until `networkx`-over-text stops being enough at ~85 nodes.
+The choice between a SQLite index and a Kùzu index is a small, reversible, build-time detail
+you can defer until the reasoning layer actually exists and tells you which query shape it
+wants.
+
 ## Decisions needed from you
 
 1. Evidence store as an **extension of `source-index.json`**, or a **new `evidence.json`**
