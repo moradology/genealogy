@@ -33,6 +33,7 @@ def usage() -> str:
         "  gate                         Run the full repository gate",
         "  build <target> [--check]     Build or check a generated artifact",
         "  stamp [--write|--check|--deployed]",
+        "  ancestry <search|record|household> ...   Read the live CDP session as JSON",
         "",
         "Build targets:",
         "  basemap  fonts  citation-backlinks  plate-keys  source-index",
@@ -134,13 +135,39 @@ def handler_stamp(argv: list[str], pretty: bool) -> int:
     return rc
 
 
+def handler_ancestry(argv: list[str], pretty: bool) -> int:
+    if not argv:
+        return json_error("ancestry", "missing subcommand", pretty, expected=["search", "record", "household"])
+    result = subprocess.run(
+        ["uv", "run", "tools/gen_ancestry.py", *argv],
+        cwd=ROOT,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    out = (result.stdout or "").strip()
+    if not out.startswith("{"):
+        return json_error(
+            "ancestry", "subtool produced no JSON", pretty,
+            returncode=result.returncode, stderr=(result.stderr or "").strip()[-800:],
+        )
+    obj = json.loads(out)  # the subtool emits exactly one clean JSON object
+    emit(obj, pretty)
+    return 0 if obj.get("ok") else 1
+
+
 def dispatch(argv: list[str]) -> int:
     args, pretty = split_global_flags(argv)
     if not args or any(arg in {"--help", "-h"} for arg in args):
         print(usage())
         return 0
 
-    handlers = {"gate": handler_gate, "build": handler_build, "stamp": handler_stamp}
+    handlers = {
+        "gate": handler_gate,
+        "build": handler_build,
+        "stamp": handler_stamp,
+        "ancestry": handler_ancestry,
+    }
     command = args[0]
     if command not in handlers:
         emit({"command": command, "ok": False, "error": "unknown command"}, pretty)
