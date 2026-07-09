@@ -37,11 +37,18 @@ from pathlib import Path
 CDP_URL = "http://localhost:9222"
 CDP_HOST, CDP_PORT = "localhost", 9222
 
-# Machine-global state, shared by EVERY agent that uses this CLI (not repo-
-# relative, so it serializes across sessions/clones and stays out of git). One
-# Ancestry account, one global queue + one cache.
-STATE_DIR = Path.home() / ".gen-cockpit" / "ancestry"
-CACHE_DIR = STATE_DIR / "cache"
+# Two kinds of state, deliberately in two places:
+# - MACHINE-GLOBAL (guards the one Ancestry account + the one browser, across
+#   every clone/session): the queue lock, pacing timestamp, tabs, agent cursors.
+#   Lives in ~/.gen-cockpit; GEN_COCKPIT_DIR overrides (tests).
+# - PROJECT-DURABLE (the acquisition store): structured data from every page
+#   ever fetched, kept forever so any revisit by any agent is free. Lives IN
+#   the repo tree but gitignored (Ancestry ToS: index-derived data stays out of
+#   the public repo). Backed up with the project. GEN_ANCESTRY_CACHE_DIR
+#   overrides (tests).
+ROOT = Path(__file__).resolve().parents[1]
+STATE_DIR = Path(os.environ.get("GEN_COCKPIT_DIR", str(Path.home() / ".gen-cockpit"))) / "ancestry"
+CACHE_DIR = Path(os.environ.get("GEN_ANCESTRY_CACHE_DIR", str(ROOT / "research" / "cache" / "ancestry")))
 LOCK_PATH = STATE_DIR / "queue.lock"
 LAST_PATH = STATE_DIR / "last_request"
 AGENTS_DIR = STATE_DIR / "agents"       # per-agent cursor + history, one file each
@@ -56,6 +63,7 @@ def emit(obj: dict) -> None:
 
 
 def ensure_state() -> None:
+    STATE_DIR.mkdir(parents=True, exist_ok=True)
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 
@@ -65,15 +73,31 @@ def cache_key(kind: str, parts: dict) -> str:
 
 
 def cache_read(key: str) -> dict | None:
+    """Return the cached payload, or None. Entries are {"meta":..., "data":...}
+    envelopes; bare pre-envelope entries are still readable (data only)."""
     path = CACHE_DIR / f"{key}.json"
-    if path.exists():
-        return json.loads(path.read_text())
-    return None
+    if not path.exists():
+        return None
+    obj = json.loads(path.read_text())
+    if set(obj) == {"meta", "data"}:
+        return obj["data"]
+    return obj
 
 
-def cache_write(key: str, obj: dict) -> None:
+def cache_write(key: str, obj: dict, meta: dict | None = None) -> None:
     ensure_state()
-    (CACHE_DIR / f"{key}.json").write_text(json.dumps(obj, separators=(",", ":")))
+    envelope = {"meta": {**(meta or {}), "fetched_at": time.strftime("%Y-%m-%dT%H:%M:%S")}, "data": obj}
+    (CACHE_DIR / f"{key}.json").write_text(json.dumps(envelope, separators=(",", ":")))
+
+
+def cache_entries():
+    """Yield (key, meta_or_None, bytes) for every cache entry."""
+    if not CACHE_DIR.exists():
+        return
+    for path in sorted(CACHE_DIR.glob("*.json")):
+        obj = json.loads(path.read_text())
+        meta = obj["meta"] if set(obj) == {"meta", "data"} else None
+        yield path.stem, meta, path.stat().st_size
 
 
 def throttle() -> None:
@@ -280,39 +304,45 @@ def cmd_search(args) -> int:
         "count": len(rows),
         "results": rows,
     }
-    cache_write(key, obj)
+    cache_write(key, obj, {"kind": "search", "collection": args.collection, "name": args.name, "birth": args.birth or "", "url": url})
     emit({**obj, "results": rows[: args.limit], "cached": False})
     return 0
 
 
 def _read_record(args, household_only: bool) -> int:
-    kind = "household" if household_only else "record"
-    cmd = f"ancestry.{kind}"
-    key = cache_key(kind, {"collection": args.collection, "id": args.id})
-    if not args.fresh:
-        hit = cache_read(key)
-        if hit is not None:
-            emit({**hit, "cached": True})
-            return 0
-    if not cdp_up():
-        emit({"command": cmd, "ok": False, "error": "cdp browser not reachable on :9222"})
-        return 1
-    url = f"https://www.ancestry.com/search/collections/{args.collection}/records/{args.id}"
+    # household is a VIEW of the record: both share one "record" cache entry
+    # (same page, same fetch), so reading one never re-fetches for the other.
+    cmd = "ancestry.household" if household_only else "ancestry.record"
+    key = cache_key("record", {"collection": args.collection, "id": args.id})
+    obj = None if args.fresh else cache_read(key)
+    cached = obj is not None
+    if obj is None:
+        if not cdp_up():
+            emit({"command": cmd, "ok": False, "error": "cdp browser not reachable on :9222"})
+            return 1
+        url = f"https://www.ancestry.com/search/collections/{args.collection}/records/{args.id}"
 
-    def fetch():
-        def go(page):
-            page.goto(url, wait_until="domcontentloaded", timeout=45000)
-            page.wait_for_timeout(3000)
-            return page.evaluate("() => document.body.innerText")
-        return run_on_page(go, agent="default")
+        def fetch():
+            def go(page):
+                page.goto(url, wait_until="domcontentloaded", timeout=45000)
+                page.wait_for_timeout(3000)
+                return page.evaluate("() => document.body.innerText")
+            return run_on_page(go, agent="default")
 
-    text = locked_fetch(fetch)
-    household = parse_household(text)
-    obj: dict = {"command": cmd, "ok": True, "collection": args.collection, "record_id": args.id, "household": household}
-    if not household_only:
-        obj["fields"] = parse_detail_fields(text)
-    cache_write(key, obj)
-    emit({**obj, "cached": False})
+        text = locked_fetch(fetch)
+        obj = {
+            "command": "ancestry.record",
+            "ok": True,
+            "collection": args.collection,
+            "record_id": args.id,
+            "household": parse_household(text),
+            "fields": parse_detail_fields(text),
+        }
+        cache_write(key, obj, {"kind": "record", "collection": args.collection, "id": args.id, "url": url})
+    view = {**obj, "command": cmd, "cached": cached}
+    if household_only:
+        view.pop("fields", None)
+    emit(view)
     return 0
 
 
@@ -399,7 +429,7 @@ def go_to_location(agent: str, loc: dict, push: bool, fresh: bool) -> int:
         data = fetch_location(agent, loc)
         navigated = True
         if key:
-            cache_write(key, data)
+            cache_write(key, data, {"kind": loc["type"], **{k: v for k, v in loc.items() if k != "type"}, "url": url_for(loc)})
     if push and state.get("location") is not None and state["location"] != loc:
         state["history"].append(state["location"])
     state["location"] = loc
@@ -482,6 +512,58 @@ def cmd_back(args) -> int:
     return go_to_location(agent, previous, push=False, fresh=False)
 
 
+# ---- cache management (no browser, no hits) ----
+
+def entry_kind(key: str, meta: dict | None) -> str:
+    if meta and meta.get("kind"):
+        return meta["kind"]
+    return key.rsplit("-", 1)[0]
+
+
+def cmd_cache(args) -> int:
+    if args.action == "stats":
+        by_kind: dict[str, int] = {}
+        total = count = 0
+        fetched = []
+        for key, meta, size in cache_entries():
+            kind = entry_kind(key, meta)
+            by_kind[kind] = by_kind.get(kind, 0) + 1
+            total += size
+            count += 1
+            if meta and meta.get("fetched_at"):
+                fetched.append(meta["fetched_at"])
+        emit({"command": "ancestry.cache.stats", "ok": True, "entries": count, "by_kind": by_kind,
+              "bytes": total, "oldest": min(fetched) if fetched else None,
+              "newest": max(fetched) if fetched else None, "dir": str(CACHE_DIR)})
+        return 0
+    if args.action == "list":
+        rows = []
+        for key, meta, size in cache_entries():
+            kind = entry_kind(key, meta)
+            if args.kind and kind != args.kind:
+                continue
+            row = {"key": key, "kind": kind, "bytes": size}
+            if meta:
+                row["fetched_at"] = meta.get("fetched_at")
+                row["what"] = {k: v for k, v in meta.items() if k not in {"kind", "fetched_at", "url"}}
+            rows.append(row)
+        emit({"command": "ancestry.cache.list", "ok": True, "count": len(rows), "entries": rows})
+        return 0
+    # clear
+    if not args.kind and not getattr(args, "all", False):
+        emit({"command": "ancestry.cache.clear", "ok": False,
+              "error": "refusing to clear everything without --all (or narrow with --kind)"})
+        return 1
+    removed = 0
+    for key, meta, _size in list(cache_entries()):
+        if args.kind and entry_kind(key, meta) != args.kind:
+            continue
+        (CACHE_DIR / f"{key}.json").unlink()
+        removed += 1
+    emit({"command": "ancestry.cache.clear", "ok": True, "removed": removed, "kind": args.kind or "all"})
+    return 0
+
+
 EPILOG = """\
 addresses:
   record/COLL/ID                          one record's detail page
@@ -495,8 +577,13 @@ semantics (what an agent must know):
   - Every real Ancestry hit is serialized through a machine-global queue and
     human-paced (>= GEN_ANCESTRY_MIN_INTERVAL seconds apart, default 5, plus
     jitter) across ALL agents. You never need to rate-limit yourself.
-  - Cache-first: repeat reads return instantly with "cached":true and never
-    touch Ancestry (records cache forever; searches until --fresh).
+  - DURABLE acquisition store, not an eviction cache: the structured data from
+    every page ever fetched is kept forever in research/cache/ancestry
+    (gitignored, backed up with the project), so a revisit by any agent, any
+    session, returns instantly with "cached":true and never touches Ancestry.
+    record and household share one entry (same page). --fresh forces a re-
+    fetch (mainly for searches, which can gain rows as indexes grow). Inspect
+    with `cache stats` / `cache list`; `cache clear` is guarded.
   - --agent ID gives you your own browser tab plus your own cursor and history
     (state in ~/.gen-cockpit/ancestry/). Stateless commands share the reserved
     "default" tab. The human's own tab is never driven. Use one process per
@@ -575,6 +662,14 @@ def main() -> int:
     p_open.add_argument("--agent", metavar="ID", help="your agent id; default: 'default'")
     p_open.add_argument("--fresh", action="store_true", help="bypass the cache; force a live fetch")
     p_open.set_defaults(func=cmd_open)
+
+    p_cache = sub.add_parser(
+        "cache", help="inspect or clear the shared cache -> stats | list | clear; no Ancestry hits",
+        description="Manage the machine-global cache. stats/list never touch Ancestry; clear only deletes local files.")
+    p_cache.add_argument("action", choices=["stats", "list", "clear"], help="what to do")
+    p_cache.add_argument("--kind", metavar="K", help="filter/narrow to one kind (search, record, ...)")
+    p_cache.add_argument("--all", action="store_true", help="required to clear without a --kind filter")
+    p_cache.set_defaults(func=cmd_cache)
 
     args = parser.parse_args()
     return args.func(args)

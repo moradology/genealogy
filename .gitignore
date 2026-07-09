@@ -13,3 +13,7 @@ tools/font-data/
 
 # Raw record images pulled from subscription services (Ancestry ToS; keep local)
 research/pulls/
+
+# Durable structured-data acquisition store (Ancestry ToS: index-derived data
+# stays out of the public repo; the store lives with the project, not in git)
+research/cache/ancestry/

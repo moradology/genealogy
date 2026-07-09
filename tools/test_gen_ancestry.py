@@ -71,6 +71,47 @@ check("url search", ga.url_for(srch) == "https://www.ancestry.com/search/collect
 check("location_key record stable", ga.location_key(rec) == ga.cache_key("record", {"collection": "2442", "id": "58087568"}))
 check("location_key collection none", ga.location_key(coll) is None)
 
+# ---- cache verbs against a throwaway GEN_COCKPIT_DIR (subprocess; offline) ----
+import json
+import os
+import subprocess
+import tempfile
+
+with tempfile.TemporaryDirectory(prefix="gen-cache-test-") as tmp:
+    env = {**os.environ, "GEN_ANCESTRY_CACHE_DIR": tmp, "GEN_COCKPIT_DIR": tmp + "/state"}
+
+    def cache_cmd(*args):
+        return subprocess.run(
+            [sys.executable, "tools/gen_ancestry.py", "cache", *args],
+            cwd=Path(__file__).resolve().parents[1], capture_output=True, text=True, env=env)
+
+    r = cache_cmd("stats")
+    o = json.loads(r.stdout)
+    check("cache stats empty", o["ok"] is True and o["entries"] == 0, r.stdout[:200])
+
+    # seed one enveloped entry and one legacy (pre-envelope) entry
+    cdir = Path(tmp)
+    (cdir / "record-aaaa.json").write_text(json.dumps(
+        {"meta": {"kind": "record", "collection": "2442", "id": "1", "fetched_at": "2026-07-09T12:00:00"},
+         "data": {"ok": True}}))
+    (cdir / "search-bbbb.json").write_text(json.dumps({"ok": True, "results": []}))  # legacy shape
+
+    o = json.loads(cache_cmd("stats").stdout)
+    check("cache stats counts", o["entries"] == 2 and o["by_kind"] == {"record": 1, "search": 1}, o)
+    check("cache stats newest", o["newest"] == "2026-07-09T12:00:00", o)
+
+    o = json.loads(cache_cmd("list", "--kind", "record").stdout)
+    check("cache list filtered", o["count"] == 1 and o["entries"][0]["kind"] == "record", o)
+
+    r = cache_cmd("clear")
+    check("cache clear refuses bare", r.returncode != 0 and json.loads(r.stdout)["ok"] is False, r.stdout[:200])
+    o = json.loads(cache_cmd("clear", "--kind", "search").stdout)
+    check("cache clear by kind", o["removed"] == 1, o)
+    o = json.loads(cache_cmd("clear", "--all").stdout)
+    check("cache clear all", o["removed"] == 1, o)
+    o = json.loads(cache_cmd("stats").stdout)
+    check("cache empty after clear", o["entries"] == 0, o)
+
 # ---- per-agent state round-trip (uses the real state dir; unique agent name) ----
 AGENT = "test-agent-selfcheck"
 state = ga.new_agent_state()

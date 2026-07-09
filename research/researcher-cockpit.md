@@ -77,9 +77,15 @@ directly — only through `gen ancestry`, which enforces safety for them.** Thre
    fd). A shared `last_request` timestamp enforces `MIN_INTERVAL` (default 5s + jitter)
    between real hits across *all* agents. So no matter how many agents run, Ancestry sees one
    paced, human-like stream.
-2. **Cache-first (BUILT).** Records/searches are keyed and cached; a repeat lookup returns
-   instantly (`"cached":true`) and never touches Ancestry. Historical records are immutable,
-   so this is a huge, safe traffic cut. `--fresh` forces a live re-fetch.
+2. **Durable acquisition store (BUILT; upgraded from a cache 2026-07-09).** The structured
+   data from every page ever fetched is kept forever in `research/cache/ancestry/` (in the
+   repo tree, gitignored per Ancestry ToS, backed up with the project). Revisits by any
+   agent, any session, return instantly (`"cached":true`) and never touch Ancestry.
+   Entries are `{meta, data}` envelopes (fetch timestamp + source URL); `record` and
+   `household` share one entry (same page). `--fresh` forces a re-fetch (mainly searches,
+   which can gain rows). Managed via `gen ancestry cache stats|list|clear` (clear is
+   guarded). Machine-global concerns (queue lock, pacing, tabs, agent cursors) stay in
+   `~/.gen-cockpit`.
 3. **Per-agent tabs + relative addressing (BUILT).** Verbs: `goto <address>`, `where`,
    `next`, `prev`, `open [N]`, `back` — all `--agent <id>`-scoped. Semantics decided at
    review: (a) an agent's location is **logical** — a cache-served `goto` updates state
