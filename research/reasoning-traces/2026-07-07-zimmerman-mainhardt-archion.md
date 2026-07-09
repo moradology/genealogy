@@ -1,25 +1,16 @@
 ---
 id: trace.2026-07-07.zimmerman-mainhardt-archion
-title: Zimmerman Mainhardt Archion Path
-date_created: 2026-07-07
+title: "Zimmerman Mainhardt Archion Path"
+date: 2026-07-07
 status: active
-confidence: strong
-lineage_tags: [zimmerman]
-people: [John Paul Zimmerman, Catherine Zinkle, Michael John Zimmerman Sr., Paul Michael Zimmerman]
-places: [Mainhardt, Huetten, Wuerttemberger Hof, Baden-Wuerttemberg, Madison County Nebraska]
-source_ids:
-  - src.michael-john-zimmerman-sr-familysearch.8c643069
-  - src.john-paul-zimmerman-familysearch.68be8f2c
-  - src.paul-michael-zimmerman-familysearch.e53a9c95
-  - src.archion-mainhardt-familienregister-1808-1918-band-25.fe546c15
-  - src.archion-mainhardt-eheregister-1850-1870-band-15.6bdbdcfb
-  - src.archion-mainhardt-taufregister-1859-1877-band-9.baf3f1e8
-  - src.archion-mainhardt-taufregister-1835-1843-band-7.5c81429a
-geojson_ids:
-  - event.zimmerman.michael_birth.1869-10-25
-  - event.zimmerman.john_paul_household.1880
-  - family_link.john_paul_household_to_michael
-next_action: Pull Mainhardt church-book images on Archion, starting with Band 9 baptisms and Band 15 marriages.
+confidence: lead
+case_refs: ["case.02"]
+person_refs: ["person.catherine_zinkle", "person.zimmerman.john_paul", "person.zimmerman.michael"]
+evidence_refs: []
+source_refs: ["src.archion-mainhardt-eheregister-1850-1870-band-15.6bdbdcfb", "src.archion-mainhardt-familienregister-1808-1918-band-25.fe546c15", "src.archion-mainhardt-taufregister-1835-1843-band-7.5c81429a", "src.archion-mainhardt-taufregister-1859-1877-band-9.baf3f1e8", "src.john-paul-zimmerman-familysearch.68be8f2c", "src.michael-john-zimmerman-sr-familysearch.8c643069", "src.paul-michael-zimmerman-familysearch.e53a9c95"]
+geo_refs: ["event.zimmerman.john_paul_household.1880", "event.zimmerman.michael_birth.1869-10-25", "family_link.john_paul_household_to_michael", "target.zimmerman.mainhardt_archion"]
+outcome: "Mainhardt remains a testable locality lead, but later database negatives weakened the claim that it was the family's long-rooted origin."
+next_action: "Pull the Mainhardt Archion baptism and marriage images, then compare them with United States Catholic records that may name the family's Heimat."
 ---
 
 # Zimmerman Mainhardt Archion Path

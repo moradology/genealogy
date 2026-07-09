@@ -1,7 +1,22 @@
+---
+id: trace.2026-07-08.clemans-flaherty-validation
+title: "Clemans and Flaherty Wisconsin Cluster Validation"
+date: 2026-07-08
+status: resolved
+confidence: strong
+case_refs: ["case.07", "case.08"]
+person_refs: ["person.clemans.marjorie", "person.evelyn_mundell", "person.marjorie_opal_clemans"]
+evidence_refs: ["ev.ancestry.1910-clemans-barron", "ev.ancestry.1921-clemans-flaherty-negative", "ev.ancestry.1930-clemans-bayport", "ev.ancestry.1933-mundell-clemans-marriage", "ev.ancestry.1940-clemans-st-paul", "ev.ancestry.marjorie-clemans-candidates"]
+source_refs: ["src.c-ellen-martin-marriage-whs.af52aaef", "src.calvary-cemetery-transcription-wayback.a14b1166", "src.descendants-of-christian-eby-internet-archive-text.0f8669ad", "src.edward-flaherty-birth-whs.2c3e473c", "src.margaret-ellen-flaherty-clemans-find-a-grave.9d4ee797", "src.marjorie-opal-clemans-familysearch.f092de64", "src.michael-d-clemans-birth-whs.08684e8a", "src.rollie-c-clemans-marriage-whs.5b6033b2", "src.whs-vital-records-scope-page.e31c5ed9"]
+geo_refs: ["event.evelyn_mundell.birth.1935-01-16", "target.clemans.marjorie_opal_same_name_collision"]
+outcome: "The Wisconsin cluster sources are valid, but they do not connect that family's daughter to Evelyn; later chronology and marriage evidence reject the attachment."
+next_action: "Keep the Wisconsin family as negative memory and seek Marjorie Evelyn Clemans's own Colorado vital and later-life records."
+---
+
 # Clemans + Flaherty (Wisconsin) cluster: validation (2026-07-08)
 
 Independent validation of the frontier-intake Clemans/Flaherty cluster
-(`research/frontier-intake/11-clemans-flaherty.md`; TODO.md 3.11). All seven
+(`research/frontier-intake/11-clemans-flaherty.md`; research/archive/program-board-2026-07-08.md 3.11). All seven
 claims re-queried/re-fetched by a validation agent on 2026-07-08 against the
 Wisconsin Historical Society pre-1907 vital index (near-primary), a Wayback
 capture of the Douglas County GenWeb Calvary transcription (the live wigenweb

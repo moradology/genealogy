@@ -5,10 +5,12 @@
 
 const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
+const { execFileSync } = require('node:child_process');
 const fs = require('node:fs');
 
 const path = require('node:path');
-const FILE = path.join(__dirname, '..', 'index.html');
+const ROOT = path.join(__dirname, '..');
+const FILE = path.join(ROOT, 'index.html');
 const URL = 'file://' + FILE;
 
 // Derived from verifiedEventData/familyLinkData + plate rules:
@@ -28,12 +30,19 @@ const ROUTE_EXPECT = {
   'map-line-dible': { routes: 3, paths: 7, solidPaths: 2, conjecturalPaths: 5 },
   'map-line-connelly': { routes: 2, paths: 3, solidPaths: 2, conjecturalPaths: 1 },
 };
+const MAP_ACCESSIBLE_NAMES = {
+  'map-convergence': 'Northwest Kansas convergence map of all four family lines',
+  'map-line-zimmerman': 'Doyle Julius Zimmerman Branches event map',
+  'map-line-mundell': 'Evelyn Delores Mundell Zimmerman Branches event map',
+  'map-line-dible': 'William J. "Bill" Dible Branches event map',
+  'map-line-connelly': 'Donna Lea Connelly Dible Branches event map',
+};
 const LINK_TOTAL = 10;
-const SOURCE_ITEMS = 172;
+const SOURCE_ITEMS = 178;
 const PERSON_DIVS = 73;
 const PERSON_IDS = 73;
 const STEM_DIVS = 7;
-const CASE_ARTICLES = 21, CORRIGENDA_ITEMS = 4, NEGATIVE_REGISTER_ITEMS = 11;
+const CASE_ARTICLES = 23, CORRIGENDA_ITEMS = 4, NEGATIVE_REGISTER_ITEMS = 11;
 
 const ISOLATED_ID = 'event.zimmerman.michael_birth.1869-10-25'; // Mainhardt; isolated on the zimmerman plate
 const COINCIDENT_PAIRS = [
@@ -117,6 +126,16 @@ function ok(label, cond, detail) {
     src.includes('id="print-btn"') &&
     src.includes('localStorage.getItem("zd-scale")') &&
     src.includes('window.print()'));
+  const publicContentFiles = execFileSync('git', [
+    'ls-files', '-z', '--cached', '--others', '--exclude-standard', '--',
+    'index.html', 'ancestry_geospatial.geojson', 'README.md', 'TODO.md', 'research',
+  ], { cwd: ROOT, encoding: 'utf8' }).split('\0').filter(Boolean)
+    .filter((relative) => fs.existsSync(path.join(ROOT, relative)));
+  const ssnShape = /(^|[^0-9])[0-9]{3}-[0-9]{2}-[0-9]{4}(?![0-9])/m;
+  const ssnShapeFiles = publicContentFiles.filter((relative) =>
+    ssnShape.test(fs.readFileSync(path.join(ROOT, relative), 'utf8')));
+  ok('S20 public research and product content contains no SSN-shaped text',
+    ssnShapeFiles.length === 0, ssnShapeFiles.join(', '));
   const plateKeyBlocks = [...src.matchAll(/<!-- BEGIN plate-key:([a-z]+) -->[\s\S]*?<!-- END -->/g)]
     .map((m) => m[1]);
   ok('K1 five generated plate-key regions present',
@@ -149,6 +168,7 @@ function ok(label, cond, detail) {
     document.querySelectorAll('figure.plate svg').forEach((svg) => {
       out[svg.id] = {
         visible: svg.getBoundingClientRect().width > 200 && getComputedStyle(svg).display !== 'none',
+        accessibleName: svg.getAttribute('aria-label') || '',
         markers: svg.querySelectorAll('g.event-marker[data-event-id]').length,
         edges: svg.querySelectorAll('path.family-link[data-link-id]').length,
         guests: svg.querySelectorAll('g.event-marker.guest').length,
@@ -178,6 +198,11 @@ function ok(label, cond, detail) {
     assert.ok(p.baseDrawn, id + ' basemap empty');
   }
   ok('B2 all five plates render with expected markers/edges/guests', true);
+  const mapAccessibleNames = Object.fromEntries(Object.keys(MAP_ACCESSIBLE_NAMES)
+    .map((id) => [id, plates[id]?.accessibleName || '']));
+  ok('B2a all five map SVGs have complete accessible names',
+    Object.entries(MAP_ACCESSIBLE_NAMES).every(([id, expected]) =>
+      mapAccessibleNames[id] === expected), JSON.stringify(mapAccessibleNames));
   const keyAudit = await page.evaluate(() => PLATES.map((cfg) => {
     const data = plateData(cfg);
     const expected = data.events.map((e) => e.id);
@@ -310,6 +335,11 @@ function ok(label, cond, detail) {
     const sec = [...document.querySelectorAll('section')].find((s) =>
       s.querySelector('h2') && s.querySelector('h2').textContent.trim() === 'Source Ledger');
     const lis = sec ? [...sec.querySelectorAll('li')] : [];
+    const evidenceRows = [...document.querySelectorAll('.person')].filter((row) =>
+      row.querySelector('.person-head .tag.documented, .person-head .tag.strong'));
+    const evidenceRowsWithoutCitation = evidenceRows
+      .filter((row) => !row.querySelector('a.cite[href^="#s"]'))
+      .map((row) => row.id);
     return {
       h2s,
       sourceCount: lis.length,
@@ -321,6 +351,8 @@ function ok(label, cond, detail) {
       personIds: [...document.querySelectorAll('.person[id^="person."]')].map((el) => el.id),
       breadth: document.body.textContent.includes('The goal here is breadth plus honesty'),
       geojsonLink: !!document.querySelector('a[href="ancestry_geospatial.geojson"]'),
+      evidenceRows: evidenceRows.length,
+      evidenceRowsWithoutCitation,
     };
   });
   for (const h of ['Doyle Julius Zimmerman Branches', 'Evelyn Delores Mundell Zimmerman Branches',
@@ -357,7 +389,7 @@ function ok(label, cond, detail) {
       s.querySelector('h2') && s.querySelector('h2').textContent.trim() === 'Source Ledger');
     const ledgerLis = sec ? [...sec.querySelectorAll('li')] : [];
     const scodes = ledgerLis.map((li) => li.querySelector(':scope > .scode')?.textContent.trim() || '');
-    const allCiteLinks = [...document.querySelectorAll('sup.cite a[href]')];
+    const allCiteLinks = [...document.querySelectorAll('a.cite[href]')];
     const citeLinks = allCiteLinks.filter((a) => /^#s[1-9]\d*$/.test(a.getAttribute('href') || ''));
     const failures = [];
     const phaseRows = new Set();
@@ -388,10 +420,13 @@ function ok(label, cond, detail) {
     citationContract.sequential &&
     citationContract.pinned === 's1|s2|s3|s4' &&
     citationContract.phaseRows >= 22 &&
-    citationContract.chips >= 22 && citationContract.chips <= 80 &&
+    citationContract.chips >= 22 && citationContract.chips <= 100 &&
     citationContract.badCites === 0 &&
     citationContract.failures.length === 0,
     JSON.stringify(citationContract));
+  ok('C14a every documented or strong person row cites the Source Ledger',
+    content.evidenceRows === 38 && content.evidenceRowsWithoutCitation.length === 0,
+    JSON.stringify(content.evidenceRowsWithoutCitation));
   const stemCheck = await page.evaluate((stemDivs) => {
     const expected = [
       { href: '#person.zodrow.cecilia', tagClass: 'documented', tagText: 'Documented' },
@@ -500,7 +535,7 @@ function ok(label, cond, detail) {
     if (s.querySelectorAll(':scope>ul:nth-of-type(2) li').length < n) f.push('negative-register count');
     return f;
   }, { c: CASE_ARTICLES, r: CORRIGENDA_ITEMS, n: NEGATIVE_REGISTER_ITEMS });
-  ok('C13 docket has 21 structured cases plus registers', docketCheck.length === 0, JSON.stringify(docketCheck));
+  ok('C13 docket has 23 structured cases plus registers', docketCheck.length === 0, JSON.stringify(docketCheck));
 
   // ---------- theme ----------
   const bgFor = async (scheme, theme) => {

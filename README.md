@@ -10,7 +10,7 @@ Repository: https://github.com/moradology/genealogy
 
 This repo holds a shareable public-record research artifact for four grandparent anchors:
 
-- Doyle Jule Zimmerman
+- Doyle Julius Zimmerman
 - Evelyn Delores Mundell Zimmerman
 - William J. "Bill" Dible
 - Donna Lea Connelly Dible
@@ -21,15 +21,17 @@ The goal is breadth plus honesty. The public page presents the current working t
 
 - `index.html` - the hosted static artifact.
 - `ancestry_geospatial.geojson` - machine-readable geography for verified events, temporal paths, research targets, and family links.
-- `research/` - durable research memory, reasoning traces, and source indexes.
-- `tools/build_source_index.py` - extracts the HTML Source Ledger into a searchable JSON source index.
+- `research/` - durable evidence records, cases, reasoning traces, search frames, and source registries.
+- `tools/build_source_index.py` - builds the searchable source index from canonical `sources.jsonl` and checks the public ledger projection.
 
 ## Research Memory
 
 Research notes live under `research/` so useful reasoning does not get buried in chat history.
 
+- `research/evidence/` holds privacy-reviewed JSONL metadata for pulled records; restricted raw images remain local.
+- `research/cases/cases.jsonl` is the append-only structured Docket.
 - `research/reasoning-traces/` captures fruitful chains of reasoning: question, hypothesis, evidence used, why the inference is plausible, why it is not proved, and the next record pull.
-- `research/sources/source-index.json` lists every source currently in the artifact Source Ledger with a stable local id, URL, type, lineage tags, evidence role, blurb, and searchable text.
+- `research/sources/sources.jsonl` is the canonical source registry; `source-index.json` is generated from it.
 - `research/sources/README.md` documents the source-index fields and search patterns.
 
 Use reasoning traces for memory when a path is worth preserving even if it is not yet proof. Use the source index for retrieval and cross-link traces to source ids.
@@ -52,7 +54,8 @@ The artifact uses these broad confidence labels:
 
 Feature kinds currently include:
 
-- `verified_event` - a mapped event asserted strongly enough to display.
+- `life_event` - a mapped event asserted strongly enough to display.
+- `candidate_life_event` - a mapped candidate that remains visually distinct from proved events.
 - `record_target` - a place or repository target where a record pull could move the tree.
 - `temporal_path` - a sequence of places through time for one branch or hypothesis.
 - `family_link` - a relationship edge used by the map to show people converging into unions and unions carrying forward to descendants.
@@ -66,10 +69,11 @@ Important conventions:
 
 ## Source Index
 
-Rebuild the source index after editing the Source Ledger in `index.html`:
+Add or edit sources in `research/sources/sources.jsonl`, then make the matching
+reader-facing change in the Source Ledger. Rebuild the generated search index:
 
 ```sh
-python3 tools/build_source_index.py
+uv run tools/build_source_index.py
 ```
 
 Useful source searches:
@@ -88,9 +92,9 @@ Run the single gate before committing:
 sh tools/check.sh
 ```
 
-It validates both JSON data files, regenerates and freshness-checks the source index,
-verifies every cross-reference id resolves, syntax-checks the inline JavaScript, and runs
-the full Playwright acceptance spec. CI runs the same script on every push.
+It validates GeoJSON, evidence, cases, sources, and reasoning traces; checks every
+cross-reference and generated projection; syntax-checks the inline JavaScript; and runs
+the browser acceptance spec. CI runs the same script on every push.
 
 ## Publishing
 
@@ -100,9 +104,9 @@ Normal update flow:
 
 ```sh
 git status -sb
-python3 tools/build_source_index.py
-python3 -m json.tool ancestry_geospatial.geojson >/dev/null
-python3 -m json.tool research/sources/source-index.json >/dev/null
+uv run tools/build_source_index.py
+uv run python -m json.tool ancestry_geospatial.geojson >/dev/null
+uv run python -m json.tool research/sources/source-index.json >/dev/null
 git add index.html ancestry_geospatial.geojson research tools README.md
 git commit -m "Describe the genealogy update"
 git push

@@ -1,15 +1,16 @@
 ---
 id: trace.yyyy-mm-dd.short-slug
-title: Short Trace Title
-date_created: YYYY-MM-DD
+title: "Short Trace Title"
+date: YYYY-MM-DD
 status: active
 confidence: working
-lineage_tags: []
-people: []
-places: []
-source_ids: []
-geojson_ids: []
-next_action: ""
+case_refs: []
+person_refs: []
+evidence_refs: []
+source_refs: []
+geo_refs: []
+outcome: "Current result, including what remains unproved."
+next_action: "One concrete next research action."
 ---
 
 # Short Trace Title

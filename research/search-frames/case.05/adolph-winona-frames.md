@@ -17,7 +17,7 @@ Graduated: 2026-07-08; Case: case.05
   1. Confirm whether the 'German Baptist Church west of Centropolis' in Jacob's 1935 obituary is the Appanoose Brethren Church or a distinct Centropolis-area meetinghouse.
   1. Search Osage/Franklin County KS German Baptist Brethren (Church of the Brethren) congregational rolls/histories for the Adolph surname.
 
-### F2 (w1). In which household(s) and jurisdiction(s) do Evelyn -- and a previously undocumented sibling found in the 1950 census -- appear across 1940 and 1950, and how does that square with the 'raised in Winona' obituary claim?
+### F2 (w1). In which households do Evelyn and Herbert appear across 1940 and 1950, and how does that square with the 'raised in Winona' obituary claim?
 
 - Jurisdictions: Kingery Township, Thomas County, Kansas (confirmed 1950 residence); Winona Township, Logan County, Kansas (claimed by 1983-2023 obituary text, not yet found in a census); Flagler, Kit Carson County, Colorado (Evelyn's 1935 birthplace)
 - Record sets:
@@ -25,10 +25,10 @@ Graduated: 2026-07-08; Case: case.05
   - NARA 1950 Census name-search tool (open API, no login) -- https://1950census.archives.gov/search/ (1950)
   - FamilySearch 1940 U.S. Census collection (free index; images free with account) -- https://www.familysearch.org/en/search/collection/2000219 (1940)
   - 1950 census search restricted to Logan County (to test Winona/Monument townships) -- https://1950census.archives.gov/search/?state=KS&county=Logan (1950)
-- Next pulls:
-  1. Run the NARA 1950 search for 'Adolph' and 'Mundell' restricted to Logan County/Winona Township specifically to rule in/out a second household there (only a Monument Township 'Adolph' -- an apparently unrelated household, W. M./Illinois-born head with a France-born wife -- turned up so far).
-  1. Search FamilySearch's free 1940 census index for Homer Mundell, Marjorie Mundell, Albert Adolph, and Frances Adolph households to fix when Evelyn (age ~5 in 1940) first moved in with her grandparents.
-  1. Verify the identity, full name, and life dates of 'Herbert D.' (grandson, b. c.1936-37 Colorado) found with Evelyn in 1950 before using him further -- treat as possibly living until confirmed otherwise.
+- Results and next pulls:
+  1. Completed: the Logan County/Winona search found no second household; the Monument Township Adolph household is unrelated.
+  1. Completed: the 1940 Barrett Township census already places Evelyn and Herbert with Lon and Frances Adolph.
+  1. Completed: Herbert D. is Herbert Duane Mundell; the Social Security Death Index documents his 1972 death, so the census identity may be used safely.
 
 ### F3 (w1). What Logan County institutional record sets (school, church, cemetery, newspaper) can independently document the family's Winona presence?
 
@@ -46,7 +46,7 @@ Graduated: 2026-07-08; Case: case.05
   1. Search the Winona Cemetery's 832 Find a Grave memorials for any Rust/Adolph/Mundell/Strawn burials that would place the family locally rather than only in Thomas/Mitchell counties.
   1. Contact Logan County Historical Society or the Winona-area successor school district for surviving school census, enrollment, or yearbook records naming Evelyn Mundell.
 
-### F4 (w1). When and where did Frances marry Edgar Lyle Strawn, and how does the Beloit, Mitchell County chapter fit chronologically between Albert Adolph's 1954 death and Frances's own 1984 death?
+### F4 (w1). Did Frances marry Edgar Lyle Strawn, and if so when and where does the Beloit chapter fit after Albert Adolph's 1954 death?
 
 - Jurisdictions: Mitchell County (Beloit, Asherville), Kansas; Thomas County (Colby), Kansas; Sheridan County (Hoxie), Kansas
 - Record sets:
@@ -98,8 +98,8 @@ Graduated: 2026-07-08; Case: case.05
   - National Archives Catalog, 1940 census images by state/county/ED (no index; browse by ED) -- https://catalog.archives.gov/search?q=1940%20census%20Kansas%20Thomas%20County (1940)
   - NCES Logan County public school search -- https://nces.ed.gov/ccd/schoolsearch/school_list.asp?County=Logan+County&Search=1&State=20 (current, used as modern locality check)
   - KSGenWeb 1912 Cyclopedia, Thomas County entry -- http://www.ksgenweb.org/archives/1912/t/thomas_county.html (1912 snapshot)
-- Next pulls:
-  1. Identify the 1940 census enumeration district for Kingery Township, Thomas County (and for Colby) and pull the Adolph household image directly, to see whether 5-year-old Evelyn was already there or still with a parent
+- Results and next pulls:
+  1. Completed: the 1940 Barrett Township census places five-year-old Evelyn and Herbert with Lon and Frances Adolph.
   1. Search Thomas County Register of Deeds / plat-book records for the exact section-township-range of Albert L. Adolph's farm to test literal proximity to the Logan County line
   1. Check Colby city directories and Thomas County high-school enrollment/annual records for any 'Adolph' entries 1935-1950 following up on the 'Lon Adolph of Colby' 1935 obituary detail
 
@@ -116,7 +116,7 @@ Graduated: 2026-07-08; Case: case.05
   1. Browse the Winona Cemetery Find a Grave listing (id 94092) directly in a browser for Adolph/Rust/Strawn/Mundell burials to test whether the family used a local cemetery
   1. Contact or search the Kansas Historical Society's KG (Oakley Graphic) microfilm reels directly if the digital archive proves paywalled for early-1950s issues
 
-### F9 (w2). Exactly when did Frances (Rust) Mundell Adolph marry Edgar Lyle Strawn, given that his first wife Dorothy did not die until 1960 -- six years after Albert Adolph's 1954 death?
+### F9 (w2). Did Frances (Rust) Mundell Adolph marry Edgar Lyle Strawn after his first marriage ended, and what record proves it?
 
 - Jurisdictions: Beloit, Mitchell County, Kansas; Hoxie, Sheridan County, Kansas
 - Record sets:
@@ -174,11 +174,10 @@ Graduated: 2026-07-08; Case: case.05
 - Record sets:
   - Find A Grave: Beulah Cemetery, Colby, Thomas County (Albert Adolph's burial, plot Blk 32 Lot 4 site 2; John Duane Adolph, Rex Adolph, Glenn Howard Adolph also here) -- https://www.findagrave.com/cemetery/92035/beulah-cemetery (burials 1915-1954+)
   - Find A Grave: Winona Cemetery surname search interface (returned zero results for Adolph/Mundell/Rust/Strawn) -- https://www.findagrave.com/cemetery/94092/winona-cemetery/memorial-search (as indexed to date)
-  - 1940 & 1950 US Federal Census (need to pull BOTH Kingery Twp/Colby, Thomas Co. AND Winona/Wallace Twp, Logan Co.) via FamilySearch free search -- https://www.familysearch.org/search/record/results?q.residencePlace=Kansas&q.recordCountry=United%20States (1940, 1950)
+  - 1940 and 1950 U.S. Federal Censuses (Thomas County households pulled; no Logan County household found) via FamilySearch free search -- https://www.familysearch.org/search/record/results?q.residencePlace=Kansas&q.recordCountry=United%20States (1940, 1950)
   - Kansas Digital Newspaper Program (Kansas Historical Society) - ~300,000 pages, 42 titles/28 cities, 1854-1923, via Chronicling America; automated curl/WebFetch queries returned unreliable/browse-only results this session, needs a live browser session -- https://www.kansashistory.gov/p/kansas-digital-newspaper-program/16126 (1854-1923)
-- Next pulls:
-  1. Pull the 1940 census by name-search for 'Adolph' in BOTH Kingery Township (Thomas Co.) and Winona/Wallace Townships (Logan Co.) -- do not assume Winona; every hard record so far (cemetery, birthplaces, 1922 obituary) points to Thomas/Osage/Franklin counties, never Logan County
-  1. Pull the 1950 census the same way, watching for a household with 'Frances Adolph' and granddaughter 'Evelyn Mundell' plus the still-unidentified 13-year-old grandson 'Herbert D.' (do not research Herbert D. further absent confirmation he is deceased)
+- Results and next pulls:
+  1. Completed: the 1940 Barrett Township and 1950 Kingery Township censuses place Evelyn and Herbert with the Adolph grandparents in Thomas County; no Logan County household has been found.
   1. Check Colby, Thomas County newspapers (Colby Free Press, Colby Tribune) for 1952-1954 Winona High School graduation/social notices, since rural Winona-area news was often carried in the larger county-seat paper 25 miles away
   1. Contact the Logan County Historical Society / Oakley Public Library (Oakley, KS) directly for Winona High School yearbooks or alumni records -- note: do NOT confuse with logancoil-genhist.org, which is Logan County, ILLINOIS, a dead-end misdirect found this pass
 

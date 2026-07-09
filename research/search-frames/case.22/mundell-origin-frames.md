@@ -1,6 +1,13 @@
 Source intake file: research/frontier-intake/08-mundell-origin.md
-Graduated: 2026-07-08; Case: uncased
-Note: No current Docket case; a future Mundell-origin case should adopt these frames.
+Graduated: 2026-07-08; Case: case.22
+Adopted by the append-only Docket on 2026-07-09.
+
+**Landed 2026-07-09:** the official Clinton County Courthouse Archives export
+identifies John Mundell as a son in James Mundell probate folder 236A, file 32,
+dated 14 Aug 1837. The now-openly available Barry/Woodruff 1968 book independently
+transcribes the matching will and probate date. James-to-John is strong at
+archival-index tier; Harvey-to-John and the older Pennsylvania-to-Kentucky
+identity remain open. See `ev.fcpl.1837-james-mundell-probate`.
 
 ### F1 (w1). Where and when was John Mundell (Harvey's father) actually born, and can his 1836 marriage record and 1830-1880 census trail be pulled at full citation detail?
 
@@ -22,13 +29,13 @@ Note: No current Docket case; a future Mundell-origin case should adopt these fr
 - Jurisdictions: Kentucky (unspecified county, source of Joseph's 1802 birth); Indiana Territory (possibly Harrison County, organized 1808); Clinton County, Indiana (Jackson Township, by the 1830s); candidate bridge to Greene County, Pennsylvania and New Castle County, Delaware (unproven); candidate origin countries Scotland (Dumfriesshire), Ireland, or Wales (all three claimed by different open sources, none proven)
 - Record sets:
   - 'Descendants of Abner M. Mundell' compiled genealogy PDF (New Castle Co DE -> Greene Co PA line; original host site is dead, recovered via Wayback Machine) -- http://web.archive.org/web/20160626014448/http://mundellpa.tripod.com:80/sitebuildercontent/sitebuilderfiles/abnerdescendants.pdf
-  - 'The Mundell (Mundle) Family' by Ruth/Ruby Mundell Barry and Audrey Lee Woodruff, 1968 (cited throughout the PDF above; not found digitized/open online) -- https://www.worldcat.org/search?q=Mundell+Mundle+Family+Barry+Woodruff
+  - Ruby Mundell Barry and Audrey Lee Woodruff, *The Mundell (Mundle) Family* (1968), now openly available in full; its Clinton County will transcript matches the official archive index -- https://www.seekingmyroots.com/members/files/G004652.pdf
   - Lucas County, Iowa biographical sketch of James R. Mundell (son of Joseph Mundell, b. 1802 KY) -- http://iagenweb.org/wayne/lucaswayne/mundell.james.r.htm
   - SurnameDB Mundell surname history (Scottish/Dumfriesshire framing) -- https://surnamedb.com/Surname/Mundell
   - WikiTree MUNDELL surname hub (blocked by bot-detection this pass; contains a James Mundell b. 1759 Drummuir/Torthorwald, Dumfriesshire, and other Indiana/Kentucky Mundells, unverified) -- https://www.wikitree.com/genealogy/MUNDELL
   - Geni.com profile 'Sgt. John Jefferson Mundell (1752-1806)' of Jefferson Co, KY (blocked by Incapsula bot-defense this pass, unverified) -- https://www.geni.com/people/Sgt-John-Mundell/6000000008518454937
 - Next pulls:
-  1. Search FamilySearch catalog, WorldCat, and Indiana/Iowa state archives for a digitized or library copy of the 1968 Barry/Woodruff 'Mundell (Mundle) Family' book
+  1. COMPLETED 2026-07-09: the full Barry/Woodruff book is openly downloadable; retain its older Pennsylvania-to-Kentucky bridge as circumstantial only.
   1. Search Kentucky county tax and court records (candidate counties: Jefferson, Fayette, Bourbon, Mercer) for a James Mundell head of household c.1795-1808 with children matching Joseph (b.1802) and John (b.1808)
   1. Search Clinton County, Indiana deed and probate records for a James Mundell landholder in Jackson Township in the 1830s, to test proximity/kinship to both John Mundell and the documented Abner-descendant household (Benjamin L. Mundell)
   1. Re-attempt Ancestry.com, WikiTree, and Geni.com lookups for 'John Mundell' (b.1808, parents 'James Mundell' + reported 'Mary Kate Smith' per one blocked/unverified Ancestry search snippet) and 'Sgt. John Jefferson Mundell' (1752-1806, Jefferson Co KY) from an authenticated session — all three sites returned bot-detection walls to unauthenticated automated requests this pass
@@ -49,7 +56,7 @@ Note: No current Docket case; a future Mundell-origin case should adopt these fr
   1. Pull Solomon Mundell's actual Civil War compiled service record and pension file (Co G, 34th Iowa Infantry) from Fold3/NARA/archive.org to corroborate the OCCGS sibling claim with a primary record
   1. Search Lucas County, Iowa probate/court records for Joseph Mundell (d.1885) for language identifying siblings or a father, to test the Joseph/John brothers hypothesis directly
 
-### F4 (w2). Is a James Mundell (Kentucky-born, 'of Irish descent' per an 1886 county history, m. Mary Smith of Germany, land entry 1816 in Lawrence Co., moved to Jackson Twp., Clinton Co. by 1828/1829, 8 children, apparently died c.1838) the father of John Mundell (m. Deborah Elmore 1836)? No record yet names John among this James's children.
+### F4 (w2). James-to-John is now named at archival-index tier; can the original 1837 probate file or Will Book I page 22 promote it to verified primary evidence?
 
 - Jurisdictions: Pleasant Run Township, Lawrence County, Indiana (pre-1828) -> Jackson Township, Clinton County, Indiana (1828-1852) -> unorganized/attached-county status before Clinton Co.'s formal creation on 1 Mar 1830
 - Record sets:
@@ -62,7 +69,7 @@ Note: No current Docket case; a future Mundell-origin case should adopt these fr
   - Indiana probate/estate case files, Lawrence & Clinton Counties -- https://www.in.gov/iara/ (1816-1840s)
 - Next pulls:
   1. Pull the actual 1816 Lawrence County GLO land patent for James Mundell via glorecords.blm.gov from a real browser session (curl/WebFetch both blocked by its JS-only results table) -- this gives an exact legal description and patent date.
-  1. Search Clinton County, Indiana probate/estate index for a James Mundell estate settled c.1838-1840; an estate file would list all legal heirs by name and could directly confirm or refute John Mundell as a son.
+  1. COMPLETED AT INDEX TIER 2026-07-09: folder 236A/file 32 names John as son. Request the loose papers or inspect Clinton Will Book I:22 for the original wording.
   1. Pull original 1820 Lawrence Co. and 1830 Clinton Co. census page images (not just name index) to read full household tallies and compare to the '8 children' claim.
   1. Search Clinton County deed/land-transfer indexes 1828-1840 for adjoining parcels held by James, John, and Adam Mundell to test co-residence/inheritance patterns.
 
@@ -103,11 +110,11 @@ Note: No current Docket case; a future Mundell-origin case should adopt these fr
   - Descendants of Abner M. Mundell (Ruth Mundell Barry, 1968 compilation) -- http://web.archive.org/web/20160626014448/http://mundellpa.tripod.com:80/sitebuildercontent/sitebuilderfiles/abnerdescendants.pdf (1758-1980s)
   - SurnameDB Mundell entry (Scottish/Dumfriesshire origin claim) -- https://www.surnamedb.com/Surname/Mundell (n/a, reference only)
 - Next pulls:
-  1. Locate the full original 'The Mundell (Mundle) Family' by Ruth Mundell Barry (1968) at a library/archive (DAR, Greene Co. PA Historical Society, or WorldCat) rather than the partial tripod.com excerpt, to see if it addresses the immigrant's actual port of origin.
+  1. COMPLETED 2026-07-09: the full book includes the Kentucky/Indiana branch, but candidly treats the older Pennsylvania-to-Kentucky identification as circumstantial; do not land that bridge.
   1. Search Pennsylvania colonial-era naturalization and land records (Chester/New Castle Co. area, pre-1758) for a James Mundell/Mundle matching the described 'located in Pa. in Colonial Times' immigrant.
   1. Test the Hugh Mundell (PA line) vs. James Mundell Sr. (KY-native line) non-connection directly via Clinton County land deed indexes 1846-1852 for adjoining or overlapping parcels.
 
-### F9 (w3). Is James Mundell (Kentucky-native, 'of Irish descent' per the 1886 book, wife Mary Smith of Germany, land in Lawrence/Fountain/Clinton Counties, d. c.1838) the father of John Mundell (m. Deborah Elmore 1836)?
+### F9 (w3). Can the indexed James-to-John relationship be verified in the original Clinton County probate record, and can Harvey then be tied to John?
 
 - Jurisdictions: Pleasant Run Twp/Lawrence Co., IN -> Fountain Co., IN -> Jackson Twp/Clinton Co., IN (Boone Co. line) -- all under Jeffersonville and later district IN federal land offices
 - Name variants: Mundell, Mundle, Mondell, Mundall
@@ -119,7 +126,7 @@ Note: No current Docket case; a future Mundell-origin case should adopt these fr
   - Clinton County, Indiana, Will Records 1830-1904, Books 1-4 (Slevin, 1978), FamilySearch Digital Library -- https://www.familysearch.org/library/books/records/item/468081-clinton-county-indiana-index-of-names-of-persons-and-of-firms (1830-1904)
   - Find A Grave: John Mundell -- https://www.findagrave.com/memorial/192261974/john-mundell (compiled, undated)
 - Next pulls:
-  1. Open the Slevin Clinton County Will Records 1830-1904 (FamilySearch Digital Library, book item) and search for a James Mundell estate/probate c.1838-1840 that names heirs
+  1. Request Clinton County probate folder 236A/file 32 or inspect Will Book I:22; the official index and Barry/Woodruff transcript already name John as son.
   1. Pull the Clinton County grantor/grantee deed index 1828-1840 for any Mundell-to-Mundell land conveyance (John buying from James or Andrew would prove kinship even absent a federal patent in John's name)
   1. Search Lawrence County, Indiana probate/guardian minute books 1816-1828 for James Mundell Sr.'s household before the move to Fountain/Clinton counties
   1. Pull 1830 US Census Clinton County, Indiana page images (name-only census) for James Mundell's household to check total free white persons under 10/10-15 against 'eight children'
@@ -146,7 +153,7 @@ Note: No current Docket case; a future Mundell-origin case should adopt these fr
 - Name variants: Mundell, Mundle, Mondell, Mandeville (proposed etymological root)
 - Record sets:
   - SurnameDB Mundell surname origin (secondary/compiled reference) -- https://surnamedb.com/Surname/Mundell (reference work, no date range)
-  - 'The Mundell (Mundle) Family by Ruby Mundell Barry, 1968' (covers the separate, unconnected New Castle Co. DE / Greene Co. PA line only) -- https://www.thekingealogy.com/tng/getperson%2Ephp?personID=I7319&tree=tree1 (family narrative, undated events c.1700s-1800s)
+  - Barry and Woodruff, *The Mundell (Mundle) Family* (1968), full text includes both the Pennsylvania material and the Kentucky/Indiana branch while explicitly leaving their connection circumstantial -- https://www.seekingmyroots.com/members/files/G004652.pdf
   - Pennsylvania and Virginia colonial naturalization record indexes (FamilySearch, login-gated) -- https://www.familysearch.org/en/wiki/Kentucky_Taxation (1700s-1800s)
 - Next pulls:
   1. This is the genuine end of the free/open trail: no immigration, naturalization, or original land-patent record exists yet for any Mundell generation earlier than James Mundell Sr., who was native-born in Kentucky

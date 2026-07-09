@@ -1652,9 +1652,9 @@
         "place_label": "Beloit, Mitchell County, Kansas",
         "confidence": "open",
         "related_places": ["place.smith_county_ks", "place.smith_center_ks", "place.winona_ks", "place.logan_county_ks"],
-        "candidate_people": ["person.mary_frances_rust", "person.frances_adolph", "person.lyle_strawn", "person.mundell.walter", "person.evelyn_mundell"],
-        "evidence_note": "Rust-family forum says Mary Frances Rust married an Adolph and, after he died, married Lyle Strawn and lived in Beloit, Kansas. William Bryan Rust's Find a Grave search result lists a sibling Mary Frances Rust Strawn, 1894-1984. Evelyn's obituary independently says she was raised by grandmother Frances Adolph.",
-        "research_question": "Do Beloit/Mitchell County marriage, obituary, cemetery, probate, city directory, or newspaper records prove Frances Adolph and Mary Frances Rust Strawn are the same person?",
+        "candidate_people": ["person.mary_frances_rust", "person.lyle_strawn", "person.mundell.walter", "person.evelyn_mundell"],
+        "evidence_note": "The 1940 census documents Mary Frances Rust under her later Frances Adolph name. A Rust-family forum says that, after Adolph died, she married Lyle Strawn and lived in Beloit, Kansas; William Bryan Rust's Find a Grave search result lists a sibling Mary Frances Rust Strawn, 1894-1984. The Strawn step still lacks a primary marriage, obituary, probate, or household record.",
+        "research_question": "Do Beloit or Mitchell County marriage, obituary, cemetery, probate, city directory, or newspaper records prove that Mary Frances Rust Adolph later married Lyle Strawn?",
         "source_refs": [
           "https://www.support.genealogy.com/forum/surnames/topics/rust/482/",
           "https://www.findagrave.com/memorial/124223039/william_bryan-rust",
@@ -1686,35 +1686,6 @@
         "confidence": "documented",
         "evidence_note": "Evelyn's obituary says she was raised by grandmother Frances Adolph and graduated from Winona High School.",
         "source_refs": ["https://www.baalmannmortuary.com/obituaries/evelyn-zimmerman", "https://nces.ed.gov/ccd/schoolsearch/school_list.asp?County=Logan+County&Search=1&State=20"]
-      }
-    },
-    {
-      "type": "Feature",
-      "id": "target.rust.frances_adolph_winona_identity",
-      "geometry": {"type": "Point", "coordinates": [-101.2449267, 39.0617169]},
-      "properties": {
-        "feature_kind": "record_target",
-        "event_type": "same_person_identity_target",
-        "label": "Frances Rust to Frances Adolph Winona identity target",
-        "anchor": "Evelyn Delores Mundell Zimmerman",
-        "line_ids": ["line.mundell_rust_cantwell"],
-        "generation": 3,
-        "date_start": "1910",
-        "date_end": "1953",
-        "date_sort": "1910-01-01",
-        "place_id": "place.winona_ks",
-        "place_label": "Winona, Logan County, Kansas",
-        "confidence": "open",
-        "related_places": ["place.logan_county_ks", "place.smith_county_ks", "place.smith_center_ks", "place.flagler_co"],
-        "candidate_people": ["person.mary_frances_rust", "person.frances_adolph", "person.evelyn_mundell", "person.mundell.homer", "person.clemans.marjorie"],
-        "evidence_note": "Rust-family forum says Mary Frances Rust later married a man surnamed Adolph; Evelyn's obituary says she was raised by grandmother Frances Adolph and graduated from Winona High School. These two clues fit, but same-person proof is still missing.",
-        "research_question": "Do Winona and Logan County school, census, guardianship, cemetery, probate, obituary, newspaper, or remarriage records prove that Frances Adolph was Mary Frances Rust Mundell and explain Evelyn's childhood household?",
-        "source_refs": [
-          "https://www.support.genealogy.com/forum/surnames/topics/rust/482/",
-          "https://www.baalmannmortuary.com/obituaries/evelyn-zimmerman",
-          "https://www.fryfuneralhome.com/obituaries/donald-mundell",
-          "https://nces.ed.gov/ccd/schoolsearch/school_list.asp?County=Logan+County&Search=1&State=20"
-        ]
       }
     },
     {
@@ -2908,17 +2879,17 @@
         "feature_kind": "temporal_path",
         "path_type": "candidate_parentage_and_identity_route",
         "line_id": "line.mundell_rust_cantwell",
-        "label": "Candidate Rust route: Reamsville parent cluster to Smith Center marriage, Winona Adolph clue, and Beloit Strawn clue",
+        "label": "Rust route: Reamsville parent cluster to Smith Center marriage, documented Adolph household, and Beloit Strawn clue",
         "anchor": "Evelyn Delores Mundell Zimmerman",
         "date_start": "1870-04-12",
         "date_end": "1984",
         "confidence": "candidate",
-        "evidence_note": "This path isolates the unresolved Rust hypothesis so it can be mapped without promoting it to proved lineage: John F. Rust/Ethel B. Rupert at Reamsville, Mary Frances Rust's possible Smith County birth and Smith Center marriage, Evelyn's Winona Frances Adolph clue, and the forum's Lyle Strawn/Beloit clue.",
+        "evidence_note": "This path separates the open steps from the documented Rust-to-Adolph identity: John F. Rust and Ethel B. Rupert remain candidate parents, while the later Lyle Strawn and Beloit step still rests on derivative clues.",
         "sequence": [
           {"order": 1, "date_sort": "1870-04-12", "place_id": "place.reamsville_cemetery_ks", "event_id": "target.rust.john_f_ethel_rupert_reamsville_cluster"},
           {"order": 2, "date_sort": "1894-06-06", "place_id": "place.smith_county_ks", "event_id": "event.rust.frances_birth.1894-06-06"},
           {"order": 3, "date_sort": "1910-01-01", "place_id": "place.smith_center_ks", "event_id": "event.mundell.walter_frances_marriage.1910"},
-          {"order": 4, "date_sort": "1935-01-16", "place_id": "place.winona_ks", "event_id": "target.rust.frances_adolph_winona_identity"},
+          {"order": 4, "date_sort": "1935-01-16", "place_id": "place.winona_ks", "event_id": "event.evelyn_mundell.winona_residence_school"},
           {"order": 5, "date_sort": "1984-01-01", "place_id": "place.beloit_ks", "event_id": "target.rust.frances_adolph_strawn_beloit"}
         ],
         "source_refs": [

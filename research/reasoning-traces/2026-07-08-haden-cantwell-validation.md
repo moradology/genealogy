@@ -1,7 +1,22 @@
+---
+id: trace.2026-07-08.haden-cantwell-validation
+title: "Haden and Cantwell Clusters Validation"
+date: 2026-07-08
+status: resolved
+confidence: strong
+case_refs: ["case.09", "case.12"]
+person_refs: ["person.cantwell.barnabas", "person.cantwell.thomas_jr", "person.haden.andrew", "person.haden.richard"]
+evidence_refs: []
+source_refs: ["src.andrew-jackson-haden-kaysancestry-rootsmagic-page.bf1db557", "src.barnabas-barney-cantwell-familysearch.0fd9613d", "src.christ-church-parish-register-middlesex-county-virginia.f8712f04", "src.kay-haden-anthony-haden-descendants-blogspot-page.28f24c5e", "src.king-william-county-records-scope-library-of-virginia.33f19b12", "src.samuel-cantwell-biography-1888-henry-county-iowa-history.fd509e80", "src.sarah-alice-cantwell-mundell-find-a-grave.ee2b20da"]
+geo_refs: ["event.haden.richard_sally_marriage.1799-03-07", "target.haden.cumberland_county_parentage", "target.haden.richard_sally_virginia_kentucky", "target.mundell.cantwell_coshocton"]
+outcome: "The Haden and Cantwell source clusters were validated at their honest tiers, but neither supplies the direct parent-child proof needed to close the two cases."
+next_action: "Use deeds, probate, marriage bonds, and household records to prove the Haden and Cantwell links instead of extending compiled pedigrees."
+---
+
 # Haden + Cantwell clusters: validation (2026-07-08)
 
 Independent validation of the frontier-intake Haden and Cantwell clusters
-(`research/frontier-intake/05-haden.md`, `09-cantwell.md`; TODO.md 3.5, 3.9).
+(`research/frontier-intake/05-haden.md`, `09-cantwell.md`; research/archive/program-board-2026-07-08.md 3.5, 3.9).
 All sources re-fetched by a validation agent on 2026-07-08.
 
 ## Haden (case.12)

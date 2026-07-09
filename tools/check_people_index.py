@@ -6,7 +6,7 @@ renderer and the static Index of Names. This checker keeps that registry
 closed against index.html: ids are unique, ahnentafel slots are unique
 within each anchor, href targets resolve, every rendered person row is
 covered by some registry entry, row-owned confidence tags match the
-actual .tag class, and docket case refs stay inside case.01-case.21.
+actual .tag class, and Docket case refs resolve through the canonical case registry.
 
 Run: uv run tools/check_people_index.py
 """
@@ -111,7 +111,7 @@ def main() -> int:
             seen_ah[key] = i
         c = entry.get("c")
         if c is not None and c not in PLANNED_CASES:
-            failures.append(f"{i} c is outside case.01-case.21: {c}")
+            failures.append(f"{i} c is outside the canonical Docket: {c}")
 
     for person_id in sorted(tags):
         if person_id not in h_values:

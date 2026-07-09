@@ -4,7 +4,10 @@ This directory stores durable research memory for the genealogy artifact.
 
 ## Layout
 
+- `cases/` - the canonical append-only research docket and its current status.
+- `evidence/` - canonical, branch-sharded JSONL metadata for acquired records and documented negative searches; see its README for the schema and privacy contract.
 - `reasoning-traces/` - structured notes for fruitful reasoning chains that should survive beyond chat history.
+- `search-frames/` - case-owned search plans, repositories, variants, and completed-search notes.
 - `sources/` - source listings, indexing blurbs, source ids, source-type tags, and retrieval notes.
 
 ## When To Add A Reasoning Trace

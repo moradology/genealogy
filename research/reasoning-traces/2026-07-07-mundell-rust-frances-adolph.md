@@ -1,27 +1,16 @@
 ---
 id: trace.2026-07-07.mundell-rust-frances-adolph
-title: Mundell Rust Frances Adolph Identity Path
-date_created: 2026-07-07
+title: "Mundell Rust Frances Adolph Identity Path"
+date: 2026-07-07
 status: active
 confidence: possible
-lineage_tags: [mundell]
-people: [Mary Frances Rust, Frances Adolph, Walter William Mundell, Homer Clair Mundell, Evelyn Delores Mundell Zimmerman, Lyle Strawn]
-places: [Smith County Kansas, Reamsville Kansas, Smith Center Kansas, Winona Kansas, Beloit Kansas]
-source_ids:
-  - src.evelyn-delores-zimmerman-obituary-baalmann-mortuary.e1d95407
-  - src.walter-william-mundell-familysearch.bd666c67
-  - src.sarah-alice-cantwell-mundell-forum-post-genealogy-com-archive.c515f29b
-  - src.walter-william-mundell-familysearch.bd666c67
-  - src.mary-frances-rust-forum-post-genealogy-com-archive.0356175c
-  - src.william-bryan-rust-find-a-grave.95e736d4
-  - src.clarence-aison-rust-ancestry-search-result-lead.032fa923
-  - src.reamsville-cemetery-interment-net.656f3e01
-  - src.nces-logan-county-public-school-search.afc503a6
-geojson_ids:
-  - event.rust.frances_birth.1894-06-06
-  - event.mundell.walter_frances_marriage.1910
-  - event.evelyn_mundell.winona_residence_school
-next_action: Prove or reject that Mary Frances Rust Mundell later appears as Frances Adolph and then Frances Strawn.
+case_refs: ["case.05"]
+person_refs: ["person.evelyn_mundell", "person.mary_frances_rust", "person.mundell.homer", "person.mundell.walter"]
+evidence_refs: ["ev.ancestry.1940-adolph-mundell"]
+source_refs: ["src.clarence-aison-rust-ancestry-search-result-lead.032fa923", "src.evelyn-delores-zimmerman-obituary-baalmann-mortuary.e1d95407", "src.mary-frances-rust-forum-post-genealogy-com-archive.0356175c", "src.nces-logan-county-public-school-search.afc503a6", "src.reamsville-cemetery-interment-net.656f3e01", "src.sarah-alice-cantwell-mundell-forum-post-genealogy-com-archive.c515f29b", "src.walter-william-mundell-familysearch.bd666c67", "src.william-bryan-rust-find-a-grave.95e736d4"]
+geo_refs: ["event.evelyn_mundell.winona_residence_school", "event.mundell.walter_frances_marriage.1910", "event.rust.frances_birth.1894-06-06", "target.rust.frances_adolph_strawn_beloit"]
+outcome: "Later census evidence supports the Rust-to-Adolph identity; the possible later Strawn identity remains open."
+next_action: "Obtain a marriage, obituary, or household record that directly connects Frances Adolph to Frances Strawn."
 ---
 
 # Mundell Rust Frances Adolph Identity Path

@@ -1,3 +1,18 @@
+---
+id: trace.2026-07-08.cecilia-parents-correction
+title: "Cecilia Parents Correction"
+date: 2026-07-08
+status: resolved
+confidence: documented
+case_refs: ["case.01", "case.21", "case.23"]
+person_refs: ["person.fleckenstein.catherine_parents", "person.zodrow.cecilia", "person.zodrow.john", "person.zodrow.julius_collateral", "person.zodrow.leonard_ferdinand"]
+evidence_refs: ["ev.ancestry.1910-zodrow", "ev.ancestry.1920-zodrow", "ev.ancestry.1997-cecilia-obituary-index"]
+source_refs: ["src.cecilia-zodrow-zimmerman-find-a-grave.5586b816", "src.hedwig-hattie-zodrow-schroer-find-a-grave.8fde6214", "src.julius-henry-zodrow-find-a-grave.b2c95ae2", "src.leonard-ferdinand-zodrow-find-a-grave.7870a1b4"]
+geo_refs: ["event.zodrow.john_death.1915-03-15", "event.zodrow.julius_death.1959-03-13"]
+outcome: "Federal censuses establish Cecilia as a daughter of Leonard Ferdinand Zodrow and Catherine Fleckenstein; Julius Zodrow is a collateral great-uncle."
+next_action: "Identify Catherine Fleckenstein's parents through the Leoville baptism, the couple's marriage, and Catherine's parish or death records."
+---
+
 # Cecilia's parents: Leonard Ferdinand Zodrow, not Julius (2026-07-08)
 
 Owner-initiated lead, fetched and verified this session. The page has carried

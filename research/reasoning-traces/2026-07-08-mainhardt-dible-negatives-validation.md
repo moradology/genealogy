@@ -1,8 +1,23 @@
+---
+id: trace.2026-07-08.mainhardt-dible-negatives-validation
+title: "Mainhardt and Dible Origin Negatives Validation"
+date: 2026-07-08
+status: resolved
+confidence: strong
+case_refs: ["case.02", "case.11"]
+person_refs: ["person.dible.jacob", "person.dible.john_albert", "person.zimmerman.john_paul"]
+evidence_refs: ["ev.ancestry.1866-dible-will"]
+source_refs: ["src.dad-bremen-emigrant-search.e1c6671c", "src.genealogie-mainhardt-database.05a17439", "src.history-of-the-devilbiss-family-in-the-united-states.69241716", "src.johann-jacob-dreibelbis-wikitree.9e7389b3", "src.pa-archives-3rd-series-vol-22.5842163a"]
+geo_refs: ["target.dible.early_pennsylvania", "target.zimmerman.mainhardt_archion"]
+outcome: "The Mainhardt database weakens the locality claim, the emigration search remains open, and the Dreibelbis and DeVilbiss pedigree grafts are disconfirmed."
+next_action: "Pull original Mainhardt or United States Heimat records for Zimmerman and Westmoreland deeds, tax, probate, and church records for Dible."
+---
+
 # Mainhardt + Dible-origin negatives: validation (2026-07-08)
 
 Independent validation of the two load-bearing negative/disconfirming clusters from
 the frontier intake (`research/frontier-intake/13-zinkle.md`, `03-dible-origin.md`;
-TODO.md 3.13 and 3.3). A validation agent re-ran every query and re-fetched every
+research/archive/program-board-2026-07-08.md 3.13 and 3.3). A validation agent re-ran every query and re-fetched every
 text itself on 2026-07-08; the zeros below are that agent's own results, not
 inherited claims. All five verdicts: CONFIRMED.
 

@@ -1,7 +1,22 @@
+---
+id: trace.2026-07-08.long-patton-validation
+title: "Long Line Chapman Fulton Goodspeed Chalkley Validation"
+date: 2026-07-08
+status: resolved
+confidence: documented
+case_refs: ["case.13", "case.20"]
+person_refs: ["person.long.john_franklin", "person.long.robert_nelson", "person.rev_robert_long"]
+evidence_refs: []
+source_refs: ["src.chalkley-chronicles-of-the-scotch-irish-settlement-vol-2.266c0d94", "src.chapman-pike-county-1880.6975c649", "src.fulton-jefferson-county-iowa-vol-1.9efd1642", "src.goodspeed-posey-county-1886.0f726b9b"]
+geo_refs: ["event.long.jf_marriage.1826-02-23", "event.long.robert_ann_marriage.1857-02-19", "path.long_sleight"]
+outcome: "Chapman identifies Sally A. Patton and fixes the Long generation order; the older Samuel-to-Robert and Pearl Township links still require direct records."
+next_action: "Pull Long probate, land, Bible, and church records for the unresolved generation links while preserving the corrected 1826 marriage and 1843 church chronology."
+---
+
 # Long line: Chapman/Fulton/Goodspeed/Chalkley validation (2026-07-08)
 
 Independent validation of the frontier-intake Long cluster (`research/frontier-intake/06-long.md`,
-TODO.md 3.6). Every source below was re-fetched from archive.org full-text OCR and
+research/archive/program-board-2026-07-08.md 3.6). Every source below was re-fetched from archive.org full-text OCR and
 quote-matched verbatim by a validation agent on 2026-07-08; verdicts and the quotes
 as matched are recorded here. Ledger entries for these four sources are queued for
 the next index.html landing window (they will receive src ids then; URLs cited

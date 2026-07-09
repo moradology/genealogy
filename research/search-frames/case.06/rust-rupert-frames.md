@@ -1,7 +1,7 @@
 Source intake file: research/frontier-intake/10-rust-rupert.md
 Graduated: 2026-07-08; Case: case.06
 
-### F1 (w1). Are John F. ('F. John') Rust and Etta B. Rupert the biological parents of Mary Frances Rust (later Mundell / Adolph / Strawn, 1894-1984), and how does this reconcile the earlier 'Ethel B. Rupert' candidate name?
+### F1 (w1). Are John F. ('F. John') Rust and Etta B. Rupert the biological parents of Mary Frances Rust (later Mundell / Adolph; reported as Strawn, 1894-1984), and how does this reconcile the earlier 'Ethel B. Rupert' candidate name?
 
 - Jurisdictions: Reamsville / Martin Township, Smith County, Kansas; Smith Center (county seat), Smith County, Kansas
 - Name variants: Rust / Ruste; Rupert (confirmed) vs. earlier candidate spelling 'Ethel B. Rupert' now shown to be 'Etta B. Rupert' on her own and her children's Find A Grave pages; Mary Frances / Frances / Fannie Rust

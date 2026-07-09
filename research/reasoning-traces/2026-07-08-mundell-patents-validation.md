@@ -1,7 +1,22 @@
+---
+id: trace.2026-07-08.mundell-patents-validation
+title: "Mundell Land Patents and Harvey Validation"
+date: 2026-07-08
+status: resolved
+confidence: documented
+case_refs: ["case.22"]
+person_refs: ["person.mundell.harvey", "person.mundell.john"]
+evidence_refs: []
+source_refs: ["src.harvey-mundell-find-a-grave.d5b36449", "src.mundell-patent-0031-530-blm-glo.d9eff0c9", "src.mundell-patent-0053-283-blm-glo.7f7af14e", "src.mundell-patent-in0980-467-blm-glo.3598c84c", "src.mundell-patent-in0980-468-blm-glo.87e9f582", "src.mundell-patent-in1040-291-blm-glo.b55e8832", "src.mundell-patent-in1040-292-blm-glo.96538f93", "src.mundell-patent-in1050-380-blm-glo.ae0b35ae"]
+geo_refs: ["event.mundell.harvey_birth.1837-04", "event.mundell.harvey_death.1911-03-26", "event.mundell.harvey_marriage.1857-12-27", "path.mundell"]
+outcome: "Primary patents document James Mundell's Indiana land arc and a same-surname cluster; Harvey's service and later life are supported, but the parentage chain is not proved."
+next_action: "Find original household, marriage, probate, or deed evidence that names Harvey as John and Deborah Mundell's son and then tests James as John's father."
+---
+
 # Mundell land patents + Harvey: validation (2026-07-08)
 
 Independent validation of the frontier-intake Mundell-origin cluster
-(`research/frontier-intake/08-mundell-origin.md`; TODO.md 3.8). BLM GLO records
+(`research/frontier-intake/08-mundell-origin.md`; research/archive/program-board-2026-07-08.md 3.8). BLM GLO records
 re-queried directly (government primary); Find a Grave partially reachable via
 reader proxy.
 

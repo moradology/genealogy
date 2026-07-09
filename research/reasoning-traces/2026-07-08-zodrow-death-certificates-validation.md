@@ -1,7 +1,22 @@
+---
+id: trace.2026-07-08.zodrow-death-certificates-validation
+title: "Zodrow Washington Death Certificate Cluster Validation"
+date: 2026-07-08
+status: resolved
+confidence: documented
+case_refs: ["case.01", "case.21"]
+person_refs: ["person.zodrow.cecilia", "person.zodrow.john", "person.zodrow.julius_collateral", "person.zodrow.leonard_ferdinand"]
+evidence_refs: []
+source_refs: ["src.albert-l-zodrow-wa-death-index.2d449e56", "src.august-henry-zodrow-wa-death-certificate.773029eb", "src.ernestina-zodrow-holy-cross-burial-record.471959dc", "src.ernestine-zodrow-wa-death-index.24690954", "src.hedwig-hattie-zodrow-schroer-find-a-grave.8fde6214", "src.julius-zodrow-holy-cross-burial-record.5bc82a53", "src.julius-zodrow-wa-death-certificate.d9291309", "src.leonard-william-zodrow-wa-death-certificate.4207e371"]
+geo_refs: ["event.zodrow.ernestina_death.1940-05-14", "event.zodrow.julius_death.1959-03-13", "target.zodrow.lebehnke_parish_civil_registry", "target.zodrow.neu_lebehnke_hypothesis"]
+outcome: "Washington primary records document Julius and Ernestina's collateral household and its conflicts; they do not make Julius the father of Cecilia."
+next_action: "Keep the Washington family collateral and use Leoville and Sheridan County records for the direct Leonard Ferdinand and Cecilia line."
+---
+
 # Zodrow Washington death-certificate cluster: validation (2026-07-08)
 
 Independent validation of the frontier-intake Zodrow-west cluster
-(`research/frontier-intake/16-zodrow-west.md`, TODO.md 3.16). The validating agent
+(`research/frontier-intake/16-zodrow-west.md`, research/archive/program-board-2026-07-08.md 3.16). The validating agent
 fetched the Washington State Digital Archives records itself — including the
 actual certificate page SCANS (DigitalObject downloads), not just index HTML —
 and reached Find a Grave through a reader proxy after direct and country-mirror

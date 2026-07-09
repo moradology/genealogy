@@ -1,7 +1,22 @@
+---
+id: trace.2026-07-08.adolph-grams-validation
+title: "Adolph and Grams Clusters Validation"
+date: 2026-07-08
+status: resolved
+confidence: strong
+case_refs: ["case.01", "case.05"]
+person_refs: ["person.antonette_grams", "person.evelyn_mundell", "person.mary_frances_rust", "person.zodrow.john"]
+evidence_refs: ["ev.ancestry.1885-zodrow", "ev.ancestry.1940-adolph-mundell"]
+source_refs: ["src.1950-census-kingery-township-kansas.22501237", "src.antonette-grams-zodrow-find-a-grave.46e00498", "src.charles-adolph-obituary-rootsweb.a4cf57d2", "src.evelyn-delores-zimmerman-obituary-baalmann-mortuary.e1d95407", "src.glenn-howard-adolph-find-a-grave.05be8223", "src.jacob-henry-adolph-find-a-grave.ee45bf2b", "src.leoville-calvary-cemetery-transcription-ksgenweb.6d88b722", "src.rosa-grams-find-a-grave.defa5a8a"]
+geo_refs: ["event.evelyn_mundell.winona_residence_school", "event.zodrow.antonette_grams_birth.1846-05-23", "event.zodrow.antonette_grams_death.1934-08-01"]
+outcome: "The seven checked claims were confirmed at their stated tiers, while the Winona connection, Alsace labels, dates, and cemetery naming remain explicit conflicts."
+next_action: "Resolve the Winona schooling tension and the later Strawn identity with direct household, school, marriage, or obituary records."
+---
+
 # Adolph + Grams clusters: validation (2026-07-08)
 
 Independent validation of the frontier-intake Adolph and Grams clusters
-(`research/frontier-intake/12-adolph-winona.md`, `15-grams-rolof.md`; TODO.md 3.12,
+(`research/frontier-intake/12-adolph-winona.md`, `15-grams-rolof.md`; research/archive/program-board-2026-07-08.md 3.12,
 3.15). All seven claims re-fetched and quote-matched by a validation agent on
 2026-07-08 (Find a Grave reachable only through a reader proxy this session; the
 1950 census read from the schedule image itself). All seven LAND-READY, with the

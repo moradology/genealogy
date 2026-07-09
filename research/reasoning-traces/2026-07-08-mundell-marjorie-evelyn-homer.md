@@ -1,3 +1,18 @@
+---
+id: trace.2026-07-08.mundell-marjorie-evelyn-homer
+title: "Homer Mundell Marjorie Evelyn Clemans and the Raising of Evelyn"
+date: 2026-07-08
+status: active
+confidence: documented
+case_refs: ["case.05", "case.07", "case.08"]
+person_refs: ["person.clemans.marjorie", "person.evelyn_mundell", "person.mary_frances_rust", "person.mundell.homer"]
+evidence_refs: ["ev.ancestry.1910-clemans-barron", "ev.ancestry.1921-clemans-flaherty-negative", "ev.ancestry.1930-clemans-bayport", "ev.ancestry.1930-homer-mundell", "ev.ancestry.1933-mundell-clemans-marriage", "ev.ancestry.1939-mundell-divorce", "ev.ancestry.1940-adolph-mundell", "ev.ancestry.1940-clemans-st-paul", "ev.ancestry.1940-homer-mundell", "ev.ancestry.1950-adolph-mundell", "ev.ancestry.1950-homer-mundell", "ev.ancestry.1972-herbert-mundell-ssdi", "ev.ancestry.clemans-colorado-candidates", "ev.ancestry.leora-rogers-marriage-negative", "ev.ancestry.marjorie-clemans-candidates"]
+source_refs: ["src.donald-lynn-mundell-obituary-fry-funeral-home.820e326b", "src.evelyn-delores-zimmerman-obituary-baalmann-mortuary.e1d95407"]
+geo_refs: ["event.evelyn_mundell.birth.1935-01-16", "event.mundell.homer_marriage.1933-06-19", "event.mundell.homer_marriage.1956-02-06", "event.mundell.homer_residence.1930"]
+outcome: "Homer and Marjorie's timeline and the children's residence with Frances Adolph are documented; four same-name lines are excluded, but Marjorie's parents and later life remain unknown."
+next_action: "Pursue offline Colorado vital records and Marjorie's post-1939 death or remarriage records under any later surname."
+---
+
 # Homer Mundell, Marjorie Evelyn Clemans, and the raising of Evelyn (2026-07-08)
 
 Owner-authorized single-session Ancestry pull (their subscription), driven directly by
@@ -20,11 +35,11 @@ brother Herbert, and (e) narrowed but did NOT prove Marjorie's parents.
 - **6 Feb 1956** — Homer Clair Mundell m. **Clara Isbell Walker**, Colorado Springs, El Paso Co.
   CO Select County Marriages 1863-2018 (coll. 61846 rec 568982).
 
-So Homer married three times: Marjorie (1933–39), Leora (by 1940), Clara (1956). The
-"Leora/William Rogers context that needs household-level sorting" flagged on the page is
-now RESOLVED: Leora was the second wife (post-Marjorie); Evelyn's siblings named in
-Donald Lynn Mundell's obituary (Marilyn Ayers, Judy Bastian, and Donald Lynn himself)
-are half-siblings via Leora, not Marjorie's children.
+So Homer married three times: Marjorie (1933–39), Leora (by 1940), Clara (1956). Leora's
+place as Homer's second wife is resolved, but the obituary's William Rogers wording is not.
+The 1950 follow-up identifies Jerry, Walter, Donald, and an unnamed daughter in Homer and
+Leora's household, making the named sons Evelyn's half-brothers; it also leaves Rogers open
+outside the Colorado marriage-index coverage. See `2026-07-09-mundell-1950-households.md`.
 
 ## Homer Clair Mundell — corrected identity
 
@@ -60,8 +75,8 @@ Rust cluster is Smith Co KS / Reamsville — a field to reconcile, minor).
 
 ## Herbert Duane Mundell (1936–1972) — Evelyn's brother, verified deceased
 
-- SSDI (coll. 3693 rec 44277315): Herbert Mundell, SSN 512-34-6599, b **18 Nov 1936**,
-  SSN issued **1953 in Kansas**, last residence Colorado Springs CO 80911, d **Dec 1972**.
+- SSDI (coll. 3693 rec 44277315): Herbert Mundell, b **18 Nov 1936**; Social Security
+  number issued **1953 in Kansas**; d **Dec 1972**.
 - Middle name Duane (Korean War draft card "Herbert Duane Mundell"; FindAGrave / VA
   gravesite "Herbert D Mundell"); a veteran.
 - Ancestry suggested-records link this SSDI entry directly to "Herbert Mondel" in the 1940

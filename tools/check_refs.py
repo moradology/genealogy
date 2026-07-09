@@ -76,9 +76,6 @@ RESIDUAL_PERSONS = frozenset({
     "person.elizabeth_j_haden",
     "person.elizabeth_jane_brown",
     "person.ethel_b_rupert",
-    # candidate identity of person.mary_frances_rust pending case.05 --
-    # deliberately distinct id while the identity question is open.
-    "person.frances_adolph",
     "person.julia_dible",
     "person.lovina_parker_love",
     "person.lyle_strawn",
@@ -140,6 +137,7 @@ RETIRED_TO_CANONICAL = {
     "person.homer_clair_mundell": "person.mundell.homer",
     "person.marjorie_clemans": "person.clemans.marjorie",
     "person.marjorie_clemans_mundell": "person.clemans.marjorie",
+    "person.frances_adolph": "person.mary_frances_rust",
 }
 RETIRED_ALIASES = frozenset(RETIRED_TO_CANONICAL)
 
@@ -147,11 +145,16 @@ _retired_residual_overlap = RESIDUAL_PERSONS & RETIRED_ALIASES
 assert not _retired_residual_overlap, (
     f"RESIDUAL_PERSONS and RETIRED_ALIASES overlap: {sorted(_retired_residual_overlap)}")
 
-# Append-only Docket registry: extend this set in the same change that
-# opens a new case. Bounds how far a case ref can pend before the Docket
-# lands -- an id outside this manifest is a typo, not a future case.
-# 2026-07-08: case.21 opened for Cecilia's corrected Leonard Ferdinand parentage.
-PLANNED_CASES = frozenset({f"case.{n:02d}" for n in range(1, 22)})
+def canonical_case_ids() -> frozenset[str]:
+    """Load the append-only case universe from the canonical JSONL truth."""
+    path = ROOT / "research" / "cases" / "cases.jsonl"
+    records = [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+    return frozenset(record["id"] for record in records)
+
+
+# One authoritative Docket registry. New cases land in cases.jsonl first; the
+# page, frames, and checkers are projections validated by check_cases.py.
+PLANNED_CASES = canonical_case_ids()
 
 
 def iter_person_tokens(value):

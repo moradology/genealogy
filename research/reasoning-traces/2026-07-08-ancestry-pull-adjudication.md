@@ -1,3 +1,18 @@
+---
+id: trace.2026-07-08.ancestry-pull-adjudication
+title: "Ancestry Subscription Pull Adjudication"
+date: 2026-07-08
+status: resolved
+confidence: documented
+case_refs: ["case.01", "case.03", "case.04", "case.06", "case.07", "case.11", "case.17", "case.21"]
+person_refs: ["person.claar.samuel_dove", "person.clemans.marjorie", "person.dible.john_albert", "person.dible.zephaniah", "person.doyle_zimmerman", "person.nauer.thomas", "person.rust.john_f", "person.zodrow.cecilia", "person.zodrow.john"]
+evidence_refs: ["ev.ancestry.1830-1841-rust-parish", "ev.ancestry.1861-nauer-marriage-negative", "ev.ancestry.1866-dible-will", "ev.ancestry.1885-zodrow", "ev.ancestry.1895-claar-marriage-search", "ev.ancestry.1900-rust", "ev.ancestry.1905-rust", "ev.ancestry.1910-clemans-barron", "ev.ancestry.1910-zodrow", "ev.ancestry.1920-zodrow", "ev.ancestry.1921-clemans-flaherty-negative", "ev.ancestry.1930-clemans-bayport", "ev.ancestry.1940-clemans-st-paul", "ev.ancestry.1997-cecilia-obituary-index", "ev.ancestry.2005-doyle-obituary-index"]
+source_refs: []
+geo_refs: []
+outcome: "The first subscription batch resolved several record questions and registered negatives; its tentative Clemans maternal attachment was superseded by later same-name adjudication."
+next_action: "Use the later case.07 evidence set for the Clemans line and pursue the remaining offline and paywalled records without reviving the rejected attachment."
+---
+
 # Ancestry subscription pull: adjudication (2026-07-08)
 
 Owner-authorized single-session pull of their paid Ancestry account, 15 sheet
@@ -35,9 +50,11 @@ puller's summary.
 
 - 1921 Clemans-Flaherty St. Louis marriage license — not in the Missouri index
   (city-coverage gap); groom's legal given name not obtained.
-- 1895 Claar-Hoyle marriage — absent from Kansas collections; both spouses
-  Iowa-born with first child b. Kansas 1896, so the marriage was likely in
-  Iowa; maiden name now has a THIRD spelling "Hayle" (case.17).
+- 1895 Claar-Hoyle marriage — the subscription search did not find it because
+  the searched FamilySearch-derived collection omits Decatur County. This
+  negative never supported an Iowa marriage. Superseding research on
+  2026-07-09 found the county index entry at Oberlin, Kansas; only the bride's
+  Hoyle/Hogle/Hayle spelling remains open (case.17).
 - Nauer-Koeberger ~1861 Ontario marriage — not indexed in the Ontario/Roman
   Catholic marriage collections; recommend the Drouin parish registers.
 

@@ -1,7 +1,8 @@
 # Migration plan: one file → landing + four focused pages
 
-Status: PROPOSAL for owner approval. Nothing here is executed yet. The current
-`index.html` remains the single source of truth until this is approved and done.
+Status: DEFERRED proposal. Nothing here is executed. The current `index.html` remains
+the presentation, while the canonical JSONL, reasoning traces, and GeoJSON remain the
+research source of truth throughout any future page split.
 
 ## Goal
 

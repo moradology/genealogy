@@ -1,27 +1,16 @@
 ---
 id: trace.2026-07-07.zodrow-sabanka-lebehnke
-title: Zodrow Sabanka To Neu Lebehnke Locality Path
-date_created: 2026-07-07
+title: "Zodrow Sabanka To Neu Lebehnke Locality Path"
+date: 2026-07-07
 status: active
 confidence: working
-lineage_tags: [zodrow]
-people: [John M. Zodrow, Antonette Grams Zodrow, Julius Henry Zodrow]
-places: [Sabanka, Neu Lebehnke, Lebehnke, Deutsch Krone, Westpreussen, Nowa Lubianka, Leoville Kansas]
-source_ids:
-  - src.john-zodrow-familysearch.35a4f123
-  - src.antonette-grams-zodrow-find-a-grave.46e00498
-  - src.leoville-calvary-cemetery-transcription-ksgenweb.6d88b722
-  - src.neu-lebehnke-nowa-lubianka-kartenmeister.fe6797bf
-  - src.neu-lebehnke-meyers-gazetteer.dbd29306
-  - src.lebehnke-kr-deutsch-krone-meyers-gazetteer.4c8571d5
-  - src.kreis-deutsch-krone-parish-civil-registry-table-agoff.a66fa650
-  - src.standesamtsbezirk-lebehnke-agoff.6d8cdd05
-  - src.nowa-lubianka-place-page-deutsch-krone-project.3debea66
-  - src.lebehnke-catholic-banns-abstract-1874-1925.127337c2
-geojson_ids:
-  - event.zodrow.john_death.1915-03-15
-  - event.zodrow.antonette_grams_birth.1846-05-23
-next_action: Treat Sabanka as a locality problem and search Lebehnke Catholic/Lutheran/civil records and collateral Zodrow entries.
+case_refs: ["case.01"]
+person_refs: ["person.antonette_grams", "person.zodrow.john"]
+evidence_refs: ["ev.ancestry.1885-zodrow"]
+source_refs: ["src.antonette-grams-zodrow-find-a-grave.46e00498", "src.john-zodrow-familysearch.35a4f123", "src.kreis-deutsch-krone-parish-civil-registry-table-agoff.a66fa650", "src.lebehnke-catholic-banns-abstract-1874-1925.127337c2", "src.lebehnke-kr-deutsch-krone-meyers-gazetteer.4c8571d5", "src.leoville-calvary-cemetery-transcription-ksgenweb.6d88b722", "src.neu-lebehnke-meyers-gazetteer.dbd29306", "src.neu-lebehnke-nowa-lubianka-kartenmeister.fe6797bf", "src.nowa-lubianka-place-page-deutsch-krone-project.3debea66", "src.standesamtsbezirk-lebehnke-agoff.6d8cdd05", "src.szukaj-w-archiwach-catalog-neu-lebehnke-land-file.b15660e6"]
+geo_refs: ["event.zodrow.antonette_grams_birth.1846-05-23", "event.zodrow.john_death.1915-03-15", "target.zodrow.johann_property_neu_lebehnke.1860-1873", "target.zodrow.lebehnke_banns_collateral", "target.zodrow.lebehnke_parish_civil_registry", "target.zodrow.neu_lebehnke_hypothesis", "target.zodrow.sabanka_jurisdiction_stack"]
+outcome: "Neu Lebehnke is a practical parish and civil-jurisdiction hypothesis, but the remembered place name Sabanka remains unidentified."
+next_action: "Search Lebehnke Catholic, Lutheran, civil, and land records for direct and collateral Zodrow entries without treating the locality hypothesis as proved."
 ---
 
 # Zodrow Sabanka To Neu Lebehnke Locality Path

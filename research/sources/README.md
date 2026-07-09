@@ -1,27 +1,36 @@
 # Source Index
 
-`source-index.json` is the machine-readable source listing for this project.
+`sources.jsonl` is the canonical, Git-tracked source registry. One explicit
+source record lives on each line so parallel research work produces small,
+reviewable diffs. `source-index.json` is its generated search projection.
 
-It is generated from the `index.html` Source Ledger:
+Rebuild the search projection after editing `sources.jsonl`:
 
 ```sh
-python3 tools/build_source_index.py
+uv run tools/build_source_index.py
 ```
 
 Check whether it is current:
 
 ```sh
-python3 tools/build_source_index.py --check
+uv run tools/build_source_index.py --check
 ```
+
+The check also compares the public Source Ledger in `index.html` with the
+canonical JSONL records. The presentation may never silently change source
+titles, URLs, groups, or blurbs. The old HTML-to-JSON extraction path was
+removed in the schema-2 hard cutover.
 
 ## Fields
 
-- `id` - stable local source id used by reasoning traces. It is generated from source title, URL, and blurb so adding another source does not renumber existing entries.
+- `id` - stable local source id used by reasoning traces; the readable slug comes from the title and the digest hashes the URL only.
+- `html_id` - append-only public ledger code (`s1`, `s2`, ...), present in canonical JSONL but omitted from the generated search index.
+- `group` - public Source Ledger section, present in canonical JSONL but omitted from the generated search index.
 - `title` - source title from the HTML Source Ledger.
 - `url` - source URL.
-- `source_type` - coarse type used for filtering.
-- `lineage_tags` - inferred branch tags for retrieval.
-- `evidence_role` - how the source is currently being used.
+- `source_type` - explicitly reviewed coarse type used for filtering.
+- `lineage_tags` - explicitly reviewed branch tags for retrieval.
+- `evidence_role` - explicitly reviewed statement of how the source is used.
 - `blurb` - short summary used for indexing.
 - `search_text` - title plus blurb for simple full-text search.
 
@@ -29,6 +38,7 @@ python3 tools/build_source_index.py --check
 
 Current broad source types include:
 
+- `archival_record`
 - `obituary`
 - `cemetery_memorial`
 - `public_tree_index`
@@ -67,4 +77,6 @@ jq -r '.sources[] | select(.evidence_role == "research_target") | [.id, .title, 
 
 ## Id stability
 
-Source ids hash the URL only (slug derives from the title). Blurb edits never change ids; a title or URL change moves the id, and the migration pattern in `id-migration-2026-07.json` (old-to-new map committed alongside the change) should be repeated.
+Source ids hash the URL only (the readable slug derives from the title). Blurb
+edits never change ids; a title or URL change moves the id, and the migration
+pattern in `id-migration-2026-07.json` should be repeated.

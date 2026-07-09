@@ -1,6 +1,13 @@
 Source intake file: research/frontier-intake/01-hawkeye.md
 Graduated: 2026-07-08; Case: case.17
 
+**Landed 2026-07-09:** Decatur County's marriage index fixes Samuel D. Claar
+and Maggie M. Hogle at Oberlin, Kansas, on 5 Oct 1895. The prior failed Kansas
+database search reflected missing Decatur County coverage and does not support
+an Iowa marriage. The index is one volunteer transcription shown in two sort
+orders, so the original record is still required to adjudicate Hoyle, Hogle,
+and Hayle. See `ev.ksgenweb.1895-claar-hogle-index`.
+
 ### F1 (w1). Is the Claar family (Henry Claar + Electra/Electa Alice White, parents of the already-documented Samuel Dove Claar) among the founding circle of Hawkeye's Iowa-origin settlers, and can this be moved from compiled/index evidence to a primary record?
 
 - Jurisdictions: Cook Township, Decatur County, Kansas; village/post office Hawkeye (1879-1896); nearest county seat Oberlin, Decatur County

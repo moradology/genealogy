@@ -1,30 +1,29 @@
 {
-  "schema_version": "1.1.0",
-  "updated": "2026-07-07",
-  "source": "Extracted from index.html Source Ledger",
-  "record_count": 172,
+  "schema_version": "2.0.0",
+  "updated": "2026-07-09",
+  "source": "Canonical Git-tracked JSONL source registry",
+  "record_count": 178,
   "fields": {
-    "id": "Stable local source id for notes and reasoning traces, generated from source title, URL, and blurb.",
-    "title": "Human-readable source title from the artifact ledger.",
+    "id": "Stable local source id; readable slug from title plus a URL-only hash.",
+    "title": "Human-readable source title.",
     "url": "Source URL.",
-    "source_type": "Coarse type used for filtering and reliability expectations.",
-    "lineage_tags": "Branch/search tags inferred from title and blurb.",
-    "evidence_role": "How this source is currently being used.",
+    "source_type": "Explicit source type used for reliability expectations.",
+    "lineage_tags": "Explicit branch/search tags.",
+    "evidence_role": "Explicit statement of how this source is used.",
     "blurb": "Short indexing summary.",
-    "search_text": "Concatenated title and blurb for simple full-text search."
+    "search_text": "Title plus blurb for simple full-text search."
   },
   "sources": [
     {
       "id": "src.doyle-and-evelyn-zimmerman-50th-anniversary-announcement-colby-free-pr.ffe48c56",
       "title": "Doyle and Evelyn Zimmerman 50th anniversary announcement, Colby Free Press, 11 Jun 2004",
       "url": "http://www.nwkansas.com/cfpwebpages/pdf%20pages-all/cfp%20pages-pdfs%202004/cfp%20pages:06%20Jun/Week%202/Friday/fam.pdf",
-      "source_type": "compiled_pdf_or_journal",
+      "source_type": "newspaper",
       "lineage_tags": [
         "zimmerman",
-        "mundell",
-        "long_mcclelland"
+        "mundell"
       ],
-      "evidence_role": "lead",
+      "evidence_role": "evidence",
       "blurb": "Family-supplied announcement establishes marriage on 14 Jun 1954 at Sacred Heart Catholic Church, Colby; documents Doyle in Selden until 1953, Evelyn in Winona until 1954, the couple meeting in January 1954, and the Hi-Plains Implement career from 1953 through retirement in June 1999. Also records Evelyn at Winona until the 1954 marriage and working alongside Doyle at Hi-Plains Implement from 1974 until the couple's 1999 retirement. Contradicts the compiled 14 Jun 1953 marriage date.",
       "search_text": "Doyle and Evelyn Zimmerman 50th anniversary announcement, Colby Free Press, 11 Jun 2004 Family-supplied announcement establishes marriage on 14 Jun 1954 at Sacred Heart Catholic Church, Colby; documents Doyle in Selden until 1953, Evelyn in Winona until 1954, the couple meeting in January 1954, and the Hi-Plains Implement career from 1953 through retirement in June 1999. Also records Evelyn at Winona until the 1954 marriage and working alongside Doyle at Hi-Plains Implement from 1974 until the couple's 1999 retirement. Contradicts the compiled 14 Jun 1953 marriage date."
     },
@@ -51,8 +50,8 @@
         "mundell"
       ],
       "evidence_role": "evidence",
-      "blurb": "Names Homer Claire Mundell in Donald's parent line and places Evelyn Zimmerman, Marilyn Ayer/Ayers, and Judy Bastian in the same sibling group.",
-      "search_text": "Donald Lynn Mundell obituary, Fry Funeral Home Names Homer Claire Mundell in Donald's parent line and places Evelyn Zimmerman, Marilyn Ayer/Ayers, and Judy Bastian in the same sibling group."
+      "blurb": "Names Homer Claire Mundell in Donald's parent line and places Evelyn Zimmerman with Donald and two other daughters in the same sibling group.",
+      "search_text": "Donald Lynn Mundell obituary, Fry Funeral Home Names Homer Claire Mundell in Donald's parent line and places Evelyn Zimmerman with Donald and two other daughters in the same sibling group."
     },
     {
       "id": "src.doyle-jule-zimmerman-find-a-grave.a6b1ff2c",
@@ -2100,6 +2099,79 @@
       "evidence_role": "reference",
       "blurb": "Context-only source for the 1930s drought and dust storms on the Kansas High Plains, including the 14 Apr 1935 Black Sunday storm; used for the anchors birth-cohort aside, not as family evidence.",
       "search_text": "Dust Bowl, Kansapedia, Kansas Historical Society Context-only source for the 1930s drought and dust storms on the Kansas High Plains, including the 14 Apr 1935 Black Sunday storm; used for the anchors birth-cohort aside, not as family evidence."
+    },
+    {
+      "id": "src.1851-canada-census-lorenz-nauer-household-wilmot-township.bc7cc74a",
+      "title": "1851 Canada census, Lorenz Nauer household, Wilmot Township",
+      "url": "https://central.bac-lac.gc.ca/.item/?op=img&app=Census1851&id=e002371073",
+      "source_type": "archival_record",
+      "lineage_tags": [
+        "nauer",
+        "zimmerman"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "Primary census pages 141-144 place Lorenz and Thorothea Nauer, two Wand youths, and four Nauer children in one Prussia-born Roman Catholic Wilmot Township household; Thomas is absent and relationships are unstated.",
+      "search_text": "1851 Canada census, Lorenz Nauer household, Wilmot Township Primary census pages 141-144 place Lorenz and Thorothea Nauer, two Wand youths, and four Nauer children in one Prussia-born Roman Catholic Wilmot Township household; Thomas is absent and relationships are unstated."
+    },
+    {
+      "id": "src.1837-james-mundell-probate-index-clinton-county-courthouse-archives.89a85610",
+      "title": "1837 James Mundell probate index, Clinton County Courthouse Archives",
+      "url": "https://engagedpatrons.org/database/FrankfortCourthouseArchives/csv/CSV.cfm?Browse=&GivenName=John&MiddleName=&Surname=Mundell&RecordType=Probate&Year=&Orderby=Surname%2CGivenName%2CMiddleName%2CDate",
+      "source_type": "archival_record",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "Official loose-court-paper index identifies John Mundell as a son in James Mundell probate folder 236A, file 32, dated 14 Aug 1837; original papers remain to be pulled.",
+      "search_text": "1837 James Mundell probate index, Clinton County Courthouse Archives Official loose-court-paper index identifies John Mundell as a son in James Mundell probate folder 236A, file 32, dated 14 Aug 1837; original papers remain to be pulled."
+    },
+    {
+      "id": "src.descendants-of-james-mundell-and-his-wife-margaret-garrett-mundell.5f04b6fe",
+      "title": "Descendants of James Mundell and His Wife, Margaret (Garrett) Mundell",
+      "url": "https://www.seekingmyroots.com/members/files/G004652.pdf",
+      "source_type": "compiled_pdf_or_journal",
+      "lineage_tags": [
+        "mundell"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "Barry and Woodruff's 1968 genealogy transcribes Clinton County Will Book I, page 22, with a bequest to son John and the same 14 Aug 1837 probate date; the older Pennsylvania-to-Kentucky identity remains circumstantial.",
+      "search_text": "Descendants of James Mundell and His Wife, Margaret (Garrett) Mundell Barry and Woodruff's 1968 genealogy transcribes Clinton County Will Book I, page 22, with a bequest to son John and the same 14 Aug 1837 probate date; the older Pennsylvania-to-Kentucky identity remains circumstantial."
+    },
+    {
+      "id": "src.1860-united-states-census-zephaniah-and-catherine-dible-household.a6d85618",
+      "title": "1860 United States census, Zephaniah and Catherine Dible household",
+      "url": "https://familysearch.org/ark:/61903/1:1:MXRG-NW1",
+      "source_type": "archival_record",
+      "lineage_tags": [
+        "dible"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "Original census image enumerates Catherine Dible, 21, Pennsylvania-born, with Zephaniah in Allegheny Township on 12 Jul 1860, supporting birth about 1839.",
+      "search_text": "1860 United States census, Zephaniah and Catherine Dible household Original census image enumerates Catherine Dible, 21, Pennsylvania-born, with Zephaniah in Allegheny Township on 12 Jul 1860, supporting birth about 1839."
+    },
+    {
+      "id": "src.1886-marriage-application-of-mary-e-dible.a8b4f7ba",
+      "title": "1886 marriage application of Mary E. Dible",
+      "url": "https://familysearch.org/ark:/61903/1:1:VF4D-C8G",
+      "source_type": "archival_record",
+      "lineage_tags": [
+        "dible"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "Mary E. Dible's signed Westmoreland County marriage application 628 names her parents Zephaniah and Catherine Dible.",
+      "search_text": "1886 marriage application of Mary E. Dible Mary E. Dible's signed Westmoreland County marriage application 628 names her parents Zephaniah and Catherine Dible."
+    },
+    {
+      "id": "src.history-of-wapello-county-iowa-and-representative-citizens.c9420f9b",
+      "title": "History of Wapello County, Iowa, and Representative Citizens",
+      "url": "https://archive.org/download/historyofwapello01evan/historyofwapello01evan.pdf",
+      "source_type": "compiled_pdf_or_journal",
+      "lineage_tags": [
+        "dible"
+      ],
+      "evidence_role": "evidence",
+      "blurb": "The 1901 John Dible sketch calls him a son of Zephaniah and Catherine Moore Dible and says Zephaniah later remarried Clarinda Stodghill; it does not establish Catherine's death year or parents.",
+      "search_text": "History of Wapello County, Iowa, and Representative Citizens The 1901 John Dible sketch calls him a son of Zephaniah and Catherine Moore Dible and says Zephaniah later remarried Clarinda Stodghill; it does not establish Catherine's death year or parents."
     }
   ]
 }

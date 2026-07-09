@@ -1,6 +1,14 @@
 Source intake file: research/frontier-intake/18-nauer.md
 Graduated: 2026-07-08; Case: case.04
 
+**Landed 2026-07-09:** Library and Archives Canada's original 1851 pages
+141-144 show one hewed-log-house household: Lorenz and Thorothea Nauer, Lorenz
+and Maria Wand, then Carolina, Jacob, John, and Maria Nauer. All are recorded
+as Prussia-born Roman Catholics. Thomas is absent, and the schedule states no
+relationships. This settles the literal census birthplace as "Prussia" and
+validates the blended Nauer/Wand cluster, but it does not prove Thomas's
+parentage or a specific Prussian province. See `ev.lac.1851-nauer-household`.
+
 ### F1 (w1). What was Thomas A. Nauer's (and his presumed parents Johann Lorenz Nauer/Dorothea Meyer's) actual German origin: Rhenish-Bavarian Palatinate (Rheinkreis/Pfalz, capital Speyer) as WikiTree's garbled 'Munich, Spayer Province' implies, or Rhenish Prussia (Rheinprovinz) as the 1851 Canadian census and the compiled Waterloo PDF both independently state?
 
 - Jurisdictions: Two competing hypotheses to test against each other: (A) Bavarian Rheinkreis/Pfalz (Palatinate), capital Speyer, Kingdom of Bavaria (renamed Pfalz in 1838) vs. (B) Prussian Rhine Province (Rheinprovinz), Kingdom of Prussia, likely Regierungsbezirk Koblenz/Trier/Aachen given the many other 'New Prussia' Waterloo County Catholic settlers from that district. Landing jurisdiction: Wilmot Township then Carrick Township, Bruce County, Canada West/Ontario.
@@ -10,7 +18,7 @@ Graduated: 2026-07-08; Case: case.04
   - German Genealogy Group Bavaria & Pfalz Emigration Database (149,500+ names from period emigration notices) - test for a Nauer/Wand/Meyer hit if truly Palatinate -- https://www.germangenealogygroup.com/records-search/german_emigrants.php (1840s emigration notices)
   - Ancestry.com U.S. and Canada, Passenger and Immigration Lists Index (paywalled) - underlying record behind WikiTree citations S22 (1847 'America' entry for Lorenz, page 260) and (1871 Ontario page 111 for Thomas) -- https://www.ancestry.com/search/collections/2185/ (1847, 1871 entries)
 - Next pulls:
-  1. View the LAC digitized 1851 Wilmot Township census image directly to read the literal birthplace word written for the Lorenz Nauer household (resolves Prussia vs Bavaria at the source rather than trusting any index).
+  1. COMPLETED 2026-07-09: the original pages read "Prussia" for the full household; no narrower province or village is given.
   1. Identify and view the actual Ancestry 'Family Tree' (S8, tree ID 69509776) that WikiTree's Munich/Speyer claim traces back to, to see if it cites any document at all or is itself a guess.
   1. Search German Genealogy Group's free Pfalz emigration database and Speyer Landesarchiv Auswandererkartei-type finding aids for a Nauer emigrating circa 1846-1847 to test the Bavaria hypothesis directly.
 
@@ -33,9 +41,9 @@ Graduated: 2026-07-08; Case: case.04
 - Record sets:
   - Waterloo Region Generations - Wand surname index (9 entries, incl. Lorenz Wand of Carlsruhe b. c.1840, likely a second-marriage or first-marriage Wand child of Dorothea) -- https://generations.regionofwaterloo.ca/search.php?mylastname=Wand&lnqualify=equals&mybool=AND&nr=200&tree=-x--all--x- (1840s-1900s vital events)
   - The German Catholic Settlers of Waterloo County PDF - Wand/Nauer compiled narrative naming Adam Wand-Wandt (d. before 1852) and daughter Ann Wand Gehl -- https://img1.wsimg.com/blobby/go/c0db0dfe-27d2-4632-889f-eeb26fbb14e1/downloads/f7bcaab9-38ae-4388-a9eb-f4fbecb15a21/Waterloo%20German%20Catholic%20Settlers.pdf?ver=1781326202841 (narrative covers 1840s-1880s)
-  - 1851 Census of Canada West, Wilmot Township, Waterloo County (LAC roll C_11754, page 141, lines 47-48) - Lorenz Nauer and Mary Dorothea Wand appear on consecutive census lines; check whether any Wand or Nauer children in that same household entry include a 'Thomas' -- https://recherche-collection-search.bac-lac.gc.ca/eng/Census/index (1851)
+  - 1851 Census of Canada West, Wilmot Township, Waterloo County (LAC roll C-11754, pages 141-144) - Lorenz and Thorothea Nauer head one household containing two Wand youths and four Nauer children; Thomas is absent and relationships are not stated -- https://recherche-collection-search.bac-lac.gc.ca/eng/Census/index (1851)
 - Next pulls:
-  1. Pull the 1851 census image itself (LAC roll C_11754, p.141, lines 47-48) to see the full household listing - this is the one record that could either add or rule out a 'Thomas' in the Lorenz Nauer/Dorothea household directly.
+  1. COMPLETED 2026-07-09: the household spans pages 141-144; Thomas is absent. Treat this as a durable negative, not proof that he was unrelated or lived nowhere nearby.
   1. Search for St. Agatha or New Germany parish marriage record of Ann Wand to Charles Gehl (1853) and Ann Gehl's 1897 remarriage to Henry Hahn, both named in the compiled PDF, to anchor the Wand family with primary church records.
   1. Trace Lorenz Wand of Carlsruhe (b. c.1840, WRG I247858) forward/backward to see if he is documented as Dorothea's son by Adam Wand (would need a Bruce County-era baptismal or marriage record naming his mother).
 
@@ -64,7 +72,7 @@ Graduated: 2026-07-08; Case: case.04
   - German-French Catholic Settlers of Waterloo County PDF (Bowman/Wideen) -- https://img1.wsimg.com/blobby/go/c0db0dfe-27d2-4632-889f-eeb26fbb14e1/downloads/f7bcaab9-38ae-4388-a9eb-f4fbecb15a21/Waterloo%20German%20Catholic%20Settlers.pdf?ver=1781326202841 (compiled 1991-2018, covering 1824-1850s+)
   - Bruce County Marriage Register 1858-1869 (indexed by WRG) -- https://generations.regionofwaterloo.ca/showsource.php?sourceID=S69&tree=generations (1858-1869)
 - Next pulls:
-  1. Pull the actual 1851 Census of Canada West image for Wilmot Twp Div 4 pp.5-6 from Library and Archives Canada's free digitized census database to check for any Wand-surnamed entries in or near the Lorenz Nauer household, and to see if Thomas appears nearby as an independent adult
+  1. COMPLETED 2026-07-09: pages 141-144 contain the full household and its facing house tally; no Thomas appears in it. Continue with parish and separate-residence searches.
   1. Search Waterloo Township 1851/1861 census and any surviving Catholic parish register for a 'Thomas Wand' alias, to test whether Thomas was born to Adam Wand and only adopted 'Nauer' as an adult stepson, matching the documented Lorenz/Lawrence Wand-Nauer pattern
   1. Search St. Agatha parish marriage register (1853, Ann/Maria Josepha Wand x Charles Gehl) for Adam Wand's village of origin, which if found would anchor the whole Wand-Meyer-Nauer cluster to a specific European parish
   1. Request the Diocese of Hamilton Archives' holdings list for Petersburg/St. Agatha/St. Boniface Maryhill Catholic registers 1850s-1870s to identify which register book holds Thomas Nauer's 1856 marriage and his children's baptisms
@@ -74,7 +82,7 @@ Graduated: 2026-07-08; Case: case.04
 - Jurisdictions: Unidentified Prussian village (most likely Rhineland per regional emigration patterns) vs. an internally contradictory 'Munich, Spayer Province' claim; Wilmot Township, Waterloo Co., Ontario as the receiving jurisdiction
 - Name variants: Nauer; Meyer/Meier; place-name only, no village yet identified
 - Record sets:
-  - 1851 Census of Wilmot Township (LAC, indexed by WRG) - gives 'Prussia, Germany' -- https://generations.regionofwaterloo.ca/showsource.php?sourceID=S134&tree=generations (1851)
+  - 1851 Census of Wilmot Township (LAC original; WRG index) - the manuscript literally gives "Prussia," not the modernized phrase "Prussia, Germany" -- https://generations.regionofwaterloo.ca/showsource.php?sourceID=S134&tree=generations (1851)
   - German-French Catholic Settlers of Waterloo County PDF - community origin statistics and 'of Prussia, Germany' language -- https://img1.wsimg.com/blobby/go/c0db0dfe-27d2-4632-889f-eeb26fbb14e1/downloads/f7bcaab9-38ae-4388-a9eb-f4fbecb15a21/Waterloo%20German%20Catholic%20Settlers.pdf?ver=1781326202841 (compiled 1991-2018)
   - WikiTree Nauer-7 (uncited 'Munich, Spayer Province, Germany') -- https://www.wikitree.com/wiki/Nauer-7 (n/a - undated compiled profile)
 - Next pulls:
@@ -132,7 +140,7 @@ Graduated: 2026-07-08; Case: case.04
   - Matricula Online (free digitized Catholic parish registers; Bistum Aachen substantially covered free, Bistum Trier/Bistum Speyer mostly on paywalled Archion instead -- check current coverage before relying on this) -- https://data.matricula-online.eu/de/deutschland/ (varies by diocese)
   - Deutsche Auswanderer-Datenbank (German Emigrants Database, Bremerhaven) -- free name search, ~28,000 pre-1865 records -- https://www.deutsche-auswanderer-datenbank.de/ (pre-1865)
 - Next pulls:
-  1. Pull the actual 1851/1852 LAC census image for Wilmot Twp, Division 4, pages 5-6 (not just WRG's transcription) to check whether the enumerator wrote anything more specific than 'Prussia' in the birthplace column.
+  1. COMPLETED 2026-07-09: the original gives no birthplace more specific than "Prussia." A passenger list or parish record is now required for a village or province.
   1. Search NY passenger arrival lists (free FamilySearch 'New York Passenger Arrival Lists (Castle Garden), 1820-1892' collection) for a Lorenz/Lawrence Nauer family group arriving 1847-1851 (the family's last Prussia-born child was born 1846 and they are first recorded in Ontario in 1851/52), which would fix a specific German port-of-departure town.
   1. Once a specific town or Kreis is identified, pick the matching diocese (Aachen = free on Matricula; Trier/Köln/Speyer = largely paywalled Archion or not yet public) before paying for any subscription access.
 

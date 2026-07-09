@@ -1,8 +1,19 @@
 # Reasoning Traces
 
-Reasoning traces preserve useful research paths that are not yet fully settled.
+Reasoning traces preserve both active research paths and completed proof arguments.
 
-Use `template.md` for new traces. Keep the front matter stable so traces can later be indexed or converted to JSON.
+Use `template.md` for new traces. Every dated trace uses the same strict, single-line
+frontmatter contract and is checked by `tools/check_traces.py`:
+
+- `id`, `title`, `date`, `status`, and `confidence`
+- `case_refs`, `person_refs`, `evidence_refs`, `source_refs`, and `geo_refs`
+- `outcome` and one concrete `next_action`
+
+Reference arrays use canonical ids only. Cases, evidence, and sources resolve through
+their JSONL stores; people resolve through the HTML/GeoJSON person universe; geographic
+events, targets, paths, and links resolve through `ancestry_geospatial.geojson`. Keep
+arrays sorted and use JSON array/string syntax on one line. Do not restore the legacy
+`date_created`, `people`, `places`, `source_ids`, or `geojson_ids` fields.
 
 ## Status Values
 
@@ -22,6 +33,5 @@ Use `template.md` for new traces. Keep the front matter stable so traces can lat
 
 ## Current Traces
 
-- `2026-07-07-zimmerman-mainhardt-archion.md` - Zimmerman/Mainhardt church-book path.
-- `2026-07-07-zodrow-sabanka-lebehnke.md` - Zodrow Sabanka/Neu Lebehnke locality path.
-- `2026-07-07-mundell-rust-frances-adolph.md` - Frances Rust/Adolph/Winona identity path.
+All date-prefixed Markdown files in this directory are canonical traces. The validator
+rejects undated trace filenames and missing or legacy frontmatter.

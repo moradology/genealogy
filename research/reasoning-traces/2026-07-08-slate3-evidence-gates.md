@@ -1,3 +1,18 @@
+---
+id: trace.2026-07-08.slate3-evidence-gates
+title: "Slate 3 Evidence Gates"
+date: 2026-07-08
+status: resolved
+confidence: documented
+case_refs: ["case.18"]
+person_refs: ["person.donna_connelly", "person.doyle_zimmerman", "person.evelyn_mundell"]
+evidence_refs: []
+source_refs: ["src.donna-lea-connelly-dible-obituary-baalmann-mortuary.a2afb9a6", "src.doyle-and-evelyn-zimmerman-50th-anniversary-announcement-colby-free-pr.ffe48c56", "src.dust-bowl-kansapedia-kansas-historical-society.3a3f7334", "src.personenstandsgesetz-of-6-feb-1875-full-text-wikisource.e429f724"]
+geo_refs: ["event.donna_connelly.birth.1935-04-24", "event.doyle_zimmerman.marriage.1954-06-14", "event.evelyn_mundell.winona_residence_school"]
+outcome: "All three evidence gates passed: the anniversary wording, Donna's marriage clause, and both historical-context links were verified with privacy exclusions retained."
+next_action: "No further research action is required for these gates; preserve the verified wording and living-person exclusions in future presentation edits."
+---
+
 # Slate 3 evidence gates: all three pass (2026-07-08)
 
 The reader layer's three agent-side preconditions, verified by direct fetch.

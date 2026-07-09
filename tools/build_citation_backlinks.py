@@ -17,7 +17,7 @@ SOURCE_SECTION_RE = re.compile(r'(<section class="sheet" id="sources">.*?</secti
 LI_RE = re.compile(r"<li(?P<attrs>[^>]*)>(?P<body>.*?)</li>", re.S)
 ID_RE = re.compile(r'\bid=(?:"([^"]+)"|([^\s>]+))')
 SN_RE = re.compile(r"^s[1-9]\d*$")
-GENERATED_RE = re.compile(r'\s*<span class=mono data-g>[^<]*</span>')
+GENERATED_RE = re.compile(r'\s*<span data-g>[^<]*</span>')
 
 
 def normalize_label(label: str) -> str:
@@ -57,7 +57,7 @@ class CitationParser(HTMLParser):
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         attr_map = dict(attrs)
         classes = set((attr_map.get("class") or "").split())
-        is_cite = tag == "sup" and "cite" in classes
+        is_cite = tag == "a" and "cite" in classes
         if self.ahnen_depth:
             self.ahnen_depth += 1
         self.stack.append({"tag": tag, "id": attr_map.get("id") or "", "classes": classes, "is_cite": is_cite})
@@ -167,7 +167,7 @@ def recompute(html: str) -> str:
         suffix = ""
         if li_id in citations:
             cited_by = ", ".join(html_lib.escape(label, quote=False) for label in citations[li_id])
-            suffix = f' <span class=mono data-g>→ {cited_by}</span>'
+            suffix = f' <span data-g>→ {cited_by}</span>'
         return f"<li{attrs}>{body}{suffix}</li>"
 
     fresh_section = LI_RE.sub(replace_li, section)

@@ -1,6 +1,13 @@
 Source intake file: research/frontier-intake/02-dible-armstrong-pa.md
 Graduated: 2026-07-08; Case: case.10
 
+**Landed 2026-07-09:** the 1860 census documents Catherine Dible, age 21
+and Pennsylvania-born, with Zephaniah; an 1886 application signed by daughter
+Mary names Zephaniah and Catherine as her parents; a 1901 biography names
+Catherine Moore. Birth about 1839 is now well supported, but neither 1864 nor
+1872 is a proved death year, and no parent set surfaced. See
+`ev.familysearch.1860-1886-catherine-moore`.
+
 ### F2 (w1). When and where did Zephaniah Dible and Catherine Moore die and where are they buried -- does Catherine's death fall in 1864 (Ancestry) or c.1872 (WikiTree)?
 
 - Jurisdictions: Kiskiminetas Township and/or Bethel Township, Armstrong County, PA; possibly Westmoreland County, PA
@@ -23,7 +30,7 @@ Graduated: 2026-07-08; Case: case.10
   - 'Cooker & Moore' fulling/woolen mill, near the head of the fourth western branch of Rattling Run, Kiskiminetas Twp -- a resident Moore family in the right decade and place, unconfirmed link --  (1820s-1830s per county history)
 - Next pulls:
   1. Search 1850 Westmoreland Co census for a Moore household that could be both Catherine's and Hezekiah Moore's (Zephaniah's brother-in-law by his sister Mereyann's 1853 marriage) parent family, testing whether Catherine and Hezekiah are siblings
-  1. Search 1860 Kiskiminetas Twp, Armstrong Co census directly for the Zephaniah Dible household to get Catherine's stated age/birthplace and any Moore relatives enumerated nearby
+  1. COMPLETED 2026-07-09: the family is in Allegheny Township, Armstrong County; Catherine is 21 and Pennsylvania-born. No parent relationship is supplied.
   1. Check Boiling Spring Presbyterian/Lutheran and Maysville Lutheran burial or membership registers for a Catherine Dible death entry
 
 ### F11 (w3). Who were Catherine Moore's parents, and was she kin to Hezekiah Moore, who married Zephaniah's sister Mereyann Dible in 1853?

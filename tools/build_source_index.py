@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Build a searchable JSON source index from index.html."""
+"""Build the searchable source index from canonical Git-tracked JSONL.
+
+`research/sources/sources.jsonl` is authoritative. The HTML Source Ledger is a
+presentation projection checked semantically against it; HTML is never parsed
+to create or classify source records.
+"""
 
 from __future__ import annotations
 
@@ -11,23 +16,42 @@ import re
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import urlparse
 
 
 ROOT = Path(__file__).resolve().parents[1]
 HTML_PATH = ROOT / "index.html"
+SOURCES_PATH = ROOT / "research" / "sources" / "sources.jsonl"
+META_PATH = ROOT / "research" / "sources" / "sources-meta.json"
 OUT_PATH = ROOT / "research" / "sources" / "source-index.json"
+REQUIRED = frozenset({
+    "html_id", "group", "id", "title", "url", "source_type", "lineage_tags",
+    "evidence_role", "blurb", "search_text",
+})
+SOURCE_TYPES = frozenset({
+    "archival_record", "cemetery_memorial", "church_record_target", "compiled_pdf_or_journal",
+    "compiled_tree_or_profile", "gazetteer_or_registry_context", "local_transcription",
+    "newspaper", "obituary", "public_tree_index", "web_reference",
+})
+EVIDENCE_ROLES = frozenset({
+    "conflict_or_disambiguation", "context_not_proof", "evidence", "lead",
+    "reference", "research_target",
+})
 
 
 class SourceLedgerParser(HTMLParser):
+    """Parse only enough HTML to prove the presentation matches JSONL truth."""
+
     def __init__(self) -> None:
         super().__init__()
         self.in_source_ledger = False
         self.in_heading = False
+        self.in_summary = False
         self.in_item = False
         self.in_anchor = False
         self.ignore_depth = 0
         self.heading_parts: list[str] = []
+        self.summary_parts: list[str] = []
+        self.current_group = ""
         self.current: dict[str, object] | None = None
         self.items: list[dict[str, str]] = []
 
@@ -40,12 +64,20 @@ class SourceLedgerParser(HTMLParser):
         if self.in_item and tag == "span" and ("scode" in classes or "data-g" in attr_map):
             self.ignore_depth = 1
             return
+        if self.in_summary and tag == "span" and "count" in classes:
+            self.ignore_depth = 1
+            return
         if tag == "h2":
             self.in_heading = True
             self.heading_parts = []
+        if self.in_source_ledger and tag == "summary":
+            self.in_summary = True
+            self.summary_parts = []
         if self.in_source_ledger and tag == "li":
             self.in_item = True
-            self.current = {"url": "", "html_id": attr_map.get("id") or "", "title_parts": [], "parts": []}
+            self.current = {
+                "url": "", "html_id": attr_map.get("id") or "", "title_parts": [], "parts": [],
+            }
         if self.in_item and tag == "a" and self.current is not None:
             self.in_anchor = True
             self.current["url"] = attr_map.get("href") or ""
@@ -61,6 +93,9 @@ class SourceLedgerParser(HTMLParser):
                 self.in_source_ledger = True
             elif self.in_source_ledger:
                 self.in_source_ledger = False
+        if self.in_summary and tag == "summary":
+            self.current_group = "".join(self.summary_parts).strip()
+            self.in_summary = False
         if self.in_item and tag == "a":
             self.in_anchor = False
         if self.in_item and tag == "li" and self.current is not None:
@@ -68,18 +103,14 @@ class SourceLedgerParser(HTMLParser):
             title_parts = self.current["title_parts"]
             raw = "".join(parts).strip() if isinstance(parts, list) else ""
             title = "".join(title_parts).strip() if isinstance(title_parts, list) else ""
-            blurb = raw
-            if title and raw.startswith(title):
-                blurb = raw[len(title) :].strip()
-            blurb = blurb.lstrip(". ").strip()
-            self.items.append(
-                {
-                    "url": html_lib.unescape(str(self.current["url"])),
-                    "html_id": html_lib.unescape(str(self.current["html_id"])),
-                    "title": html_lib.unescape(title),
-                    "blurb": html_lib.unescape(blurb),
-                }
-            )
+            blurb = raw[len(title):].strip() if title and raw.startswith(title) else raw
+            self.items.append({
+                "html_id": html_lib.unescape(str(self.current["html_id"])),
+                "group": html_lib.unescape(self.current_group),
+                "title": html_lib.unescape(title),
+                "url": html_lib.unescape(str(self.current["url"])),
+                "blurb": html_lib.unescape(blurb.lstrip(". ").strip()),
+            })
             self.in_item = False
             self.current = None
 
@@ -88,6 +119,8 @@ class SourceLedgerParser(HTMLParser):
             return
         if self.in_heading:
             self.heading_parts.append(data)
+        if self.in_summary:
+            self.summary_parts.append(data)
         if self.in_item and self.current is not None:
             parts = self.current["parts"]
             if isinstance(parts, list):
@@ -103,143 +136,105 @@ def slugify(text: str) -> str:
     return slug[:70].strip("-") or "source"
 
 
-def source_type(url: str, title: str) -> str:
-    host = urlparse(url).netloc.lower()
-    text = f"{url} {host} {title}".lower()
-    if "findagrave" in text:
-        return "cemetery_memorial"
-    if "familysearch" in text:
-        return "public_tree_index"
-    if "archion" in text:
-        return "church_record_target"
-    if "newspapers" in text:
-        return "newspaper"
-    if any(term in text for term in ["ksgenweb", "genealogytrails", "interment.net"]):
-        return "local_transcription"
-    if "digitalcommons" in text or ".pdf" in text or "pdf" in text:
-        return "compiled_pdf_or_journal"
-    if any(term in text for term in ["wikitree", "rootsmagic", "ancestry", "treespot", "allshouse"]):
-        return "compiled_tree_or_profile"
-    if any(term in text for term in ["meyersgaz", "kartenmeister", "agoff"]):
-        return "gazetteer_or_registry_context"
-    if any(term in text for term in ["obituaries", "funeral", "hayspost", "mortuary"]):
-        return "obituary"
-    return "web_reference"
+def source_id(record: dict[str, object]) -> str:
+    digest = hashlib.sha1(str(record["url"]).encode("utf-8")).hexdigest()[:8]
+    return f"src.{slugify(str(record['title']))}.{digest}"
 
 
-def lineage_tags(text: str) -> list[str]:
-    rules = {
-        "zimmerman": ["zimmerman", "zinkle", "zinkl", "mainhardt", "wuerttemberger", "archion"],
-        "nauer": ["nauer", "koeberger", "waterloo", "wilmot"],
-        "zodrow": ["zodrow", "grams", "sabanka", "lebehnke", "deutsch krone", "nowa lubianka"],
-        "mundell": ["mundell", "clemans", "clemens", "flaherty", "rust", "cantwell", "adolph", "winona"],
-        "dible": ["dible", "heckman", "haden", "dreibelbis", "zephaniah"],
-        "long_mcclelland": ["long", "sleight", "mcclelland", "mcclellan", "love", "hoge"],
-        "connelly_durham": ["connelly", "connolly", "durham", "ford", "staples"],
-        "claar": ["claar", "klar", "white", "stropes", "hoyle", "hogle"],
-    }
-    lower = text.lower()
-    return [tag for tag, needles in rules.items() if any(needle in lower for needle in needles)] or ["general"]
+def canonical_sources() -> list[dict[str, object]]:
+    records = [json.loads(line) for line in SOURCES_PATH.read_text().splitlines() if line.strip()]
+    failures = []
+    seen_ids = set()
+    seen_urls = set()
+    for position, record in enumerate(records, start=1):
+        missing = REQUIRED - set(record)
+        if missing:
+            failures.append(f"source line {position} missing fields: {sorted(missing)}")
+            continue
+        if record["html_id"] != f"s{position}":
+            failures.append(f"source line {position} html_id {record['html_id']!r} != s{position}")
+        expected_id = source_id(record)
+        if record["id"] != expected_id:
+            failures.append(f"{record['html_id']} id {record['id']!r} != {expected_id!r}")
+        if record["id"] in seen_ids:
+            failures.append(f"duplicate source id {record['id']}")
+        if record["url"] in seen_urls:
+            failures.append(f"duplicate source URL {record['url']}")
+        seen_ids.add(record["id"])
+        seen_urls.add(record["url"])
+        if record["source_type"] not in SOURCE_TYPES:
+            failures.append(f"{record['html_id']} invalid source_type {record['source_type']!r}")
+        if record["evidence_role"] not in EVIDENCE_ROLES:
+            failures.append(f"{record['html_id']} invalid evidence_role {record['evidence_role']!r}")
+        if not isinstance(record["lineage_tags"], list) or not record["lineage_tags"]:
+            failures.append(f"{record['html_id']} lineage_tags must be a non-empty list")
+        expected_search = f"{record['title']} {record['blurb']}"
+        if record["search_text"] != expected_search:
+            failures.append(f"{record['html_id']} search_text is not title + blurb")
+    if failures:
+        for failure in failures:
+            print(failure, file=sys.stderr)
+        raise SystemExit(1)
+    return records
 
 
-def evidence_role(blurb: str) -> str:
-    lower = blurb.lower()
-    if any(term in lower for term in ["target", "best next", "needed", "needs"]):
-        return "research_target"
-    if any(term in lower for term in ["conflict", "collision", "unresolved", "variant"]):
-        return "conflict_or_disambiguation"
-    if "context" in lower and "not proof" in lower:
-        return "context_not_proof"
-    if any(term in lower for term in ["compiled", "lead", "use as"]):
-        return "lead"
-    if any(term in lower for term in ["names", "lists", "gives", "states"]):
-        return "evidence"
-    return "reference"
-
-
-def source_id(item: dict[str, str]) -> str:
-    """ID hashes the URL only, so blurb annotations and title fixes never orphan citations.
-
-    (Slug still derives from the title for readability; a title edit changes the slug,
-    which is rare and accepted. Blurbs are the frequently-edited field.)
-    """
-    slug = slugify(item["title"])
-    digest = hashlib.sha1(item["url"].encode("utf-8")).hexdigest()[:8]
-    return f"src.{slug}.{digest}"
-
-
-def build_index() -> dict[str, object]:
+def check_html_projection(records: list[dict[str, object]]) -> None:
     parser = SourceLedgerParser()
     parser.feed(HTML_PATH.read_text())
-    urls = [item["url"] for item in parser.items]
-    duplicates = sorted({u for u in urls if urls.count(u) > 1})
-    if duplicates:
-        # Policy: one ledger entry per URL; multiple facts share one blurb.
-        print("duplicate ledger URLs (merge these entries):", file=sys.stderr)
-        for url in duplicates:
-            print(f"  {url}", file=sys.stderr)
+    failures = []
+    if len(parser.items) != len(records):
+        failures.append(f"HTML ledger has {len(parser.items)} items; canonical JSONL has {len(records)}")
+    fields = ("html_id", "group", "title", "url", "blurb")
+    for position, (canonical, projected) in enumerate(zip(records, parser.items), start=1):
+        for field in fields:
+            if canonical[field] != projected[field]:
+                failures.append(
+                    f"source {position} HTML {field} drift: {projected[field]!r} != {canonical[field]!r}")
+    if failures:
+        for failure in failures:
+            print(failure, file=sys.stderr)
         raise SystemExit(1)
-    records: list[dict[str, object]] = []
-    for position, item in enumerate(parser.items, start=1):
-        search_text = " ".join([item["title"], item["blurb"]])
-        expected_id = source_id(item)
-        expected_html_id = f"s{position}"
-        html_id = item.get("html_id", "")
-        if html_id != expected_html_id:
-            print(
-                f"ledger anchor mismatch for {item['title']}: {html_id or '(missing)'} != {expected_html_id}",
-                file=sys.stderr,
-            )
-            raise SystemExit(1)
-        records.append(
-            {
-                "id": expected_id,
-                "title": item["title"],
-                "url": item["url"],
-                "source_type": source_type(item["url"], item["title"]),
-                "lineage_tags": lineage_tags(search_text),
-                "evidence_role": evidence_role(item["blurb"]),
-                "blurb": item["blurb"],
-                "search_text": search_text,
-            }
-        )
 
+
+def build_index(records: list[dict[str, object]]) -> dict[str, object]:
+    meta = json.loads(META_PATH.read_text())
+    public_records = [
+        {key: value for key, value in record.items() if key not in {"html_id", "group"}}
+        for record in records
+    ]
     return {
-        "schema_version": "1.1.0",
-        "updated": "2026-07-07",
-        "source": "Extracted from index.html Source Ledger",
-        "record_count": len(records),
+        **meta,
+        "record_count": len(public_records),
         "fields": {
-            "id": "Stable local source id for notes and reasoning traces, generated from source title, URL, and blurb.",
-            "title": "Human-readable source title from the artifact ledger.",
+            "id": "Stable local source id; readable slug from title plus a URL-only hash.",
+            "title": "Human-readable source title.",
             "url": "Source URL.",
-            "source_type": "Coarse type used for filtering and reliability expectations.",
-            "lineage_tags": "Branch/search tags inferred from title and blurb.",
-            "evidence_role": "How this source is currently being used.",
+            "source_type": "Explicit source type used for reliability expectations.",
+            "lineage_tags": "Explicit branch/search tags.",
+            "evidence_role": "Explicit statement of how this source is used.",
             "blurb": "Short indexing summary.",
-            "search_text": "Concatenated title and blurb for simple full-text search.",
+            "search_text": "Title plus blurb for simple full-text search.",
         },
-        "sources": records,
+        "sources": public_records,
     }
 
 
 def main() -> int:
-    arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument("--check", action="store_true", help="fail if the generated index differs")
-    args = arg_parser.parse_args()
-
-    rendered = json.dumps(build_index(), indent=2, ensure_ascii=True) + "\n"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--check", action="store_true", help="fail if either projection differs")
+    args = parser.parse_args()
+    records = canonical_sources()
+    check_html_projection(records)
+    rendered = json.dumps(build_index(records), indent=2, ensure_ascii=True) + "\n"
     if args.check:
         current = OUT_PATH.read_text() if OUT_PATH.exists() else ""
         if current != rendered:
             print(f"{OUT_PATH} is out of date; run uv run tools/build_source_index.py", file=sys.stderr)
             return 1
-        print(f"{OUT_PATH} is current")
+        print(f"{OUT_PATH} is current from canonical sources.jsonl")
         return 0
-
-    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUT_PATH.write_text(rendered)
-    print(f"wrote {OUT_PATH}")
+    print(f"wrote {OUT_PATH} from {SOURCES_PATH}")
     return 0
 
 

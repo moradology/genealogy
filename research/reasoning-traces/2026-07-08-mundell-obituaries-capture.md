@@ -1,3 +1,18 @@
+---
+id: trace.2026-07-08.mundell-obituaries-capture
+title: "Mundell and Cantwell Obituaries Real Browser Capture"
+date: 2026-07-08
+status: resolved
+confidence: strong
+case_refs: ["case.09", "case.22"]
+person_refs: ["person.cantwell.barnabas", "person.mundell.harvey", "person.mundell.john", "person.mundell.john_pryor"]
+evidence_refs: []
+source_refs: ["src.john-pryor-mundell-find-a-grave.e1163e68", "src.rev-john-w-mundell-find-a-grave.737a9312", "src.sarah-alice-cantwell-mundell-find-a-grave.ee2b20da", "src.sarah-jane-mundell-wilcox-find-a-grave.f8ed8caa"]
+geo_refs: ["event.mundell.harvey_birth.1837-04", "event.mundell.harvey_death.1911-03-26", "path.mundell", "target.mundell.cantwell_coshocton"]
+outcome: "The obituary transcriptions establish the sibling and migration cluster and a Henry County Cantwell anchor, but they do not prove Harvey's parents or the deeper Cantwell line."
+next_action: "Obtain original household, marriage, probate, deed, or church records for Harvey Mundell and Sarah Alice Cantwell's parent-child links."
+---
+
 # Mundell + Cantwell obituaries: real-browser capture (2026-07-08)
 
 The four Find a Grave pages that blocked every scripted fetch (curl, mirrors,
