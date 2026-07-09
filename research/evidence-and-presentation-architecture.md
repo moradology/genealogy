@@ -3,6 +3,52 @@
 Status: PROPOSAL / north star for owner review. Reframes the multi-page migration plan:
 that plan is about the *presentation* layer; this doc is about the layer beneath it.
 
+## The source-of-truth story (decisive)
+
+**The source of truth is git-tracked plain text. Not SQLite, not any database.** Here is the
+whole reasoning, because it's the capstone decision everything else hangs on.
+
+Pick the store by the properties that define *this* project, and three dominate:
+- **Diffability = the reasoning history.** In genealogy the *argument* matters as much as the
+  fact. `git diff` + commit messages already are that log: "changed Cecilia's parents to
+  Leonard Zodrow because the 1910 census, here's the trace." A binary DB throws that away —
+  you can't see in a PR what fact changed or why. This alone is close to decisive.
+- **Hand-editability.** The owner authors the data directly (cards, geojson, notes). Text
+  supports that with any editor; a DB needs SQL or a bespoke UI, changing the whole workflow.
+- **Archival durability.** Plain text is readable in thirty years with `cat`; every DB format
+  eventually needs a migration. This record must outlive its tools.
+
+SQLite-as-truth would buy enforced constraints, transactions, and SQL queries. But note **we
+don't lose integrity by choosing text** — we move it from *storage-engine enforcement* to a
+*validation step*: the gate (`check_refs`, `check_people_index`, `check_geo_sync`, extended to
+the evidence graph) plays the role foreign keys would, in pre-commit/CI. You *can* commit a
+broken state; the gate stops it from shipping. That's "constraints as a check" instead of
+"constraints as an engine" — the right trade when diffable, hand-editable text is the goal.
+
+So: **text is truth; the gate is its integrity; SQLite/Kùzu/NetworkX are derived indexes; the
+viz is a derived projection; binaries are files referenced by path.** Nothing authoritative is
+binary.
+
+**Format of the truth** (text, but which text):
+- **Graph data → JSONL** (one node/edge/evidence record per line). Line-delimited records give
+  *clean line-level git diffs*, are appendable and greppable, and dodge JSON's noisy
+  whitespace/reordering diffs. `nodes.jsonl`, `edges.jsonl`, `evidence.jsonl`, `sources.jsonl`.
+- **Discovery threads → Markdown + front-matter** (prose reasoning; the `reasoning-traces/`
+  already are this).
+- **Geo → keep `ancestry_geospatial.geojson`** (already the geo truth; it's line-editable text).
+- **Binaries → filesystem**, referenced by `path`.
+
+**What this fixes about today.** Right now the "truth" is smeared across `index.html` (person
+cards, docket, source ledger *are* the data) plus the geojson, with `source-index.json`
+auto-extracted *from* the HTML. Presentation and data are conflated. The target inverts it: the
+canonical text graph is the truth, and `index.html`/the pages become a **generated-or-validated
+projection** of it — so a fact lives in exactly one place.
+
+**The one honest exception.** If this were multi-user, write-heavy, and integrity-critical
+operationally, storage-engine-enforced constraints + transactions would outweigh diffability,
+and SQLite-*as-truth* (with a Dolt-style diff export) would be worth it. This project is
+single-author, low-write, and archival — so text wins clearly. Revisit only if that changes.
+
 ## The idea
 
 Two layers, cleanly separated:
