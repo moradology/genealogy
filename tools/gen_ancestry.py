@@ -29,6 +29,7 @@ import hashlib
 import json
 import os
 import random
+import re
 import socket
 import time
 from pathlib import Path
@@ -43,6 +44,8 @@ STATE_DIR = Path.home() / ".gen-cockpit" / "ancestry"
 CACHE_DIR = STATE_DIR / "cache"
 LOCK_PATH = STATE_DIR / "queue.lock"
 LAST_PATH = STATE_DIR / "last_request"
+AGENTS_DIR = STATE_DIR / "agents"       # per-agent cursor + history, one file each
+TABS_PATH = STATE_DIR / "tabs.json"     # agent-id -> CDP targetId (its own tab)
 # Minimum seconds between REAL Ancestry hits, across all agents (human pace).
 MIN_INTERVAL = float(os.environ.get("GEN_ANCESTRY_MIN_INTERVAL", "5.0"))
 JITTER_MAX = float(os.environ.get("GEN_ANCESTRY_JITTER", "2.5"))
@@ -171,21 +174,58 @@ def parse_household(text: str) -> list[dict[str, str]]:
 
 # ---- browser-driven commands ----
 
-def get_ancestry_page(context):
-    pages = context.pages
-    for page in pages:
-        if "ancestry." in page.url:
-            return page
-    return pages[0] if pages else context.new_page()
+def load_json(path: Path, default):
+    if path.exists():
+        return json.loads(path.read_text())
+    return default
 
 
-def run_on_page(fn):
+def save_json(path: Path, obj) -> None:
+    ensure_state()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(obj, separators=(",", ":")))
+
+
+def new_agent_state() -> dict:
+    return {"location": None, "results": [], "cursor": 0, "history": []}
+
+
+def load_agent(agent: str) -> dict:
+    return load_json(AGENTS_DIR / f"{agent}.json", new_agent_state())
+
+
+def save_agent(agent: str, state: dict) -> None:
+    save_json(AGENTS_DIR / f"{agent}.json", state)
+
+
+def target_id(context, page) -> str:
+    session = context.new_cdp_session(page)
+    return session.send("Target.getTargetInfo")["targetInfo"]["targetId"]
+
+
+def get_agent_page(context, agent: str):
+    """The agent's own tab, matched by CDP targetId across CLI invocations."""
+    tabs = load_json(TABS_PATH, {})
+    want = tabs.get(agent)
+    if want:
+        for page in context.pages:
+            if target_id(context, page) == want:
+                return page
+    page = context.new_page()
+    tabs[agent] = target_id(context, page)
+    save_json(TABS_PATH, tabs)
+    return page
+
+
+def run_on_page(fn, agent="default"):
+    """Every command drives its agent's OWN tab (stateless commands share the
+    reserved "default" agent tab). The human's logged-in tab is never touched."""
     from playwright.sync_api import sync_playwright
 
     with sync_playwright() as pw:
         browser = pw.chromium.connect_over_cdp(CDP_URL)
         context = browser.contexts[0]
-        page = get_ancestry_page(context)
+        page = get_agent_page(context, agent)
         page.bring_to_front()
         return fn(page)
 
@@ -209,11 +249,13 @@ SEARCH_JS = r"""() => {
 
 
 def cmd_search(args) -> int:
-    key = cache_key("search", {"collection": args.collection, "name": args.name, "birth": args.birth or "", "limit": args.limit})
+    # Cache key is limit-free and the FULL result set is cached; --limit only
+    # trims the emitted view. One query = at most one real hit, ever.
+    key = cache_key("search", {"collection": args.collection, "name": args.name, "birth": args.birth or ""})
     if not args.fresh:
         hit = cache_read(key)
         if hit is not None:
-            emit({**hit, "cached": True})
+            emit({**hit, "results": hit["results"][: args.limit], "cached": True})
             return 0
     if not cdp_up():
         emit({"command": "ancestry.search", "ok": False, "error": "cdp browser not reachable on :9222"})
@@ -227,7 +269,7 @@ def cmd_search(args) -> int:
             page.goto(url, wait_until="domcontentloaded", timeout=45000)
             page.wait_for_timeout(3200)
             return page.evaluate(SEARCH_JS)
-        return run_on_page(go)
+        return run_on_page(go, agent="default")
 
     rows = locked_fetch(fetch)
     obj = {
@@ -236,10 +278,10 @@ def cmd_search(args) -> int:
         "collection": args.collection,
         "name": args.name,
         "count": len(rows),
-        "results": rows[: args.limit],
+        "results": rows,
     }
     cache_write(key, obj)
-    emit({**obj, "cached": False})
+    emit({**obj, "results": rows[: args.limit], "cached": False})
     return 0
 
 
@@ -262,7 +304,7 @@ def _read_record(args, household_only: bool) -> int:
             page.goto(url, wait_until="domcontentloaded", timeout=45000)
             page.wait_for_timeout(3000)
             return page.evaluate("() => document.body.innerText")
-        return run_on_page(go)
+        return run_on_page(go, agent="default")
 
     text = locked_fetch(fetch)
     household = parse_household(text)
@@ -282,10 +324,169 @@ def cmd_household(args) -> int:
     return _read_record(args, household_only=True)
 
 
+# ---- relative navigation: an agent moves through Ancestry by address ----
+
+def parse_address(addr: str) -> dict | None:
+    m = re.fullmatch(r"record/([^/]+)/([^/]+)", addr)
+    if m:
+        return {"type": "record", "collection": m.group(1), "id": m.group(2)}
+    m = re.fullmatch(r"collection/([^/?]+)", addr)
+    if m:
+        return {"type": "collection", "collection": m.group(1)}
+    m = re.fullmatch(r"search/([^/?]+)(?:\?(.*))?", addr)
+    if m:
+        params = dict(p.split("=", 1) for p in (m.group(2) or "").split("&") if "=" in p)
+        return {"type": "search", "collection": m.group(1), "name": params.get("name", ""), "birth": params.get("birth", "")}
+    return None
+
+
+def url_for(loc: dict) -> str:
+    base = f"https://www.ancestry.com/search/collections/{loc['collection']}"
+    if loc["type"] == "record":
+        return f"{base}/records/{loc['id']}"
+    if loc["type"] == "collection":
+        return f"{base}/"
+    url = f"{base}/?name={loc['name']}"
+    if loc.get("birth"):
+        url += f"&birth={loc['birth']}"
+    return url
+
+
+def location_key(loc: dict) -> str | None:
+    if loc["type"] == "record":
+        return cache_key("record", {"collection": loc["collection"], "id": loc["id"]})
+    if loc["type"] == "search":
+        # Same limit-free key as cmd_search: one query, one cache entry, shared
+        # by the stateless and navigational paths.
+        return cache_key("search", {"collection": loc["collection"], "name": loc["name"], "birth": loc.get("birth", "")})
+    return None
+
+
+def fetch_location(agent: str, loc: dict) -> dict:
+    """Drive the agent's tab to loc (a real hit, queued + paced) -> structured data."""
+    def fetch():
+        def go(page):
+            page.goto(url_for(loc), wait_until="domcontentloaded", timeout=45000)
+            page.wait_for_timeout(3000 if loc["type"] == "record" else 3200)
+            if loc["type"] == "search":
+                return {"results": page.evaluate(SEARCH_JS)}
+            if loc["type"] == "record":
+                return {"text": page.evaluate("() => document.body.innerText")}
+            return {}
+        return run_on_page(go, agent=agent)
+
+    got = locked_fetch(fetch)
+    if loc["type"] == "search":
+        rows = got["results"]
+        return {"command": "ancestry.search", "ok": True, "collection": loc["collection"], "name": loc["name"], "count": len(rows), "results": rows}
+    if loc["type"] == "record":
+        text = got["text"]
+        return {"command": "ancestry.record", "ok": True, "collection": loc["collection"], "record_id": loc["id"], "household": parse_household(text), "fields": parse_detail_fields(text)}
+    return {"command": "ancestry.collection", "ok": True, "collection": loc["collection"]}
+
+
+def go_to_location(agent: str, loc: dict, push: bool, fresh: bool) -> int:
+    """Move an agent to loc. Serve from cache without a hit when possible; only
+    the actual browser navigation is a real (queued, paced) hit."""
+    state = load_agent(agent)
+    key = location_key(loc)
+    data = cache_read(key) if (key and not fresh) else None
+    navigated = False
+    if data is None:
+        if not cdp_up():
+            emit({"command": "ancestry.goto", "ok": False, "error": "cdp browser not reachable on :9222"})
+            return 1
+        data = fetch_location(agent, loc)
+        navigated = True
+        if key:
+            cache_write(key, data)
+    if push and state.get("location") is not None and state["location"] != loc:
+        state["history"].append(state["location"])
+    state["location"] = loc
+    if loc["type"] == "search":
+        state["results"] = data.get("results", [])
+        state["cursor"] = 0
+    save_agent(agent, state)
+    emit({"command": "ancestry.goto", "ok": True, "agent": agent, "location": loc, "navigated": navigated, "data": data})
+    return 0
+
+
+def cmd_goto(args) -> int:
+    loc = parse_address(args.address)
+    if loc is None:
+        emit({"command": "ancestry.goto", "ok": False, "error": "unparseable address", "address": args.address})
+        return 1
+    return go_to_location(args.agent or "default", loc, push=True, fresh=args.fresh)
+
+
+def cmd_where(args) -> int:
+    agent = args.agent or "default"
+    state = load_agent(agent)
+    loc = state.get("location")
+    cursor_at = None
+    if loc and loc.get("type") == "search":
+        res, cur = state.get("results", []), state.get("cursor", 0)
+        cursor_at = {"cursor": cur, "count": len(res), "result": res[cur] if 0 <= cur < len(res) else None}
+    emit({"command": "ancestry.where", "ok": True, "agent": agent, "location": loc,
+          "history_depth": len(state.get("history", [])), "cursor_at": cursor_at})
+    return 0
+
+
+def step(agent: str, delta: int) -> int:
+    state = load_agent(agent)
+    res = state.get("results", [])
+    if not res:
+        emit({"command": "ancestry.step", "ok": False, "error": "no active search; goto a search first", "agent": agent})
+        return 1
+    cur = max(0, min(len(res) - 1, state.get("cursor", 0) + delta))
+    state["cursor"] = cur
+    save_agent(agent, state)
+    emit({"command": "ancestry.step", "ok": True, "agent": agent, "cursor": cur, "count": len(res), "result": res[cur]})
+    return 0
+
+
+def cmd_next(args) -> int:
+    return step(args.agent or "default", 1)
+
+
+def cmd_prev(args) -> int:
+    return step(args.agent or "default", -1)
+
+
+def cmd_open(args) -> int:
+    agent = args.agent or "default"
+    state = load_agent(agent)
+    res = state.get("results", [])
+    if not res:
+        emit({"command": "ancestry.open", "ok": False, "error": "no active search results", "agent": agent})
+        return 1
+    n = args.n if args.n is not None else state.get("cursor", 0)
+    if not (0 <= n < len(res)):
+        emit({"command": "ancestry.open", "ok": False, "error": "index out of range", "n": n, "count": len(res)})
+        return 1
+    loc = state.get("location") or {}
+    record = {"type": "record", "collection": loc.get("collection"), "id": res[n]["record_id"]}
+    return go_to_location(agent, record, push=True, fresh=args.fresh)
+
+
+def cmd_back(args) -> int:
+    agent = args.agent or "default"
+    state = load_agent(agent)
+    history = state.get("history", [])
+    if not history:
+        emit({"command": "ancestry.back", "ok": False, "error": "no history", "agent": agent})
+        return 1
+    previous = history.pop()
+    state["history"] = history
+    save_agent(agent, state)
+    return go_to_location(agent, previous, push=False, fresh=False)
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(prog="gen_ancestry", add_help=True)
+    parser = argparse.ArgumentParser(prog="gen_ancestry")
     sub = parser.add_subparsers(dest="cmd", required=True)
 
+    # stateless data commands (one-shot JSON, default tab)
     p_search = sub.add_parser("search")
     p_search.add_argument("--collection", required=True)
     p_search.add_argument("--name", required=True, help="Given_Surname (Ancestry format)")
@@ -300,6 +501,24 @@ def main() -> int:
         p.add_argument("--id", required=True)
         p.add_argument("--fresh", action="store_true", help="bypass cache, force a live fetch")
         p.set_defaults(func=cmd_record if name == "record" else cmd_household)
+
+    # stateful navigation (per-agent tab + cursor + history)
+    p_goto = sub.add_parser("goto", help="move to an address; open a record/search/collection")
+    p_goto.add_argument("address", help="record/COLL/ID | search/COLL?name=..&birth=.. | collection/COLL")
+    p_goto.add_argument("--agent")
+    p_goto.add_argument("--fresh", action="store_true")
+    p_goto.set_defaults(func=cmd_goto)
+
+    for name, func in (("where", cmd_where), ("next", cmd_next), ("prev", cmd_prev), ("back", cmd_back)):
+        p = sub.add_parser(name)
+        p.add_argument("--agent")
+        p.set_defaults(func=func)
+
+    p_open = sub.add_parser("open", help="open result N (or the cursor) of the current search")
+    p_open.add_argument("n", nargs="?", type=int, default=None)
+    p_open.add_argument("--agent")
+    p_open.add_argument("--fresh", action="store_true")
+    p_open.set_defaults(func=cmd_open)
 
     args = parser.parse_args()
     return args.func(args)

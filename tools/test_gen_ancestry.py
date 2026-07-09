@@ -54,6 +54,34 @@ check("household count == 3", len(hh) == 3, triples)
 # cdp_up returns a bool without raising when nothing is listening on some port
 check("cdp_up returns bool", isinstance(ga.cdp_up(), bool))
 
+# ---- address grammar (relative-navigation layer) ----
+rec = ga.parse_address("record/2442/58087568")
+check("addr record", rec == {"type": "record", "collection": "2442", "id": "58087568"}, rec)
+srch = ga.parse_address("search/6224?name=Marjorie_Clemans&birth=1912")
+check("addr search", srch == {"type": "search", "collection": "6224", "name": "Marjorie_Clemans", "birth": "1912"}, srch)
+srch_nb = ga.parse_address("search/6224?name=Only_Name")
+check("addr search no birth", srch_nb is not None and srch_nb["birth"] == "", srch_nb)
+coll = ga.parse_address("collection/6224")
+check("addr collection", coll == {"type": "collection", "collection": "6224"}, coll)
+check("addr garbage rejected", ga.parse_address("frob/nicate/x/y") is None)
+
+check("url record", ga.url_for(rec) == "https://www.ancestry.com/search/collections/2442/records/58087568", ga.url_for(rec))
+check("url search", ga.url_for(srch) == "https://www.ancestry.com/search/collections/6224/?name=Marjorie_Clemans&birth=1912", ga.url_for(srch))
+
+check("location_key record stable", ga.location_key(rec) == ga.cache_key("record", {"collection": "2442", "id": "58087568"}))
+check("location_key collection none", ga.location_key(coll) is None)
+
+# ---- per-agent state round-trip (uses the real state dir; unique agent name) ----
+AGENT = "test-agent-selfcheck"
+state = ga.new_agent_state()
+state["location"] = rec
+state["history"] = [srch]
+state["cursor"] = 2
+ga.save_agent(AGENT, state)
+back = ga.load_agent(AGENT)
+check("agent state round-trip", back == state, back)
+(ga.AGENTS_DIR / f"{AGENT}.json").unlink()
+
 if failures:
     print("GEN ANCESTRY PARSE TEST FAILURES:")
     for f in failures:
