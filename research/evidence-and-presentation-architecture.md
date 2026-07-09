@@ -197,6 +197,68 @@ search**, realized as constraint code over a plain-text graph, not as a database
 This is arguably the highest-leverage thing to build, and it pairs with the evidence layer:
 the evidence graph is the data; the opinions are the rules that walk it.
 
+### Storing paperwork and evidence — flexibility without a server
+
+The appeal of a graph DB for evidence is the **schemaless flexibility**: a census node, a
+gravestone node, and a divorce-index node have wildly different shapes, and you don't want
+to declare rigid columns up front. That instinct is right. Two clarifications settle it:
+
+- **The flexibility is the *model*, not the engine.** Schemaless property nodes + typed
+  edges is a data model; **plain-text JSON/YAML already is exactly that.** A census evidence
+  node carries `household[]`; a grave node carries `inscription` + `photo`; a divorce node
+  carries `spouse` + `date` — each a different property bag, side by side, no migration to
+  add a field to one and not the others. You get graph-DB flexibility with zero server,
+  full git diffs, and archival durability. (This is why the **record cards** already render
+  differently per record type — the model is flexible; the storage doesn't need to be a DB.)
+
+- **The actual paperwork does NOT belong in any database — graph or relational.** Storing
+  scans/PDFs/photos as blobs inside a DB is an anti-pattern: bloat, no dedup, no diffing,
+  painful backup/restore, and it couples your images to a DB format that will rot. The
+  durable pattern — and what this project already does — is **files on the filesystem,
+  metadata + relationships in the record**: the evidence *node* holds the type, the exact
+  citation, the transcription, and a `path` reference; the image lives under
+  `research/pulls/**` (gitignored for Ancestry ToS), addressed by that path. The graph
+  stores *about* the paperwork; the paperwork stays files. For preservation you want a file
+  tree + a manifest, not a binary DB.
+
+**When would a graph DBMS's flexibility actually earn its cost for evidence?** At
+*thousands* of heterogeneous records where you want ad-hoc cross-queries over an evolving
+shape without migrations, and emergent connection-discovery matters. At *dozens*, plain
+JSON gives the same flexibility, and Python over the in-memory graph gives the same
+queries — while keeping diffability, archival durability, and zero ops. So: **flexible
+model, yes; graph server, no; binaries as files, always.**
+
+### "Graph + SQLite"
+
+This is the best "database" option on the table, and it dissolves my main objection: SQLite
+is **serverless and a single file** (archival-grade — a Library of Congress preferred
+format), and you can model a graph in it cleanly (a `nodes` table + an `edges` table +
+`JSON` columns for the flexible per-node properties, with recursive CTEs for ancestor /
+descendant / path traversal). No server, one file, SQL + graph traversal, schemaless-ish
+via JSON columns. If we were going to adopt *a* database, this is it.
+
+The deciding question at this scale isn't server-vs-serverless anymore — it's
+**diffability and hand-editability**. This corpus is hand-curated, version-controlled, and
+its *git history of reasoning* ("what changed, and why") is part of the value. A SQLite file
+is binary: you can't see a meaningful PR diff, and you can't hand-edit a person the way you
+edit a card or the geojson today — you need SQL or a tool. Those are real losses for a
+small, single-author, forever archive, and SQLite's wins (SQL, traversal, scale) don't yet
+pay for them.
+
+**The synthesis that keeps both:** plain text stays the **source of truth** (diffable,
+hand-editable, archival); SQLite becomes a **derived, build-time query index** — generated
+from the text nodes/edges, used by the reasoning layer and automated search for
+traversals/queries, and thrown away/regenerated at will. Text = truth; SQLite = a
+materialized query cache; the viz still loads emitted static JSON, never the DB. You get the
+graph-SQL query surface for the "encoded opinions" *and* keep git-native authoring. And it's
+YAGNI-friendly: build the SQLite index only when the reasoning queries actually want more
+than `networkx`-over-the-text gives — until then, don't.
+
+(The coherent alternative is SQLite *as* the source of truth — defensible if you'd rather
+have rich queryability than git-diffable hand-editing. Given how this project is actually
+worked — hand-edited text, versioned reasoning, the gate as integrity — text-as-truth +
+SQLite-as-derived-index is the better fit. But it's your call, and it's the one real fork.)
+
 ## Decisions needed from you
 
 1. Evidence store as an **extension of `source-index.json`**, or a **new `evidence.json`**
