@@ -108,3 +108,38 @@ Found no citable open-web record identifying Marjorie's parents and no link from
 Clemans/Woods Co OK household to Homer/the 1933 marriage. Recommended the Washington Co CO
 marriage packet (application) — but CO marriage records of this era carry no parent fields
 (confirmed by the pulled record). Superseded by the Ancestry census work above.
+
+## Page-by-page reconstruction of the Robert M. Clemans family (2026-07-08, later)
+
+Followed the census-hint chain and a sequential-record-ID walk of the Flagler 1920 ED to
+reconstruct the ONLY traceable eastern-Colorado Clemans family and test the hypothesis.
+Result: NEGATIVE — Marjorie is not in it.
+
+- 1900 census, Martin Twp, Smith Co KS (coll. 7602 rec 4888697): Wm & Martha H. Clemans
+  (grandparents) raising grandchildren Eva J. (10, b~1890), Earl (8, b Jul 1891), Willie
+  (7, b~1893). So Robert M.'s children were being raised by grandparents by 1900 — his wife
+  (their mother) was already gone. (A 1910 hint record putting "Robert M Clemane, 30" as a
+  son of Newt & Amanda Clemane conflicts on the grandparent couple and is likely an
+  Ancestry mis-link; not relied on.)
+- 1920 census, Flagler, Kit Carson Co CO — sequential-ID walk of records 72041576-72041604:
+  Robert M. Clemans (51, widowed, boarder) ... [Thompson, Hicks, Underwood, Stone, Moore,
+  Smith x2, Quinn households] ... Earl R. Clemans (28, Head) + Anna May F. (19, wife),
+  CHILDLESS. No other Clemans household, no Marjorie in the stretch.
+- Earl R. Clemans (b1891): coll. 6061 rec 72041602 — married Anna May ~1919, childless in
+  1920. Cannot be Marjorie's father.
+- Jasper William Clemans (b 13 Mar 1893 Reamsville KS, d 9 May 1955 Sterling CO): Find a
+  Grave (coll. 60525 rec 8850322) lists spouse Mary L. and ONLY child Rosalie D. Klemt
+  (b~1923, by the second wife). 1940 household (coll. 2442 rec 39297589): Mary L. (37),
+  Rosalie (17), infant son J. William J. No Marjorie. His 1930 "age at first marriage 16"
+  implies a first marriage ~1909, but that first family is undocumented in any locatable
+  record — the single remaining gap where a daughter Marjorie could hide, unconfirmed.
+
+CONCLUSION: The Robert M. Clemans family — right surname, right marriage district — was
+reconstructed 1900-1940 and does not contain a documented Marjorie b~1912. Robert M.
+(widowed pre-1900) and Earl (childless 1920) are excluded as her father; Jasper's only
+documented child is by his second wife. The surname-and-place lead does not hold. Combined
+with no Marjorie Clemans in any CO/KS census 1920-1940 and no grave/death/remarriage
+record, Marjorie Evelyn Clemans's parentage is unrecovered from the online record. She
+appears at her 1933 marriage and disappears at her 1939 divorce; both her origin and her
+later life would need OFFLINE records (CO vital records; her own death certificate under an
+unknown later name; or manual image reads of specific enumeration districts).
