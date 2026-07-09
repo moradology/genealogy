@@ -28,11 +28,26 @@ def check(name: str, cond: bool, detail: str = "") -> None:
         failures.append(f"{name}: {detail}")
 
 
-# 1. --help lists the command groups and exits 0
+# 1. --help lists every command, the nav verbs, and the address grammar; exits 0
 r = run(["--help"])
 check("help exit 0", r.returncode == 0, r.stderr[:200])
-check("help lists gate", "gate" in r.stdout, r.stdout[:200])
-check("help lists build", "build" in r.stdout, r.stdout[:200])
+for word in ("gate", "build", "stamp", "ancestry", "goto", "record/COLL/ID", "cached"):
+    check(f"help mentions {word}", word in r.stdout, r.stdout[:300])
+
+# 1b. per-command help: gen build --help is plain text, exits 0, lists targets
+r = run(["build", "--help"])
+check("build help exit 0", r.returncode == 0, r.stderr[:200])
+check("build help lists targets", "basemap" in r.stdout and "source-index" in r.stdout, r.stdout[:300])
+check("build help is not json", not r.stdout.strip().startswith("{"), r.stdout[:80])
+
+# 1c. ancestry help forwards to the subtool's argparse (works offline, no browser)
+r = run(["ancestry", "--help"])
+check("ancestry help exit 0", r.returncode == 0, (r.stdout + r.stderr)[:300])
+for word in ("goto", "addresses:", "navigated", "human-paced"):
+    check(f"ancestry help mentions {word}", word in r.stdout, r.stdout[:400])
+r = run(["ancestry", "goto", "--help"])
+check("goto help exit 0", r.returncode == 0, (r.stdout + r.stderr)[:300])
+check("goto help shows grammar", "record/COLL/ID" in r.stdout, r.stdout[:300])
 
 # 2. `build <target> --check` prints exactly one JSON object whose ok mirrors
 #    the wrapped tool's exit code. Deliberately does NOT require ok==true:

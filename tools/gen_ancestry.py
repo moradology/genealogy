@@ -482,42 +482,98 @@ def cmd_back(args) -> int:
     return go_to_location(agent, previous, push=False, fresh=False)
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(prog="gen_ancestry")
-    sub = parser.add_subparsers(dest="cmd", required=True)
+EPILOG = """\
+addresses:
+  record/COLL/ID                          one record's detail page
+  search/COLL?name=Given_Surname&birth=Y  a collection search (birth optional)
+  collection/COLL                         a collection's landing page
 
-    # stateless data commands (one-shot JSON, default tab)
-    p_search = sub.add_parser("search")
-    p_search.add_argument("--collection", required=True)
-    p_search.add_argument("--name", required=True, help="Given_Surname (Ancestry format)")
-    p_search.add_argument("--birth")
-    p_search.add_argument("--limit", type=int, default=25)
-    p_search.add_argument("--fresh", action="store_true", help="bypass cache, force a live fetch")
+semantics (what an agent must know):
+  - Never launches a browser: connects to the already-running, logged-in Chrome
+    (CDP :9222). If it is down, you get {"ok":false,"error":"cdp browser not
+    reachable on :9222"} - ask the human to start it.
+  - Every real Ancestry hit is serialized through a machine-global queue and
+    human-paced (>= GEN_ANCESTRY_MIN_INTERVAL seconds apart, default 5, plus
+    jitter) across ALL agents. You never need to rate-limit yourself.
+  - Cache-first: repeat reads return instantly with "cached":true and never
+    touch Ancestry (records cache forever; searches until --fresh).
+  - --agent ID gives you your own browser tab plus your own cursor and history
+    (state in ~/.gen-cockpit/ancestry/). Stateless commands share the reserved
+    "default" tab. The human's own tab is never driven. Use one process per
+    agent id at a time.
+  - Your location is LOGICAL: a cache-served goto/back updates state without
+    moving the tab; the "navigated" field reports whether the browser moved.
+  - next/prev/where are pure local state: zero Ancestry hits.
+  - Search reads page 1 only (up to ~20 rows); next stops at the page edge.
+
+typical session:
+  goto "search/6224?name=Marjorie_Clemans&birth=1912" --agent alice
+  next --agent alice          # step the cursor through results, free
+  open --agent alice          # open the record under the cursor (one hit)
+  where --agent alice         # {location, history_depth, cursor_at}
+  back --agent alice          # usually cache-served: "navigated":false
+"""
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        prog="gen ancestry",
+        description=(
+            "Read Ancestry as structured JSON through the shared, human-paced "
+            "browser session. Emits exactly one JSON object per invocation; "
+            "no HTML or DOM ever reaches the caller."
+        ),
+        epilog=EPILOG,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    sub = parser.add_subparsers(dest="cmd", required=True, metavar="<command>")
+
+    # stateless data commands (one-shot JSON, reserved "default" tab)
+    p_search = sub.add_parser(
+        "search", help="run a collection search -> {count, results:[{record_id, cells, text}]}",
+        description="Search one collection. Full result set is cached; --limit trims only the emitted view.")
+    p_search.add_argument("--collection", required=True, metavar="N", help="Ancestry collection id (e.g. 6224 = 1930 census)")
+    p_search.add_argument("--name", required=True, metavar="GIVEN_SURNAME", help="underscore-joined, e.g. Marjorie_Clemans")
+    p_search.add_argument("--birth", metavar="YEAR", help="approximate birth year filter")
+    p_search.add_argument("--limit", type=int, default=25, metavar="K", help="max results to emit (default 25)")
+    p_search.add_argument("--fresh", action="store_true", help="bypass the cache; force a live fetch")
     p_search.set_defaults(func=cmd_search)
 
-    for name in ("record", "household"):
-        p = sub.add_parser(name)
-        p.add_argument("--collection", required=True)
-        p.add_argument("--id", required=True)
-        p.add_argument("--fresh", action="store_true", help="bypass cache, force a live fetch")
+    for name, desc in (
+        ("record", "read one record -> {fields:{label:value}, household:[{name,age,relation}]}"),
+        ("household", "read one record, household members only"),
+    ):
+        p = sub.add_parser(name, help=desc, description=desc + ". Records are immutable; cached forever.")
+        p.add_argument("--collection", required=True, metavar="N", help="Ancestry collection id")
+        p.add_argument("--id", required=True, metavar="RECORD_ID", help="record id within the collection")
+        p.add_argument("--fresh", action="store_true", help="bypass the cache; force a live fetch")
         p.set_defaults(func=cmd_record if name == "record" else cmd_household)
 
     # stateful navigation (per-agent tab + cursor + history)
-    p_goto = sub.add_parser("goto", help="move to an address; open a record/search/collection")
+    p_goto = sub.add_parser(
+        "goto", help="move your agent to an address -> {location, navigated, data}",
+        description="Move to an address (see epilog for the grammar). Pushes the previous location onto your history.")
     p_goto.add_argument("address", help="record/COLL/ID | search/COLL?name=..&birth=.. | collection/COLL")
-    p_goto.add_argument("--agent")
-    p_goto.add_argument("--fresh", action="store_true")
+    p_goto.add_argument("--agent", metavar="ID", help="your agent id (own tab, cursor, history); default: 'default'")
+    p_goto.add_argument("--fresh", action="store_true", help="bypass the cache; force a live fetch")
     p_goto.set_defaults(func=cmd_goto)
 
-    for name, func in (("where", cmd_where), ("next", cmd_next), ("prev", cmd_prev), ("back", cmd_back)):
-        p = sub.add_parser(name)
-        p.add_argument("--agent")
+    for name, func, desc in (
+        ("where", cmd_where, "report your logical location, history depth, and cursor -> no Ancestry hit"),
+        ("next", cmd_next, "step the search cursor forward -> {cursor, result}; no Ancestry hit"),
+        ("prev", cmd_prev, "step the search cursor back -> {cursor, result}; no Ancestry hit"),
+        ("back", cmd_back, "pop history and return there (usually cache-served)"),
+    ):
+        p = sub.add_parser(name, help=desc, description=desc + ".")
+        p.add_argument("--agent", metavar="ID", help="your agent id; default: 'default'")
         p.set_defaults(func=func)
 
-    p_open = sub.add_parser("open", help="open result N (or the cursor) of the current search")
-    p_open.add_argument("n", nargs="?", type=int, default=None)
-    p_open.add_argument("--agent")
-    p_open.add_argument("--fresh", action="store_true")
+    p_open = sub.add_parser(
+        "open", help="open search result N, or the one under your cursor -> a record",
+        description="Open result N of your current search (0-based); with no N, opens the result under your cursor.")
+    p_open.add_argument("n", nargs="?", type=int, default=None, metavar="N", help="0-based result index (default: cursor)")
+    p_open.add_argument("--agent", metavar="ID", help="your agent id; default: 'default'")
+    p_open.add_argument("--fresh", action="store_true", help="bypass the cache; force a live fetch")
     p_open.set_defaults(func=cmd_open)
 
     args = parser.parse_args()

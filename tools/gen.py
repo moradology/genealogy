@@ -29,16 +29,91 @@ def usage() -> str:
     lines = [
         "Usage: gen [--pretty] <command> [args]",
         "",
-        "Commands:",
-        "  gate                         Run the full repository gate",
-        "  build <target> [--check]     Build or check a generated artifact",
-        "  stamp [--write|--check|--deployed]",
-        "  ancestry <search|record|household> ...   Read the live CDP session as JSON",
+        "The researcher's cockpit: one JSON-first entry point for the genealogy",
+        "toolchain. Every command prints exactly one JSON object to stdout",
+        '(compact single line; --pretty for indented) carrying at least',
+        '{"command", "ok"}. Exit code is 0 iff ok. Wrapped-tool output is in',
+        'the "output" field, never raw on stdout.',
         "",
-        "Build targets:",
-        "  basemap  fonts  citation-backlinks  plate-keys  source-index",
+        "Repository commands:",
+        "  gate                        Run the full gate (tools/check.sh)",
+        "  build <target> [--check]    Rebuild, or verify with --check, one of:",
+        "                              basemap fonts citation-backlinks",
+        "                              plate-keys source-index",
+        "  stamp [--write|--check|--deployed]",
+        "                              Deploy fingerprint (tools/stamp.py)",
+        "",
+        "Ancestry commands (drive the already-running, logged-in Chrome; never",
+        "launch a browser; all reads share a machine-global queue, human pacing,",
+        "and a cache under ~/.gen-cockpit/ancestry):",
+        "  ancestry search --collection N --name Given_Surname",
+        "                  [--birth YEAR] [--limit K] [--fresh]",
+        "  ancestry record --collection N --id RECORD_ID [--fresh]",
+        "  ancestry household --collection N --id RECORD_ID [--fresh]",
+        "  ancestry goto <address> [--agent ID] [--fresh]",
+        "  ancestry open [N] [--agent ID] [--fresh]",
+        "  ancestry where | next | prev | back  [--agent ID]",
+        "",
+        "  Addresses:  record/COLL/ID",
+        "              search/COLL?name=Given_Surname&birth=YEAR",
+        "              collection/COLL",
+        '  Result fields: "cached":true  = served from cache, Ancestry untouched;',
+        '                 "navigated":false = logical location moved from cache',
+        "                 without driving the browser tab.",
+        "",
+        "Help:  gen <command> --help   (ancestry forwards to the full subhelp;",
+        "       try also: gen ancestry goto --help)",
+        "",
+        "Examples:",
+        "  gen gate",
+        "  gen build fonts --check",
+        '  gen ancestry goto "search/6224?name=Marjorie_Clemans&birth=1912" --agent alice',
+        "  gen ancestry next --agent alice",
+        "  gen ancestry open 0 --agent alice",
     ]
     return "\n".join(lines)
+
+
+COMMAND_HELP = {
+    "gate": "\n".join([
+        "Usage: gen gate",
+        "",
+        "Run the full repository gate (tools/check.sh): geojson + source-index",
+        "validation, evidence/case/trace contracts, cross-reference closure,",
+        "people index, geo sync, generated-region byte-identity, deploy stamp,",
+        "and the Playwright acceptance spec.",
+        "",
+        'JSON: {"command":"gate","ok":<all passed>,"returncode":N,"output":"..."}',
+        "Exit code mirrors check.sh. Requires Playwright locally (CI parity).",
+    ]),
+    "build": "\n".join([
+        "Usage: gen build <target> [--check]",
+        "",
+        "Rebuild a generated artifact, or verify it byte-identical with --check.",
+        "",
+        "Targets:",
+        "  basemap             Natural Earth projection/paths/routes regions",
+        "  fonts               Subsetted woff2 data-URI block",
+        "  citation-backlinks  'Cited by' backlinks in the Source Ledger",
+        "  plate-keys          Plate marker keys, ledger, and numerals",
+        "  source-index        research/sources/source-index.json",
+        "",
+        'JSON: {"command":"build","target":T,"check":bool,"ok":...,"returncode":N,"output":"..."}',
+        "Note: a failing --check often just means index.html changed and the",
+        "artifact needs a rebuild - read the output field.",
+    ]),
+    "stamp": "\n".join([
+        "Usage: gen stamp [--write|--check|--deployed]",
+        "",
+        "Deploy fingerprint via tools/stamp.py.",
+        "  (none)      report the current stamp state",
+        "  --write     restamp index.html after content changes",
+        "  --check     verify the stamp matches content (gate mode)",
+        "  --deployed  compare against the live GitHub Pages deployment",
+        "",
+        'JSON: {"command":"stamp","ok":...,"returncode":N,"output":"..."}',
+    ]),
+}
 
 
 def split_global_flags(argv: list[str]) -> tuple[list[str], bool]:
@@ -158,7 +233,7 @@ def handler_ancestry(argv: list[str], pretty: bool) -> int:
 
 def dispatch(argv: list[str]) -> int:
     args, pretty = split_global_flags(argv)
-    if not args or any(arg in {"--help", "-h"} for arg in args):
+    if not args or args[0] in {"--help", "-h"}:
         print(usage())
         return 0
 
@@ -172,6 +247,18 @@ def dispatch(argv: list[str]) -> int:
     if command not in handlers:
         emit({"command": command, "ok": False, "error": "unknown command"}, pretty)
         return 1
+    if any(arg in {"--help", "-h"} for arg in args[1:]):
+        if command == "ancestry":
+            # Forward to the subtool so argparse renders the real, always-current
+            # help (works at any depth: `gen ancestry --help`, `... goto --help`).
+            result = subprocess.run(
+                ["uv", "run", "tools/gen_ancestry.py", *args[1:]],
+                cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+            )
+            print(result.stdout, end="")
+            return result.returncode
+        print(COMMAND_HELP[command])
+        return 0
     return handlers[command](args[1:], pretty)
 
 
