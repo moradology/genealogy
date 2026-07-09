@@ -122,6 +122,39 @@ only if the plain-text approach starts hurting. Today it doesn't. Don't build it
 integrity checker. Revisit SQLite as a build-time convenience only if querying becomes
 painful — and even then the shipped artifact stays static files.
 
+### What about a *graph* database specifically?
+
+Sharper instinct: genealogy is natively a **graph** (people = nodes; parent-of /
+married-to / child-of = typed edges; a pedigree is a graph traversal), and evidence,
+sources, places, and cases hang off that same graph. Modeling it as a property graph —
+nodes with types (`person`, `evidence`, `source`, `place`, `case`, `event`) and typed
+edges (`parent_of`, `married_to`, `born_at`, `cites`, `supports`, `resolves`, `refutes`) —
+is the truest picture of the data. So: **adopt the graph as the mental model.**
+
+But, same split as before:
+
+- **A graph DBMS (Neo4j and friends): no**, for the identical reasons — it's a server,
+  which breaks static / offline / archival / no-ops, and it can't be served from GitHub
+  Pages. Same forklift, same book.
+- **You already have the graph, in plain text.** The geojson `family_link` features are
+  literally a typed edge list (`from[]`, `to`, `kind: "parents to child" | "couple
+  convergence" | "descendant path" | "parent evidence"`); the ahnentafel numbers encode
+  the pedigree DAG (father of *n* = 2*n*); person `h`/`ah` and the `source_refs` are edges
+  too. The evidence layer just extends this graph with `evidence`/`case` nodes and
+  `supports`/`cites`/`resolves` edges. Storage = a **nodes file + a typed-edges file** (or
+  edges embedded as id refs, as today). The gate becomes **graph-integrity**: every edge
+  endpoint resolves to a real node.
+- **Traversal is trivial at this scale.** "Ancestors of X", "everything a source touches",
+  "shortest path between two people" are the graph queries that make a graph DB shine — at
+  *millions* of nodes with deep walks. Here it's ~85 nodes, ~4 generations. Those walks are
+  a 20-line Python function over the edge list, or an in-memory `networkx` graph built at
+  build-time from the plain-text edges (never shipped). That's the right amount of tool.
+
+So: **model it as a graph, store the graph as plain-text nodes + typed edges, run no graph
+server.** If interactive graph *exploration* ever becomes a feature of the viz, build the
+in-memory graph at build-time and emit exactly the static JSON the page needs — the browser
+still loads plain data, not a database.
+
 ## Decisions needed from you
 
 1. Evidence store as an **extension of `source-index.json`**, or a **new `evidence.json`**
