@@ -183,7 +183,7 @@ def main() -> int:
     rendered = recompute(original)
     if args.check:
         if original != rendered:
-            print(f"{HTML_PATH} citation backlinks are out of date; run uv run tools/build_citation_backlinks.py", file=sys.stderr)
+            print(f"{HTML_PATH} citation backlinks are out of date; run ./gen build citation-backlinks", file=sys.stderr)
             return 1
         print(f"{HTML_PATH} citation backlinks are current")
         return 0

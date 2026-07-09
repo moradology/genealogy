@@ -7,13 +7,13 @@ reviewable diffs. `source-index.json` is its generated search projection.
 Rebuild the search projection after editing `sources.jsonl`:
 
 ```sh
-uv run tools/build_source_index.py
+./gen build source-index
 ```
 
 Check whether it is current:
 
 ```sh
-uv run tools/build_source_index.py --check
+./gen build source-index --check
 ```
 
 The check also compares the public Source Ledger in `index.html` with the

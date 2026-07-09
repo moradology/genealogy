@@ -19,8 +19,8 @@ rounded to 0.1. The fan and graticule are computed at runtime in
 index.html from the same constants; --emit-all prints them here too for
 cross-validation.
 
-  uv run tools/build_basemap.py --check      rebuild and byte-compare
-  uv run tools/build_basemap.py --write      splice into index.html
+  ./gen build basemap --check                rebuild and byte-compare
+  ./gen build basemap                        splice into index.html
   uv run tools/build_basemap.py --emit-routes
   uv run tools/build_basemap.py --emit-all   print everything to stdout
 """
@@ -637,7 +637,7 @@ def write(blocks):
         start, stop = region_bounds(html, tag)
         html = html[:start] + generated + "\n" + html[stop:]
     HTML.write_text(html)
-    print("index.html regions rewritten; run tools/stamp.py --write next")
+    print("index.html regions rewritten; run ./gen stamp --write next")
     return 0
 
 

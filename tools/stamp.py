@@ -6,9 +6,9 @@ truncated to 12 hex chars, plus the stamp date. GitHub Pages has no build
 step, so this committed fingerprint is what lets `--deployed` prove the live
 site serves the pushed content (no more cache guessing).
 
-  uv run tools/stamp.py --write      refresh the stamp after edits
-  uv run tools/stamp.py --check      fail if content changed since stamping
-  uv run tools/stamp.py --deployed   compare the live site's stamp digest
+  ./gen stamp --write      refresh the stamp after edits
+  ./gen stamp --check      fail if content changed since stamping
+  ./gen stamp --deployed   compare the live site's stamp digest
 """
 
 from __future__ import annotations
@@ -59,12 +59,12 @@ def check() -> int:
     html = HTML.read_text()
     stamp = current_stamp(html)
     if stamp is None:
-        print("no deploy stamp present; run tools/stamp.py --write", file=sys.stderr)
+        print("no deploy stamp present; run ./gen stamp --write", file=sys.stderr)
         return 1
     recorded = stamp.split()[0]
     actual = digest_of(html)
     if recorded != actual:
-        print(f"stale stamp: recorded {recorded}, content is {actual}; run tools/stamp.py --write", file=sys.stderr)
+        print(f"stale stamp: recorded {recorded}, content is {actual}; run ./gen stamp --write", file=sys.stderr)
         return 1
     print(f"stamp current: {stamp}")
     return 0
@@ -73,7 +73,7 @@ def check() -> int:
 def deployed() -> int:
     local = current_stamp(HTML.read_text())
     if local is None:
-        print("no local stamp; run --write first", file=sys.stderr)
+        print("no local stamp; run ./gen stamp --write first", file=sys.stderr)
         return 1
     result = subprocess.run(
         ["curl", "-s", "--max-time", "20", LIVE_URL],

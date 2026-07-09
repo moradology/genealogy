@@ -17,3 +17,6 @@ research/pulls/
 # Durable structured-data acquisition store (Ancestry ToS: index-derived data
 # stays out of the public repo; the store lives with the project, not in git)
 research/cache/ancestry/
+
+# Cockpit store flock (created on first gen_store write; never content)
+research/.store.lock

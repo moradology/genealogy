@@ -301,7 +301,7 @@ def main() -> int:
     rendered = render(original)
     if args.check:
         if original != rendered:
-            print(f"{HTML_PATH} plate keys, ledger, or numerals are out of date; run uv run tools/build_plate_keys.py", file=sys.stderr)
+            print(f"{HTML_PATH} plate keys, ledger, or numerals are out of date; run ./gen build plate-keys", file=sys.stderr)
             return 1
         print(f"{HTML_PATH} plate keys, ledger, and numerals are current")
         return 0

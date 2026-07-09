@@ -23,14 +23,15 @@ BUILD_TARGETS = {
     "plate-keys": "tools/build_plate_keys.py",
     "source-index": "tools/build_source_index.py",
 }
+WRITE_FLAG_TARGETS = frozenset({"basemap", "fonts"})
 
 
 def usage() -> str:
     lines = [
-        "Usage: gen [--pretty] <command> [args]",
+        "Usage: ./gen [--pretty] <command> [args]",
         "",
         "The researcher's cockpit: one JSON-first entry point for the genealogy",
-        "toolchain. Every command prints exactly one JSON object to stdout",
+        "toolchain. Every non-help command prints exactly one JSON object to stdout",
         '(compact single line; --pretty for indented) carrying at least',
         '{"command", "ok"}. Exit code is 0 iff ok. Wrapped-tool output is in',
         'the "output" field, never raw on stdout.',
@@ -42,19 +43,22 @@ def usage() -> str:
         "                              plate-keys source-index",
         "  stamp [--write|--check|--deployed]",
         "                              Deploy fingerprint (tools/stamp.py)",
+        "                              (no flag means --check)",
         "",
         "Ancestry commands (drive the already-running, logged-in Chrome; never",
         "launch a browser; all reads share a machine-global queue, human pacing,",
-        "and the durable acquisition store in research/cache/ancestry - every",
-        "page ever fetched is kept, so revisits are free and instant):",
+        "and the durable acquisition store in research/cache/ancestry - one",
+        "latest validated snapshot is kept per page/query, so revisits are free):",
         "  ancestry search --collection N --name Given_Surname",
-        "                  [--birth YEAR] [--limit K] [--fresh]",
-        "  ancestry record --collection N --id RECORD_ID [--fresh]",
-        "  ancestry household --collection N --id RECORD_ID [--fresh]",
-        "  ancestry goto <address> [--agent ID] [--fresh]",
-        "  ancestry open [N] [--agent ID] [--fresh]",
+        "                  [--birth YEAR] [--limit K] [--fresh|--cache-only]",
+        "  ancestry record --collection N --id RECORD_ID [--fresh|--cache-only]",
+        "  ancestry household --collection N --id RECORD_ID [--fresh|--cache-only]",
+        "  ancestry goto <address> [--agent ID] [--fresh|--cache-only]",
+        "  ancestry open [N] [--agent ID] [--fresh|--cache-only]",
         "  ancestry where | next | prev | back  [--agent ID]",
-        "  ancestry cache stats|list|clear [--kind K] [--all]",
+        "  ancestry cache stats|list [--kind K]",
+        "  ancestry cache clear (--kind K|--all)",
+        "                  [--include-records --confirm DELETE-DURABLE-ANCESTRY-RECORDS]",
         "",
         "  Addresses:  record/COLL/ID",
         "              search/COLL?name=Given_Surname&birth=YEAR",
@@ -62,23 +66,42 @@ def usage() -> str:
         '  Result fields: "cached":true  = served from cache, Ancestry untouched;',
         '                 "navigated":false = logical location moved from cache',
         "                 without driving the browser tab.",
+        "  --cache-only: fail on a miss without probing Chrome or Ancestry.",
         "",
-        "Help:  gen <command> --help   (ancestry forwards to the full subhelp;",
-        "       try also: gen ancestry goto --help)",
+        "Store commands (the canonical research truth stores; every write is",
+        "validated against the repository contracts before it lands, under a",
+        "store-wide lock, and never leaves a partial or unattested record):",
+        "  evidence add --shard zimmerman|mundell|dible|connelly",
+        "               [--validate-only]      (one evidence record as JSON on stdin;",
+        "                                       privacy_review.status='passed' required;",
+        "                                       acquisition.pull auto-assigned)",
+        "  trace new --slug S --title T [--date D] [--case-refs a,b] [--person-refs ...]",
+        "            [--evidence-refs ...] [--source-refs ...] [--geo-refs ...]",
+        "            [--confidence C] [--outcome S] [--next-action S]",
+        "  show <id>                   Any case/evidence/source/trace/geo/person id ->",
+        "                              the record + everything referencing it",
+        "  status                      Fast dashboard: validators, case histogram,",
+        "                              evidence counts, latest trace (no Playwright)",
+        "",
+        "Help:  ./gen <command> --help   (ancestry forwards to the full subhelp;",
+        "       try also: ./gen ancestry goto --help)",
         "",
         "Examples:",
-        "  gen gate",
-        "  gen build fonts --check",
-        '  gen ancestry goto "search/6224?name=Marjorie_Clemans&birth=1912" --agent alice',
-        "  gen ancestry next --agent alice",
-        "  gen ancestry open 0 --agent alice",
+        "  ./gen gate",
+        "  ./gen stamp",
+        "  ./gen build fonts --check",
+        '  ./gen ancestry goto "search/6224?name=Marjorie_Clemans&birth=1912" --agent alice',
+        "  ./gen ancestry next --agent alice",
+        "  ./gen ancestry open 0 --agent alice",
+        "  ./gen show case.07",
+        "  ./gen status",
     ]
     return "\n".join(lines)
 
 
 COMMAND_HELP = {
     "gate": "\n".join([
-        "Usage: gen gate",
+        "Usage: ./gen gate",
         "",
         "Run the full repository gate (tools/check.sh): geojson + source-index",
         "validation, evidence/case/trace contracts, cross-reference closure,",
@@ -89,7 +112,7 @@ COMMAND_HELP = {
         "Exit code mirrors check.sh. Requires Playwright locally (CI parity).",
     ]),
     "build": "\n".join([
-        "Usage: gen build <target> [--check]",
+        "Usage: ./gen build <target> [--check]",
         "",
         "Rebuild a generated artifact, or verify it byte-identical with --check.",
         "",
@@ -105,15 +128,60 @@ COMMAND_HELP = {
         "artifact needs a rebuild - read the output field.",
     ]),
     "stamp": "\n".join([
-        "Usage: gen stamp [--write|--check|--deployed]",
+        "Usage: ./gen stamp [--write|--check|--deployed]",
         "",
         "Deploy fingerprint via tools/stamp.py.",
-        "  (none)      report the current stamp state",
+        "  (none)      verify and report the current stamp (same as --check)",
         "  --write     restamp index.html after content changes",
         "  --check     verify the stamp matches content (gate mode)",
         "  --deployed  compare against the live GitHub Pages deployment",
         "",
-        'JSON: {"command":"stamp","ok":...,"returncode":N,"output":"..."}',
+        'JSON: {"command":"stamp","mode":M,"ok":...,"returncode":N,"output":"..."}',
+    ]),
+    "evidence": "\n".join([
+        "Usage: ./gen evidence add --shard <zimmerman|mundell|dible|connelly> [--validate-only]",
+        "",
+        "Append ONE evidence record (JSON object on stdin) to the canonical store.",
+        "Safety contract: refuses without an explicit privacy attestation",
+        "(privacy_review.status='passed'); refuses duplicate ids; auto-assigns the",
+        "next two-digit acquisition.pull within the record's batch; validates the",
+        "candidate store in a temp copy BEFORE touching the real shard; writes",
+        "atomically under the store lock. --validate-only never writes.",
+        "",
+        'JSON: {"command":"evidence.add","ok":...,"written":bool,"id":...,"shard":...,"pull":...}',
+        "Errors carry the repository validator's messages verbatim.",
+    ]),
+    "trace": "\n".join([
+        "Usage: ./gen trace new --slug S --title T [--date YYYY-MM-DD]",
+        "         [--case-refs a,b] [--person-refs ...] [--evidence-refs ...]",
+        "         [--source-refs ...] [--geo-refs ...] [--confidence C]",
+        "         [--outcome STR] [--next-action STR]",
+        "",
+        "Scaffold a reasoning trace from the canonical template: derived id",
+        "(trace.<date>.<slug>), sorted refs, template body. Validated against the",
+        "trace contract in a temp copy; the real file is only created after it",
+        "passes, so a failure leaves nothing behind.",
+        "",
+        'JSON: {"command":"trace.new","ok":...,"path":...,"id":...}',
+    ]),
+    "show": "\n".join([
+        "Usage: ./gen show <id>",
+        "",
+        "Resolve any id across the truth stores - case.*, ev.*, src.*, trace ids",
+        "or filenames, geojson feature/place ids, person.* - and return the full",
+        "record plus everything that references it (cases, evidence, traces).",
+        "The orientation verb: start sessions here.",
+        "",
+        'JSON: {"command":"show","ok":...,"kind":...,"record":{...},"referenced_by":{...}}',
+    ]),
+    "status": "\n".join([
+        "Usage: ./gen status",
+        "",
+        "Fast research dashboard - no Playwright, no network: store validators",
+        "(evidence/cases/traces), case-status histogram, evidence counts by",
+        "shard, newest trace. Exit code mirrors overall health.",
+        "",
+        'JSON: {"command":"status","ok":...,"validators":{...},"cases":{...},"evidence":{...},"latest_trace":...}',
     ]),
 }
 
@@ -140,6 +208,15 @@ def run_captured(args: list[str]) -> subprocess.CompletedProcess[str]:
         stderr=subprocess.STDOUT,
         text=True,
     )
+
+
+def build_command(target: str, check: bool) -> list[str]:
+    command = ["uv", "run", BUILD_TARGETS[target]]
+    if check:
+        command.append("--check")
+    elif target in WRITE_FLAG_TARGETS:
+        command.append("--write")
+    return command
 
 
 def json_error(command: str, error: str, pretty: bool, **extra: object) -> int:
@@ -179,10 +256,7 @@ def handler_build(argv: list[str], pretty: bool) -> int:
     if target not in BUILD_TARGETS:
         return json_error("build", "unknown target", pretty, target=target)
 
-    cmd = ["uv", "run", BUILD_TARGETS[target]]
-    if check:
-        cmd.append("--check")
-    result = run_captured(cmd)
+    result = run_captured(build_command(target, check))
     rc = result.returncode
     emit(
         {
@@ -206,15 +280,30 @@ def handler_stamp(argv: list[str], pretty: bool) -> int:
     if len(modes) > 1:
         return json_error("stamp", "conflicting mode flags", pretty, arguments=modes)
 
-    result = run_captured(["uv", "run", "tools/stamp.py", *modes])
+    mode = modes[0] if modes else "--check"
+    result = run_captured(["uv", "run", "tools/stamp.py", mode])
     rc = result.returncode
-    emit({"command": "stamp", "ok": rc == 0, "returncode": rc, "output": result.stdout or ""}, pretty)
+    emit(
+        {
+            "command": "stamp",
+            "mode": mode.removeprefix("--"),
+            "ok": rc == 0,
+            "returncode": rc,
+            "output": result.stdout or "",
+        },
+        pretty,
+    )
     return rc
 
 
 def handler_ancestry(argv: list[str], pretty: bool) -> int:
     if not argv:
-        return json_error("ancestry", "missing subcommand", pretty, expected=["search", "record", "household"])
+        return json_error(
+            "ancestry",
+            "missing subcommand",
+            pretty,
+            expected=["search", "record", "household", "goto", "where", "next", "prev", "back", "open", "cache"],
+        )
     result = subprocess.run(
         ["uv", "run", "tools/gen_ancestry.py", *argv],
         cwd=ROOT,
@@ -233,6 +322,44 @@ def handler_ancestry(argv: list[str], pretty: bool) -> int:
     return 0 if obj.get("ok") else 1
 
 
+def handler_store(command: str, argv: list[str], pretty: bool) -> int:
+    """Forward a truth-store verb to tools/gen_store.py (stdlib-only, so this
+    interpreter suffices) and re-emit its single JSON object, preserving the
+    subtool's exit code (status mirrors store health)."""
+    result = subprocess.run(
+        [sys.executable, "tools/gen_store.py", command, *argv],
+        cwd=ROOT,
+        stdin=None if sys.stdin.isatty() else sys.stdin,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    out = (result.stdout or "").strip()
+    if not out.startswith("{"):
+        return json_error(
+            command, "subtool produced no JSON", pretty,
+            returncode=result.returncode, stderr=(result.stderr or "").strip()[-800:],
+        )
+    emit(json.loads(out), pretty)
+    return result.returncode
+
+
+def handler_evidence(argv: list[str], pretty: bool) -> int:
+    return handler_store("evidence", argv, pretty)
+
+
+def handler_trace(argv: list[str], pretty: bool) -> int:
+    return handler_store("trace", argv, pretty)
+
+
+def handler_show(argv: list[str], pretty: bool) -> int:
+    return handler_store("show", argv, pretty)
+
+
+def handler_status(argv: list[str], pretty: bool) -> int:
+    return handler_store("status", argv, pretty)
+
+
 def dispatch(argv: list[str]) -> int:
     args, pretty = split_global_flags(argv)
     if not args or args[0] in {"--help", "-h"}:
@@ -244,6 +371,10 @@ def dispatch(argv: list[str]) -> int:
         "build": handler_build,
         "stamp": handler_stamp,
         "ancestry": handler_ancestry,
+        "evidence": handler_evidence,
+        "trace": handler_trace,
+        "show": handler_show,
+        "status": handler_status,
     }
     command = args[0]
     if command not in handlers:
@@ -252,12 +383,19 @@ def dispatch(argv: list[str]) -> int:
     if any(arg in {"--help", "-h"} for arg in args[1:]):
         if command == "ancestry":
             # Forward to the subtool so argparse renders the real, always-current
-            # help (works at any depth: `gen ancestry --help`, `... goto --help`).
+            # help (works at any depth: `./gen ancestry --help`,
+            # `./gen ancestry goto --help`). Help imports no browser dependency,
+            # so use this interpreter and remain offline on a cold uv cache.
             result = subprocess.run(
-                ["uv", "run", "tools/gen_ancestry.py", *args[1:]],
+                [sys.executable, "tools/gen_ancestry.py", *args[1:]],
                 cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
             )
-            print(result.stdout, end="")
+            # The implementation module uses argparse's conventional program
+            # name; expose the repository's real, runnable entry point.
+            print(
+                result.stdout.replace("usage: gen ancestry", "usage: ./gen ancestry"),
+                end="",
+            )
             return result.returncode
         print(COMMAND_HELP[command])
         return 0

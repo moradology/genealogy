@@ -1,0 +1,6 @@
+#!/bin/sh
+# Canonical local entry point for the researcher's cockpit.
+set -eu
+
+ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+exec uv run "$ROOT/tools/gen.py" "$@"

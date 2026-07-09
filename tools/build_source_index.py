@@ -229,7 +229,7 @@ def main() -> int:
     if args.check:
         current = OUT_PATH.read_text() if OUT_PATH.exists() else ""
         if current != rendered:
-            print(f"{OUT_PATH} is out of date; run uv run tools/build_source_index.py", file=sys.stderr)
+            print(f"{OUT_PATH} is out of date; run ./gen build source-index", file=sys.stderr)
             return 1
         print(f"{OUT_PATH} is current from canonical sources.jsonl")
         return 0

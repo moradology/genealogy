@@ -22,6 +22,7 @@ The goal is breadth plus honesty. The public page presents the current working t
 - `index.html` - the hosted static artifact.
 - `ancestry_geospatial.geojson` - machine-readable geography for verified events, temporal paths, research targets, and family links.
 - `research/` - durable evidence records, cases, reasoning traces, search frames, and source registries.
+- `gen` - the repository-local command-line entry point for checks, builds, stamps, and guarded Ancestry reads.
 - `tools/build_source_index.py` - builds the searchable source index from canonical `sources.jsonl` and checks the public ledger projection.
 
 ## Research Memory
@@ -73,7 +74,7 @@ Add or edit sources in `research/sources/sources.jsonl`, then make the matching
 reader-facing change in the Source Ledger. Rebuild the generated search index:
 
 ```sh
-uv run tools/build_source_index.py
+./gen build source-index
 ```
 
 Useful source searches:
@@ -86,15 +87,32 @@ rg -n "Frances Adolph|Rust|Winona" research/sources/source-index.json
 
 ## Local Checks
 
+The cockpit is repository-local; run it as `./gen` rather than assuming a
+machine-wide command is installed. See `research/researcher-cockpit.md` for the
+implemented command list and the separately labeled future ideas.
+
+Useful local commands:
+
+```sh
+./gen --help
+./gen build source-index --check
+./gen stamp
+./gen gate
+```
+
+`./gen stamp` verifies the current deployment fingerprint. Use
+`./gen stamp --write` only after an intentional public-page change.
+
 Run the single gate before committing:
 
 ```sh
-sh tools/check.sh
+./gen gate
 ```
 
 It validates GeoJSON, evidence, cases, sources, and reasoning traces; checks every
-cross-reference and generated projection; syntax-checks the inline JavaScript; and runs
-the browser acceptance spec. CI runs the same script on every push.
+cross-reference and generated projection; runs the offline cockpit regression tests;
+syntax-checks the inline JavaScript; and runs the browser acceptance spec. CI runs the
+same underlying `tools/check.sh` script on every push.
 
 ## Publishing
 
@@ -104,10 +122,10 @@ Normal update flow:
 
 ```sh
 git status -sb
-uv run tools/build_source_index.py
-uv run python -m json.tool ancestry_geospatial.geojson >/dev/null
-uv run python -m json.tool research/sources/source-index.json >/dev/null
-git add index.html ancestry_geospatial.geojson research tools README.md
+./gen build source-index
+./gen stamp --write
+./gen gate
+git add index.html ancestry_geospatial.geojson research tools README.md gen
 git commit -m "Describe the genealogy update"
 git push
 ```

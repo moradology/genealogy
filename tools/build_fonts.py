@@ -23,8 +23,8 @@ the blobs this tool replaced were unreproducible (unknown original
 subset parameters), so this pipeline's own output became ground truth
 at its landing commit, and --check gates from then on.
 
-  uv run tools/build_fonts.py --check    rebuild and byte-compare
-  uv run tools/build_fonts.py --write    splice into index.html
+  ./gen build fonts --check              rebuild and byte-compare
+  ./gen build fonts                      splice into index.html
 """
 
 from __future__ import annotations
@@ -165,12 +165,12 @@ def main() -> int:
     if args.check:
         current = html[start:stop].rstrip("\n")
         if current != generated:
-            print("fonts: region differs from generator output; run --write", file=sys.stderr)
+            print("fonts: region differs from generator output; run ./gen build fonts", file=sys.stderr)
             return 1
         print(f"fonts: byte-identical ({stop - start} bytes)")
         return 0
     HTML.write_text(html[:start] + generated + "\n" + html[stop:])
-    print("index.html fonts region rewritten; run tools/stamp.py --write next")
+    print("index.html fonts region rewritten; run ./gen stamp --write next")
     return 0
 
 
