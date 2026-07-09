@@ -38,6 +38,60 @@
       "precision": "town",
       "coordinate_source": "OpenStreetMap Nominatim 2026-07-06"
     },
+    "place.bavaria_de": {
+      "label": "Bavaria, Germany",
+      "coordinates": [11.497889, 48.790447],
+      "precision": "region",
+      "coordinate_source": "manual centroid, added 2026-07-08"
+    },
+    "place.akron_co": {
+      "label": "Akron, Washington County, Colorado, USA",
+      "coordinates": [-103.214725, 40.161638],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim, added 2026-07-08"
+    },
+    "place.colorado_springs_co": {
+      "label": "Colorado Springs, El Paso County, Colorado, USA",
+      "coordinates": [-104.821363, 38.833882],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim, added 2026-07-08"
+    },
+    "place.cloverly_wy": {
+      "label": "Cloverly, Big Horn County, Wyoming, USA",
+      "coordinates": [-108.55, 44.94],
+      "precision": "locale",
+      "coordinate_source": "manual approximation, added 2026-07-08"
+    },
+    "place.medical_lake_wa": {
+      "label": "Medical Lake, Spokane County, Washington, USA",
+      "coordinates": [-117.703, 47.573],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim, added 2026-07-08"
+    },
+    "place.chewelah_wa": {
+      "label": "Chewelah, Stevens County, Washington, USA",
+      "coordinates": [-117.715, 48.276],
+      "precision": "town",
+      "coordinate_source": "OpenStreetMap Nominatim, added 2026-07-08"
+    },
+    "place.vanderburgh_county_in": {
+      "label": "Vanderburgh County, Indiana, USA",
+      "coordinates": [-87.583, 38.025],
+      "precision": "county",
+      "coordinate_source": "county centroid approximation, added 2026-07-08"
+    },
+    "place.east_frisia_de": {
+      "label": "Wybelsum / Wymeer, Ostfriesland, Germany",
+      "coordinates": [7.13, 53.35],
+      "precision": "region",
+      "coordinate_source": "manual approximation, added 2026-07-08"
+    },
+    "place.canton_bern_ch": {
+      "label": "Canton Bern, Switzerland",
+      "coordinates": [7.45, 46.95],
+      "precision": "region",
+      "coordinate_source": "manual centroid, added 2026-07-08"
+    },
     "place.colby_ks": {
       "label": "Colby, Thomas County, Kansas, USA",
       "coordinates": [-101.0526881, 39.3959655],
@@ -583,6 +637,178 @@
         "place_label": "Selden, Sheridan County, Kansas",
         "confidence": "documented",
         "source_refs": ["https://nb.findagrave.com/memorial/34266662/doyle-jule-zimmerman"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.zimmerman.john_paul_birth.1842-03-09",
+      "geometry": {"type": "Point", "coordinates": [11.497889, 48.790447]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "birth",
+        "person_id": "person.zimmerman.john_paul",
+        "person_name": "John Paul Zimmerman",
+        "anchor": "Doyle Julius Zimmerman",
+        "line_ids": ["line.zimmerman_surname"],
+        "date": "1842-03-09",
+        "date_sort": "1842-03-09",
+        "place_id": "place.bavaria_de",
+        "place_label": "Bavaria, Germany",
+        "confidence": "lead",
+        "source_refs": ["https://ancestors.familysearch.org/en/LTRB-GY1/john-paul-zimmerman-1842-1926"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.mundell.homer_marriage.1933-06-19",
+      "geometry": {"type": "Point", "coordinates": [-103.214725, 40.161638]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "marriage",
+        "person_id": "person.mundell.homer",
+        "person_name": "Homer Clair Mundell",
+        "participants": ["person.mundell.homer", "person.clemans.marjorie"],
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "line_ids": ["line.mundell_rust_cantwell", "line.clemans_flaherty"],
+        "date": "1933-06-19",
+        "date_sort": "1933-06-19",
+        "place_id": "place.akron_co",
+        "place_label": "Akron, Washington County, Colorado",
+        "confidence": "documented",
+        "notes": "Colorado marriage record, Washington County, report no. 1896 (Ancestry; ToS)"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.mundell.homer_marriage.1956-02-06",
+      "geometry": {"type": "Point", "coordinates": [-104.821363, 38.833882]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "marriage",
+        "person_id": "person.mundell.homer",
+        "person_name": "Homer Clair Mundell",
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "line_ids": ["line.mundell_rust_cantwell"],
+        "date": "1956-02-06",
+        "date_sort": "1956-02-06",
+        "place_id": "place.colorado_springs_co",
+        "place_label": "Colorado Springs, El Paso County, Colorado",
+        "confidence": "documented",
+        "notes": "Colorado, Select County Marriages, 1863-2018 (Ancestry; ToS)"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.mundell.homer_residence.1930",
+      "geometry": {"type": "Point", "coordinates": [-108.55, 44.94]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "residence",
+        "person_id": "person.mundell.homer",
+        "person_name": "Homer Clair Mundell",
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "line_ids": ["line.mundell_rust_cantwell"],
+        "date": "1930",
+        "date_sort": "1930-01-01",
+        "place_id": "place.cloverly_wy",
+        "place_label": "Cloverly, Big Horn County, Wyoming",
+        "confidence": "documented",
+        "notes": "1930 U.S. Census, Big Horn County, Wyoming (Ancestry; ToS)"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.zodrow.julius_death.1959-03-13",
+      "geometry": {"type": "Point", "coordinates": [-117.703, 47.573]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "death",
+        "person_id": "person.zodrow.julius_collateral",
+        "person_name": "Julius Henry Zodrow",
+        "anchor": "Doyle Julius Zimmerman",
+        "line_ids": ["line.zodrow_fleckenstein"],
+        "date": "1959-03-13",
+        "date_sort": "1959-03-13",
+        "place_id": "place.medical_lake_wa",
+        "place_label": "Medical Lake, Spokane County, Washington",
+        "confidence": "strong",
+        "source_refs": ["https://www.findagrave.com/memorial/111655641/julius-henry-zodrow"]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.zodrow.ernestina_death.1940-05-14",
+      "geometry": {"type": "Point", "coordinates": [-117.715, 48.276]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "death",
+        "person_id": "person.zodrow.julius_collateral",
+        "person_name": "Ernestina Baier Zodrow",
+        "anchor": "Doyle Julius Zimmerman",
+        "line_ids": ["line.zodrow_fleckenstein"],
+        "date": "1940-05-14",
+        "date_sort": "1940-05-14",
+        "place_id": "place.chewelah_wa",
+        "place_label": "Chewelah, Stevens County, Washington",
+        "confidence": "strong",
+        "notes": "Washington Digital Archives death index, checked 2026-07-08"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.long.jf_marriage.1826-02-23",
+      "geometry": {"type": "Point", "coordinates": [-87.583, 38.025]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "marriage",
+        "person_id": "person.long.john_franklin",
+        "person_name": "John Franklin Long + Sally A. Patton",
+        "anchor": "William J. Dible",
+        "line_ids": ["line.long_sleight_mcclelland"],
+        "date": "1826-02-23",
+        "date_sort": "1826-02-23",
+        "place_id": "place.vanderburgh_county_in",
+        "place_label": "Vanderburgh County, Indiana",
+        "confidence": "lead",
+        "notes": "Chapman Brothers 1880 county history (archive.org OCR)"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.rust.east_frisian_origin.1841",
+      "geometry": {"type": "Point", "coordinates": [7.13, 53.35]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "european_origin",
+        "person_id": "person.rust.john_aissen",
+        "person_name": "Rust family, East Frisia",
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "line_ids": ["line.mundell_rust_cantwell"],
+        "date": "1841",
+        "date_sort": "1841-01-01",
+        "place_id": "place.east_frisia_de",
+        "place_label": "Wybelsum / Wymeer, Ostfriesland, Germany",
+        "confidence": "strong",
+        "notes": "Wybelsum/Wymeer Reformed parish records (case.06)"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event.claar.swiss_origin.1700",
+      "geometry": {"type": "Point", "coordinates": [7.45, 46.95]},
+      "properties": {
+        "feature_kind": "life_event",
+        "event_type": "european_origin",
+        "person_id": "person.claar.frontier",
+        "person_name": "Claar family, Canton Bern (lead)",
+        "anchor": "Donna Lea Connelly Dible",
+        "line_ids": ["line.claar_white_stropes"],
+        "date": "1700s",
+        "date_sort": "1700-01-01",
+        "place_id": "place.canton_bern_ch",
+        "place_label": "Canton Bern, Switzerland",
+        "confidence": "lead",
+        "notes": "WikiTree Claar profile (lead)"
       }
     },
     {
