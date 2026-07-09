@@ -66,6 +66,50 @@ validate → update the frontier** — a short sequence of clean, composable com
 - `gen status` — dashboard: gate state, open cases, recent evidence, frontier top-5.
 - `gen log <case> "<note>"` — append to a discovery thread.
 
+## The Ancestry session manager (shared account, polite agents)
+
+The account is one shared, ban-risky resource. The rule: **agents never touch Ancestry
+directly — only through `gen ancestry`, which enforces safety for them.** Three layers:
+
+1. **Global queue + human pace (BUILT).** State lives machine-globally under
+   `~/.gen-cockpit/ancestry/` (outside the repo). Real hits take a single `flock` — one
+   agent at a time, the rest queue; the lock frees on close *and* on crash (the OS frees the
+   fd). A shared `last_request` timestamp enforces `MIN_INTERVAL` (default 5s + jitter)
+   between real hits across *all* agents. So no matter how many agents run, Ancestry sees one
+   paced, human-like stream.
+2. **Cache-first (BUILT).** Records/searches are keyed and cached; a repeat lookup returns
+   instantly (`"cached":true`) and never touches Ancestry. Historical records are immutable,
+   so this is a huge, safe traffic cut. `--fresh` forces a live re-fetch.
+3. **Per-agent tabs + relative addressing (DESIGNED-NEXT).** See below.
+
+### Per-agent tabs on a shared Chrome (designed)
+
+One Chrome/CDP process, one login; each agent gets its **own tab** so navigation state
+doesn't stomp others. Each `gen` invocation is a fresh process, so "the agent's tab" is made
+durable by mapping `agent-id -> CDP targetId` in `~/.gen-cockpit/tabs.json`: on
+`gen ancestry --agent A ...`, find A's target among the browser's pages (via a CDP session's
+`Target.getTargetInfo`); if gone, open a new tab and record it. The global lock still
+serializes the actual *requests* (the account limit is global), so tabs buy **navigation
+isolation**, not request parallelism — agent A can sit on a search while B reads a record,
+each driving only its own tab.
+
+### Local / relative addressing (designed)
+
+A compact address scheme + per-tab cursor state so agents "move around" Ancestry without
+juggling URLs:
+- **Absolute:** `record/2442/58087568`, `search/6224?name=Marjorie_Clemans&birth=1912`,
+  `collection/6224`.
+- **Relative (needs per-tab state — current location, current result set + cursor, a small
+  history stack, stored per agent):** `next` / `prev` (walk search results), `open <n>`
+  (open result N), `back` (history), `up` (record -> its search/collection),
+  `household <n>` (open a household member's own record).
+So: `gen ancestry --agent A goto record/2442/58087568`, then `... A up`, `... A next`,
+`... A open 3`. This turns the browser into a stateful, addressable surface per agent.
+
+Build note: layer 3 is a real build (per-tab state machine + address parser + history) and is
+optional — layers 1-2 already make the shared account safe for many agents. Do tabs first
+(navigation isolation), addressing second.
+
 ## Build order (pain-first, YAGNI)
 
 1. **`gen ancestry …`** — the highest-friction thing today. Turn the ad-hoc CDP scripting into
