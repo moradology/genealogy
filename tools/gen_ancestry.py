@@ -24,15 +24,78 @@ Commands:
 from __future__ import annotations
 
 import argparse
+import fcntl
+import hashlib
 import json
+import os
+import random
 import socket
+import time
+from pathlib import Path
 
 CDP_URL = "http://localhost:9222"
 CDP_HOST, CDP_PORT = "localhost", 9222
 
+# Machine-global state, shared by EVERY agent that uses this CLI (not repo-
+# relative, so it serializes across sessions/clones and stays out of git). One
+# Ancestry account, one global queue + one cache.
+STATE_DIR = Path.home() / ".gen-cockpit" / "ancestry"
+CACHE_DIR = STATE_DIR / "cache"
+LOCK_PATH = STATE_DIR / "queue.lock"
+LAST_PATH = STATE_DIR / "last_request"
+# Minimum seconds between REAL Ancestry hits, across all agents (human pace).
+MIN_INTERVAL = float(os.environ.get("GEN_ANCESTRY_MIN_INTERVAL", "5.0"))
+JITTER_MAX = float(os.environ.get("GEN_ANCESTRY_JITTER", "2.5"))
+
 
 def emit(obj: dict) -> None:
     print(json.dumps(obj, separators=(",", ":")))
+
+
+def ensure_state() -> None:
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def cache_key(kind: str, parts: dict) -> str:
+    raw = kind + "|" + "|".join(f"{k}={parts[k]}" for k in sorted(parts))
+    return kind + "-" + hashlib.sha1(raw.encode()).hexdigest()[:16]
+
+
+def cache_read(key: str) -> dict | None:
+    path = CACHE_DIR / f"{key}.json"
+    if path.exists():
+        return json.loads(path.read_text())
+    return None
+
+
+def cache_write(key: str, obj: dict) -> None:
+    ensure_state()
+    (CACHE_DIR / f"{key}.json").write_text(json.dumps(obj, separators=(",", ":")))
+
+
+def throttle() -> None:
+    """Human-pace real hits: wait out MIN_INTERVAL since the last global request."""
+    if LAST_PATH.exists():
+        last = float(LAST_PATH.read_text().strip() or "0")
+        wait = MIN_INTERVAL - (time.time() - last)
+        if wait > 0:
+            time.sleep(wait + random.uniform(0, JITTER_MAX))
+    LAST_PATH.write_text(str(time.time()))
+
+
+def locked_fetch(fetch):
+    """Serialize + pace a real Ancestry hit across ALL agents via a global flock.
+
+    LOCK_EX blocks until this process is next in line (that is the queue). The
+    lock is released when the file closes at the end of the `with` -- including
+    on crash, because the OS frees the fd -- so a dead agent never wedges it.
+    No try/except: `with open` guarantees the release.
+    """
+    ensure_state()
+    with open(LOCK_PATH, "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        throttle()
+        return fetch()
 
 
 def cdp_up() -> bool:
@@ -146,6 +209,12 @@ SEARCH_JS = r"""() => {
 
 
 def cmd_search(args) -> int:
+    key = cache_key("search", {"collection": args.collection, "name": args.name, "birth": args.birth or "", "limit": args.limit})
+    if not args.fresh:
+        hit = cache_read(key)
+        if hit is not None:
+            emit({**hit, "cached": True})
+            return 0
     if not cdp_up():
         emit({"command": "ancestry.search", "ok": False, "error": "cdp browser not reachable on :9222"})
         return 1
@@ -153,41 +222,55 @@ def cmd_search(args) -> int:
     if args.birth:
         url += f"&birth={args.birth}"
 
-    def go(page):
-        page.goto(url, wait_until="domcontentloaded", timeout=45000)
-        page.wait_for_timeout(3200)
-        return page.evaluate(SEARCH_JS)
+    def fetch():
+        def go(page):
+            page.goto(url, wait_until="domcontentloaded", timeout=45000)
+            page.wait_for_timeout(3200)
+            return page.evaluate(SEARCH_JS)
+        return run_on_page(go)
 
-    rows = run_on_page(go)
-    emit({
+    rows = locked_fetch(fetch)
+    obj = {
         "command": "ancestry.search",
         "ok": True,
         "collection": args.collection,
         "name": args.name,
         "count": len(rows),
         "results": rows[: args.limit],
-    })
+    }
+    cache_write(key, obj)
+    emit({**obj, "cached": False})
     return 0
 
 
 def _read_record(args, household_only: bool) -> int:
-    cmd = "ancestry.household" if household_only else "ancestry.record"
+    kind = "household" if household_only else "record"
+    cmd = f"ancestry.{kind}"
+    key = cache_key(kind, {"collection": args.collection, "id": args.id})
+    if not args.fresh:
+        hit = cache_read(key)
+        if hit is not None:
+            emit({**hit, "cached": True})
+            return 0
     if not cdp_up():
         emit({"command": cmd, "ok": False, "error": "cdp browser not reachable on :9222"})
         return 1
     url = f"https://www.ancestry.com/search/collections/{args.collection}/records/{args.id}"
 
-    def go(page):
-        page.goto(url, wait_until="domcontentloaded", timeout=45000)
-        page.wait_for_timeout(3000)
-        return page.evaluate("() => document.body.innerText")
+    def fetch():
+        def go(page):
+            page.goto(url, wait_until="domcontentloaded", timeout=45000)
+            page.wait_for_timeout(3000)
+            return page.evaluate("() => document.body.innerText")
+        return run_on_page(go)
 
-    text = run_on_page(go)
+    text = locked_fetch(fetch)
     household = parse_household(text)
     obj: dict = {"command": cmd, "ok": True, "collection": args.collection, "record_id": args.id, "household": household}
     if not household_only:
         obj["fields"] = parse_detail_fields(text)
-    emit(obj)
+    cache_write(key, obj)
+    emit({**obj, "cached": False})
     return 0
 
 
@@ -208,12 +291,14 @@ def main() -> int:
     p_search.add_argument("--name", required=True, help="Given_Surname (Ancestry format)")
     p_search.add_argument("--birth")
     p_search.add_argument("--limit", type=int, default=25)
+    p_search.add_argument("--fresh", action="store_true", help="bypass cache, force a live fetch")
     p_search.set_defaults(func=cmd_search)
 
     for name in ("record", "household"):
         p = sub.add_parser(name)
         p.add_argument("--collection", required=True)
         p.add_argument("--id", required=True)
+        p.add_argument("--fresh", action="store_true", help="bypass cache, force a live fetch")
         p.set_defaults(func=cmd_record if name == "record" else cmd_household)
 
     args = parser.parse_args()
