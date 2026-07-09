@@ -143,3 +143,38 @@ lean into rule-based reasoning (my pick given the "encoded opinions" goal), or *
 prefer property-graph + Cypher. Either is generated from the plain-text truth and thrown away/
 regenerated freely — so you can even prototype both cheaply and keep the winner. Never a server;
 never shipped to the browser.
+
+## DECISION (2026-07-09): CozoDB
+
+Owner chose **CozoDB** as the derived reasoning/query index. Rationale: Datalog is the natural
+language for the encoded "opinions" (recursive rules), it's embeddable + single-file (SQLite
+backend), and it bundles vector search so we don't need a second store. It remains a *derived*
+index generated from the plain-text truth (`pip install pycozo`, build/search-time only, never
+shipped). The young-project risk is real but mitigated by the derived-index design — if Cozo
+ever fell over, regenerate the same graph into Kùzu/SQLite from the unchanged text truth.
+
+### Where the vector search actually earns its keep here (honest read)
+
+Bundled vectors are a genuine bonus, but they help in specific places — and *not* the one people
+assume first:
+
+- **Semantic retrieval over the evidence/thread corpus — the strongest fit.** As the
+  `reasoning-traces/`, evidence notes, and obituary/record text grow, embed them so automated
+  search can ask "have we already investigated an institutional death in this family?" or "what
+  did we find on the Rust East Frisian origin?" This is RAG over the evidence layer — the agent's
+  cross-session memory of its own prior work. Value grows with the corpus.
+- **A *signal* in entity resolution / same-name candidate scoring — secondary.** Embed a
+  candidate record's full context (name + dates + places + associated names) and find the nearest
+  existing person node to suggest identity / flag collisions. Useful as one input, not the whole
+  decision.
+- **NOT the right tool for name-spelling variants.** "Zodrow→Farrow", "Mundell→Mandell→Mondel",
+  "Clemans/Clemens/Clemons/Clements" are *orthographic/phonetic* problems, and the proven, lighter
+  tools are **Soundex / Double Metaphone / Jaro-Winkler / Levenshtein** — encode those as Datalog/
+  Python predicates. Vectors complement them for *semantic* text, they don't replace them for
+  spelling.
+
+Cost to be aware of: vectors need an **embedding model** at build/search-time (a local
+sentence-transformer or an API call) — a real moving part. It's YAGNI until the corpus is big
+enough that semantic retrieval beats `grep`; at a few dozen traces, full-text search is often
+enough. So: adopt Cozo for the Datalog rules first; turn on its vector search when the corpus
+makes it worth an embedding step.
