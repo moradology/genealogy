@@ -80,9 +80,18 @@ directly — only through `gen ancestry`, which enforces safety for them.** Thre
 2. **Cache-first (BUILT).** Records/searches are keyed and cached; a repeat lookup returns
    instantly (`"cached":true`) and never touches Ancestry. Historical records are immutable,
    so this is a huge, safe traffic cut. `--fresh` forces a live re-fetch.
-3. **Per-agent tabs + relative addressing (DESIGNED-NEXT).** See below.
+3. **Per-agent tabs + relative addressing (BUILT).** Verbs: `goto <address>`, `where`,
+   `next`, `prev`, `open [N]`, `back` — all `--agent <id>`-scoped. Semantics decided at
+   review: (a) an agent's location is **logical** — a cache-served `goto` updates state
+   without moving the tab; the `navigated` field reports whether a real fetch happened;
+   (b) records are cached forever (immutable), searches until `--fresh`; search cache is
+   limit-free and stores the full result set, so one query costs at most one real hit ever;
+   (c) **one process per agent-id at a time** (the flock serializes Ancestry hits, not
+   per-agent state writes); (d) the human's own tab is never driven — stateless commands
+   use the reserved `default` agent tab. Known gaps, deliberate: no pagination past page 1,
+   no `up`/`household <N>` verbs yet, no tab-cleanup verb.
 
-### Per-agent tabs on a shared Chrome (designed)
+### Per-agent tabs on a shared Chrome (as built)
 
 One Chrome/CDP process, one login; each agent gets its **own tab** so navigation state
 doesn't stomp others. Each `gen` invocation is a fresh process, so "the agent's tab" is made
