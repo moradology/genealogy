@@ -85,6 +85,43 @@ completed and turn its pulls into structured evidence records, link them from th
 cases and the person cards, and extend `check_refs` to enforce "these claims cite these
 records." One vertical slice proves the contract; the rest is repetition.
 
+## Do we need a relational database?
+
+The data *is* relational (people ↔ evidence ↔ sources ↔ places ↔ cases, all many-to-many).
+But "relational structure" and "a database management system" are different questions, and
+they have different answers here.
+
+**A database server (Postgres/MySQL): no.** It fights the artifact's entire reason for
+being — static, offline, no server, no account, archival-for-decades. A server dies; this
+record must outlive servers. It also can't be served from GitHub Pages, adds ops, and buys
+nothing at this scale.
+
+**Scale check.** The whole thing is ~85 people, ~170 sources, a few dozen evidence records,
+~21 cases. That is a *spreadsheet*, not a database problem. It fits in memory as JSON with
+room to spare and will grow by hand, slowly. Introducing a DBMS here is a forklift for a
+book — and it violates YAGNI directly.
+
+**The relational model belongs in plain text.** Express the relations as **id references
+between git-tracked files** (evidence `supports: [ids]`, claims `evidence: [ids]`,
+person `ah`/`h`, geojson `place_id`/`line_ids`). That *is* a relational model — normalized
+tables as files, foreign keys as id strings — and the **gate is the constraint engine**:
+`check_refs`, `check_people_index`, and `check_geo_sync` already enforce referential
+integrity. This is less abstraction than a DBMS, not more, and it stays human-readable,
+diffable, and archival. Plain text outlives every database format (this is why genealogy's
+own interchange standard, GEDCOM, is flat text, and why archivists reach for plain files).
+
+**The one legitimate middle path: SQLite — build-time only, if ever.** SQLite is a single
+file, no server, and archival-grade (the Library of Congress lists it as a preferred
+preservation format). If ad-hoc querying during research ever becomes a real pain ("every
+unproven parent in Kansas born before 1880"), a SQLite file *generated from* the plain-text
+records — used by the toolchain and by research, **never shipped to the browser** (that
+would mean a ~1 MB WASM SQL engine and the end of self-containment) — is reasonable. But
+only if the plain-text approach starts hurting. Today it doesn't. Don't build it yet.
+
+**Recommendation:** no DBMS. Keep the plain-text relational store + the gate as its
+integrity checker. Revisit SQLite as a build-time convenience only if querying becomes
+painful — and even then the shipped artifact stays static files.
+
 ## Decisions needed from you
 
 1. Evidence store as an **extension of `source-index.json`**, or a **new `evidence.json`**
