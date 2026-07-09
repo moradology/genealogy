@@ -24,14 +24,14 @@ const PLATE_EXPECT = {
 const ROUTE_EXPECT = {
   'map-convergence': { routes: 7, paths: 9, solidPaths: 9, conjecturalPaths: 0 },
   'map-line-zimmerman': { routes: 3, paths: 4, solidPaths: 3, conjecturalPaths: 1 },
-  'map-line-mundell': { routes: 3, paths: 4, solidPaths: 2, conjecturalPaths: 2 },
+  'map-line-mundell': { routes: 2, paths: 3, solidPaths: 2, conjecturalPaths: 1 },
   'map-line-dible': { routes: 3, paths: 7, solidPaths: 2, conjecturalPaths: 5 },
   'map-line-connelly': { routes: 2, paths: 3, solidPaths: 2, conjecturalPaths: 1 },
 };
 const LINK_TOTAL = 10;
 const SOURCE_ITEMS = 172;
-const PERSON_DIVS = 76;
-const PERSON_IDS = 76;
+const PERSON_DIVS = 73;
+const PERSON_IDS = 73;
 const STEM_DIVS = 7;
 const CASE_ARTICLES = 21, CORRIGENDA_ITEMS = 4, NEGATIVE_REGISTER_ITEMS = 11;
 
@@ -86,10 +86,10 @@ function ok(label, cond, detail) {
     ['basemap-proj', 'basemap-paths', 'basemap-routes'].every((tag) =>
       src.split('// BEGIN GENERATED ' + tag).length === 2 &&
       src.split('// END GENERATED ' + tag).length === 2));
-  ok('S13 route metadata declares 7 lineage and 4 conjectural routes',
-    (src.match(/id:"route\./g) || []).length === 11 &&
+  ok('S13 route metadata declares 7 lineage and 3 conjectural routes',
+    (src.match(/id:"route\./g) || []).length === 10 &&
     (src.match(/grade:"solid"/g) || []).length === 7 &&
-    (src.match(/grade:"conjectural"/g) || []).length === 4);
+    (src.match(/grade:"conjectural"/g) || []).length === 3);
   ok('S14 Slate 3 reader sections present',
     ['id="foreword"', 'id="stories"', 'id="album"', 'id="wanted"', 'class="colophon"']
       .every((token) => src.includes(token)));

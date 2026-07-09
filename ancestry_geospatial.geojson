@@ -648,100 +648,6 @@
     },
     {
       "type": "Feature",
-      "id": "event.clemans.talmage_margaret_marriage.1921-04-16",
-      "geometry": {"type": "Point", "coordinates": [-90.1910154, 38.6280278]},
-      "properties": {
-        "feature_kind": "candidate_life_event",
-        "event_type": "marriage",
-        "person_id": "person.clemans.talmadge",
-        "person_name": "Talmadge Dewitt Clemans",
-        "name_variants": ["Talmage Clemans", "Talmage D. Clemans", "Talmage D. Clemons"],
-        "participants": ["person.clemans.talmadge", "person.margaret_ellen_flaherty"],
-        "participant_name_variants": {
-          "person.margaret_ellen_flaherty": ["Margaret Ellen Flaherty", "Margaret Flaherty", "Margaret Ellen Flaherty Clemans"]
-        },
-        "anchor": "Evelyn Delores Mundell Zimmerman",
-        "line_ids": ["line.clemans_flaherty"],
-        "generation": 3,
-        "date": "1921-04-16",
-        "date_sort": "1921-04-16",
-        "place_id": "place.st_louis_mo",
-        "place_label": "St. Louis, Missouri",
-        "confidence": "lead",
-        "evidence_note": "Find a Grave's Margaret Ellen Flaherty Clemans memorial cites an online St. Louis marriage note: V3-237, 16 Apr 1921, Clemans, Talmage and Flaherty, Margaret. Original St. Louis marriage record still needed.",
-        "source_refs": ["https://www.findagrave.com/memorial/113830517/margaret_ellen-clemans"]
-      }
-    },
-    {
-      "type": "Feature",
-      "id": "event.clemans.genevieve_birth.1925-01-15",
-      "geometry": {"type": "Point", "coordinates": [-94.6858998, 46.729553]},
-      "properties": {
-        "feature_kind": "collateral_life_event",
-        "event_type": "birth",
-        "person_id": "person.genevieve_clemans",
-        "person_name": "Genevieve Clemans",
-        "participants": ["person.clemans.talmadge", "person.margaret_ellen_flaherty"],
-        "anchor": "Evelyn Delores Mundell Zimmerman",
-        "line_ids": ["line.clemans_flaherty"],
-        "generation": 2,
-        "relationship_to_anchor": "Collateral sibling lead for Marjorie Clemans Mundell",
-        "date": "1925-01-15",
-        "date_sort": "1925-01-15",
-        "place_id": "place.minnesota",
-        "place_label": "Minnesota",
-        "confidence": "lead",
-        "evidence_note": "FamilySearch's public Genevieve Clemans page names Talmadge Dewitt Clemans and Margaret Ellen Flaherty as parents and lists Marjorie Clemans as a sibling.",
-        "source_refs": ["https://ancestors.familysearch.org/en/G6RD-KWY/genevieve-clemans-1925-2003"]
-      }
-    },
-    {
-      "type": "Feature",
-      "id": "event.flaherty.edward_birth.1897",
-      "geometry": {"type": "Point", "coordinates": [-92.4479108, 34.7519275]},
-      "properties": {
-        "feature_kind": "collateral_life_event",
-        "event_type": "birth",
-        "person_id": "person.edward_j_flaherty",
-        "person_name": "Edward J. Flaherty",
-        "participants": ["person.flaherty.martin", "person.kate_flaherty"],
-        "anchor": "Evelyn Delores Mundell Zimmerman",
-        "line_ids": ["line.clemans_flaherty"],
-        "generation": 3,
-        "relationship_to_anchor": "Collateral sibling lead for Margaret Ellen Flaherty Clemans",
-        "date": "1897",
-        "date_sort": "1897-01-01",
-        "place_id": "place.arkansas",
-        "place_label": "Arkansas",
-        "confidence": "lead",
-        "evidence_note": "Edward J. Flaherty's Find a Grave page gives birth in Arkansas, names parents Martin Flaherty and Kate Flaherty, and lists Margaret Ellen Flaherty Clemans among siblings.",
-        "source_refs": ["https://www.findagrave.com/memorial/36793267/edward_j-flaherty"]
-      }
-    },
-    {
-      "type": "Feature",
-      "id": "target.flaherty.margaret_parent_cluster",
-      "geometry": {
-        "type": "MultiPoint",
-        "coordinates": [[-92.4479108, 34.7519275], [-90.1910154, 38.6280278], [-93.717979, 36.970891], [-94.6858998, 46.729553]]
-      },
-      "properties": {
-        "feature_kind": "record_target",
-        "target_type": "same_person_parentage_and_marriage_proof",
-        "line_ids": ["line.clemans_flaherty"],
-        "label": "Margaret Ellen Flaherty Clemans parentage and same-name-collision target",
-        "date_start": "1897",
-        "date_end": "1925",
-        "confidence": "target",
-        "candidate_places": ["place.arkansas", "place.st_louis_mo", "place.aurora_mo", "place.minnesota"],
-        "candidate_people": ["person.margaret_ellen_flaherty", "person.edward_j_flaherty", "person.flaherty.martin", "person.kate_flaherty"],
-        "research_question": "Does a direct Margaret Ellen Flaherty record prove Martin Flaherty and Kate Flaherty as her parents, and is the 1901/1902 Margaret who married Talmage Clemans distinct from the separate 1908 Chicago/Prairie View FamilySearch same-name profile?",
-        "evidence_note": "The 1925 Genevieve Clemans profile and 1921 St. Louis marriage note fit a Margaret born about 1901/1902; Edward J. Flaherty's sibling cluster points to Martin and Kate. Direct records are still required before merging or extending this Flaherty line.",
-        "source_refs": ["https://ancestors.familysearch.org/en/G6RD-KWY/genevieve-clemans-1925-2003", "https://www.findagrave.com/memorial/113830517/margaret_ellen-clemans", "https://www.findagrave.com/memorial/36793267/edward_j-flaherty"]
-      }
-    },
-    {
-      "type": "Feature",
       "id": "event.bill_dible.birth.1933-06-02",
       "geometry": {"type": "Point", "coordinates": [-100.743482, 39.471671]},
       "properties": {
@@ -2793,30 +2699,6 @@
           "https://www.support.genealogy.com/forum/surnames/topics/rust/482/",
           "https://www.findagrave.com/memorial/124223039/william_bryan-rust",
           "https://www.interment.net/data/us/ks/smith/reamsville/index.htm"
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "id": "path.clemans_flaherty",
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [[-90.1910154, 38.6280278], [-94.6858998, 46.729553], [-103.067158, 39.2930463], [-101.0526881, 39.3959655]]
-      },
-      "properties": {
-        "feature_kind": "temporal_path",
-        "path_type": "lineage_route_with_collateral_evidence",
-        "line_id": "line.clemans_flaherty",
-        "label": "Clemans/Flaherty evidence route: St. Louis marriage target to Minnesota sibling lead, then Evelyn's Colorado/Kansas anchors",
-        "anchor": "Evelyn Delores Mundell Zimmerman",
-        "date_start": "1921-04-16",
-        "date_end": "2023-04-15",
-        "confidence": "working",
-        "sequence": [
-          {"order": 1, "date_sort": "1921-04-16", "place_id": "place.st_louis_mo", "event_id": "event.clemans.talmage_margaret_marriage.1921-04-16"},
-          {"order": 2, "date_sort": "1925-01-15", "place_id": "place.minnesota", "event_id": "event.clemans.genevieve_birth.1925-01-15"},
-          {"order": 3, "date_sort": "1935-01-16", "place_id": "place.flagler_co", "event_id": "event.evelyn_mundell.birth.1935-01-16"},
-          {"order": 4, "date_sort": "2023-04-15", "place_id": "place.colby_ks", "event_id": "event.evelyn_mundell.death.2023-04-15"}
         ]
       }
     },

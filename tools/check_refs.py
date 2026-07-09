@@ -72,7 +72,6 @@ RESIDUAL_PERSONS = frozenset({
     "person.clarence_aison_rust",
     "person.cora_mcclellan",
     "person.dorothea_meyer",
-    "person.edward_j_flaherty",
     "person.edwin_reid",
     "person.elizabeth_j_haden",
     "person.elizabeth_jane_brown",
@@ -80,12 +79,9 @@ RESIDUAL_PERSONS = frozenset({
     # candidate identity of person.mary_frances_rust pending case.05 --
     # deliberately distinct id while the identity question is open.
     "person.frances_adolph",
-    "person.genevieve_clemans",
     "person.julia_dible",
-    "person.kate_flaherty",
     "person.lovina_parker_love",
     "person.lyle_strawn",
-    "person.margaret_ellen_flaherty",
     # EXCLUDED same-name individual, referenced by the exclusion target.
     "person.marjorie_opal_clemans",
     "person.mary_frances_rust",
