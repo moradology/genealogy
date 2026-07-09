@@ -155,6 +155,48 @@ server.** If interactive graph *exploration* ever becomes a feature of the viz, 
 in-memory graph at build-time and emit exactly the static JSON the page needs — the browser
 still loads plain data, not a database.
 
+### The real prize: encoded opinions as a reasoning layer for automated search
+
+The strongest argument for "graph" here isn't storage — it's that a graph with
+**genealogical opinions encoded on it** would make *automated search* (me + Codex driving
+Ancestry/web lookups) principled and cumulative instead of re-deriving judgment each
+session. That's the valuable idea, and it's worth building. But note what's actually
+valuable: the **encoded opinions**, not the query engine. You can have the opinions without
+a graph DBMS — as predicates over the in-memory graph (built from the plain-text
+nodes/edges; `networkx` at search-time, never shipped). At ~85 nodes the "query language"
+is a handful of Python functions, and a DBMS buys nothing the ethos doesn't lose.
+
+**The opinions worth encoding** (several already exist, informally — this makes them
+repeatable rather than living in my head each session):
+
+- **Chronology constraints.** parent 12–55 at a child's birth; death after birth; marriage
+  after ~14; no children after death; sane generation gaps. This is exactly what rejected
+  the Barron-County Marjorie (mother would have been ~13) — as a *rule*, automated search
+  flags it without me.
+- **Same-name adjudication.** A candidate for an open edge must match on a discriminator
+  (middle name, a linking record) and be geographically/temporally plausible; "two
+  independent mismatches ⇒ reject." This is the exact logic that cleared all four Marjorie
+  Clemans candidates by hand.
+- **Confidence propagation.** A claim is only as strong as its weakest supporting edge; a
+  descent chain is as strong as its weakest link. The stems already display "weakest step"
+  — encode it so it's computed, not asserted.
+- **Lead tractability ranking.** Score open edges by the anchors available (known death
+  place/date ⇒ orderable certificate; known spouse ⇒ findable household; cold frontier ⇒
+  low). This is what produced the offline-records order for Marjorie; as a heuristic it
+  ranks *every* open edge and tells automated search where to spend next.
+- **Negative memory.** Rejected candidates as `refutes` edges with reasons, so search never
+  re-proposes a ruled-out same-name. The Negative-Evidence Register is this, unstructured.
+
+**How it serves automated search.** Before landing a candidate, the search agent runs it
+through the constraints (contradiction check); when a name search returns N same-names, it
+scores each against the graph; between sessions it reads the frontier ranking to pick the
+next target and the negative memory to skip dead ends. The agent proposes; the encoded
+opinions dispose. That's the graph's genuine utility here — as a **reasoning substrate for
+search**, realized as constraint code over a plain-text graph, not as a database server.
+
+This is arguably the highest-leverage thing to build, and it pairs with the evidence layer:
+the evidence graph is the data; the opinions are the rules that walk it.
+
 ## Decisions needed from you
 
 1. Evidence store as an **extension of `source-index.json`**, or a **new `evidence.json`**
