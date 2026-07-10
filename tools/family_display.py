@@ -62,8 +62,20 @@ def cite_map(root: Path) -> dict[str, str]:
     return mapping
 
 
+def _page_href(target_id: str, page_context: tuple | None) -> str:
+    """'' (same page / no context) or 'page.html' prefix for a fragment link."""
+    if page_context is None:
+        return ""
+    assignments, current_page = page_context
+    page = assignments.get(target_id)
+    if page is None:
+        fail(f"page context has no assignment for {target_id!r}")
+    return "" if page == current_page else page
+
+
 def render_prose(value: str, cite_codes: dict[str, str],
-                 known_anchors: set[str] | None = None) -> str:
+                 known_anchors: set[str] | None = None,
+                 page_context: tuple | None = None) -> str:
     parts: list[str] = []
     cursor = 0
     for match in TOKEN_RE.finditer(value):
@@ -76,15 +88,19 @@ def render_prose(value: str, cite_codes: dict[str, str],
             if source_id not in cite_codes:
                 fail(f"cite token {source_id!r} does not resolve in sources.jsonl")
             code = cite_codes[source_id]
-            parts.append(f"<a class=cite href=#{code}>{code}</a>")
+            prefix = _page_href(code, page_context)
+            parts.append(f"<a class=cite href={prefix}#{code}>{code}</a>")
         elif token.startswith("case:"):
             case_id = token[len("case:"):]
-            parts.append(f'<a class="case-chip" href="#{case_id}">{case_id}</a>')
+            prefix = _page_href(case_id, page_context)
+            parts.append(
+                f'<a class="case-chip" href="{prefix}#{case_id}">{case_id}</a>')
         elif token.startswith("link:"):
             target, label = token[len("link:"):].split("|", 1)
             if known_anchors is not None and target[1:] not in known_anchors:
                 fail(f"link token targets unknown anchor {target[1:]!r}")
-            parts.append(f'<a href="{target}">{_escape(label)}</a>')
+            prefix = _page_href(target[1:], page_context)
+            parts.append(f'<a href="{prefix}{target}">{_escape(label)}</a>')
         else:
             url, label = token[len("url:"):].split("|", 1)
             parts.append(f'<a href="{_attr(url)}">{_escape(label)}</a>')
@@ -185,7 +201,8 @@ def render_person_card(*, row_id: str, title_html: str, ahnen_text: str,
                        tag: str, display: dict, cite_map: dict[str, str],
                        known_anchors: set[str] | None = None,
                        record_cards_html: str = "",
-                       alias_ids: tuple = ()) -> str:
+                       alias_ids: tuple = (),
+                       page_context: tuple | None = None) -> str:
     if tag not in TAG_LABELS:
         fail(f"{row_id}: unknown confidence tag {tag!r}")
     parts = [f'<div class="person" id="{row_id}">']
@@ -198,9 +215,9 @@ def render_person_card(*, row_id: str, title_html: str, ahnen_text: str,
     vitals = display.get("vitals")
     if vitals:
         parts.append(f'<div class="vitals">'
-                     f"{render_prose(vitals, cite_map, known_anchors)}</div>")
+                     f"{render_prose(vitals, cite_map, known_anchors, page_context)}</div>")
     parts.append(f'<p class="identity">'
-                 f"{render_prose(display['identity'], cite_map, known_anchors)}</p>")
+                 f"{render_prose(display['identity'], cite_map, known_anchors, page_context)}</p>")
     cameos = "".join(
         '<figure class="cameo">'
         f'<img src="{_attr(cameo["src"])}" alt="{_attr(cameo["alt"])}" '
@@ -209,7 +226,7 @@ def render_person_card(*, row_id: str, title_html: str, ahnen_text: str,
         f'{_escape(cameo["credit_label"])}</a></figcaption></figure>'
         for cameo in display.get("cameos") or [])
     parts.append(f'<div class="person-details">{cameos}'
-                 f"{render_prose(display['details'], cite_map, known_anchors)}</div>")
+                 f"{render_prose(display['details'], cite_map, known_anchors, page_context)}</div>")
     parts.append(record_cards_html)
     parts.append("</div>")
     return "".join(parts)

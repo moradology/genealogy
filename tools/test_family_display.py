@@ -76,6 +76,34 @@ result = subprocess.run([sys.executable, "-c", snippet],
                         capture_output=True, text=True)
 check("unknown link anchor hard-fails", result.returncode != 0, result.stdout)
 
+# ---------- page-context rendering (five-page split) ----------
+ASSIGN = {"src.test.alpha": "index.html", "s1": "index.html",
+          "case.07": "index.html", "person.a": "zimmerman.html",
+          "person.m": "index.html"}
+check("cite token qualifies to the landing from a person page",
+      family_display.render_prose("proof.{{cite:src.test.alpha}}", CITE_MAP,
+                                  page_context=(ASSIGN, "zimmerman.html"))
+      == "proof.<a class=cite href=index.html#s1>s1</a>")
+check("cite token stays bare on the landing",
+      family_display.render_prose("proof.{{cite:src.test.alpha}}", CITE_MAP,
+                                  page_context=(ASSIGN, "index.html"))
+      == "proof.<a class=cite href=#s1>s1</a>")
+check("case token qualifies cross-page",
+      family_display.render_prose("See {{case:case.07}}.", CITE_MAP,
+                                  page_context=(ASSIGN, "zimmerman.html"))
+      == 'See <a class="case-chip" href="index.html#case.07">case.07</a>.')
+check("link token qualifies cross-page",
+      family_display.render_prose("{{link:#person.m|Mira}}", CITE_MAP,
+                                  page_context=(ASSIGN, "zimmerman.html"))
+      == '<a href="index.html#person.m">Mira</a>')
+check("link token stays bare same-page",
+      family_display.render_prose("{{link:#person.a|Ann}}", CITE_MAP,
+                                  page_context=(ASSIGN, "zimmerman.html"))
+      == '<a href="#person.a">Ann</a>')
+check("no page context keeps today's bare behavior",
+      family_display.render_prose("{{link:#person.a|Ann}}", CITE_MAP)
+      == '<a href="#person.a">Ann</a>')
+
 # ---------- cite map loader ----------
 with tempfile.TemporaryDirectory(prefix="family-display-test-") as td:
     root = Path(td)
@@ -204,6 +232,17 @@ check("record cards trail the details div",
           display={"identity": "x.", "details": "y."}, cite_map=CITE_MAP,
           record_cards_html=expected_roll_card,
       ).endswith("y.</div>" + expected_roll_card + "</div>"))
+
+# person cards thread the page context through every prose field
+rendered = family_display.render_person_card(
+    row_id="person.a", title_html="Ann Alpha", ahnen_text="Z-1",
+    tag="documented",
+    display={"identity": "See {{case:case.07}}.",
+             "details": "Proof.{{cite:src.test.alpha}}"},
+    cite_map=CITE_MAP, page_context=(ASSIGN, "zimmerman.html"))
+check("person card qualifies cross-page tokens",
+      'href="index.html#case.07"' in rendered
+      and "href=index.html#s1" in rendered, rendered)
 
 # ---------- dom_stream ----------
 check("entities and unicode stream identically",
