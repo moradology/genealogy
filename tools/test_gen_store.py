@@ -279,6 +279,23 @@ with tempfile.TemporaryDirectory(prefix="gen-store-test-") as td:
     check("published-gap close refused", r.returncode != 0 and o["ok"] is False, r.stdout[:300])
     check("refusal names the gap rule", "gap" in " ".join(o.get("errors", [])).lower(), o.get("errors"))
 
+    # ---- traversal verbs over the family core ----
+    r = store(root, "ancestors", "person.evelyn_mundell")
+    o = json.loads(r.stdout)
+    check("ancestors ok", o.get("ok") is True and r.returncode == 0, r.stdout[:300])
+    gen1 = {x["id"] for x in o.get("generations", [[]])[0]}
+    check("ancestors gen1 parents", {"person.mundell.homer", "person.clemans.marjorie"} <= gen1, gen1)
+    check("ancestors reach rust", any(
+        x["id"] == "person.rust.john_f" for layer in o.get("generations", []) for x in layer), o.get("count"))
+    check("ancestors frontier has marjorie gap", any(
+        "case.07" in (g.get("case_refs") or []) for g in o.get("frontier", [])), o.get("frontier"))
+    r = store(root, "path", "person.rust.john_f", "person.evelyn_mundell")
+    o = json.loads(r.stdout)
+    check("path ok", o.get("ok") is True and o.get("length") == 3, r.stdout[:300])
+    check("path steps carry confidence", all(st.get("confidence") for st in o.get("steps", [])), o.get("steps"))
+    r = store(root, "ancestors", "person.nobody")
+    check("ancestors unknown refused", r.returncode != 0 and json.loads(r.stdout)["ok"] is False, r.stdout[:200])
+
     # ---- status: fast dashboard, no Playwright; ok mirrors exit code ----
     r = store(root, "status")
     o = json.loads(r.stdout)

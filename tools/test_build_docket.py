@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Acceptance checks for the docket projection builder (tools/build_docket.py).
 
-Offline, stdlib only, no try/except. Exercises --migrate, write, --check, and
+Offline, stdlib only, no try/except. Exercises write, --check, and
 error paths against a synthetic fixture repo via --root, in the same style as
 test_build_people_index.py. Run: uv run tools/test_build_docket.py
 """
@@ -72,7 +72,7 @@ HTML_TEMPLATE = (
 
 
 def case_record(case_id: str, title: str, summary: str, status: str, person_refs: list[str],
-                trace_refs: list[str], **extra) -> dict:
+                trace_refs: list[str], source_note: str = "test sources", **extra) -> dict:
     rec = {
         "id": case_id,
         "node_type": "case",
@@ -80,6 +80,7 @@ def case_record(case_id: str, title: str, summary: str, status: str, person_refs
         "title": title,
         "status": status,
         "summary": summary,
+        "source_note": source_note,
         "person_refs": person_refs,
         "evidence_refs": [],
         "trace_refs": trace_refs,
@@ -96,9 +97,10 @@ def make_fixture(tmp: Path) -> Path:
         (root / "research" / "reasoning-traces" / name).write_text("---\n---\n")
     records = [
         case_record("case.01", "Alpha & entities", "Q: alpha — with an entity dash.", "open",
-                    ["person.alpha", "person.alpha_wife"], ["2026-01-01-alpha-trace.md"]),
+                    ["person.alpha", "person.alpha_wife"], ["2026-01-01-alpha-trace.md"],
+                    source_note="1885 KS census; notes"),
         case_record("case.02", "Beta->arrow", "Q: beta.", "in_conflict",
-                    ["person.beta"], []),
+                    ["person.beta"], [], source_note="Beta memorials"),
     ]
     lines = "".join(json.dumps(r, ensure_ascii=False, separators=(",", ":")) + "\n" for r in records)
     (root / "research" / "cases" / "cases.jsonl").write_text(lines)
@@ -114,18 +116,6 @@ def read_cases(root: Path) -> list[dict]:
 with tempfile.TemporaryDirectory(prefix="build-docket-test-") as td:
     root = make_fixture(Path(td))
     html_path = root / "index.html"
-
-    # ---- 1. --migrate extracts source_note; strips embedded trace token ----
-    r = run(root, "--migrate")
-    check("migrate exit 0", r.returncode == 0, r.stderr[:300])
-    recs = {c["id"]: c for c in read_cases(root)}
-    check("migrate source_note case.01", recs["case.01"].get("source_note") == "1885 KS census; notes", recs["case.01"].get("source_note"))
-    check("migrate strips trace token from note",
-          recs["case.02"].get("source_note") == "Beta memorials", recs["case.02"].get("source_note"))
-    check("migrate merged stripped trace into trace_refs",
-          recs["case.02"].get("trace_refs") == ["2026-01-02-beta-trace.md"], recs["case.02"].get("trace_refs"))
-    check("migrate report mentions case.02", "case.02" in (r.stdout + r.stderr), r.stdout[:400])
-    check("migrate never touches html", '<div id="case.01"><div><b>case.01</b><h3>Alpha &amp; entities</h3>' in html_path.read_text())
 
     # ---- 2. write mode: markers inserted, canonical render, region-contained ----
     r = run(root)

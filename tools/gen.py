@@ -90,6 +90,9 @@ def usage() -> str:
         "                              the record + everything referencing it",
         "  status                      Fast dashboard: validators, case histogram,",
         "                              family/evidence counts, latest trace (no Playwright)",
+        "  ancestors <person.id>       Walk the family graph upward: generations,",
+        "                              per-link confidence, and the gap frontier",
+        "  path <a> <b>                Shortest relationship chain between two people",
         "",
         "Help:  ./gen <command> --help   (ancestry forwards to the full subhelp;",
         "       try also: ./gen ancestry goto --help)",
@@ -195,6 +198,24 @@ COMMAND_HELP = {
         "",
         'JSON: {"command":"case.update","ok":...,"written":...,"changed":{...},',
         '       "added":{...},"already_present":{...},"docket":...,"stamp":...}',
+    ]),
+    "ancestors": "\n".join([
+        "Usage: ./gen ancestors <person.id>",
+        "",
+        "BFS up the parent links in research/people/relationships.jsonl: every",
+        "reachable ancestor grouped by generation, each carrying the linking",
+        "relationship id and its confidence. The frontier lists gap.* rows for",
+        "walked people whose parents are explicitly unknown - the research edge.",
+        "",
+        'JSON: {"command":"ancestors","ok":...,"generations":[[...]],"count":N,"frontier":[...]}',
+    ]),
+    "path": "\n".join([
+        "Usage: ./gen path <person.a> <person.b>",
+        "",
+        "Shortest chain of parent/spouse links between two people, each step",
+        "naming the relationship, role, confidence, and relationship id.",
+        "",
+        'JSON: {"command":"path","ok":...,"length":N,"steps":[{from,to,relationship,...}]}',
     ]),
     "show": "\n".join([
         "Usage: ./gen show <id>",
@@ -396,6 +417,14 @@ def handler_case(argv: list[str], pretty: bool) -> int:
     return handler_store("case", argv, pretty)
 
 
+def handler_ancestors(argv: list[str], pretty: bool) -> int:
+    return handler_store("ancestors", argv, pretty)
+
+
+def handler_path(argv: list[str], pretty: bool) -> int:
+    return handler_store("path", argv, pretty)
+
+
 def dispatch(argv: list[str]) -> int:
     args, pretty = split_global_flags(argv)
     if not args or args[0] in {"--help", "-h"}:
@@ -410,6 +439,8 @@ def dispatch(argv: list[str]) -> int:
         "evidence": handler_evidence,
         "trace": handler_trace,
         "case": handler_case,
+        "ancestors": handler_ancestors,
+        "path": handler_path,
         "show": handler_show,
         "status": handler_status,
     }

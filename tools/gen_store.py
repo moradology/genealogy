@@ -611,6 +611,128 @@ def referenced_by(root: Path, aliases: set[str]) -> dict[str, list[str]]:
     }
 
 
+def family_core(root: Path) -> tuple[dict[str, dict], list[dict], list[dict]]:
+    """People by id, parent/spouse relationship links, and gap rows."""
+    people = {
+        r["id"]: r
+        for r in read_jsonl(root / "research" / "people" / "people.jsonl")
+        if r.get("node_type") == "person"
+    }
+    rows = read_jsonl(root / "research" / "people" / "relationships.jsonl")
+    links = [r for r in rows if r.get("node_type") == "relationship"]
+    gaps = [r for r in rows if r.get("node_type") == "gap"]
+    return people, links, gaps
+
+
+def parents_of_index(links: list[dict]) -> dict[str, list[dict]]:
+    index: dict[str, list[dict]] = {}
+    for link in links:
+        if link.get("relationship_type") == "parent_of":
+            index.setdefault(link["person_b"], []).append(link)
+    return index
+
+
+def gaps_for(gaps: list[dict], person_id: str) -> list[dict]:
+    return [
+        {"id": g["id"], "label": g.get("label"), "open_roles": g.get("open_roles", []),
+         "case_refs": g.get("case_refs", [])}
+        for g in gaps
+        if person_id in (g.get("subject_persons") or [])
+    ]
+
+
+def command_ancestors(args: argparse.Namespace, root: Path) -> int:
+    people, links, gaps = family_core(root)
+    if args.person_id not in people:
+        return stop({"command": "ancestors", "ok": False,
+                     "errors": [f"unknown person id {args.person_id!r}"]}, 1)
+    parents = parents_of_index(links)
+    generations: list[list[dict]] = []
+    frontier: list[dict] = []
+    seen = {args.person_id}
+    current = [args.person_id]
+    while current:
+        layer: list[dict] = []
+        next_ids: list[str] = []
+        for person_id in current:
+            for link in parents.get(person_id, []):
+                parent_id = link["person_a"]
+                if parent_id in seen:
+                    continue
+                seen.add(parent_id)
+                next_ids.append(parent_id)
+                layer.append({
+                    "id": parent_id,
+                    "name": people.get(parent_id, {}).get("display_name"),
+                    "child": person_id,
+                    "role": link.get("parent_role"),
+                    "confidence": link.get("confidence"),
+                    "via": link["id"],
+                })
+            for gap in gaps_for(gaps, person_id):
+                if "parents" in gap["open_roles"] and gap not in frontier:
+                    frontier.append(gap)
+        if layer:
+            generations.append(layer)
+        current = next_ids
+    return stop({
+        "command": "ancestors", "ok": True, "id": args.person_id,
+        "name": people[args.person_id].get("display_name"),
+        "generations": generations,
+        "count": sum(len(layer) for layer in generations),
+        "frontier": frontier,
+    }, 0)
+
+
+def command_path(args: argparse.Namespace, root: Path) -> int:
+    people, links, _gaps = family_core(root)
+    for pid in (args.person_a, args.person_b):
+        if pid not in people:
+            return stop({"command": "path", "ok": False,
+                         "errors": [f"unknown person id {pid!r}"]}, 1)
+    neighbors: dict[str, list[tuple[str, dict]]] = {}
+    for link in links:
+        a, b = link.get("person_a"), link.get("person_b")
+        if not isinstance(a, str) or not isinstance(b, str):
+            continue
+        neighbors.setdefault(a, []).append((b, link))
+        neighbors.setdefault(b, []).append((a, link))
+    origin, goal = args.person_a, args.person_b
+    if origin == goal:
+        return stop({"command": "path", "ok": True, "steps": [], "length": 0}, 0)
+    came: dict[str, tuple[str, dict]] = {}
+    queue = [origin]
+    seen = {origin}
+    while queue and goal not in seen:
+        person_id = queue.pop(0)
+        for other, link in neighbors.get(person_id, []):
+            if other in seen:
+                continue
+            seen.add(other)
+            came[other] = (person_id, link)
+            queue.append(other)
+    if goal not in came:
+        return stop({"command": "path", "ok": False,
+                     "errors": [f"no relationship path between {origin} and {goal}"]}, 1)
+    steps: list[dict] = []
+    cursor = goal
+    while cursor != origin:
+        previous, link = came[cursor]
+        steps.append({
+            "from": previous, "to": cursor,
+            "from_name": people.get(previous, {}).get("display_name"),
+            "to_name": people.get(cursor, {}).get("display_name"),
+            "relationship": link.get("relationship_type"),
+            "role": link.get("parent_role"),
+            "confidence": link.get("confidence"),
+            "via": link.get("id"),
+        })
+        cursor = previous
+    steps.reverse()
+    return stop({"command": "path", "ok": True, "from": origin, "to": goal,
+                 "length": len(steps), "steps": steps}, 0)
+
+
 def command_show(args: argparse.Namespace, root: Path) -> int:
     kind, record, aliases = resolve_id(root, args.id)
     if kind is None or record is None:
@@ -871,6 +993,15 @@ def build_parser() -> argparse.ArgumentParser:
     show = attach_error(sub.add_parser("show", add_help=False))
     show.add_argument("id")
     show.set_defaults(handler=command_show)
+
+    ancestors = attach_error(sub.add_parser("ancestors", add_help=False))
+    ancestors.add_argument("person_id")
+    ancestors.set_defaults(handler=command_ancestors)
+
+    path_cmd = attach_error(sub.add_parser("path", add_help=False))
+    path_cmd.add_argument("person_a")
+    path_cmd.add_argument("person_b")
+    path_cmd.set_defaults(handler=command_path)
 
     status = attach_error(sub.add_parser("status", add_help=False))
     status.set_defaults(handler=command_status)

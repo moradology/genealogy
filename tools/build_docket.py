@@ -6,7 +6,6 @@ from __future__ import annotations
 import argparse
 import html
 import json
-import os
 import re
 import sys
 from pathlib import Path
@@ -33,12 +32,6 @@ MARKER_RE = re.compile(
     r"(<!-- BEGIN docket-cases -->\n).*?(\n<!-- END -->)",
     re.S,
 )
-CASE_RE = re.compile(
-    r'<div id="(case\.\d+)"><div>.*?</div><p>.*?</p><div>(.*?)</div></div>',
-    re.S,
-)
-LEADING_LINKS_RE = re.compile(r"\A(?:\s*<a\b[^>]*>.*?</a>\s*(?:,\s*)?)+", re.I | re.S)
-TRACE_TOKEN_RE = re.compile(r"\d{4}-\d{2}-\d{2}-[a-z0-9-]+\.md")
 
 
 def fail(message: str) -> NoReturn:
@@ -210,104 +203,12 @@ def build(root: Path) -> tuple[str, str, int]:
     return source, splice_cases(source, rendered_cases), len(cases)
 
 
-def docket_section(source: str) -> str:
-    start, end = section_bounds(source)
-    return source[start:end]
-
-
-def note_from_refs(raw_refs: str) -> str:
-    tail = LEADING_LINKS_RE.sub("", raw_refs.strip(), count=1)
-    for segment in tail.split("|"):
-        note = html.unescape(segment).strip()
-        if note:
-            return note
-    return ""
-
-
-def strip_trace_tokens(note: str) -> tuple[str, list[str]]:
-    tokens = TRACE_TOKEN_RE.findall(note)
-    cleaned_segments: list[str] = []
-    for segment in note.split(";"):
-        cleaned = TRACE_TOKEN_RE.sub("", segment)
-        cleaned = re.sub(r"\s+", " ", cleaned).strip(" ;")
-        if cleaned:
-            cleaned_segments.append(cleaned)
-    return "; ".join(cleaned_segments), tokens
-
-
-def ordered_case(record: dict[str, Any], source_note: str) -> dict[str, Any]:
-    ordered: dict[str, Any] = {}
-    for key in ("id", "node_type", "branch", "title", "status", "summary"):
-        if key in record:
-            ordered[key] = record[key]
-    ordered["source_note"] = source_note
-    for key, value in record.items():
-        if key not in ordered and key != "source_note":
-            ordered[key] = value
-    return ordered
-
-
-def write_jsonl_atomic(path: Path, records: list[dict[str, Any]]) -> None:
-    payload = "".join(
-        json.dumps(record, ensure_ascii=False, separators=(",", ":")) + "\n"
-        for record in records
-    )
-    tmp_path = path.with_name(path.name + ".tmp")
-    tmp_path.write_text(payload, encoding="utf-8")
-    os.replace(tmp_path, path)
-
-
-def migrate(root: Path) -> int:
-    html_path = root / HTML_PATH
-    if not html_path.is_file():
-        fail(f"missing presentation file: {html_path}")
-    source = html_path.read_text(encoding="utf-8")
-    notes: dict[str, str] = {}
-    token_updates: dict[str, list[str]] = {}
-    for match in CASE_RE.finditer(docket_section(source)):
-        case_id = match.group(1)
-        raw_note = note_from_refs(match.group(2))
-        cleaned_note, tokens = strip_trace_tokens(raw_note)
-        notes[case_id] = cleaned_note
-        token_updates[case_id] = tokens
-
-    records = read_jsonl(root / CASES_PATH)
-    migrated: list[dict[str, Any]] = []
-    reports: list[str] = []
-    for record in records:
-        case_id = record.get("id")
-        if not isinstance(case_id, str):
-            fail("case record without string id")
-        source_note = notes.get(case_id, "")
-        trace_refs = string_list(record.get("trace_refs", []), f"{case_id}.trace_refs")
-        for token in token_updates.get(case_id, []):
-            if token not in trace_refs:
-                trace_refs.append(token)
-                reports.append(f"build_docket: {case_id} merged trace_ref {token}")
-            reports.append(f"build_docket: {case_id} stripped trace token {token}")
-        updated = dict(record)
-        updated["trace_refs"] = trace_refs
-        migrated.append(ordered_case(updated, source_note))
-        if source_note:
-            reports.append(f"build_docket: {case_id} source_note extracted: {source_note}")
-
-    write_jsonl_atomic(root / CASES_PATH, migrated)
-    for report in reports:
-        print(report)
-    print(f"updated {root / CASES_PATH}: {len(migrated)} cases migrated")
-    return 0
-
-
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--check", action="store_true", help="fail if docket projection has drifted")
-    parser.add_argument("--migrate", action="store_true", help="extract source_note values from the current hand docket")
     args = parser.parse_args(argv)
     root = args.root.resolve()
-
-    if args.migrate:
-        return migrate(root)
 
     original, rendered, count = build(root)
     html_path = root / HTML_PATH
