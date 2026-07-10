@@ -156,6 +156,7 @@ def jl(rows: list[dict]) -> str:
 
 
 def make_root(tmp: Path, *, layout: dict = LAYOUT, hand: str = HAND_REGION,
+              registry: dict = REGISTRY,
               solo_display: dict = SOLO_DISPLAY,
               evidence_display: dict | None = EVIDENCE_DISPLAY,
               stem_confidence: str = "documented") -> Path:
@@ -189,7 +190,7 @@ def make_root(tmp: Path, *, layout: dict = LAYOUT, hand: str = HAND_REGION,
     (root / "index.html").write_text(
         "<html><body>\n"
         f'<script type="application/json" id="people-index">'
-        f"{json.dumps(REGISTRY, separators=(',', ':'))}</script>\n"
+        f"{json.dumps(registry, separators=(',', ':'))}</script>\n"
         '<section class="sheet" id="branch-test"><h2>Test Branches</h2>\n'
         '<div class="branch"><div class="branch-title"><h3>Test Line</h3></div>\n'
         f'<div class="generations">\n{hand}\n</div></div></section>\n'
@@ -301,6 +302,21 @@ with tempfile.TemporaryDirectory(prefix="build-family-test-") as td:
     root = make_root(tmp / "dup-item", layout=dup_layout)
     result = run(root)
     check("duplicate layout item exits 1", result.returncode == 1,
+          result.stdout + result.stderr)
+
+    # 8. A card whose slots vanish (a rejected link) degrades to (collateral)
+    slotless = json.loads(json.dumps(REGISTRY))
+    for entry in slotless["people"]:
+        if entry["i"] == "person.solo":
+            entry["ah"] = []
+    root = make_root(tmp / "slotless", registry=slotless,
+                     hand=HAND_REGION.replace(
+                         '<span class="ahnen">Z-4</span>',
+                         '<span class="ahnen">(collateral)</span>'))
+    result = run(root)
+    check("slotless card renders collateral", result.returncode == 0
+          and '<span class="ahnen">(collateral)</span>' in
+          (root / "index.html").read_text(encoding="utf-8"),
           result.stdout + result.stderr)
 
 if failures:

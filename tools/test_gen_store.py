@@ -362,19 +362,13 @@ with tempfile.TemporaryDirectory(prefix="gen-store-test-") as td:
 
     # ---- display blocks on person rows survive the family write path ----
     people_store = root / "research/people/people.jsonl"
-    people_rows = [json.loads(line)
-                   for line in people_store.read_text().splitlines() if line.strip()]
-    for person_row in people_rows:
-        if person_row["id"] == "person.clemans.marjorie":
-            person_row["display"] = {
-                "identity": "Evelyn's mother in the Clemans branch.",
-                "details": ("Documented by the 1933 marriage record."
-                            "{{cite:src.test.display}}"),
-            }
-    people_store.write_text(
-        "".join(json.dumps(row, separators=(",", ":")) + "\n"
-                for row in people_rows), encoding="utf-8")
     people_with_display = people_store.read_bytes()
+    marjorie_row = next(
+        json.loads(line) for line in people_store.read_text().splitlines()
+        if line.strip()
+        and json.loads(line).get("id") == "person.clemans.marjorie")
+    check("fixture person row carries a real display block",
+          isinstance(marjorie_row.get("display"), dict), marjorie_row.get("display"))
     r = store(root, "relationship", "update", relationship_id,
               "--status", "accepted", "--confidence", "strong",
               "--provenance-note", "Direct test evidence replaces the working hypothesis.",

@@ -150,8 +150,9 @@ def render_card(item: str, *, groups: dict[str, list[dict]],
     if not ahnen_text:
         ahnen_text = family_display.derived_ahnen(members)
     if not ahnen_text:
-        fail(f"layout item {item!r}: ahnen label is underivable and no "
-             "ahnen_override is set")
+        # Slotless cards degrade gracefully: a rejected link that vacates a
+        # pedigree slot must not strand the card or block the write path.
+        ahnen_text = "frontier" if is_gap else "(collateral)"
     tag = "open" if is_gap else row.get("confidence")
     record_cards_html = ""
     for ref in display.get("record_cards") or []:
