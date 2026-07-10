@@ -10,8 +10,37 @@ const fs = require('node:fs');
 
 const path = require('node:path');
 const ROOT = path.join(__dirname, '..');
-const FILE = path.join(ROOT, 'index.html');
-const URL = 'file://' + FILE;
+const PAGES = [{
+  file: 'index.html',
+  label: 'landing',
+  personDivs: 73,
+  personIds: 73,
+  stems: {
+    count: 7,
+    expected: [
+      { href: '#person.zodrow.cecilia', tagClass: 'documented', tagText: 'Documented' },
+      { href: '#person.zodrow.cecilia', tagClass: 'documented', tagText: 'Documented' },
+      { href: '#person.nauer.elizabeth', tagClass: 'strong', tagText: 'Strong lead' },
+      { href: '#person.clemans.marjorie', tagClass: 'documented', tagText: 'Documented' },
+      { href: '#person.clemans.marjorie', tagClass: 'documented', tagText: 'Documented' },
+      { href: '#person.long.almeda', tagClass: 'documented', tagText: 'Documented' },
+      { href: '#person.claar.martha', tagClass: 'documented', tagText: 'Documented' },
+    ],
+  },
+  charts: 4,
+  plates: ['convergence', 'zimmerman', 'mundell', 'dible', 'connelly'],
+  caseArticles: 23,
+  corrigendaItems: 4,
+  negativeRegisterItems: 11,
+  sourceItems: 178,
+  storyCards: 6,
+  heightBudget: 42135,
+  evidenceRows: 39,
+  citeChips: { min: 22, max: 100 },
+  registryPeople: 117,
+  linkTotal: 10,
+}];
+const FILE = path.join(ROOT, PAGES[0].file);
 
 // Derived from verifiedEventData/familyLinkData + plate rules:
 // line plate = events of that anchor + links of that anchor or referencing them
@@ -37,12 +66,6 @@ const MAP_ACCESSIBLE_NAMES = {
   'map-line-dible': 'William J. "Bill" Dible Branches event map',
   'map-line-connelly': 'Donna Lea Connelly Dible Branches event map',
 };
-const LINK_TOTAL = 10;
-const SOURCE_ITEMS = 178;
-const PERSON_DIVS = 73;
-const PERSON_IDS = 73;
-const STEM_DIVS = 7;
-const CASE_ARTICLES = 23, CORRIGENDA_ITEMS = 4, NEGATIVE_REGISTER_ITEMS = 11;
 
 const ISOLATED_ID = 'event.zimmerman.michael_birth.1869-10-25'; // Mainhardt; isolated on the zimmerman plate
 const COINCIDENT_PAIRS = [
@@ -58,6 +81,10 @@ function ok(label, cond, detail) {
   console.log('PASS ' + label);
 }
 
+function plateId(key) {
+  return key === 'convergence' ? 'map-convergence' : `map-line-${key}`;
+}
+
 (async () => {
   // ---------- static source checks ----------
   // person.* ids contain dots (person.<surname>.<given>), so both this spec and
@@ -70,6 +97,7 @@ function ok(label, cond, detail) {
   const fontsCss = fs.readFileSync(path.join(ROOT, 'assets', 'fonts.css'), 'utf8');
   const siteCss = fs.readFileSync(path.join(ROOT, 'assets', 'site.css'), 'utf8');
   const appJs = fs.readFileSync(path.join(ROOT, 'assets', 'app.js'), 'utf8');
+  const sourceSpec = PAGES[0];
   const scriptSrcs = [...src.matchAll(/<script[^>]*\ssrc="([^"]+)"/g)].map((m) => m[1]);
   ok('S1 scripts are same-origin assets only',
     scriptSrcs.length === 1 && scriptSrcs[0] === 'assets/app.js', scriptSrcs);
@@ -121,7 +149,7 @@ function ok(label, cond, detail) {
     ['id="foreword"', 'id="stories"', 'id="album"', 'id="wanted"', 'class="colophon"']
       .every((token) => src.includes(token)));
   ok('S15 story cards target live person ids',
-    (src.match(/class="story-card/g) || []).length === 6 &&
+    (src.match(/class="story-card/g) || []).length === sourceSpec.storyCards &&
     ['#person.doyle_zimmerman', '#person.bill_dible', '#person.mundell.walter',
       '#person.zodrow.john', '#person.zimmerman.michael'].every((href) => src.includes(`href="${href}"`)));
   ok('S16 context stamps and asides present',
@@ -162,7 +190,6 @@ function ok(label, cond, detail) {
   // ---------- browser ----------
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
-  await page.setViewportSize({ width: 1440, height: 900 });
 
   const externalRequests = [];
   const consoleErrors = [];
@@ -176,10 +203,20 @@ function ok(label, cond, detail) {
   page.on('console', (m) => { if (m.type() === 'error') consoleErrors.push(m.text()); });
   page.on('pageerror', (e) => pageErrors.push(String(e)));
 
-  await page.goto(URL, { waitUntil: 'load' });
+  for (const pageSpec of PAGES) {
+  const pageFile = path.join(ROOT, pageSpec.file);
+  const pageUrl = 'file://' + pageFile;
+  const expectedPlateIds = pageSpec.plates.map(plateId);
+  const externalStart = externalRequests.length;
+  const consoleStart = consoleErrors.length;
+  const pageErrorStart = pageErrors.length;
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(pageUrl, { waitUntil: 'load' });
   await page.waitForTimeout(800);
 
-  ok('B1 zero external requests', externalRequests.length === 0, externalRequests.join(', '));
+  const pageExternalRequests = externalRequests.slice(externalStart);
+  ok('B1 zero external requests', pageExternalRequests.length === 0, pageExternalRequests.join(', '));
 
   const plates = await page.evaluate(() => {
     const out = {};
@@ -206,7 +243,9 @@ function ok(label, cond, detail) {
     out._nav = document.querySelectorAll('nav a[href^="#"]').length;
     return out;
   });
-  for (const [id, expect] of Object.entries(PLATE_EXPECT)) {
+  for (const id of expectedPlateIds) {
+    const expect = PLATE_EXPECT[id];
+    assert.ok(expect, 'missing plate expectation ' + id);
     const p = plates[id];
     assert.ok(p, 'missing plate ' + id);
     assert.ok(p.visible, id + ' not visible');
@@ -216,12 +255,12 @@ function ok(label, cond, detail) {
     assert.ok(p.baseDrawn, id + ' basemap empty');
   }
   ok('B2 all five plates render with expected markers/edges/guests', true);
-  const mapAccessibleNames = Object.fromEntries(Object.keys(MAP_ACCESSIBLE_NAMES)
+  const mapAccessibleNames = Object.fromEntries(expectedPlateIds
     .map((id) => [id, plates[id]?.accessibleName || '']));
   ok('B2a all five map SVGs have complete accessible names',
-    Object.entries(MAP_ACCESSIBLE_NAMES).every(([id, expected]) =>
-      mapAccessibleNames[id] === expected), JSON.stringify(mapAccessibleNames));
-  const keyAudit = await page.evaluate(() => PLATES.map((cfg) => {
+    expectedPlateIds.every((id) => MAP_ACCESSIBLE_NAMES[id] &&
+      mapAccessibleNames[id] === MAP_ACCESSIBLE_NAMES[id]), JSON.stringify(mapAccessibleNames));
+  const keyAudit = await page.evaluate((plateKeys) => PLATES.filter((cfg) => plateKeys.includes(cfg.key)).map((cfg) => {
     const data = plateData(cfg);
     const expected = data.events.map((e) => e.id);
     const fig = document.getElementById(cfg.svgId).closest('figure');
@@ -234,7 +273,7 @@ function ok(label, cond, detail) {
       markerNos: [...document.getElementById(cfg.svgId).querySelectorAll('g.event-marker .marker-no')]
         .map((node) => node.textContent.trim()),
     };
-  }));
+  }), pageSpec.plates);
   ok('K2 static plate keys match computed order and count', keyAudit.every((plate) =>
     JSON.stringify(plate.actual) === JSON.stringify(plate.expected) &&
     plate.keyNos.join('|') === plate.expected.map((_, i) => String(i + 1)).join('|')),
@@ -242,7 +281,8 @@ function ok(label, cond, detail) {
   ok('N1 marker numerals are present and unique per plate', keyAudit.every((plate) =>
     plate.markerNos.join('|') === plate.expected.map((_, i) => String(i + 1)).join('|')),
     JSON.stringify(keyAudit));
-  for (const [id, expect] of Object.entries(ROUTE_EXPECT)) {
+  for (const id of expectedPlateIds.filter((plateId) => ROUTE_EXPECT[plateId])) {
+    const expect = ROUTE_EXPECT[id];
     const p = plates[id];
     assert.equal(p.routes, expect.routes, id + ' distinct route ids');
     assert.equal(p.routePaths, expect.paths, id + ' route paths');
@@ -250,11 +290,12 @@ function ok(label, cond, detail) {
     assert.equal(p.conjecturalRoutePaths, expect.conjecturalPaths, id + ' conjectural route paths');
   }
   ok('R1 route path counts by style match each affected plate', true);
+  const linePlateIds = expectedPlateIds.filter((id) => id !== 'map-convergence');
   ok('R2 conjectural route paths are dashed only off convergence',
     plates['map-convergence'].conjecturalRoutePaths === 0 &&
-    ['map-line-zimmerman', 'map-line-mundell', 'map-line-dible', 'map-line-connelly']
-      .every((id) => plates[id].conjecturalRoutePaths > 0));
-  ok('P1 routes are noninteractive', Object.keys(ROUTE_EXPECT).every((id) => plates[id].routesPointerNone));
+    linePlateIds.every((id) => plates[id].conjecturalRoutePaths > 0));
+  ok('P1 routes are noninteractive', expectedPlateIds
+    .filter((id) => ROUTE_EXPECT[id]).every((id) => plates[id].routesPointerNone));
   const mapPlateCartouches = await page.evaluate(() => [...document.querySelectorAll('figure.plate')]
     .filter((fig) => fig.querySelector('svg')).map((fig) => ({
     no: fig.querySelector('.plate-no')?.textContent.trim() || '',
@@ -268,7 +309,7 @@ function ok(label, cond, detail) {
   })));
   const allPlateNos = await page.evaluate(() => [...document.querySelectorAll('figure.plate .plate-no')]
     .map((n) => n.textContent.trim()));
-  ok('SB1 scale bars carry reference-latitude labels', mapPlateCartouches.length === 5 &&
+  ok('SB1 scale bars carry reference-latitude labels', mapPlateCartouches.length === pageSpec.plates.length &&
     mapPlateCartouches.every((p) => p.scaleBars === 1 && /LAT\. 40°(?: N|27[′'] N)$/.test(p.scaleLabel)),
     JSON.stringify(mapPlateCartouches));
   ok('RN1 plate numerals are cartouche-only and document-ordered',
@@ -290,8 +331,8 @@ function ok(label, cond, detail) {
     removes.caption.startsWith('Table of Removes') && removes.rows === 11 && removes.conjectural === 4 &&
     ['8,158', '10,779', '~9,100', '2,216', '1921-2023'].every((token) => removes.text.includes(token)),
     JSON.stringify(removes));
-  ok('B3 ten distinct links across plates', plates._distinctLinks === LINK_TOTAL, plates._distinctLinks);
-  ok('B4 detail strip per plate', plates._details === 5, plates._details);
+  ok('B3 ten distinct links across plates', plates._distinctLinks === pageSpec.linkTotal, plates._distinctLinks);
+  ok('B4 detail strip per plate', plates._details === pageSpec.plates.length, plates._details);
   ok('B5 markers keyboard-ready', plates._keyboardReady);
   ok('B6 nav has jump links', plates._nav >= 5, plates._nav);
   ok('B7 no leftover sidebar/chips/toggle', await page.evaluate(() =>
@@ -380,15 +421,15 @@ function ok(label, cond, detail) {
     'The Docket', 'Index of Names', 'Source Ledger'])
     assert.ok(content.h2s.includes(h), 'missing h2: ' + h);
   ok('C1 all section headings present', true);
-  ok('C2 source ledger count matches', content.sourceCount === SOURCE_ITEMS, content.sourceCount);
-  ok('C3 every source has a link', content.sourcesWithAnchor === SOURCE_ITEMS, content.sourcesWithAnchor);
+  ok('C2 source ledger count matches', content.sourceCount === pageSpec.sourceItems, content.sourceCount);
+  ok('C3 every source has a link', content.sourcesWithAnchor === pageSpec.sourceItems, content.sourcesWithAnchor);
   ok('C4 sources grouped, first open', content.groups >= 5 && content.firstOpen, content.groups);
-  ok('C5 person entry count matches', content.persons === PERSON_DIVS, content.persons);
+  ok('C5 person entry count matches', content.persons === pageSpec.personDivs, content.persons);
   const idRe = /^(?:person|gap)\.[a-z0-9]+(?:[._-][a-z0-9]+)*$/;
   ok('C8 family rows have canonical person or gap ids',
-    content.personIds.length === PERSON_IDS &&
+    content.personIds.length === pageSpec.personIds &&
     content.personWithoutIds === 0 &&
-    new Set(content.personIds).size === PERSON_IDS &&
+    new Set(content.personIds).size === pageSpec.personIds &&
     content.personIds.every((id) => idRe.test(id)),
     JSON.stringify({ ids: content.personIds.length, bare: content.personWithoutIds }));
   ok('C6 method note preserved', content.breadth);
@@ -432,30 +473,22 @@ function ok(label, cond, detail) {
       badCites: allCiteLinks.length - citeLinks.length,
       failures,
     };
-  }, SOURCE_ITEMS);
+  }, pageSpec.sourceItems);
   ok('C14 citation chips target coded ledger rows',
-    citationContract.ledgerIds === SOURCE_ITEMS &&
-    citationContract.scodeCount === SOURCE_ITEMS &&
+    citationContract.ledgerIds === pageSpec.sourceItems &&
+    citationContract.scodeCount === pageSpec.sourceItems &&
     citationContract.sequential &&
     citationContract.pinned === 's1|s2|s3|s4' &&
-    citationContract.phaseRows >= 22 &&
-    citationContract.chips >= 22 && citationContract.chips <= 100 &&
+    citationContract.phaseRows >= pageSpec.citeChips.min &&
+    citationContract.chips >= pageSpec.citeChips.min && citationContract.chips <= pageSpec.citeChips.max &&
     citationContract.badCites === 0 &&
     citationContract.failures.length === 0,
     JSON.stringify(citationContract));
   ok('C14a every documented or strong person row cites the Source Ledger',
-    content.evidenceRows === 39 && content.evidenceRowsWithoutCitation.length === 0,
+    content.evidenceRows === pageSpec.evidenceRows && content.evidenceRowsWithoutCitation.length === 0,
     JSON.stringify(content.evidenceRowsWithoutCitation));
-  const stemCheck = await page.evaluate((stemDivs) => {
-    const expected = [
-      { href: '#person.zodrow.cecilia', tagClass: 'documented', tagText: 'Documented' },
-      { href: '#person.zodrow.cecilia', tagClass: 'documented', tagText: 'Documented' },
-      { href: '#person.nauer.elizabeth', tagClass: 'strong', tagText: 'Strong lead' },
-      { href: '#person.clemans.marjorie', tagClass: 'documented', tagText: 'Documented' },
-      { href: '#person.clemans.marjorie', tagClass: 'documented', tagText: 'Documented' },
-      { href: '#person.long.almeda', tagClass: 'documented', tagText: 'Documented' },
-      { href: '#person.claar.martha', tagClass: 'documented', tagText: 'Documented' },
-    ];
+  const stemCheck = await page.evaluate((stemSpec) => {
+    const expected = stemSpec.expected;
     const stems = [...document.querySelectorAll('.stem')];
     const details = stems.map((stem) => {
       const links = [...stem.querySelectorAll('a[href]')];
@@ -479,7 +512,7 @@ function ok(label, cond, detail) {
       };
     });
     const failures = [];
-    if (stems.length !== stemDivs) failures.push(`stem count ${stems.length}`);
+    if (stems.length !== stemSpec.count) failures.push(`stem count ${stems.length}`);
     details.forEach((d, i) => {
       const e = expected[i];
       if (!e) failures.push(`unexpected stem ${i + 1}`);
@@ -490,7 +523,7 @@ function ok(label, cond, detail) {
       }
     });
     return { pass: failures.length === 0, details, failures };
-  }, STEM_DIVS);
+  }, pageSpec.stems);
   ok('C10 descent stems resolve and carry expected chain tags',
     stemCheck.pass, JSON.stringify(stemCheck.failures.length ? stemCheck.failures : stemCheck.details));
   const chartCheck = await page.evaluate(() => {
@@ -507,7 +540,7 @@ function ok(label, cond, detail) {
     return { charts };
   });
   ok('C11 pedigree charts render 63 cells each and links resolve',
-    chartCheck.charts.length === 4 &&
+    chartCheck.charts.length === pageSpec.charts &&
     chartCheck.charts.every((c) => c.cells === 63 && c.broken.length === 0),
     JSON.stringify(chartCheck));
   const nameIndex = await page.evaluate(() => {
@@ -533,7 +566,8 @@ function ok(label, cond, detail) {
     };
   });
   ok('C12 Index of Names exists, is grouped, ordered, and linked',
-    nameIndex.exists && nameIndex.entries >= nameIndex.registryPeople &&
+    nameIndex.exists && nameIndex.registryPeople === pageSpec.registryPeople &&
+    nameIndex.entries >= pageSpec.registryPeople &&
     nameIndex.ordered && nameIndex.grouped && nameIndex.broken === 0,
     JSON.stringify(nameIndex));
   const docketCheck = await page.evaluate(({ c, r, n }) => {
@@ -553,7 +587,11 @@ function ok(label, cond, detail) {
     if (s.querySelectorAll(':scope>ul:nth-of-type(1) li').length < r) f.push('corrigenda count');
     if (s.querySelectorAll(':scope>ul:nth-of-type(2) li').length < n) f.push('negative-register count');
     return f;
-  }, { c: CASE_ARTICLES, r: CORRIGENDA_ITEMS, n: NEGATIVE_REGISTER_ITEMS });
+  }, {
+    c: pageSpec.caseArticles,
+    r: pageSpec.corrigendaItems,
+    n: pageSpec.negativeRegisterItems,
+  });
   ok('C13 docket has 23 structured cases plus registers', docketCheck.length === 0, JSON.stringify(docketCheck));
 
   // ---------- theme ----------
@@ -682,7 +720,7 @@ function ok(label, cond, detail) {
   // procedure: local measure + 1,200 (covers CI drift + headroom), confirm on the
   // next CI run. Prior local measures: 19,700 pre-W2, 23,511 post-W2, 26,132
   // post-W4, 26,703 post-correction, 29,725 post-W5 Docket, 31,108 post-plate-keys, 36,462 post-Slate-3 reader layer, 37,742 post-Mundell/Clemans intake, 40,935 post family-card air pass (owner-approved keepsake readability: line-height 1.62, card padding, grid gaps).
-  ok('L2 page height within layout budget (<42135)', desktop.scrollH < 42135, desktop.scrollH);
+  ok('L2 page height within layout budget (<42135)', desktop.scrollH < pageSpec.heightBudget, desktop.scrollH);
 
   for (const [w, h] of [[320, 700], [390, 844], [768, 1024], [1024, 768]]) {
     await page.setViewportSize({ width: w, height: h });
@@ -732,19 +770,19 @@ function ok(label, cond, detail) {
     cameos.every((c) => c.loaded && c.alt && c.lazy && c.sized && c.credited),
     JSON.stringify(cameos.filter((c) => !(c.loaded && c.alt && c.lazy && c.sized && c.credited))));
 
-  ok('E1 no console errors', consoleErrors.length === 0, consoleErrors.join(' | '));
-  ok('E2 no page errors', pageErrors.length === 0, pageErrors.join(' | '));
-  await browser.close();
+  const pageConsoleErrors = consoleErrors.slice(consoleStart);
+  const currentPageErrors = pageErrors.slice(pageErrorStart);
+  ok('E1 no console errors', pageConsoleErrors.length === 0, pageConsoleErrors.join(' | '));
+  ok('E2 no page errors', currentPageErrors.length === 0, currentPageErrors.join(' | '));
 
   // touch context: tap pins the record card but no hover bubble appears
-  const touchBrowser = await chromium.launch({ headless: true });
-  const touchCtx = await touchBrowser.newContext({
+  const touchCtx = await browser.newContext({
     viewport: { width: 390, height: 844 },
     hasTouch: true,
     isMobile: true,
   });
   const tpage = await touchCtx.newPage();
-  await tpage.goto(URL, { waitUntil: 'load' });
+  await tpage.goto(pageUrl, { waitUntil: 'load' });
   await tpage.waitForTimeout(700);
   const tmarker = tpage.locator(`#map-line-zimmerman g.event-marker[data-event-id="${ISOLATED_ID}"]`);
   await tmarker.scrollIntoViewIfNeeded();
@@ -760,7 +798,10 @@ function ok(label, cond, detail) {
   ok('T4 tap pins record card on touch', touch.pinned && touch.detail.includes('Michael'),
     touch.detail.slice(0, 60));
   ok('T5 no hover bubble on touch devices', !touch.bubbleShown);
-  await touchBrowser.close();
+  await touchCtx.close();
+  }
+
+  await browser.close();
 
   console.log(`\nALL ${passed} CHECKS PASSED`);
 })();
