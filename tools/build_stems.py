@@ -47,6 +47,13 @@ ENTITY_RE = re.compile(r"&#?[a-zA-Z0-9]+;")
 HAND_STEM_RE = re.compile(r'<div class="stem">.*?</div>')
 MARKER_KEY_RE = re.compile(r"<!-- BEGIN stem:([^ ]+) -->")
 HREF_RE = re.compile(r'href="#([^"]+)"')
+STEM_ID_RE = re.compile(r"stem\.[a-z0-9][a-z0-9._-]*")
+TAG_STRIP_RE = re.compile(r"<[^>]+>")
+
+
+def visible_text(fragment: str) -> str:
+    """Collapse a fragment to its space-normalized, entity-decoded text."""
+    return " ".join(html.unescape(TAG_STRIP_RE.sub(" ", fragment)).split())
 
 
 def fail(message: str) -> NoReturn:
@@ -71,8 +78,8 @@ def validate_rows(rows: list[dict], people: dict[str, dict]) -> None:
     for row in rows:
         where = f"stems.jsonl {row.get('id')!r}"
         row_id = row.get("id")
-        if not isinstance(row_id, str) or not row_id.startswith("stem."):
-            fail(f"{where}: id must be a stem.* string")
+        if not isinstance(row_id, str) or not STEM_ID_RE.fullmatch(row_id):
+            fail(f"{where}: id must match stem.[a-z0-9][a-z0-9._-]*")
         if row_id in seen:
             fail(f"{where}: duplicate stem id")
         seen.add(row_id)
@@ -125,6 +132,11 @@ def render_stem(row: dict, people: dict[str, dict], links: list[dict]) -> str:
     if len(chains) > 1:
         fail(f"{where}: {len(chains)} distinct chains from {row['anchor']} to "
              f"{row['target']}; stems require exactly one")
+    for link in chains[0]:
+        if link.get("status") != "accepted":
+            fail(f"{where}: chain link {link.get('id')!r} has status "
+                 f"{link.get('status')!r}; a descent stem may only claim a "
+                 "fully accepted chain")
     weakest = family_rules.weakest_parent_step(chains[0])
     confidence = weakest.get("confidence")
     if confidence not in TAG_LABELS:
@@ -165,6 +177,12 @@ def splice(source: str, rows: list[dict], rendered: dict[str, str],
                 fail(f"index.html has {len(matches)} marker pairs for {row['id']!r}; "
                      "markers and store have diverged")
             match = matches[0]
+            interior = updated[match.end(1): match.start(2)]
+            if ("<!--" in interior
+                    or not interior.startswith('<div class="stem">')
+                    or not interior.endswith("</div>")):
+                fail(f"index.html stem region for {row['id']!r} is malformed "
+                     "(a marker was edited or removed by hand); refusing to splice")
             updated = (updated[: match.end(1)] + rendered[row["id"]]
                        + updated[match.start(2):])
         return updated
@@ -179,6 +197,12 @@ def splice(source: str, rows: list[dict], rendered: dict[str, str],
             fail(f"bootstrap: hand stem {position} targets "
                  f"#{href_match.group(1) if href_match else '?'} but store row "
                  f"{row['id']!r} resolves to #{expected}")
+        hand_text = visible_text(match.group(0))
+        rendered_text = visible_text(rendered[row["id"]])
+        if hand_text != rendered_text:
+            fail(f"bootstrap: hand stem {position} reads {hand_text!r} but store "
+                 f"row {row['id']!r} renders {rendered_text!r}; refusing to "
+                 "replace words the store does not carry")
     updated = source
     for match, row in reversed(list(zip(hand, rows))):
         block = (f"<!-- BEGIN stem:{row['id']} -->{rendered[row['id']]}"

@@ -1079,9 +1079,9 @@ def render_candidate_family_html(
             (root / "research" / "people" / "people.jsonl").read_bytes()
         )
         (people_dir / "relationships.jsonl").write_bytes(candidate)
-        (people_dir / "stems.jsonl").write_bytes(
-            (root / "research" / "people" / "stems.jsonl").read_bytes()
-        )
+        stems_path = root / "research" / "people" / "stems.jsonl"
+        if stems_path.exists():
+            (people_dir / "stems.jsonl").write_bytes(stems_path.read_bytes())
         layout_path = root / "research" / "people" / "layout.jsonl"
         if layout_path.exists():
             (people_dir / "layout.jsonl").write_bytes(layout_path.read_bytes())
@@ -1089,11 +1089,12 @@ def render_candidate_family_html(
             (root / "index.html").read_bytes()
         )
         _original, rendered, payload = build_people_index.build(candidate_root)
-        # Stems derive their tags from the candidate relationships: a
-        # confidence or status change must re-render them in the same
-        # atomic projection pass.
-        (candidate_root / "index.html").write_text(rendered, encoding="utf-8")
-        _stems_original, rendered, _stem_count = build_stems.build(candidate_root)
+        if stems_path.exists():
+            # Stems derive their tags from the candidate relationships: a
+            # confidence or status change must re-render them in the same
+            # atomic projection pass.
+            (candidate_root / "index.html").write_text(rendered, encoding="utf-8")
+            _stems_original, rendered, _stem_count = build_stems.build(candidate_root)
     stamped, stamp_value = stamp_tool.stamped_html(rendered)
     return stamped, stamp_value, len(payload["people"])
 

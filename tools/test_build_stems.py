@@ -232,6 +232,75 @@ with tempfile.TemporaryDirectory(prefix="build-stems-test-") as td:
     check("raw html in store text exits 1", result.returncode == 1,
           result.stdout + result.stderr)
 
+    # 7. Splice safety: a hand-deleted END marker must refuse, never over-splice
+    root = make_root(tmp / "no-end", STORE_ROWS)
+    run(root)
+    html_path = root / "index.html"
+    marked = html_path.read_text(encoding="utf-8")
+    begin = "<!-- BEGIN stem:stem.a.two-hop -->"
+    start = marked.index(begin)
+    end_at = marked.index("<!-- END -->", start)
+    html_path.write_text(marked[:end_at] + marked[end_at + len("<!-- END -->"):],
+                         encoding="utf-8")
+    before = html_path.read_bytes()
+    result = run(root)
+    check("missing END refuses", result.returncode == 1, result.stdout + result.stderr)
+    check("missing END writes nothing", html_path.read_bytes() == before)
+
+    # Duplicate BEGIN for one key also refuses
+    html_path.write_text(
+        marked + '<!-- BEGIN stem:stem.a.two-hop --><div class="stem">x</div>'
+        "<!-- END -->", encoding="utf-8")
+    result = run(root)
+    check("duplicate marker key refuses", result.returncode == 1,
+          result.stdout + result.stderr)
+
+    # 8. Bootstrap same-target swap: href order agrees but the words do not
+    swapped_hand = (
+        '<div class="stem"><span class="stem-label">descent</span> Anna A. Anchor '
+        '<span class="stem-arrow">→</span> mother <a href="#person.t2">Linked Target</a> '
+        '<span class="stem-arrow">→</span> line A <span class="tag documented">Documented</span> '
+        '<span class="stem-note">weakest step: Ann–Willa, obituary</span></div>',
+        '<div class="stem"><span class="stem-label">descent</span> Anna A. Anchor '
+        '<span class="stem-arrow">→</span> mother <a href="#person.t2">Linked Target</a> '
+        '<span class="stem-arrow">→</span> line B <span class="tag documented">Documented</span> '
+        '<span class="stem-note">weakest step: Ann–Willa, obituary</span></div>',
+    )
+    swap_rows = [
+        stem_row("stem.same.one", "person.a", "person.t2", "line B",
+                 note_suffix="obituary", short_names={"person.a": "Ann"}),
+        stem_row("stem.same.two", "person.a", "person.t2", "line A",
+                 note_suffix="obituary", short_names={"person.a": "Ann"}),
+    ]
+    swap = make_root(tmp / "bad-swap", swap_rows, hand_stems=swapped_hand)
+    before = (swap / "index.html").read_bytes()
+    result = run(swap)
+    check("bootstrap same-target swap refuses", result.returncode == 1,
+          result.stdout + result.stderr)
+    check("bootstrap swap writes nothing", (swap / "index.html").read_bytes() == before)
+    aligned = make_root(tmp / "good-swap", list(reversed(swap_rows)),
+                        hand_stems=swapped_hand)
+    result = run(aligned)
+    check("bootstrap aligned same-target pair succeeds", result.returncode == 0,
+          result.stdout + result.stderr)
+
+    # 9. A non-accepted link in the chain refuses: no Documented claim over a
+    # hypothesis edge
+    hypothesis_links = [dict(l) for l in LINKS]
+    hypothesis_links[2]["status"] = "hypothesis"
+    hypo = make_root(tmp / "bad-status", [STORE_ROWS[1]],
+                     hand_stems=(HAND_STEMS[1],), links=hypothesis_links)
+    result = run(hypo)
+    check("hypothesis chain link refuses", result.returncode == 1
+          and "accepted" in result.stdout, result.stdout + result.stderr)
+
+    # 10. Stem ids follow the canonical grammar
+    bad_id = stem_row("stem.same.one", "person.a", "person.t2", "this line")
+    bad_id["id"] = "stem.bad id"
+    result = run(make_root(tmp / "bad-id", [bad_id]))
+    check("malformed stem id refuses", result.returncode == 1,
+          result.stdout + result.stderr)
+
 if failures:
     print("BUILD STEMS TEST FAILURES:")
     for failure in failures:
