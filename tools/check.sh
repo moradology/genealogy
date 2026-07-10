@@ -27,6 +27,7 @@ uv run tools/check_geo_sync.py
 uv run tools/test_gen.py
 uv run tools/test_gen_ancestry.py
 uv run tools/test_gen_store.py
+uv run tools/test_family_rules.py
 uv run tools/build_plate_keys.py --check
 if [ -d tools/basemap-data ]; then
   uv run tools/build_basemap.py --check

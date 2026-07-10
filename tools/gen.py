@@ -111,6 +111,8 @@ def usage() -> str:
         "  ancestors <person.id>       Walk the family graph upward: generations,",
         "                              per-link confidence, and the gap frontier",
         "  path <a> <b>                Shortest relationship chain between two people",
+        "  contradictions [--strict]   Deterministic rule sweep over the family graph:",
+        "                              chronology, hygiene, and recorded conflicts",
         "",
         "Help:  ./gen <command> --help   (ancestry forwards to the full subhelp;",
         "       try also: ./gen ancestry goto --help)",
@@ -283,6 +285,21 @@ COMMAND_HELP = {
         "naming the relationship, role, confidence, and relationship id.",
         "",
         'JSON: {"command":"path","ok":...,"length":N,"steps":[{from,to,relationship,...}]}',
+    ]),
+    "contradictions": "\n".join([
+        "Usage: ./gen contradictions [--strict]",
+        "",
+        "Run the encoded-opinion rules (tools/family_rules.py) over the truth",
+        "stores: parent ages, posthumous births, death-before-birth, marriage",
+        "ages, confidence-vs-evidence hygiene, open gaps citing closed cases,",
+        "and multiple-parent groupings. Vitals come from dated geojson life",
+        "events; rejected relationship rows never enter any rule. Severities:",
+        "violation = impossibility on accepted dated data (the only gating",
+        "level), conflict = deliberately recorded unresolved state, advisory =",
+        "the same impossibilities on hypothesis links plus hygiene notes.",
+        "",
+        'JSON: {"command":"contradictions","ok":...,"clean":...,"counts":{...},"coverage":{...},"findings":[...]}',
+        "Exit 0 always; --strict exits 1 iff violations exist.",
     ]),
     "show": "\n".join([
         "Usage: ./gen show <id>",
@@ -519,6 +536,10 @@ def handler_path(argv: list[str], pretty: bool) -> int:
     return handler_store("path", argv, pretty)
 
 
+def handler_contradictions(argv: list[str], pretty: bool) -> int:
+    return handler_store("contradictions", argv, pretty)
+
+
 def dispatch(argv: list[str]) -> int:
     args, pretty = split_global_flags(argv)
     if not args or args[0] in {"--help", "-h"}:
@@ -537,6 +558,7 @@ def dispatch(argv: list[str]) -> int:
         "gap": handler_gap,
         "ancestors": handler_ancestors,
         "path": handler_path,
+        "contradictions": handler_contradictions,
         "show": handler_show,
         "status": handler_status,
     }

@@ -25,6 +25,7 @@ import check_cases  # noqa: E402
 import check_evidence  # noqa: E402
 import check_family_core  # noqa: E402
 import check_traces  # noqa: E402
+import family_rules  # noqa: E402
 import stamp as stamp_tool  # noqa: E402
 
 
@@ -773,6 +774,12 @@ def command_path(args: argparse.Namespace, root: Path) -> int:
     steps.reverse()
     return stop({"command": "path", "ok": True, "from": origin, "to": goal,
                  "length": len(steps), "steps": steps}, 0)
+
+
+def command_contradictions(args: argparse.Namespace, root: Path) -> int:
+    report = family_rules.contradictions(root)
+    code = 1 if args.strict and report["counts"]["violation"] else 0
+    return stop({"command": "contradictions", "ok": code == 0, **report}, code)
 
 
 def command_show(args: argparse.Namespace, root: Path) -> int:
@@ -2077,6 +2084,10 @@ def build_parser() -> argparse.ArgumentParser:
     path_cmd.add_argument("person_a")
     path_cmd.add_argument("person_b")
     path_cmd.set_defaults(handler=command_path)
+
+    contradictions = attach_error(sub.add_parser("contradictions", add_help=False))
+    contradictions.add_argument("--strict", action="store_true")
+    contradictions.set_defaults(handler=command_contradictions)
 
     status = attach_error(sub.add_parser("status", add_help=False))
     status.set_defaults(handler=command_status)
