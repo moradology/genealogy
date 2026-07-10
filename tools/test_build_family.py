@@ -34,11 +34,13 @@ def run(root: Path, *args: str) -> subprocess.CompletedProcess:
 
 
 def person(pid: str, name: str, confidence: str = "documented",
-           anchor: str | None = None, display: dict | None = None) -> dict:
+           anchor: str | None = None, display: dict | None = None,
+           branches: list[str] | None = None, role: str = "ancestor") -> dict:
     row = {
         "id": pid, "node_type": "person", "display_name": name,
-        "index_names": [name], "name_variants": [], "branches": ["zimmerman"],
-        "role": "ancestor", "confidence": confidence,
+        "index_names": [name], "name_variants": [],
+        "branches": branches or ["zimmerman"],
+        "role": role, "confidence": confidence,
         "privacy": "public_deceased", "public_anchor": anchor or pid,
     }
     if display is not None:
@@ -46,12 +48,13 @@ def person(pid: str, name: str, confidence: str = "documented",
     return row
 
 
-def plink(parent: str, child: str, confidence: str = "documented") -> dict:
+def plink(parent: str, child: str, confidence: str = "documented",
+          parent_role: str = "father", status: str = "accepted") -> dict:
     return {
         "id": f"relationship.parent.{parent.split('.')[-1]}-to-{child.split('.')[-1]}",
         "node_type": "relationship", "relationship_type": "parent_of",
-        "person_a": parent, "person_b": child, "parent_role": "mother",
-        "status": "accepted", "confidence": confidence, "branches": ["zimmerman"],
+        "person_a": parent, "person_b": child, "parent_role": parent_role,
+        "status": status, "confidence": confidence, "branches": ["zimmerman"],
         "evidence_refs": [], "source_refs": ["src.test.x"], "case_refs": [],
         "provenance_note": "test",
     }
@@ -61,7 +64,7 @@ GAP_ROW = {
     "id": "gap.solo.parents", "node_type": "gap", "gap_type": "parentage",
     "label": "Parents of Sol Solo", "subject_persons": ["person.solo"],
     "candidate_persons": [], "open_roles": ["parents"], "branches": ["zimmerman"],
-    "case_refs": [], "evidence_refs": [], "source_refs": [],
+    "case_refs": ["case.test.solo-parents"], "evidence_refs": [], "source_refs": [],
     "public_anchor": "gap.solo.parents", "status": "open",
     "resolution_note": "", "resolved_on": None, "owner_follow_up_required": False,
     "pedigree": {"Z": [16, 17], "M": [], "D": [], "C": []},
@@ -71,21 +74,8 @@ GAP_ROW = {
 STEM_ROW = {
     "id": "stem.test.one", "node_type": "stem", "anchor": "person.anchor",
     "target": "person.target", "from_label": "Anna A. Anchor",
-    "via_prose": "mother", "link_text": "Tessa Target",
+    "via_prose": "father", "link_text": "Tessa Target",
     "line_label": "the Target line",
-}
-REGISTRY = {
-    "v": 2,
-    "people": [
-        {"i": "person.anchor", "n": "Anna Anchor", "a": "Z", "k": "person",
-         "ah": [1], "t": "documented", "h": "person.anchor"},
-        {"i": "person.solo", "n": "Sol Solo", "a": "Z", "k": "person",
-         "ah": [4], "t": "documented", "h": "person.solo"},
-        {"i": "person.target", "n": "Tessa Target", "a": "Z", "k": "person",
-         "ah": [2], "t": "documented", "h": "person.target"},
-        {"i": "gap.solo.parents", "n": "Parents of Sol Solo", "a": "Z",
-         "k": "gap", "ah": [16, 17], "t": "open", "h": "gap.solo.parents"},
-    ],
 }
 LAYOUT = {
     "id": "layout.branch-test.1", "node_type": "layout_block",
@@ -121,7 +111,7 @@ HAND_REGION = (
     '<div class="generation"><div class="gen-label">Gen 2</div>'
     '<div class="people"><div class="person" id="person.solo">'
     '<div class="person-head"><span class="person-name">Sol Solo</span> '
-    '<span class="ahnen">Z-4</span> '
+    '<span class="ahnen">Z-8</span> '
     '<span class="tag documented">Documented</span></div>'
     '<div class="vitals">b. 1900 &ndash; d. 1980</div>'
     '<p class="identity">Anna&rsquo;s son.</p>'
@@ -135,7 +125,7 @@ HAND_REGION = (
     '<p class="record-cite">Sheet 1A &middot; via Test</p></figure></div>'
     "<!-- BEGIN stem:stem.test.one -->"
     '<div class="stem"><span class="stem-label">descent</span> Anna A. Anchor '
-    '<span class="stem-arrow">→</span> mother '
+    '<span class="stem-arrow">→</span> father '
     '<a href="#person.target">Tessa Target</a> '
     '<span class="stem-arrow">→</span> the Target line '
     '<span class="tag documented">Documented</span> '
@@ -155,26 +145,46 @@ def jl(rows: list[dict]) -> str:
     return "".join(json.dumps(r, separators=(",", ":")) + "\n" for r in rows)
 
 
+def people_rows(solo_display: dict | None = SOLO_DISPLAY) -> list[dict]:
+    return [
+        person("person.anchor", "Anna Anchor", display=ANCHOR_DISPLAY,
+               role="anchor"),
+        person("person.target", "Tessa Target"),
+        person("person.midparent", "Milo Midparent"),
+        person("person.solo", "Sol Solo",
+               display=dict(solo_display) if solo_display is not None else None),
+        person("person.mundell_anchor", "Mona Mundell",
+               branches=["mundell"], role="anchor"),
+        person("person.dible_anchor", "Dina Dible",
+               branches=["dible"], role="anchor"),
+        person("person.connelly_anchor", "Cora Connelly",
+               branches=["connelly"], role="anchor"),
+    ]
+
+
+def relationship_rows(stem_confidence: str = "documented",
+                      solo_link_status: str = "accepted") -> list[dict]:
+    return [
+        plink("person.target", "person.anchor", confidence=stem_confidence),
+        plink("person.midparent", "person.target"),
+        plink("person.solo", "person.midparent", status=solo_link_status),
+        GAP_ROW,
+    ]
+
+
 def make_root(tmp: Path, *, layout: dict = LAYOUT, hand: str = HAND_REGION,
-              registry: dict = REGISTRY,
-              solo_display: dict = SOLO_DISPLAY,
+              solo_display: dict | None = SOLO_DISPLAY,
               evidence_display: dict | None = EVIDENCE_DISPLAY,
-              stem_confidence: str = "documented") -> Path:
+              stem_confidence: str = "documented",
+              solo_link_status: str = "accepted") -> Path:
     root = tmp / "repo"
     (root / "research" / "people").mkdir(parents=True)
     (root / "research" / "sources").mkdir(parents=True)
     (root / "research" / "evidence").mkdir(parents=True)
-    people = [
-        person("person.anchor", "Anna Anchor", display=ANCHOR_DISPLAY),
-        person("person.solo", "Sol Solo",
-               display=dict(solo_display) if solo_display else None),
-        person("person.target", "Tessa Target"),
-    ]
     (root / "research" / "people" / "people.jsonl").write_text(
-        jl(people), encoding="utf-8")
+        jl(people_rows(solo_display)), encoding="utf-8")
     (root / "research" / "people" / "relationships.jsonl").write_text(
-        jl([plink("person.target", "person.anchor",
-                  confidence=stem_confidence), GAP_ROW]), encoding="utf-8")
+        jl(relationship_rows(stem_confidence, solo_link_status)), encoding="utf-8")
     (root / "research" / "people" / "stems.jsonl").write_text(
         jl([STEM_ROW]), encoding="utf-8")
     (root / "research" / "people" / "layout.jsonl").write_text(
@@ -189,8 +199,6 @@ def make_root(tmp: Path, *, layout: dict = LAYOUT, hand: str = HAND_REGION,
             {"id": "src.two.bbbb2222", "html_id": "s2"}]), encoding="utf-8")
     (root / "index.html").write_text(
         "<html><body>\n"
-        f'<script type="application/json" id="people-index">'
-        f"{json.dumps(registry, separators=(',', ':'))}</script>\n"
         '<section class="sheet" id="branch-test"><h2>Test Branches</h2>\n'
         '<div class="branch"><div class="branch-title"><h3>Test Line</h3></div>\n'
         f'<div class="generations">\n{hand}\n</div></div></section>\n'
@@ -231,9 +239,7 @@ with tempfile.TemporaryDirectory(prefix="build-family-test-") as td:
     solo = dict(SOLO_DISPLAY)
     solo["details"] = "Counted in the 1910 census.{{cite:src.two.bbbb2222}}"
     (root / "research" / "people" / "people.jsonl").write_text(
-        jl([person("person.anchor", "Anna Anchor", display=ANCHOR_DISPLAY),
-            person("person.solo", "Sol Solo", display=solo),
-            person("person.target", "Tessa Target")]), encoding="utf-8")
+        jl(people_rows(solo)), encoding="utf-8")
     result = run(root, "--check")
     check("display edit reddens check", result.returncode == 1, result.stdout)
     check("check names the remediation", "./gen build family" in result.stdout,
@@ -245,8 +251,7 @@ with tempfile.TemporaryDirectory(prefix="build-family-test-") as td:
 
     # 4. A relationship confidence edit re-renders the inline stem
     (root / "research" / "people" / "relationships.jsonl").write_text(
-        jl([plink("person.target", "person.anchor", confidence="lead"),
-            GAP_ROW]), encoding="utf-8")
+        jl(relationship_rows(stem_confidence="lead")), encoding="utf-8")
     result = run(root, "--check")
     check("stem chain edit reddens check", result.returncode == 1, result.stdout)
     result = run(root)
@@ -296,13 +301,9 @@ with tempfile.TemporaryDirectory(prefix="build-family-test-") as td:
           result.stdout + result.stderr)
 
     # 8. A card whose slots vanish (a rejected link) degrades to (collateral)
-    slotless = json.loads(json.dumps(REGISTRY))
-    for entry in slotless["people"]:
-        if entry["i"] == "person.solo":
-            entry["ah"] = []
-    root = make_root(tmp / "slotless", registry=slotless,
+    root = make_root(tmp / "slotless", solo_link_status="rejected",
                      hand=HAND_REGION.replace(
-                         '<span class="ahnen">Z-4</span>',
+                         '<span class="ahnen">Z-8</span>',
                          '<span class="ahnen">(collateral)</span>'))
     result = run(root)
     check("slotless card renders collateral", result.returncode == 0

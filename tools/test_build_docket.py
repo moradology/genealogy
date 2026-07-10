@@ -32,25 +32,13 @@ def run(root: Path, *args: str) -> subprocess.CompletedProcess:
     )
 
 
-PEOPLE_INDEX = {
-    "v": 1,
-    "people": [
-        # alpha + alpha_wife share one card anchor: refs to both must merge into
-        # a single couple-style link Z-12/13.
-        {"i": "person.alpha", "n": "Alpha, Ada", "a": "Z", "k": "person", "ah": [12], "t": "strong", "h": "person.alpha"},
-        {"i": "person.alpha_wife", "n": "Alpha, Win", "a": "Z", "k": "person", "ah": [13], "t": "strong", "h": "person.alpha"},
-        {"i": "person.beta", "n": "Beta, Bo", "a": "M", "k": "person", "ah": [3], "t": "documented", "h": "person.beta"},
-        {"i": "person.gamma_collateral", "n": "Gamma, Gil collateral", "a": "Z", "k": "collateral", "t": "lead", "h": "person.gamma_collateral"},
-    ],
-}
-
 # Hand-authored docket in the CURRENT page style: entities, a two-segment refs
 # div, and one MALFORMED div (trace id embedded in the middle segment,
 # no third pipe) mirroring the real case.07.
 HAND_DOCKET = (
     '<div id="case.01"><div><b>case.01</b><h3>Alpha &amp; entities</h3><b>OPEN</b></div>'
     "<p>Q: alpha &mdash; with an entity dash.</p>"
-    '<div><a href="#person.alpha">Z-12/13</a>|1885 KS census; notes|trace.2026-01-01.alpha-trace</div></div>\n'
+    '<div><a href="#person.alpha">Z-4/5</a>|1885 KS census; notes|trace.2026-01-01.alpha-trace</div></div>\n'
     '<div id="case.02"><div><b>case.02</b><h3>Beta-&gt;arrow</h3><b>IN CONFLICT</b></div>'
     "<p>Q: beta.</p>"
     '<div><a href="#person.beta">M-3</a>|Beta memorials trace.2026-01-02.beta-trace</div></div>\n'
@@ -58,7 +46,6 @@ HAND_DOCKET = (
 
 HTML_TEMPLATE = (
     "<html><head></head><body>\n"
-    '<script type="application/json" id="people-index">{blob}</script>\n'
     '<section class="sheet" id="docket">\n'
     "<h2>The Docket</h2>\n"
     "<p class=section-note>Append-only cases.</p>\n"
@@ -69,6 +56,72 @@ HTML_TEMPLATE = (
     '<section class="sheet" id="wanted"><h2>Wanted</h2></section>\n'
     "</body></html>\n"
 )
+
+
+def person(pid: str, name: str, branches: list[str], role: str = "ancestor",
+           confidence: str = "documented", anchor: str | None = None) -> dict:
+    return {
+        "id": pid,
+        "node_type": "person",
+        "display_name": name,
+        "index_names": [name],
+        "name_variants": [],
+        "branches": branches,
+        "role": role,
+        "confidence": confidence,
+        "privacy": "public_deceased",
+        "public_anchor": anchor or pid,
+    }
+
+
+def plink(parent: str, child: str, branch: str,
+          parent_role: str = "father") -> dict:
+    return {
+        "id": f"relationship.parent.{parent.split('.')[-1]}-to-{child.split('.')[-1]}",
+        "node_type": "relationship",
+        "relationship_type": "parent_of",
+        "parent_role": parent_role,
+        "person_a": parent,
+        "person_b": child,
+        "status": "accepted",
+        "confidence": "documented",
+        "branches": [branch],
+        "evidence_refs": [],
+        "source_refs": ["src.test.relationship"],
+        "case_refs": [],
+        "provenance_note": "test",
+    }
+
+
+def people_rows() -> list[dict]:
+    return [
+        person("person.z_anchor", "Zara Zimmerman", ["zimmerman"],
+               role="anchor"),
+        person("person.z_parent", "Zane Zimmerman", ["zimmerman"]),
+        person("person.alpha", "Alpha, Ada", ["zimmerman"],
+               confidence="strong"),
+        person("person.alpha_wife", "Alpha, Win", ["zimmerman"],
+               confidence="strong", anchor="person.alpha"),
+        person("person.gamma_collateral", "Gamma, Gil collateral",
+               ["zimmerman"], role="collateral", confidence="lead"),
+        person("person.m_anchor", "Mona Mundell", ["mundell"],
+               role="anchor"),
+        person("person.beta", "Beta, Bo", ["mundell"]),
+        person("person.d_anchor", "Dina Dible", ["dible"], role="anchor"),
+        person("person.c_anchor", "Cora Connelly", ["connelly"],
+               role="anchor"),
+    ]
+
+
+def relationship_rows() -> list[dict]:
+    return [
+        plink("person.z_parent", "person.z_anchor", "zimmerman"),
+        plink("person.alpha", "person.z_parent", "zimmerman"),
+        plink("person.alpha_wife", "person.z_parent", "zimmerman",
+              parent_role="mother"),
+        plink("person.beta", "person.m_anchor", "mundell",
+              parent_role="mother"),
+    ]
 
 
 def case_record(case_id: str, title: str, summary: str, status: str, person_refs: list[str],
@@ -92,6 +145,7 @@ def case_record(case_id: str, title: str, summary: str, status: str, person_refs
 def make_fixture(tmp: Path) -> Path:
     root = tmp / "repo"
     (root / "research" / "cases").mkdir(parents=True)
+    (root / "research" / "people").mkdir(parents=True)
     (root / "research" / "reasoning-traces").mkdir(parents=True)
     for name in ("2026-01-01-alpha-trace.md", "2026-01-02-beta-trace.md"):
         (root / "research" / "reasoning-traces" / name).write_text("---\n---\n")
@@ -104,8 +158,19 @@ def make_fixture(tmp: Path) -> Path:
     ]
     lines = "".join(json.dumps(r, ensure_ascii=False, separators=(",", ":")) + "\n" for r in records)
     (root / "research" / "cases" / "cases.jsonl").write_text(lines)
+    people_lines = "".join(
+        json.dumps(r, ensure_ascii=False, separators=(",", ":")) + "\n"
+        for r in people_rows()
+    )
+    (root / "research" / "people" / "people.jsonl").write_text(people_lines)
+    relationship_lines = "".join(
+        json.dumps(r, ensure_ascii=False, separators=(",", ":")) + "\n"
+        for r in relationship_rows()
+    )
+    (root / "research" / "people" / "relationships.jsonl").write_text(
+        relationship_lines)
     (root / "index.html").write_text(
-        HTML_TEMPLATE.format(blob=json.dumps(PEOPLE_INDEX, separators=(",", ":")), docket=HAND_DOCKET))
+        HTML_TEMPLATE.format(docket=HAND_DOCKET))
     return root
 
 
@@ -125,7 +190,7 @@ with tempfile.TemporaryDirectory(prefix="build-docket-test-") as td:
     check("markers inside docket section", html.index('id="docket"') < html.index("<!-- BEGIN docket-cases -->") < html.index("<h3>Corrigenda</h3>"))
     check("entity normalized to unicode", "— with an entity dash" in html)
     check("arrow escaped roundtrip", "Beta-&gt;arrow" in html)
-    check("label derived from blob", '<a href="#person.alpha">Z-12/13</a>' in html)
+    check("label derived from stores", '<a href="#person.alpha">Z-4/5</a>' in html)
     check("status label mapped", "<b>IN CONFLICT</b>" in html)
     check("trace ref rendered", "|trace.2026-01-01.alpha-trace</div>" in html)
     check("corrigenda untouched", "hand-authored corrigendum stays untouched" in html)

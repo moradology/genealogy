@@ -30,7 +30,7 @@ from pathlib import Path
 from typing import NoReturn
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import build_docket  # noqa: E402
+import build_people_index  # noqa: E402
 import family_display  # noqa: E402
 from build_people_index import ProjectionError  # noqa: E402
 
@@ -294,13 +294,13 @@ def build(root: Path) -> tuple[str, str, int]:
              if row.get("node_type") == "relationship"]
     stems_rows = {row["id"]: row for row in read_jsonl(root / STEMS_PATH)}
     source = (root / "index.html").read_text(encoding="utf-8")
-    registry = build_docket.people_index(source)
+    registry = build_people_index.registry_payload(root)["people"]
     context = {
         "people": people,
         "gaps": gaps,
         "links": links,
         "stems": stems_rows,
-        "groups": family_display.registry_groups(list(registry.values())),
+        "groups": family_display.registry_groups(registry),
         "evidence_displays": load_evidence_displays(root),
         "cite_codes": family_display.cite_map(root),
     }

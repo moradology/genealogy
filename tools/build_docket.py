@@ -199,7 +199,10 @@ def build(root: Path) -> tuple[str, str, int]:
         fail(f"missing presentation file: {html_path}")
     source = html_path.read_text(encoding="utf-8")
     cases = read_jsonl(root / CASES_PATH)
-    rendered_cases = render_cases(cases, people_index(source))
+    import build_people_index
+    payload = build_people_index.registry_payload(root)
+    people = {entry["i"]: entry for entry in payload["people"]}
+    rendered_cases = render_cases(cases, people)
     return source, splice_cases(source, rendered_cases), len(cases)
 
 

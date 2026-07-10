@@ -24,6 +24,9 @@ uv run tools/test_check_cases.py
 uv run tools/check_traces.py
 uv run tools/test_check_traces.py
 uv run tools/check_refs.py
+uv run tools/test_page_map.py
+uv run tools/check_pages.py
+uv run tools/test_check_pages.py
 uv run tools/check_people_index.py
 uv run tools/check_geo_sync.py
 uv run tools/test_gen.py

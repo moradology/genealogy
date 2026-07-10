@@ -837,6 +837,15 @@ def render_html(
     return rendered
 
 
+def registry_payload(root: Path) -> dict[str, Any]:
+    """The people-index registry computed from the stores alone - the
+    canonical source for every consumer (page scripts, docket person links,
+    family-card groups). Never scraped back out of a rendered page."""
+    people, relationships, gaps = load_family_core(root)
+    person_slots, gap_slots = project_slots(people, relationships, gaps)
+    return build_payload(people, gaps, person_slots, gap_slots)
+
+
 def build(root: Path) -> tuple[str, str, dict[str, Any]]:
     people, relationships, gaps = load_family_core(root)
     person_slots, gap_slots = project_slots(people, relationships, gaps)

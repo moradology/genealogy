@@ -916,7 +916,8 @@ def render_docket_html(root: Path, records: list[dict[str, Any]]) -> tuple[str, 
     region + fresh deploy stamp. Pure; hard-fails (SystemExit) on missing
     markers/anchors or unknown person refs, BEFORE any file is written."""
     source = (root / "index.html").read_text(encoding="utf-8")
-    people = build_docket.people_index(source)
+    payload = build_people_index.registry_payload(root)
+    people = {entry["i"]: entry for entry in payload["people"]}
     markup = build_docket.render_cases(records, people)
     spliced = build_docket.splice_cases(source, markup)
     return stamp_tool.stamped_html(spliced)
