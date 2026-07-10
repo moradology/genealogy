@@ -3313,6 +3313,96 @@
           {"order": 3, "date_sort": "1935-04-24", "event_id": "event.donna_connelly.birth.1935-04-24", "role": "descendant_birth"}
         ]
       }
+    },
+    {
+      "type": "Feature",
+      "id": "target.clemans.barron_same_name_collision",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -91.8484,
+          45.4235
+        ]
+      },
+      "properties": {
+        "feature_kind": "exclusion_target",
+        "event_type": "same_name_collision",
+        "label": "Barron County same-name Clemans daughter, Wisconsin",
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "line_ids": [
+          "line.clemans_flaherty"
+        ],
+        "generation": 2,
+        "date_start": "1922-01-01",
+        "date_sort": "1922-01-01",
+        "place_label": "Barron County, Wisconsin",
+        "confidence": "lead",
+        "candidate_person": null,
+        "ancestor_person": "person.clemans.marjorie",
+        "exclusion_note": "The Barron County, Wisconsin Clemans family (1910 Rollie Clemens household; ev.ancestry.1910-clemans-barron) carries a daughter Marjorie born about 1922, who would have been about 11 at the target's documented 19 June 1933 Washington County, Colorado marriage. Chronology excludes her from the target maternal role; the branch was detached.",
+        "research_question": "Closed: chronology excludes the Barron County daughter from the target maternal role.",
+        "source_refs": []
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.clemans.kit_carson_same_name_collision",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -102.6029,
+          39.3053
+        ]
+      },
+      "properties": {
+        "feature_kind": "exclusion_target",
+        "event_type": "same_name_collision",
+        "label": "Kit Carson County same-name Clemans child, Colorado",
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "line_ids": [
+          "line.clemans_flaherty"
+        ],
+        "generation": 2,
+        "date_start": "1918-01-01",
+        "date_sort": "1918-01-01",
+        "place_label": "Kit Carson County, Colorado",
+        "confidence": "lead",
+        "candidate_person": null,
+        "ancestor_person": "person.clemans.marjorie",
+        "exclusion_note": "The 1930 Kit Carson County, Colorado census records Marjorie E. Clemans, about 12 years old (born about 1918), a daughter of Laura M. Clemans (ev.ancestry.marjorie-clemans-candidates). The target bride's reported age of 21 at the 19 June 1933 marriage (ev.ancestry.1933-mundell-clemans-marriage) places the target's birth about 1912; the six-year gap excludes this child from the target identity.",
+        "research_question": "Closed: the 1933 marriage record's bride age excludes the 1918-born Kit Carson County child.",
+        "source_refs": []
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "target.clemans.waynoka_same_name_collision",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -98.8801,
+          36.5867
+        ]
+      },
+      "properties": {
+        "feature_kind": "exclusion_target",
+        "event_type": "same_name_collision",
+        "label": "Marjorie Emily Clemans same-name collision, Oklahoma",
+        "anchor": "Evelyn Delores Mundell Zimmerman",
+        "line_ids": [
+          "line.clemans_flaherty"
+        ],
+        "generation": 2,
+        "date_start": "1915-12-20",
+        "date_sort": "1915-12-20",
+        "place_label": "Waynoka, Woods County, Oklahoma",
+        "confidence": "lead",
+        "candidate_person": null,
+        "ancestor_person": "person.clemans.marjorie",
+        "exclusion_note": "Marjorie Emily Clemans of Waynoka, Woods County, Oklahoma, born 20 December 1915 to Benjamin F. Clemans and Jessie M. Barker, married Weaver by 1936 and later Robbins, and was never a Mundell (ev.ancestry.marjorie-clemans-candidates). Middle name and marriage history both conflict with the target, who was married to Homer C. Mundell from 1933 to 1939.",
+        "research_question": "Closed: middle name and marriage history exclude the Waynoka woman from the target identity.",
+        "source_refs": []
+      }
     }
   ]
 }
