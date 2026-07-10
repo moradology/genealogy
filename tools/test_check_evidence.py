@@ -318,6 +318,7 @@ class MigratedEvidenceRegressionTests(unittest.TestCase):
         self.assertEqual(
             set(parser.cards),
             {
+                "ev.ancestry.1910-rust",
                 "ev.ancestry.1910-zodrow",
                 "ev.ancestry.1939-mundell-divorce",
                 "ev.ancestry.1940-adolph-mundell",
