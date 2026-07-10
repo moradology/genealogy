@@ -648,6 +648,21 @@ def _exclusion_targets(root: Path) -> list[dict]:
     ]
 
 
+def _citable_ids(root: Path) -> set[str]:
+    ids: set[str] = set()
+    for row in _evidence_rows(root):
+        value = row.get("id")
+        if isinstance(value, str):
+            ids.add(value)
+    sources = root / "research" / "sources" / "sources.jsonl"
+    if sources.exists():
+        for row in _read_jsonl(sources):
+            value = row.get("id")
+            if isinstance(value, str):
+                ids.add(value)
+    return ids
+
+
 def _equivalence_compatible(word_a: str, word_b: str) -> bool:
     if word_a == word_b:
         return True
@@ -769,6 +784,24 @@ def _words_cover(covered: list[str], covering: list[str]) -> bool:
     return True
 
 
+def _strip_trailing_middle(cand_names: list[list[str]], discriminators: dict) -> list[list[str]]:
+    """Drop a name's tail word when it IS the declared middle - a partial
+    'Given Middle' extraction must not read as given + surname."""
+    middle = discriminators.get("middle")
+    if not isinstance(middle, str):
+        return cand_names
+    middle_words = set(normalized_words(middle))
+    if not middle_words:
+        return cand_names
+    trimmed: list[list[str]] = []
+    for words in cand_names:
+        if len(words) >= 2 and words[-1] in middle_words:
+            trimmed.append(words[:-1])
+        else:
+            trimmed.append(words)
+    return trimmed
+
+
 def _candidate_middle_terms(candidate: dict, cand_names: list[list[str]]) -> list[str]:
     terms: list[str] = []
     discriminators = candidate.get("discriminators") or {}
@@ -839,6 +872,7 @@ def _spouse_axis(people_by_id: dict[str, dict], active_links: list[dict],
     words = normalized_words(spouse_value)
     if not words:
         return None, ""
+    spouse_surnames: set[str] = set()
     spouse_words: set[str] = set()
     spouse_names: list[str] = []
     for link in active_links:
@@ -857,15 +891,23 @@ def _spouse_axis(people_by_id: dict[str, dict], active_links: list[dict],
         display = row.get("display_name")
         if isinstance(display, str):
             spouse_names.append(display)
-        for value in _person_name_strings(row):
-            spouse_words.update(normalized_words(value))
+        row_surnames, row_words, _middles = _target_word_pools(row)
+        spouse_surnames.update(row_surnames)
+        spouse_words.update(row_words)
     if not spouse_words:
         return None, ""
     surname = words[-1]
-    if len(surname) >= 3:
-        for target_word in sorted(spouse_words):
-            if _word_compatible(surname, target_word):
-                return "support", f"spouse {spouse_value!r} matches a documented spouse"
+    surname_ok = any(_word_compatible(surname, target_word)
+                     for target_word in sorted(spouse_surnames))
+    given_ok = True
+    if len(words) >= 2:
+        given = words[0]
+        given_ok = any(
+            _word_compatible(given, target_word)
+            or _initial_compatible(given, target_word)
+            for target_word in sorted(spouse_words))
+    if surname_ok and given_ok:
+        return "support", f"spouse {spouse_value!r} matches a documented spouse"
     return "mismatch", (
         f"spouse {spouse_value!r} matches no documented spouse "
         f"({', '.join(sorted(spouse_names))})")
@@ -977,16 +1019,17 @@ def _parent_of_chronology(child_vital: dict, candidate: dict, role: str,
             if gap > 1 + pad:
                 impossible.append(
                     f"candidate died {death}, {gap} years before the child's birth")
-            elif gap == 1:
+            elif gap == 1 or (pad == 1 and gap == 2):
                 strained.append(
-                    f"candidate died {death}, the year before the child's birth")
+                    f"candidate died {death}, just before the child's birth")
     return _chronology_entry(impossible, strained, compatible, evaluated)
 
 
 def _negative_memory(root: Path, people_by_id: dict[str, dict], all_links: list[dict],
-                     gaps: list[dict], claim_type: str, target_id: str | None,
-                     child_id: str | None, role: str | None, candidate: dict,
-                     cand_names: list[list[str]]) -> list[dict]:
+                     gaps: list[dict], vital_map: dict[str, dict], claim_type: str,
+                     target_id: str | None, child_id: str | None, role: str | None,
+                     candidate: dict, cand_names: list[list[str]],
+                     tombstone_anchors: list[str], occupants: list[dict]) -> list[dict]:
     entries: list[dict] = []
     focus_ids = {value for value in (target_id, child_id) if value}
     for row in _evidence_rows(root):
@@ -1011,11 +1054,21 @@ def _negative_memory(root: Path, people_by_id: dict[str, dict], all_links: list[
             row = people_by_id.get(link.get("person_a", ""))
             refutes = False
             if row:
-                surnames, all_words, _middles = _target_word_pools(row)
-                refutes = _name_core_compatible(cand_names, surnames, all_words)
+                refutes = _full_name_match(cand_names, row)
+                birth = candidate.get("birth_year")
+                row_birth = vital_map.get(
+                    link.get("person_a", ""), {}).get("birth_year")
+                if refutes and isinstance(birth, int) and isinstance(row_birth, int):
+                    refutes = abs(birth - row_birth) <= 1
             entries.append({"kind": "rejected_relationship", "ref": _link_id(link),
                             "refutes": refutes,
                             "note": str(link.get("provenance_note") or "")})
+        for link in occupants:
+            entries.append({
+                "kind": "occupied_slot", "ref": _link_id(link), "refutes": False,
+                "note": (f"{link.get('person_a')} already holds the accepted "
+                         f"{role} slot; a second accepted parent would be a "
+                         "violation")})
     for gap in gaps:
         if gap.get("status", "open") != "resolved":
             continue
@@ -1023,14 +1076,14 @@ def _negative_memory(root: Path, people_by_id: dict[str, dict], all_links: list[
             entries.append({"kind": "resolved_gap", "ref": str(gap.get("id") or ""),
                             "refutes": False,
                             "note": str(gap.get("resolution_note") or "")})
-    if claim_type == "same_person":
+    if tombstone_anchors:
         birth = candidate.get("birth_year")
         candidate_tokens = _place_tokens(
             [place for place in (candidate.get("places") or [])
              if isinstance(place, str)])
         for feature in _exclusion_targets(root):
             props = feature.get("properties", {})
-            if props.get("ancestor_person") != target_id:
+            if props.get("ancestor_person") not in tombstone_anchors:
                 continue
             start_year = _year_from_date_sort(
                 props.get("date_start") or props.get("date_sort"))
@@ -1047,7 +1100,7 @@ def _negative_memory(root: Path, people_by_id: dict[str, dict], all_links: list[
                 feature_tokens = _place_tokens(
                     [place_label] if isinstance(place_label, str) else [])
                 overlap = feature_tokens & candidate_tokens
-                needed = min(2, len(feature_tokens), len(candidate_tokens))
+                needed = min(2, len(feature_tokens))
                 refutes = (isinstance(birth, int) and start_year == birth
                            and needed > 0 and len(overlap) >= needed)
             entries.append({"kind": "exclusion_target",
@@ -1109,16 +1162,49 @@ def adjudicate(root: Path, claim: dict) -> dict:
     elif chron_support:
         supports.append(chron_support)
 
+    trimmed_names = _strip_trailing_middle(
+        cand_names, candidate.get("discriminators") or {})
+    occupants: list[dict] = []
+    matched_occupants: list[str] = []
+    if claim_type == "parent_of":
+        for link in active_links:
+            if (link.get("relationship_type") != "parent_of"
+                    or link.get("status") != "accepted"
+                    or link.get("person_b") != child_id
+                    or link.get("parent_role") != role):
+                continue
+            occupants.append(link)
+            occupant_id = link.get("person_a")
+            if not isinstance(occupant_id, str):
+                continue
+            occupant_row = people_by_id.get(occupant_id)
+            if not occupant_row:
+                continue
+            occupant_surnames, occupant_words, _o = _target_word_pools(occupant_row)
+            if _name_core_compatible(trimmed_names, occupant_surnames, occupant_words):
+                matched_occupants.append(occupant_id)
+        # A claim into an occupied slot whose name matches the occupant is an
+        # identity claim about the occupant: their vitals apply too.
+        for occupant_id in matched_occupants:
+            occupant_eval, occupant_mismatch, occupant_support = (
+                _same_person_chronology(vital_map.get(occupant_id, {}), candidate))
+            if occupant_eval:
+                evaluated.add("chronology")
+            if occupant_mismatch:
+                mismatches.append(occupant_mismatch)
+            elif occupant_support:
+                supports.append(occupant_support)
+
     surnames, all_words, middles = _target_word_pools(subject_row)
     if claim_type == "same_person":
         evaluated.add("name-core")
-        if not _name_core_compatible(cand_names, surnames, all_words):
+        if not _name_core_compatible(trimmed_names, surnames, all_words):
             mismatches.append({
                 "axis": "name-core", "kind": "mismatch",
                 "detail": "candidate name is not compatible with any recorded name"})
     elif role == "father":
         evaluated.add("name-core")
-        cand_surnames = sorted({words[-1] for words in cand_names})
+        cand_surnames = sorted({words[-1] for words in trimmed_names})
         if not any(_word_compatible(cand_surname, target_surname)
                    for cand_surname in cand_surnames
                    for target_surname in sorted(surnames)):
@@ -1161,8 +1247,13 @@ def adjudicate(root: Path, claim: dict) -> dict:
                 mismatches.append({"axis": "spouse", "kind": "mismatch",
                                    "detail": detail})
 
-    negative = _negative_memory(root, people_by_id, all_links, gaps, claim_type,
-                                target_id, child_id, role, candidate, cand_names)
+    if claim_type == "same_person":
+        tombstone_anchors = [target_id] if isinstance(target_id, str) else []
+    else:
+        tombstone_anchors = matched_occupants
+    negative = _negative_memory(root, people_by_id, all_links, gaps, vital_map,
+                                claim_type, target_id, child_id, role, candidate,
+                                cand_names, tombstone_anchors, occupants)
     refutations = [entry for entry in negative if entry["refutes"]]
     impossible = [entry for entry in mismatches if entry["kind"] == "impossible"]
     independent = len({entry["axis"] for entry in mismatches})
@@ -1185,10 +1276,14 @@ def adjudicate(root: Path, claim: dict) -> dict:
         reasons.append("one mismatch axis: " + mismatches[0]["axis"])
     elif supports:
         linking = (candidate.get("discriminators") or {}).get("linking_document")
-        if isinstance(linking, str) and linking:
+        if isinstance(linking, str) and linking and linking in _citable_ids(root):
             verdict = "strong"
             reasons.append(f"no mismatches, {len(supports)} supporting axes, "
                            f"linking document cited: {linking}")
+        elif isinstance(linking, str) and linking:
+            verdict = "plausible"
+            reasons.append(f"linking document {linking!r} does not resolve to a "
+                           "tracked evidence or source record; capped at plausible")
         else:
             verdict = "plausible"
             reasons.append(f"no mismatches with {len(supports)} supporting axes; "

@@ -463,15 +463,47 @@ with tempfile.TemporaryDirectory(prefix="family-rules-test-") as td:
     check("adjudicate middle initial support",
           any(s["axis"] == "middle" for s in out["supports"]), out["supports"])
 
-    # Strong requires a cited linking document; otherwise capped at plausible
-    out = family_rules.adjudicate(root, same_person_claim(
+    # Strong requires a cited linking document that RESOLVES in the tracked
+    # stores; an unresolvable string never promotes
+    link_root = adjudicate_root("adj-k", evidence=[
+        negative_evidence("ev.test.link", "person.t.homer")])
+    out = family_rules.adjudicate(link_root, same_person_claim(
         "person.t.marjorie", ["Marjorie Evelyn Clemans"], places=["Smith County, Kansas"]))
     check("adjudicate caps at plausible without linking document",
           out["verdict"] == "plausible", out)
-    out = family_rules.adjudicate(root, same_person_claim(
+    out = family_rules.adjudicate(link_root, same_person_claim(
         "person.t.marjorie", ["Marjorie Evelyn Clemans"], places=["Smith County, Kansas"],
         discriminators={"linking_document": "ev.test.link"}))
-    check("adjudicate linking document promotes to strong", out["verdict"] == "strong", out)
+    check("adjudicate resolvable linking document promotes to strong",
+          out["verdict"] == "strong", out)
+    out = family_rules.adjudicate(link_root, same_person_claim(
+        "person.t.marjorie", ["Marjorie Evelyn Clemans"], places=["Smith County, Kansas"],
+        discriminators={"linking_document": "ev.fake.nope"}))
+    check("adjudicate fake linking document stays plausible",
+          out["verdict"] == "plausible", out)
+    check("adjudicate fake linking document called out",
+          any("does not resolve" in reason for reason in out["reasons"]), out["reasons"])
+
+    # Spouse axis matches surname-first with a given-name check, not any-word
+    out = family_rules.adjudicate(root, same_person_claim(
+        "person.t.marjorie", ["Marjorie Clemans"], spouse="Clay Clair"))
+    check("adjudicate spouse middle-word does not support",
+          any(m["axis"] == "spouse" for m in out["mismatches"]), out)
+    out = family_rules.adjudicate(root, same_person_claim(
+        "person.t.marjorie", ["Marjorie Clemans"], spouse="Clay Mundell"))
+    check("adjudicate spouse wrong given name does not support",
+          any(m["axis"] == "spouse" for m in out["mismatches"]), out)
+    out = family_rules.adjudicate(root, same_person_claim(
+        "person.t.marjorie", ["Marjorie Clemans"], spouse="Homer"))
+    check("adjudicate spouse given-name-only supports",
+          any(s["axis"] == "spouse" for s in out["supports"]), out)
+
+    # A partial two-word name whose tail IS the middle discriminator counts once
+    out = family_rules.adjudicate(root, same_person_claim(
+        "person.t.marjorie", ["Marjorie Opal"], discriminators={"middle": "Opal"}))
+    check("adjudicate partial name counts middle once",
+          out["verdict"] == "weak"
+          and {m["axis"] for m in out["mismatches"]} == {"middle"}, out)
 
     # All-unknown with a compatible name -> weak; missing axes reported
     root = adjudicate_root("adj-p")
@@ -526,13 +558,76 @@ with tempfile.TemporaryDirectory(prefix="family-rules-test-") as td:
         places=["Kit Carson County, Colorado"]))
     check("adjudicate exclusion matches on year+place", out["verdict"] == "reject", out)
 
-    # A county-precise tombstone must not swallow a merely same-state candidate
+    # A county-precise tombstone must not swallow a merely same-state candidate,
+    # whether the state rides with a city or stands alone
     out = family_rules.adjudicate(root, same_person_claim(
         "person.t.marjorie", ["Marjorie E Clemans"], birth_year=1918,
         places=["Denver, Colorado"]))
     check("adjudicate state-only overlap does not refute",
           not any(n.get("refutes") for n in out["negative_memory"]),
           out["negative_memory"])
+    out = family_rules.adjudicate(root, same_person_claim(
+        "person.t.marjorie", ["Marjorie E Clemans"], birth_year=1918,
+        places=["Colorado"]))
+    check("adjudicate bare-state candidate does not refute",
+          not any(n.get("refutes") for n in out["negative_memory"]),
+          out["negative_memory"])
+
+    # parent_of against an OCCUPIED slot is an identity claim on the occupant:
+    # the occupant's tombstones and vitals apply
+    mother_link = plink("person.t.marjorie", "person.t.kid", "mother")
+    occupied = adjudicate_root("adj-q", extra_people=[kid, opal],
+                               extra_links=[mother_link],
+                               extra_events=[
+        event("person.t.kid", "birth", "1935", "1935-01-01"),
+        exclusion_feature("person.t.marjorie", "person.t.opal", "1914-03-01",
+                          "Liberty Mills, Indiana", "recorded exclusion")])
+    out = family_rules.adjudicate(occupied, {
+        "claim": "parent_of", "child": "person.t.kid", "role": "mother",
+        "candidate": {"names": ["Marjorie Opal Clemans"], "birth_year": 1914,
+                      "places": [], "discriminators": {}}})
+    check("adjudicate parent_of consults occupant tombstones",
+          out["verdict"] == "reject"
+          and any(n["kind"] == "exclusion_target" and n.get("refutes")
+                  for n in out["negative_memory"]), out)
+    check("adjudicate surfaces occupied slot",
+          any(n["kind"] == "occupied_slot" for n in out["negative_memory"]),
+          out["negative_memory"])
+    # Barron shape via parent_of: candidate b1922 matching the occupant's name
+    # is judged against the occupant's documented 1933 marriage -> impossible
+    out = family_rules.adjudicate(occupied, {
+        "claim": "parent_of", "child": "person.t.kid", "role": "mother",
+        "candidate": {"names": ["Marjorie Clemans"], "birth_year": 1922,
+                      "places": [], "discriminators": {}}})
+    check("adjudicate parent_of occupant chronology rejects",
+          out["verdict"] == "reject"
+          and any(m["axis"] == "chronology" and m["kind"] == "impossible"
+                  for m in out["mismatches"]), out)
+
+    # Rejected-row tombstones need year corroboration when both sides are dated
+    dated_smith_root = adjudicate_root(
+        "adj-m2", extra_people=[kid, smith],
+        extra_links=[plink("person.t.smith", "person.t.kid", "father", status="rejected")],
+        extra_events=[event("person.t.kid", "birth", "1905", "1905-01-01"),
+                      event("person.t.smith", "birth", "1880", "1880-01-01")])
+    out = family_rules.adjudicate(dated_smith_root, {
+        "claim": "parent_of", "child": "person.t.kid", "role": "father",
+        "candidate": {"names": ["John Smith"], "birth_year": 1850,
+                      "places": [], "discriminators": {}}})
+    check("adjudicate same-name different-birth is not refuted",
+          not any(n.get("refutes") for n in out["negative_memory"]),
+          out["negative_memory"])
+
+    # Padded father-death gap of 2 mirrors R3: strained, never silent
+    out = family_rules.adjudicate(
+        adjudicate_root("adj-r", extra_people=[kid], extra_events=[
+            event("person.t.kid", "birth", "about 1905", "1905-01-01")]),
+        {"claim": "parent_of", "child": "person.t.kid", "role": "father",
+         "candidate": {"names": ["Robert Clemans"], "death_year": 1903,
+                       "places": [], "discriminators": {}}})
+    check("adjudicate padded father gap 2 strained",
+          any(m["axis"] == "chronology" and m["kind"] == "mismatch"
+              and "strained" in m["detail"] for m in out["mismatches"]), out)
 
     # not_found evidence surfaces as a pointer but never forces the verdict
     root = adjudicate_root("adj-o", evidence=[
