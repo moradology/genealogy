@@ -48,7 +48,8 @@ REQUIRED_FIELDS = frozenset(
         "local_assets",
     }
 )
-OPTIONAL_FIELDS = frozenset({"citation_gap", "cache_provenance"})
+OPTIONAL_FIELDS = frozenset({"citation_gap", "cache_provenance", "display"})
+DISPLAY_ENTITY_RE = re.compile(r"&#?[a-zA-Z0-9]+;")
 RECORD_TYPES = frozenset(
     {
         "census",
@@ -367,6 +368,92 @@ def _validate_acquisition(
     return None
 
 
+def _display_text(value: Any, spot: str, errors: list[str]) -> None:
+    if not isinstance(value, str) or not value:
+        errors.append(f"{spot} must be a non-empty string")
+        return
+    if "<" in value:
+        errors.append(f"{spot} must not contain raw HTML ('<')")
+    if DISPLAY_ENTITY_RE.search(value):
+        errors.append(f"{spot} must hold plain unicode, not HTML entities")
+
+
+def _validate_display_block(
+    record: dict[str, Any], where: str, errors: list[str]
+) -> None:
+    """The optional record-card display block: what the page renders when a
+    person or gap card cites this evidence. Curation stays deliberate - the
+    cross-reference rule lives in validate_repository."""
+    display = record.get("display")
+    if display is None:
+        return
+    if not isinstance(display, dict):
+        errors.append(f"{where}: display must be an object")
+        return
+    variant = display.get("variant")
+    if variant not in ("roll", "fields"):
+        errors.append(f"{where}: display.variant must be 'roll' or 'fields'")
+        return
+    body_field = "roll" if variant == "roll" else "fields"
+    expected = {"variant", "head", body_field, "cite"}
+    if set(display) != expected:
+        errors.append(
+            f"{where}: display fields must be exactly {sorted(expected)} "
+            f"for the {variant} variant"
+        )
+        return
+    _display_text(display["head"], f"{where}: display.head", errors)
+    _display_text(display["cite"], f"{where}: display.cite", errors)
+    body = display[body_field]
+    if not isinstance(body, list) or not body:
+        errors.append(f"{where}: display.{body_field} must be a non-empty list")
+        return
+    for position, entry in enumerate(body, 1):
+        spot = f"{where}: display.{body_field}[{position}]"
+        if not isinstance(entry, dict):
+            errors.append(f"{spot} must be an object")
+            continue
+        allowed = {"cells", "focal"} if variant == "roll" else {"dt", "dd", "focal"}
+        required = allowed - {"focal"}
+        if not required <= set(entry) <= allowed:
+            errors.append(
+                f"{spot} fields must be {sorted(required)} plus optional 'focal'"
+            )
+            continue
+        if "focal" in entry and not isinstance(entry["focal"], bool):
+            errors.append(f"{spot}.focal must be a boolean")
+        if variant == "roll":
+            cells = entry["cells"]
+            if (not isinstance(cells, list) or len(cells) != 3
+                    or not all(isinstance(cell, str) and cell for cell in cells)):
+                errors.append(f"{spot}.cells must be exactly three non-empty strings")
+            else:
+                for cell in cells:
+                    _display_text(cell, f"{spot} cell", errors)
+        else:
+            for key in ("dt", "dd"):
+                _display_text(entry[key], f"{spot}.{key}", errors)
+
+
+def _collect_display_card_refs(root: Path) -> list[str]:
+    """Every ev.* named by a person/gap display.record_cards list."""
+    refs: list[str] = []
+    for rel in ("research/people/people.jsonl", "research/people/relationships.jsonl"):
+        path = root / rel
+        if not path.is_file():
+            continue
+        for line in path.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            display = row.get("display") if isinstance(row, dict) else None
+            if isinstance(display, dict):
+                for ref in display.get("record_cards") or []:
+                    if isinstance(ref, str):
+                        refs.append(ref)
+    return refs
+
+
 def _validate_cache_provenance(
     record: dict[str, Any], where: str, errors: list[str]
 ) -> None:
@@ -607,6 +694,7 @@ def _validate_record(
 
     _validate_privacy(record, where, errors)
     _validate_cache_provenance(record, where, errors)
+    _validate_display_block(record, where, errors)
     pull_key = _validate_acquisition(
         record, where, root, require_local_assets, errors
     )
@@ -639,6 +727,7 @@ def validate_repository(
 
     seen_ids: dict[str, str] = {}
     seen_pulls: dict[tuple[str, str], str] = {}
+    display_ids: dict[str, str] = {}
     record_count = 0
     for path in shards:
         relative = path.relative_to(root) if path.is_relative_to(root) else path
@@ -669,6 +758,8 @@ def validate_repository(
                     )
                 else:
                     seen_ids[evidence_id] = where
+                if isinstance(record, dict) and record.get("display") is not None:
+                    display_ids[evidence_id] = where
             if pull_key is not None:
                 if pull_key in seen_pulls:
                     errors.append(
@@ -680,6 +771,29 @@ def validate_repository(
     for ref in record_card_refs:
         if ref not in seen_ids:
             errors.append(f"index.html record card references unknown evidence id {ref!r}")
+
+    # Curation rule: every evidence display block is referenced by exactly one
+    # person/gap record_cards list, and every reference has a display block.
+    display_card_refs = _collect_display_card_refs(root)
+    reference_counts: dict[str, int] = {}
+    for ref in display_card_refs:
+        reference_counts[ref] = reference_counts.get(ref, 0) + 1
+        if ref not in seen_ids:
+            errors.append(
+                f"display.record_cards references unknown evidence id {ref!r}"
+            )
+        elif ref not in display_ids:
+            errors.append(
+                f"display.record_cards references {ref!r}, which has no evidence "
+                "display block"
+            )
+    for evidence_id, where in sorted(display_ids.items()):
+        count = reference_counts.get(evidence_id, 0)
+        if count != 1:
+            errors.append(
+                f"{where}: the display block for {evidence_id!r} must be "
+                f"referenced by exactly one record_cards list (found {count})"
+            )
 
     return ValidationResult(tuple(errors), record_count, len(seen_pulls))
 

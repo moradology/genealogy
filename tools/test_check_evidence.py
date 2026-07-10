@@ -494,5 +494,122 @@ class MigratedEvidenceRegressionTests(unittest.TestCase):
         )
 
 
+def display_roll() -> dict:
+    return {
+        "variant": "roll",
+        "head": "1910 U.S. Census · Test Township",
+        "roll": [{"cells": ["Head Person", "34", "Head"]},
+                 {"cells": ["Focal Person", "5", "Daughter"], "focal": True}],
+        "cite": "ED 0001, sheet 1A · via Test",
+    }
+
+
+class EvidenceDisplayTests(unittest.TestCase):
+    """The optional evidence display block (record cards) and its curation
+    rule: a display block is referenced by exactly one record_cards list."""
+
+    def setUp(self) -> None:
+        self.fixture = EvidenceFixture()
+
+    def tearDown(self) -> None:
+        self.fixture.close()
+
+    def assert_error_contains(self, needle: str, result) -> None:
+        self.assertFalse(result.ok, result.errors)
+        self.assertTrue(
+            any(needle in error for error in result.errors),
+            f"expected {needle!r} in {result.errors!r}",
+        )
+
+    def reference_from_person(self, refs: list[str]) -> None:
+        (self.fixture.root / "research/people/people.jsonl").write_text(
+            json.dumps({"id": "person.test", "node_type": "person",
+                        "display": {"identity": "x.", "details": "y.",
+                                    "record_cards": refs}}) + "\n",
+            encoding="utf-8",
+        )
+
+    def test_referenced_roll_display_is_accepted(self) -> None:
+        record = valid_record()
+        record["display"] = display_roll()
+        self.fixture.write([record])
+        self.reference_from_person(["ev.test.record"])
+        result = self.fixture.validate()
+        self.assertTrue(result.ok, result.errors)
+
+    def test_referenced_fields_display_is_accepted(self) -> None:
+        record = valid_record()
+        record["display"] = {
+            "variant": "fields",
+            "head": "Test Divorce Index",
+            "fields": [{"dt": "Name", "dd": "Head Person"},
+                       {"dt": "Spouse", "dd": "Focal Person", "focal": True}],
+            "cite": "via Test",
+        }
+        self.fixture.write([record])
+        self.reference_from_person(["ev.test.record"])
+        result = self.fixture.validate()
+        self.assertTrue(result.ok, result.errors)
+
+    def test_unknown_display_variant_is_rejected(self) -> None:
+        record = valid_record()
+        record["display"] = {**display_roll(), "variant": "table"}
+        self.fixture.write([record])
+        self.assert_error_contains("display.variant", self.fixture.validate())
+
+    def test_display_field_set_is_exact(self) -> None:
+        record = valid_record()
+        record["display"] = {**display_roll(), "footnote": "extra"}
+        self.fixture.write([record])
+        self.assert_error_contains("display fields must be exactly",
+                                   self.fixture.validate())
+
+    def test_roll_rows_need_three_cells(self) -> None:
+        record = valid_record()
+        block = display_roll()
+        block["roll"][0]["cells"] = ["Head Person", "34"]
+        record["display"] = block
+        self.fixture.write([record])
+        self.assert_error_contains("three non-empty strings",
+                                   self.fixture.validate())
+
+    def test_entities_in_display_text_are_rejected(self) -> None:
+        record = valid_record()
+        block = display_roll()
+        block["head"] = "1910 Census &middot; Test"
+        record["display"] = block
+        self.fixture.write([record])
+        self.assert_error_contains("plain unicode", self.fixture.validate())
+
+    def test_unreferenced_display_block_is_rejected(self) -> None:
+        record = valid_record()
+        record["display"] = display_roll()
+        self.fixture.write([record])
+        self.assert_error_contains("exactly one record_cards",
+                                   self.fixture.validate())
+
+    def test_reference_without_display_block_is_rejected(self) -> None:
+        self.fixture.write([valid_record()])
+        self.reference_from_person(["ev.test.record"])
+        self.assert_error_contains("no evidence display block",
+                                   self.fixture.validate())
+
+    def test_double_reference_is_rejected(self) -> None:
+        record = valid_record()
+        record["display"] = display_roll()
+        self.fixture.write([record])
+        (self.fixture.root / "research/people/people.jsonl").write_text(
+            json.dumps({"id": "person.test", "node_type": "person",
+                        "display": {"identity": "x.", "details": "y.",
+                                    "record_cards": ["ev.test.record"]}}) + "\n"
+            + json.dumps({"id": "person.other", "node_type": "person",
+                          "display": {"identity": "x.", "details": "y.",
+                                      "record_cards": ["ev.test.record"]}}) + "\n",
+            encoding="utf-8",
+        )
+        self.assert_error_contains("exactly one record_cards",
+                                   self.fixture.validate())
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
