@@ -113,6 +113,8 @@ def usage() -> str:
         "  path <a> <b>                Shortest relationship chain between two people",
         "  contradictions [--strict]   Deterministic rule sweep over the family graph:",
         "                              chronology, hygiene, and recorded conflicts",
+        "  adjudicate                  Judge a candidate-identity claim (JSON on stdin)",
+        "                              against tracked structure and negative memory",
         "",
         "Help:  ./gen <command> --help   (ancestry forwards to the full subhelp;",
         "       try also: ./gen ancestry goto --help)",
@@ -300,6 +302,32 @@ COMMAND_HELP = {
         "",
         'JSON: {"command":"contradictions","ok":...,"clean":...,"counts":{...},"coverage":{...},"findings":[...]}',
         "Exit 0 always; --strict exits 1 iff violations exist.",
+    ]),
+    "adjudicate": "\n".join([
+        "Usage: echo '<claim json>' | ./gen adjudicate",
+        "",
+        "Judge an identity claim against tracked structure only - the agent",
+        "proposes, the encoded opinions dispose. Claim shapes:",
+        '  {"claim":"same_person","target":"person.x","candidate":{...}}',
+        '  {"claim":"parent_of","child":"person.x","role":"father|mother",',
+        '   "candidate":{...}}',
+        'candidate: {"names":["Full Name",...], "birth_year":N?, "birth_approx":bool,',
+        '  "death_year":N?, "places":["County, State",...], "spouse":"Name"?,',
+        '  "discriminators":{"middle":..., "initial":..., "linking_document":...}}',
+        "",
+        "Axes: chronology (vitals + documented marriages), name-core (with the",
+        "NAME_EQUIVALENCE variant classes), middle/initial, geo, spouse. Unknown",
+        "on either side = no mismatch and no support; the verb never over-rejects",
+        "on absence. Negative memory (not_found evidence, rejected relationship",
+        "tombstones, resolved gaps, exclusion_target features) is surfaced and a",
+        "direct match refutes without re-litigating.",
+        "",
+        "Verdicts: reject (impossible, two independent mismatch axes, or direct",
+        "refutation) / weak (one mismatch, or name-only) / plausible (clean +",
+        "supported) / strong (plausible + cited linking document - evidence, not",
+        "vibes, promotes).",
+        "",
+        'JSON: {"command":"adjudicate","ok":...,"verdict":...,"score":{...},"mismatches":[...],"supports":[...],"reasons":[...],"negative_memory":[...],"missing":[...]}',
     ]),
     "show": "\n".join([
         "Usage: ./gen show <id>",
@@ -540,6 +568,10 @@ def handler_contradictions(argv: list[str], pretty: bool) -> int:
     return handler_store("contradictions", argv, pretty)
 
 
+def handler_adjudicate(argv: list[str], pretty: bool) -> int:
+    return handler_store("adjudicate", argv, pretty)
+
+
 def dispatch(argv: list[str]) -> int:
     args, pretty = split_global_flags(argv)
     if not args or args[0] in {"--help", "-h"}:
@@ -559,6 +591,7 @@ def dispatch(argv: list[str]) -> int:
         "ancestors": handler_ancestors,
         "path": handler_path,
         "contradictions": handler_contradictions,
+        "adjudicate": handler_adjudicate,
         "show": handler_show,
         "status": handler_status,
     }

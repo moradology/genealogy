@@ -782,6 +782,17 @@ def command_contradictions(args: argparse.Namespace, root: Path) -> int:
     return stop({"command": "contradictions", "ok": code == 0, **report}, code)
 
 
+def command_adjudicate(args: argparse.Namespace, root: Path) -> int:
+    raw = sys.stdin.read()
+    if not raw.strip():
+        return stop({"command": "adjudicate", "ok": False,
+                     "errors": ["expected a claim JSON object on stdin"]}, 1)
+    report = family_rules.adjudicate(root, json.loads(raw))
+    if report.get("errors"):
+        return stop({"command": "adjudicate", "ok": False, **report}, 1)
+    return stop({"command": "adjudicate", "ok": True, **report}, 0)
+
+
 def command_show(args: argparse.Namespace, root: Path) -> int:
     kind, record, aliases = resolve_id(root, args.id)
     if kind is None or record is None:
@@ -2088,6 +2099,9 @@ def build_parser() -> argparse.ArgumentParser:
     contradictions = attach_error(sub.add_parser("contradictions", add_help=False))
     contradictions.add_argument("--strict", action="store_true")
     contradictions.set_defaults(handler=command_contradictions)
+
+    adjudicate = attach_error(sub.add_parser("adjudicate", add_help=False))
+    adjudicate.set_defaults(handler=command_adjudicate)
 
     status = attach_error(sub.add_parser("status", add_help=False))
     status.set_defaults(handler=command_status)

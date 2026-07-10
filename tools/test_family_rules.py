@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Contract tests for tools/family_rules.py (reasoning layer, phases 0-1).
+"""Contract tests for tools/family_rules.py (reasoning layer, phases 0-2).
 
 Offline, stdlib only, no pytest, no try/except. Builds tiny synthetic roots per
 scenario and calls family_rules functions directly, then smoke-tests the
@@ -86,7 +86,7 @@ def event(pid: str, etype: str, date: str, date_sort: str) -> dict:
 
 
 def make_root(tmp: Path, people: list, links_and_gaps: list, events: list,
-              cases: list | None = None) -> Path:
+              cases: list | None = None, evidence: list | None = None) -> Path:
     root = tmp / "repo"
     (root / "research" / "people").mkdir(parents=True)
     (root / "research" / "cases").mkdir(parents=True)
@@ -96,10 +96,66 @@ def make_root(tmp: Path, people: list, links_and_gaps: list, events: list,
     (root / "research" / "people" / "people.jsonl").write_text(jl(people))
     (root / "research" / "people" / "relationships.jsonl").write_text(jl(links_and_gaps))
     (root / "research" / "cases" / "cases.jsonl").write_text(jl(cases or []))
-    (root / "research" / "evidence" / "mundell.jsonl").write_text("")
+    (root / "research" / "evidence" / "mundell.jsonl").write_text(jl(evidence or []))
     (root / "ancestry_geospatial.geojson").write_text(json.dumps(
         {"type": "FeatureCollection", "features": events}))
     return root
+
+
+def slink(a: str, b: str, status: str = "accepted") -> dict:
+    return {
+        "id": f"relationship.spouse.{a.split('.')[-1]}-to-{b.split('.')[-1]}",
+        "node_type": "relationship", "relationship_type": "spouse_of",
+        "person_a": a, "person_b": b, "parent_role": None,
+        "status": status, "confidence": "documented", "branches": ["mundell"],
+        "evidence_refs": [], "source_refs": ["src.test.x"], "case_refs": [],
+        "provenance_note": "test",
+    }
+
+
+def marriage_event(pid: str, date_sort: str, participants: list) -> dict:
+    feature = event(pid, "marriage", date_sort, date_sort)
+    feature["properties"]["participants"] = participants
+    return feature
+
+
+def exclusion_feature(target_pid: str, candidate_pid: str | None,
+                      date_start: str, place_label: str, note: str) -> dict:
+    return {
+        "type": "Feature",
+        "id": f"target.test.exclusion.{date_start}",
+        "geometry": {"type": "Point", "coordinates": [0.0, 0.0]},
+        "properties": {
+            "feature_kind": "exclusion_target", "event_type": "same_name_collision",
+            "label": f"exclusion {date_start}", "anchor": "x", "line_ids": [],
+            "date_start": date_start, "date_sort": date_start,
+            "place_label": place_label, "confidence": "lead",
+            "candidate_person": candidate_pid, "ancestor_person": target_pid,
+            "exclusion_note": note, "source_refs": [],
+        },
+    }
+
+
+def negative_evidence(ev_id: str, pid: str) -> dict:
+    return {
+        "id": ev_id, "record_type": "search_log", "title": f"negative search {ev_id}",
+        "repository": "test", "citation": "test", "accessed": "2026-01-01",
+        "status": "not_found", "confidence": "medium", "supports": [], "opposes": [],
+        "person_refs": [pid], "case_refs": [],
+        "privacy_review": {"status": "passed", "reviewed": "2026-01-01",
+                           "living_people": "excluded", "sensitive_identifiers": "excluded"},
+        "acquisition": {"provider": "Ancestry", "batch": "t", "pull": "01", "local_dirs": []},
+        "source_urls": [], "transcription": "nothing found", "local_assets": [],
+    }
+
+
+def same_person_claim(target: str, names: list, **kw) -> dict:
+    candidate = {"names": names, "birth_year": kw.get("birth_year"),
+                 "birth_approx": kw.get("birth_approx", False),
+                 "death_year": kw.get("death_year"), "places": kw.get("places", []),
+                 "spouse": kw.get("spouse"),
+                 "discriminators": kw.get("discriminators", {})}
+    return {"claim": "same_person", "target": target, "candidate": candidate}
 
 
 def find(findings: list, rule: str) -> list:
@@ -314,6 +370,191 @@ with tempfile.TemporaryDirectory(prefix="family-rules-test-") as td:
     check("coverage people count", out["coverage"]["people"] == 1, out["coverage"])
     check("counts shape", set(out["counts"]) == {"violation", "conflict", "advisory"}, out["counts"])
 
+    # ============ Phase 2: adjudicate ============
+    check("NAME_EQUIVALENCE covers clemans variants",
+          any({"clemans", "clemens", "clemons", "clements"} <= s
+              for s in family_rules.NAME_EQUIVALENCE), family_rules.NAME_EQUIVALENCE)
+
+    marjorie = person("person.t.marjorie", "Marjorie Evelyn Clemans")
+    homer = person("person.t.homer", "Homer Clair Mundell")
+    adjudicate_people = [marjorie, homer]
+    adjudicate_links = [slink("person.t.marjorie", "person.t.homer")]
+    marriage = marriage_event("person.t.homer", "1933-06-19",
+                              ["person.t.homer", "person.t.marjorie"])
+
+    def adjudicate_root(name: str, extra_events: list | None = None,
+                        extra_links: list | None = None, evidence: list | None = None,
+                        extra_people: list | None = None) -> Path:
+        return make_root(tmp / name, adjudicate_people + (extra_people or []),
+                         adjudicate_links + (extra_links or []),
+                         [marriage] + (extra_events or []), evidence=evidence)
+
+    # Vitals: marriage years credit every participant, not just person_id
+    root = adjudicate_root("vp")
+    v = family_rules.vitals(root)
+    check("vitals credits marriage to participants",
+          v.get("person.t.marjorie", {}).get("marriage_years") == [1933],
+          v.get("person.t.marjorie"))
+    check("vitals credits marriage to person_id too",
+          v.get("person.t.homer", {}).get("marriage_years") == [1933],
+          v.get("person.t.homer"))
+
+    # Chronology: birth drift 10 -> impossible -> reject alone
+    root = adjudicate_root("adj-b", extra_events=[
+        event("person.t.marjorie", "birth", "1912", "1912-01-01")])
+    out = family_rules.adjudicate(root, same_person_claim(
+        "person.t.marjorie", ["Marjorie Clemans"], birth_year=1922))
+    check("adjudicate drift-10 impossible reject", out["verdict"] == "reject", out)
+    check("adjudicate impossible axis chronology",
+          any(m["axis"] == "chronology" and m["kind"] == "impossible"
+              for m in out["mismatches"]), out["mismatches"])
+
+    # The Barron shape: target birth UNKNOWN but marriage 1933 documented;
+    # candidate b1922 would be 11 at that marriage -> impossible -> reject
+    root = adjudicate_root("adj-c")
+    out = family_rules.adjudicate(root, same_person_claim(
+        "person.t.marjorie", ["Marjorie Clemans"], birth_year=1922))
+    check("adjudicate marriage-age floor reject", out["verdict"] == "reject", out)
+
+    # Drift 3 -> strained -> one mismatch -> weak, never reject alone
+    root = adjudicate_root("adj-d", extra_events=[
+        event("person.t.marjorie", "birth", "1912", "1912-01-01")])
+    out = family_rules.adjudicate(root, same_person_claim(
+        "person.t.marjorie", ["Marjorie Clemans"], birth_year=1915))
+    check("adjudicate strained drift weak", out["verdict"] == "weak", out)
+    check("adjudicate strained is one mismatch",
+          out["score"]["independent_mismatches"] == 1, out["score"])
+
+    # Approx widening: about-1912 target vs 1914 candidate -> compatible support
+    root = adjudicate_root("adj-e", extra_events=[
+        event("person.t.marjorie", "birth", "about 1912", "1912-01-01")])
+    out = family_rules.adjudicate(root, same_person_claim(
+        "person.t.marjorie", ["Marjorie Clemans"], birth_year=1914))
+    check("adjudicate approx drift-2 plausible", out["verdict"] == "plausible"
+          and any(s["axis"] == "chronology" for s in out["supports"]), out)
+
+    # NAME_EQUIVALENCE: Clemens~Clemans -> compatible -> weak, NOT reject
+    root = adjudicate_root("adj-f")
+    out = family_rules.adjudicate(root, same_person_claim(
+        "person.t.marjorie", ["Marjorie Clemens"]))
+    check("adjudicate Clemens equivalence weak not reject",
+          out["verdict"] == "weak" and out["score"]["mismatches"] == 0, out)
+
+    # Incompatible surname + wrong geography -> two independent axes -> reject
+    out = family_rules.adjudicate(root, same_person_claim(
+        "person.t.marjorie", ["Marjorie Smith"], places=["Liberty Mills, Indiana"]))
+    check("adjudicate name+geo two-axis reject", out["verdict"] == "reject"
+          and out["score"]["independent_mismatches"] >= 2, out)
+
+    # The Opal shape: middle conflict + spouse conflict -> reject
+    out = family_rules.adjudicate(root, same_person_claim(
+        "person.t.marjorie", ["Marjorie Opal Clemans"], spouse="Clay V. Stamper",
+        discriminators={"middle": "Opal"}))
+    check("adjudicate middle+spouse reject", out["verdict"] == "reject", out)
+    check("adjudicate middle and spouse axes",
+          {"middle", "spouse"} <= {m["axis"] for m in out["mismatches"]},
+          out["mismatches"])
+
+    # Middle INITIAL is compatible with the recorded middle; geo overlap supports
+    out = family_rules.adjudicate(root, same_person_claim(
+        "person.t.marjorie", ["Marjorie E Clemans"],
+        places=["Smith County, Kansas"], discriminators={"initial": "E"}))
+    check("adjudicate initial+geo plausible", out["verdict"] == "plausible", out)
+    check("adjudicate middle initial support",
+          any(s["axis"] == "middle" for s in out["supports"]), out["supports"])
+
+    # Strong requires a cited linking document; otherwise capped at plausible
+    out = family_rules.adjudicate(root, same_person_claim(
+        "person.t.marjorie", ["Marjorie Evelyn Clemans"], places=["Smith County, Kansas"]))
+    check("adjudicate caps at plausible without linking document",
+          out["verdict"] == "plausible", out)
+    out = family_rules.adjudicate(root, same_person_claim(
+        "person.t.marjorie", ["Marjorie Evelyn Clemans"], places=["Smith County, Kansas"],
+        discriminators={"linking_document": "ev.test.link"}))
+    check("adjudicate linking document promotes to strong", out["verdict"] == "strong", out)
+
+    # All-unknown with a compatible name -> weak; missing axes reported
+    root = adjudicate_root("adj-p")
+    out = family_rules.adjudicate(root, same_person_claim(
+        "person.t.marjorie", ["Marjorie Clemans"]))
+    check("adjudicate all-unknown compatible weak", out["verdict"] == "weak", out)
+    check("adjudicate missing axes listed",
+          set(out["missing"]) == {"chronology", "geo", "middle", "spouse"}, out["missing"])
+
+    # parent_of: candidate born 1900 cannot father a child born 1905
+    kid = person("person.t.kid", "Kid Clemans")
+    root = adjudicate_root("adj-l", extra_people=[kid], extra_events=[
+        event("person.t.kid", "birth", "1905", "1905-01-01")])
+    out = family_rules.adjudicate(root, {
+        "claim": "parent_of", "child": "person.t.kid", "role": "father",
+        "candidate": {"names": ["Robert Clemans"], "birth_year": 1900,
+                      "places": [], "discriminators": {}}})
+    check("adjudicate parent_of age-5 reject", out["verdict"] == "reject", out)
+
+    # parent_of: a REJECTED relationship row is a tombstone -> direct refutation
+    smith = person("person.t.smith", "John Smith")
+    root = adjudicate_root("adj-m", extra_people=[kid, smith],
+                           extra_links=[plink("person.t.smith", "person.t.kid",
+                                              "father", status="rejected")],
+                           extra_events=[event("person.t.kid", "birth", "1905", "1905-01-01")])
+    out = family_rules.adjudicate(root, {
+        "claim": "parent_of", "child": "person.t.kid", "role": "father",
+        "candidate": {"names": ["John Smith"], "birth_year": 1880,
+                      "places": [], "discriminators": {}}})
+    check("adjudicate rejected tombstone reject", out["verdict"] == "reject", out)
+    check("adjudicate tombstone pointer",
+          any(n["kind"] == "rejected_relationship" and n.get("refutes")
+              for n in out["negative_memory"]), out["negative_memory"])
+
+    # exclusion_target with candidate_person: recorded same-name collision refutes
+    opal = person("person.t.opal", "Marjorie Opal Clemans")
+    root = adjudicate_root("adj-n", extra_people=[opal], extra_events=[
+        exclusion_feature("person.t.marjorie", "person.t.opal", "1914-03-01",
+                          "Liberty Mills, Indiana", "recorded exclusion")])
+    out = family_rules.adjudicate(root, same_person_claim(
+        "person.t.marjorie", ["Marjorie Opal Clemans"], birth_year=1914))
+    check("adjudicate exclusion_target refutation", out["verdict"] == "reject"
+          and any(n["kind"] == "exclusion_target" and n.get("refutes")
+                  for n in out["negative_memory"]), out)
+
+    # exclusion_target without candidate_person: birth year + place overlap match
+    root = adjudicate_root("adj-n2", extra_events=[
+        exclusion_feature("person.t.marjorie", None, "1918-01-01",
+                          "Kit Carson County, Colorado", "too young")])
+    out = family_rules.adjudicate(root, same_person_claim(
+        "person.t.marjorie", ["Marjorie E Clemans"], birth_year=1918,
+        places=["Kit Carson County, Colorado"]))
+    check("adjudicate exclusion matches on year+place", out["verdict"] == "reject", out)
+
+    # A county-precise tombstone must not swallow a merely same-state candidate
+    out = family_rules.adjudicate(root, same_person_claim(
+        "person.t.marjorie", ["Marjorie E Clemans"], birth_year=1918,
+        places=["Denver, Colorado"]))
+    check("adjudicate state-only overlap does not refute",
+          not any(n.get("refutes") for n in out["negative_memory"]),
+          out["negative_memory"])
+
+    # not_found evidence surfaces as a pointer but never forces the verdict
+    root = adjudicate_root("adj-o", evidence=[
+        negative_evidence("ev.test.neg", "person.t.marjorie")])
+    out = family_rules.adjudicate(root, same_person_claim(
+        "person.t.marjorie", ["Marjorie Clemans"]))
+    check("adjudicate surfaces negative evidence",
+          any(n["kind"] == "evidence" for n in out["negative_memory"]),
+          out["negative_memory"])
+    check("adjudicate pointer does not force reject", out["verdict"] == "weak", out)
+
+    # Malformed claims error instead of guessing
+    out = family_rules.adjudicate(root, same_person_claim("person.t.nobody", ["X Y"]))
+    check("adjudicate unknown target errors", bool(out.get("errors")), out)
+
+    # Determinism
+    claim = same_person_claim("person.t.marjorie", ["Marjorie Opal Clemans"],
+                              spouse="Clay V. Stamper", discriminators={"middle": "Opal"})
+    a = json.dumps(family_rules.adjudicate(root, claim))
+    b = json.dumps(family_rules.adjudicate(root, claim))
+    check("adjudicate deterministic", a == b)
+
     # ============ CLI smoke: ./gen contradictions envelope ============
     repo = Path(__file__).resolve().parent.parent
 
@@ -346,9 +587,26 @@ with tempfile.TemporaryDirectory(prefix="family-rules-test-") as td:
     payload = json.loads(r.stdout)
     check("cli clean envelope", payload["ok"] is True and payload["clean"] is True, payload)
 
+    # ============ CLI smoke: ./gen adjudicate envelope ============
+    adj_cli_root = adjudicate_root("cli-adj")
+    env = {**os.environ, "GEN_STORE_ROOT": str(adj_cli_root)}
+    claim_json = json.dumps(same_person_claim(
+        "person.t.marjorie", ["Marjorie Opal Clemans"], spouse="Clay V. Stamper",
+        discriminators={"middle": "Opal"}))
+    r = subprocess.run([sys.executable, "tools/gen_store.py", "adjudicate"],
+                       cwd=repo, capture_output=True, text=True, env=env, input=claim_json)
+    check("cli adjudicate exit 0", r.returncode == 0, r.stdout + r.stderr)
+    payload = json.loads(r.stdout)
+    check("cli adjudicate envelope", payload["command"] == "adjudicate"
+          and payload["ok"] is True and payload["verdict"] == "reject", payload)
+    r = subprocess.run([sys.executable, "tools/gen_store.py", "adjudicate"],
+                       cwd=repo, capture_output=True, text=True, env=env,
+                       input=json.dumps({"claim": "same_person"}))
+    check("cli adjudicate malformed claim exits 1", r.returncode == 1, r.stdout + r.stderr)
+
 if failures:
     print("FAMILY RULES TEST FAILURES:")
     for f in failures:
         print("  -", f)
     sys.exit(1)
-print("family_rules (phases 0-1): all contract checks passed")
+print("family_rules (phases 0-2): all contract checks passed")
