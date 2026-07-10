@@ -115,6 +115,8 @@ def usage() -> str:
         "                              chronology, hygiene, and recorded conflicts",
         "  adjudicate                  Judge a candidate-identity claim (JSON on stdin)",
         "                              against tracked structure and negative memory",
+        "  frontier [--top N]          Rank the open research edge: gaps, weak links,",
+        "                              undated ancestors - online and offline channels",
         "",
         "Help:  ./gen <command> --help   (ancestry forwards to the full subhelp;",
         "       try also: ./gen ancestry goto --help)",
@@ -328,6 +330,23 @@ COMMAND_HELP = {
         "vibes, promotes).",
         "",
         'JSON: {"command":"adjudicate","ok":...,"verdict":...,"score":{...},"mismatches":[...],"supports":[...],"reasons":[...],"negative_memory":[...],"missing":[...]}',
+    ]),
+    "frontier": "\n".join([
+        "Usage: ./gen frontier [--top N]",
+        "",
+        "Deterministic ranking of the open research edge. Items are open gaps",
+        "(by gap_type), weak lead/open parent links, and undated direct-line",
+        "ancestors. score = value + tractability - penalty, all integers:",
+        "value from pedigree depth (40 - 6*floor(log2(position)), floor 6) plus",
+        "kind weight plus open-case bonus; tractability from dated subjects,",
+        "accepted spouses, known places, and the static RECORD_COVERAGE table;",
+        "penalty -10 per recorded not_found/search_log evidence touching the",
+        "subjects, capped at -20. Items whose only matching coverage is offline",
+        "(or whose online coverage is exhausted at the penalty cap) land in the",
+        "offline[] channel - the two channels never interleave. Start research",
+        "sessions here; each item carries why[] and a suggested next record.",
+        "",
+        'JSON: {"command":"frontier","ok":...,"online":[{target,kind,score,value,tractability,penalty,why,suggested_next_record,...}],"offline":[...]}',
     ]),
     "show": "\n".join([
         "Usage: ./gen show <id>",
@@ -572,6 +591,10 @@ def handler_adjudicate(argv: list[str], pretty: bool) -> int:
     return handler_store("adjudicate", argv, pretty)
 
 
+def handler_frontier(argv: list[str], pretty: bool) -> int:
+    return handler_store("frontier", argv, pretty)
+
+
 def dispatch(argv: list[str]) -> int:
     args, pretty = split_global_flags(argv)
     if not args or args[0] in {"--help", "-h"}:
@@ -592,6 +615,7 @@ def dispatch(argv: list[str]) -> int:
         "path": handler_path,
         "contradictions": handler_contradictions,
         "adjudicate": handler_adjudicate,
+        "frontier": handler_frontier,
         "show": handler_show,
         "status": handler_status,
     }

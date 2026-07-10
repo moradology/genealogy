@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Contract tests for tools/family_rules.py (reasoning layer, phases 0-2).
+"""Contract tests for tools/family_rules.py (reasoning layer, phases 0-3).
 
 Offline, stdlib only, no pytest, no try/except. Builds tiny synthetic roots per
 scenario and calls family_rules functions directly, then smoke-tests the
@@ -51,26 +51,29 @@ def plink(parent: str, child: str, role: str, status: str = "accepted",
     }
 
 
-def gap_row(gid: str, subjects: list, cases: list, status: str = "open") -> dict:
+def gap_row(gid: str, subjects: list, cases: list, status: str = "open",
+            gap_type: str = "parentage", pedigree: dict | None = None) -> dict:
     return {
-        "id": gid, "node_type": "gap", "gap_type": "parentage", "label": gid,
+        "id": gid, "node_type": "gap", "gap_type": gap_type, "label": gid,
         "subject_persons": subjects, "candidate_persons": [], "open_roles": ["parents"],
         "branches": ["mundell"], "case_refs": cases, "evidence_refs": [],
         "source_refs": [], "public_anchor": gid, "status": status,
         "resolution_note": None, "resolved_on": None, "owner_follow_up_required": False,
-        "pedigree": {"Z": [], "M": [6, 7], "D": [], "C": []},
+        "pedigree": pedigree if pedigree is not None
+        else {"Z": [], "M": [6, 7], "D": [], "C": []},
     }
 
 
-def case_row(cid: str, status: str = "open") -> dict:
+def case_row(cid: str, status: str = "open", persons: list | None = None) -> dict:
     return {
         "id": cid, "node_type": "case", "branch": "mundell", "title": cid,
         "status": status, "summary": "Q: test.", "source_note": "test",
-        "person_refs": ["person.a"], "evidence_refs": [], "trace_refs": [],
+        "person_refs": persons or ["person.a"], "evidence_refs": [], "trace_refs": [],
     }
 
 
-def event(pid: str, etype: str, date: str, date_sort: str) -> dict:
+def event(pid: str, etype: str, date: str, date_sort: str,
+          place: str = "Martin, Smith, Kansas") -> dict:
     return {
         "type": "Feature",
         "id": f"event.{pid.split('.')[-1]}.{etype}.{date_sort}",
@@ -79,7 +82,7 @@ def event(pid: str, etype: str, date: str, date_sort: str) -> dict:
             "feature_kind": "life_event", "event_type": etype, "person_id": pid,
             "person_name": pid, "anchor": "x", "line_ids": [], "generation": 1,
             "date": date, "date_sort": date_sort, "place_id": "place.test",
-            "place_label": "Martin, Smith, Kansas", "confidence": "strong",
+            "place_label": place, "confidence": "strong",
             "source_refs": [],
         },
     }
@@ -650,6 +653,139 @@ with tempfile.TemporaryDirectory(prefix="family-rules-test-") as td:
     b = json.dumps(family_rules.adjudicate(root, claim))
     check("adjudicate deterministic", a == b)
 
+    # ============ Phase 3: frontier ============
+    def ped(pos: list) -> dict:
+        return {"Z": [], "M": pos, "D": [], "C": []}
+
+    # Depth: pedigree position 2 outranks position 20; value formula pinned
+    root = make_root(tmp / "fr-depth",
+                     [person("person.fa", "Frank Alpha"), person("person.fb", "Frank Beta")],
+                     [gap_row("gap.a.parents", ["person.fa"], [], pedigree=ped([2, 3])),
+                      gap_row("gap.b.parents", ["person.fb"], [], pedigree=ped([20, 21]))],
+                     [])
+    out = family_rules.frontier(root)
+    check("frontier envelope channels", set(out) >= {"online", "offline"}, sorted(out))
+    ids = [item["target"] for item in out["online"]]
+    check("frontier depth-2 outranks depth-20",
+          ids.index("gap.a.parents") < ids.index("gap.b.parents"), ids)
+    fa = [i for i in out["online"] if i["target"] == "gap.a.parents"][0]
+    fb = [i for i in out["online"] if i["target"] == "gap.b.parents"][0]
+    check("frontier depth value formula",
+          fa["value"] - fb["value"] == (40 - 6 * 1) - (40 - 6 * 4),
+          (fa["value"], fb["value"]))
+    check("frontier item shape",
+          set(fa) >= {"target", "kind", "subjects", "score", "value", "tractability",
+                      "penalty", "why", "suggested_next_record", "case_refs"}, sorted(fa))
+    check("frontier score arithmetic",
+          fa["score"] == fa["value"] + fa["tractability"] - fa["penalty"], fa)
+
+    # Tractability: dated + county-anchored subject outranks unanchored at equal depth
+    root = make_root(tmp / "fr-anchor",
+                     [person("person.da", "Dora Dated"), person("person.ua", "Una Undated")],
+                     [gap_row("gap.da.parents", ["person.da"], [], pedigree=ped([4, 5])),
+                      gap_row("gap.ua.parents", ["person.ua"], [], pedigree=ped([4, 5]))],
+                     [event("person.da", "birth", "1880", "1880-01-01")])
+    out = family_rules.frontier(root)
+    by = {i["target"]: i for i in out["online"] + out["offline"]}
+    check("frontier dated subject adds tractability",
+          by["gap.da.parents"]["score"] > by["gap.ua.parents"]["score"], by)
+
+    # Penalty: one not_found is exactly -10; three cap at -20
+    root = make_root(tmp / "fr-pen",
+                     [person("person.p1", "Pia One"), person("person.p2", "Pia Two"),
+                      person("person.p3", "Pia Three")],
+                     [gap_row("gap.p1.parents", ["person.p1"], [], pedigree=ped([4, 5])),
+                      gap_row("gap.p2.parents", ["person.p2"], [], pedigree=ped([4, 5])),
+                      gap_row("gap.p3.parents", ["person.p3"], [], pedigree=ped([4, 5]))],
+                     [],
+                     evidence=[negative_evidence("ev.t.n1", "person.p2"),
+                               negative_evidence("ev.t.n2", "person.p3"),
+                               negative_evidence("ev.t.n3", "person.p3"),
+                               negative_evidence("ev.t.n4", "person.p3")])
+    out = family_rules.frontier(root)
+    by = {i["target"]: i for i in out["online"] + out["offline"]}
+    check("frontier single not_found is -10",
+          by["gap.p1.parents"]["score"] - by["gap.p2.parents"]["score"] == 10,
+          {k: v["score"] for k, v in by.items()})
+    check("frontier penalty caps at -20",
+          by["gap.p1.parents"]["score"] - by["gap.p3.parents"]["score"] == 20,
+          {k: v["score"] for k, v in by.items()})
+
+    # Kind weights: a weak (lead/open) direct link outranks a floor-depth
+    # parentage gap; strong links never become items; undated ancestors do
+    root = make_root(tmp / "fr-kind",
+                     [person("person.k1", "Kay One"), person("person.k2", "Kay Two"),
+                      person("person.k3", "Kay Three")],
+                     [gap_row("gap.k1.parents", ["person.k1"], [], pedigree=ped([])),
+                      plink("person.k2", "person.k3", "father", confidence="lead")],
+                     [])
+    out = family_rules.frontier(root)
+    ids = [i["target"] for i in out["online"]]
+    weak = [i for i in out["online"] if i["kind"] == "weak_link"]
+    check("frontier weak link is an item", len(weak) == 1, ids)
+    check("frontier weak link outranks floor parentage gap",
+          ids.index(weak[0]["target"]) < ids.index("gap.k1.parents"), ids)
+    check("frontier undated ancestors are items",
+          any(i["kind"] == "undated_person" for i in out["online"]), ids)
+
+    # Case bonus: the sole item citing an open case gets +8; shared items +4
+    root = make_root(tmp / "fr-case",
+                     [person("person.c1", "Cee One"), person("person.c2", "Cee Two"),
+                      person("person.c3", "Cee Three")],
+                     [gap_row("gap.c1.parents", ["person.c1"], ["case.31"], pedigree=ped([4, 5])),
+                      gap_row("gap.c2.parents", ["person.c2"], ["case.32"], pedigree=ped([4, 5])),
+                      gap_row("gap.c3.parents", ["person.c3"], ["case.32"], pedigree=ped([4, 5]))],
+                     [], cases=[case_row("case.31"), case_row("case.32")])
+    out = family_rules.frontier(root)
+    by = {i["target"]: i for i in out["online"]}
+    check("frontier sole open-case item beats shared",
+          by["gap.c1.parents"]["value"] - by["gap.c2.parents"]["value"] == 4,
+          {k: v["value"] for k, v in by.items()})
+
+    # Channel: offline-only coverage lands in offline[], never interleaved
+    root = make_root(tmp / "fr-off", [person("person.g1", "Georg Alt")],
+                     [gap_row("gap.g1.parents", ["person.g1"], [], pedigree=ped([16, 17]))],
+                     [event("person.g1", "birth", "1700", "1700-01-01",
+                            place="Dorf, Bayern")])
+    out = family_rules.frontier(root)
+    check("frontier offline-only lead in offline channel",
+          any(i["target"] == "gap.g1.parents" for i in out["offline"])
+          and not any(i["target"] == "gap.g1.parents" for i in out["online"]), out)
+    georg = [i for i in out["offline"] if i["target"] == "gap.g1.parents"][0]
+    check("frontier offline suggestion names the offline class",
+          georg["suggested_next_record"]
+          and "parish" in georg["suggested_next_record"]["collection"].lower(), georg)
+
+    # Exhausted online coverage (penalty at cap) + matching offline coverage
+    # moves the item to the offline channel - the Marjorie shape
+    root = make_root(tmp / "fr-exh", [person("person.x1", "Xena Ex")],
+                     [gap_row("gap.x1.parents", ["person.x1"], [], pedigree=ped([6, 7]))],
+                     [event("person.x1", "marriage", "1933-06-19", "1933-06-19",
+                            place="Akron, Washington County, Colorado")],
+                     evidence=[negative_evidence("ev.t.x1", "person.x1"),
+                               negative_evidence("ev.t.x2", "person.x1")])
+    out = family_rules.frontier(root)
+    check("frontier exhausted online moves offline",
+          any(i["target"] == "gap.x1.parents" for i in out["offline"]), out)
+
+    # Ties break by id ascending; byte-deterministic output; resolved gaps excluded
+    root = make_root(tmp / "fr-tie",
+                     [person("person.t1", "Tie One"), person("person.t2", "Tie Two")],
+                     [gap_row("gap.zz.parents", ["person.t2"], [], pedigree=ped([4, 5])),
+                      gap_row("gap.aa.parents", ["person.t1"], [], pedigree=ped([4, 5]))],
+                     [])
+    out = family_rules.frontier(root)
+    ids = [i["target"] for i in out["online"] if i["kind"] == "parentage"]
+    check("frontier tie breaks by id", ids == ["gap.aa.parents", "gap.zz.parents"], ids)
+    check("frontier deterministic",
+          json.dumps(family_rules.frontier(root)) == json.dumps(family_rules.frontier(root)))
+    root = make_root(tmp / "fr-res", [person("person.t1", "Tie One")],
+                     [gap_row("gap.rz.parents", ["person.t1"], [], status="resolved")], [])
+    out = family_rules.frontier(root)
+    check("frontier resolved gap excluded",
+          not any(i["target"] == "gap.rz.parents"
+                  for i in out["online"] + out["offline"]), out)
+
     # ============ CLI smoke: ./gen contradictions envelope ============
     repo = Path(__file__).resolve().parent.parent
 
@@ -699,9 +835,37 @@ with tempfile.TemporaryDirectory(prefix="family-rules-test-") as td:
                        input=json.dumps({"claim": "same_person"}))
     check("cli adjudicate malformed claim exits 1", r.returncode == 1, r.stdout + r.stderr)
 
+    # ============ CLI smoke: ./gen frontier envelope ============
+    fr_root = make_root(tmp / "cli-fr", [person("person.fa", "Frank Alpha")],
+                        [gap_row("gap.a.parents", ["person.fa"], [],
+                                 pedigree=ped([2, 3]))], [])
+    env = {**os.environ, "GEN_STORE_ROOT": str(fr_root)}
+    r = subprocess.run([sys.executable, "tools/gen_store.py", "frontier", "--top", "1"],
+                       cwd=repo, capture_output=True, text=True, env=env)
+    check("cli frontier exit 0", r.returncode == 0, r.stdout + r.stderr)
+    payload = json.loads(r.stdout)
+    check("cli frontier envelope", payload["command"] == "frontier"
+          and payload["ok"] is True and len(payload["online"]) == 1, payload)
+
+    # ============ CLI smoke: case close gate refuses on violation ============
+    gate_root = make_root(tmp / "cli-gate", [person("person.f"), person("person.k")],
+                          [plink("person.f", "person.k", "father")],
+                          [event("person.f", "birth", "1900", "1900-01-01"),
+                           event("person.k", "birth", "1910", "1910-01-01")],
+                          cases=[case_row("case.90", persons=["person.f"])])
+    env = {**os.environ, "GEN_STORE_ROOT": str(gate_root)}
+    r = subprocess.run([sys.executable, "tools/gen_store.py", "case", "update",
+                        "case.90", "--status", "closed"],
+                       cwd=repo, capture_output=True, text=True, env=env)
+    check("cli case close refused on violation", r.returncode == 1,
+          r.stdout + r.stderr)
+    payload = json.loads(r.stdout)
+    check("cli case close names the violation",
+          any("parent-age" in error for error in payload.get("errors", [])), payload)
+
 if failures:
     print("FAMILY RULES TEST FAILURES:")
     for f in failures:
         print("  -", f)
     sys.exit(1)
-print("family_rules (phases 0-2): all contract checks passed")
+print("family_rules (phases 0-3): all contract checks passed")

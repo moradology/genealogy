@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Deterministic family reasoning rules, phases 0-2.
+"""Deterministic family reasoning rules, phases 0-3.
 
 Phase 0: vitals resolved from dated geojson life events.
 Phase 1: contradictions - encoded-opinion rules over the truth stores.
 Phase 2: adjudicate - candidate-identity verdicts from tracked structure only.
+Phase 3: frontier - integer-rubric ranking of the open research edge.
 """
 
 from __future__ import annotations
@@ -23,6 +24,69 @@ NAME_EQUIVALENCE = (
 )
 PLACE_STOPWORDS = {"and", "city", "co", "county", "of", "states", "the", "town",
                    "township", "twp", "united", "us", "usa"}
+RECORD_COVERAGE = (
+    {
+        "record_class": "census",
+        "years": (1850, 1950),
+        "jurisdictions": (
+            "kansas", "colorado", "missouri", "wisconsin", "oklahoma",
+            "indiana", "wyoming", "iowa", "illinois", "ohio",
+            "pennsylvania", "nebraska",
+        ),
+        "channel": "online",
+        "collection": "US federal census",
+    },
+    {
+        "record_class": "census",
+        "years": (1855, 1925),
+        "jurisdictions": ("kansas",),
+        "channel": "online",
+        "collection": "Kansas state census",
+    },
+    {
+        "record_class": "marriage",
+        "years": (1860, 2006),
+        "jurisdictions": ("colorado", "kansas"),
+        "channel": "online",
+        "collection": "Colorado and Kansas county marriage records",
+    },
+    {
+        "record_class": "death_index",
+        "years": (1936, 2007),
+        "jurisdictions": (),
+        "channel": "online",
+        "collection": "Social Security indexes",
+    },
+    {
+        "record_class": "grave_index",
+        "years": (1800, 2026),
+        "jurisdictions": (),
+        "channel": "online",
+        "collection": "Find a Grave index",
+    },
+    {
+        "record_class": "county_records",
+        "years": (1870, 1990),
+        "jurisdictions": ("colorado",),
+        "channel": "offline",
+        "collection": "Colorado county vital records and court case files",
+    },
+    {
+        "record_class": "parish",
+        "years": (1600, 1900),
+        "jurisdictions": ("bayern", "ostfriesland", "hannover", "germany"),
+        "channel": "offline",
+        "collection": "German parish registers",
+    },
+)
+FRONTIER_KIND_WEIGHTS = {
+    "weak_link": 14,
+    "parentage": 12,
+    "candidate_parentage": 10,
+    "frontier": 6,
+    "undated_person": 6,
+    "research_cluster": 4,
+}
 SAME_PERSON_AXES = ("chronology", "geo", "middle", "name-core", "spouse")
 PARENT_OF_AXES = ("chronology", "geo", "name-core")
 MARRIAGE_AGE_FLOOR = 14
@@ -849,6 +913,367 @@ def _target_place_labels(root: Path, person_id: str) -> list[str]:
         if isinstance(label, str) and label and label not in labels:
             labels.append(label)
     return labels
+
+
+def _frontier_case_refs(row: dict) -> list[str]:
+    refs = row.get("case_refs")
+    if not isinstance(refs, list):
+        return []
+    return sorted({ref for ref in refs if isinstance(ref, str) and ref})
+
+
+def _frontier_gap_subjects(gap: dict) -> list[str]:
+    subjects = gap.get("subject_persons")
+    if not isinstance(subjects, list):
+        return []
+    return [subject for subject in subjects if isinstance(subject, str) and subject]
+
+
+def _frontier_pedigree_position(gap: dict) -> int | None:
+    pedigree = gap.get("pedigree")
+    if not isinstance(pedigree, dict):
+        return None
+    positions: list[int] = []
+    for values in pedigree.values():
+        if not isinstance(values, list):
+            continue
+        for value in values:
+            if isinstance(value, int) and not isinstance(value, bool) and value > 0:
+                positions.append(value)
+    if not positions:
+        return None
+    return min(positions)
+
+
+def _frontier_depth_value(position: int | None) -> int:
+    if position is None:
+        return 6
+    return max(6, 40 - 6 * (position.bit_length() - 1))
+
+
+def _frontier_open_case_refs(case_refs: list[str], cases_by_id: dict[str, dict]) -> list[str]:
+    return [
+        ref for ref in case_refs
+        if cases_by_id.get(ref, {}).get("status") != "closed"
+    ]
+
+
+def _frontier_years(vital_map: dict[str, dict], subjects: list[str]) -> list[int]:
+    years: list[int] = []
+    for subject in subjects:
+        vital = vital_map.get(subject, {})
+        for key in ("birth_year", "death_year"):
+            value = vital.get(key)
+            if isinstance(value, int):
+                years.append(value)
+        for value in vital.get("marriage_years") or []:
+            if isinstance(value, int):
+                years.append(value)
+    return sorted(set(years))
+
+
+def _frontier_has_dated_subject(vital_map: dict[str, dict], subjects: list[str]) -> bool:
+    for subject in subjects:
+        vital = vital_map.get(subject, {})
+        if isinstance(vital.get("birth_year"), int) or isinstance(vital.get("death_year"), int):
+            return True
+    return False
+
+
+def _frontier_place_labels(features: list[dict]) -> dict[str, list[str]]:
+    labels_by_person: dict[str, list[str]] = {}
+    for feature in features:
+        props = feature.get("properties", {})
+        label = props.get("place_label")
+        if not isinstance(label, str) or not label:
+            continue
+        credited: list[str] = []
+        person_id = props.get("person_id")
+        if isinstance(person_id, str) and person_id:
+            credited.append(person_id)
+        for participant in props.get("participants") or []:
+            if isinstance(participant, str) and participant and participant not in credited:
+                credited.append(participant)
+        for person_id in credited:
+            labels = labels_by_person.setdefault(person_id, [])
+            if label not in labels:
+                labels.append(label)
+    return {
+        person_id: sorted(labels)
+        for person_id, labels in sorted(labels_by_person.items())
+    }
+
+
+def _frontier_subject_labels(
+    labels_by_person: dict[str, list[str]], subjects: list[str]
+) -> list[str]:
+    labels: list[str] = []
+    for subject in subjects:
+        for label in labels_by_person.get(subject, []):
+            if label not in labels:
+                labels.append(label)
+    return sorted(labels)
+
+
+def _frontier_has_accepted_spouse(active_links: list[dict], subjects: list[str]) -> bool:
+    subject_set = set(subjects)
+    for link in active_links:
+        if link.get("relationship_type") != "spouse_of" or link.get("status") != "accepted":
+            continue
+        if link.get("person_a") in subject_set or link.get("person_b") in subject_set:
+            return True
+    return False
+
+
+def _frontier_coverage_matches(
+    years: list[int], place_words: set[str]
+) -> list[tuple[dict, int, bool]]:
+    matches: list[tuple[dict, int, bool]] = []
+    for row in RECORD_COVERAGE:
+        start, end = row["years"]
+        era_match = any(start - 10 <= year <= end + 10 for year in years)
+        if not era_match:
+            continue
+        jurisdictions = set(row["jurisdictions"])
+        jurisdiction_match = bool(jurisdictions and jurisdictions & place_words)
+        tier = 2 if jurisdiction_match else 1
+        channel_match = not jurisdictions or jurisdiction_match
+        matches.append((row, tier, channel_match))
+    return matches
+
+
+def _frontier_best_coverage(
+    matches: list[tuple[dict, int, bool]],
+    channel: str | None = None,
+    channel_match_only: bool = False,
+) -> tuple[dict, int, bool] | None:
+    best = None
+    for match in matches:
+        row, tier, channel_match = match
+        if channel is not None and row["channel"] != channel:
+            continue
+        if channel_match_only and not channel_match:
+            continue
+        if best is None or tier > best[1]:
+            best = match
+    return best
+
+
+def _frontier_record_suggestion(
+    row: dict | None,
+    people_by_id: dict[str, dict],
+    subjects: list[str],
+    years: list[int],
+) -> dict | None:
+    if row is None or not years:
+        return None
+    first_subject = subjects[0] if subjects else ""
+    name = people_by_id.get(first_subject, {}).get("display_name")
+    if not isinstance(name, str) or not name:
+        name = first_subject
+    return {
+        "collection": row["collection"],
+        "name": name,
+        "years": f"{min(years) - 10}-{max(years) + 10}",
+    }
+
+
+def _frontier_penalty(evidence_rows: list[dict], subjects: list[str]) -> int:
+    subject_set = set(subjects)
+    count = 0
+    for row in evidence_rows:
+        refs = row.get("person_refs")
+        if not isinstance(refs, list):
+            refs = []
+        if not subject_set & {ref for ref in refs if isinstance(ref, str)}:
+            continue
+        if row.get("status") == "not_found" or row.get("record_type") == "search_log":
+            count += 1
+    return min(20, count * 10)
+
+
+def _frontier_base_items(
+    people_by_id: dict[str, dict],
+    active_links: list[dict],
+    gaps: list[dict],
+    vital_map: dict[str, dict],
+) -> list[dict]:
+    items: list[dict] = []
+    for gap in sorted(gaps, key=lambda row: str(row.get("id") or "")):
+        if gap.get("status", "open") == "resolved":
+            continue
+        target = gap.get("id")
+        if not isinstance(target, str) or not target:
+            continue
+        kind = gap.get("gap_type")
+        if not isinstance(kind, str) or not kind:
+            kind = "frontier"
+        items.append({
+            "target": target,
+            "kind": kind,
+            "subjects": _frontier_gap_subjects(gap),
+            "case_refs": _frontier_case_refs(gap),
+            "position": _frontier_pedigree_position(gap),
+        })
+    for link in sorted(active_links, key=_link_id):
+        if link.get("relationship_type") != "parent_of":
+            continue
+        if link.get("status") == "rejected":
+            continue
+        if link.get("confidence") not in {"lead", "open"}:
+            continue
+        target = _link_id(link)
+        if not target:
+            continue
+        items.append({
+            "target": target,
+            "kind": "weak_link",
+            "subjects": _person_pair(link),
+            "case_refs": _link_case_refs(link),
+            "position": None,
+        })
+    for person_id in sorted(people_by_id):
+        person = people_by_id[person_id]
+        if person.get("role") != "ancestor":
+            continue
+        vital = vital_map.get(person_id, {})
+        if isinstance(vital.get("birth_year"), int) or isinstance(vital.get("death_year"), int):
+            continue
+        items.append({
+            "target": person_id,
+            "kind": "undated_person",
+            "subjects": [person_id],
+            "case_refs": [],
+            "position": None,
+        })
+    return items
+
+
+def _frontier_case_counts(
+    items: list[dict], cases_by_id: dict[str, dict]
+) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for item in items:
+        for ref in _frontier_open_case_refs(item["case_refs"], cases_by_id):
+            counts[ref] = counts.get(ref, 0) + 1
+    return counts
+
+
+def _frontier_case_bonus(
+    item: dict, cases_by_id: dict[str, dict], case_counts: dict[str, int]
+) -> tuple[int, str]:
+    open_refs = _frontier_open_case_refs(item["case_refs"], cases_by_id)
+    if not open_refs:
+        return 0, ""
+    unique_refs = [ref for ref in open_refs if case_counts.get(ref) == 1]
+    if unique_refs:
+        return 8, f"sole open case {unique_refs[0]}: +8"
+    return 4, "open case reference: +4"
+
+
+def _frontier_scored_item(
+    base: dict,
+    people_by_id: dict[str, dict],
+    active_links: list[dict],
+    vital_map: dict[str, dict],
+    labels_by_person: dict[str, list[str]],
+    evidence_rows: list[dict],
+    cases_by_id: dict[str, dict],
+    case_counts: dict[str, int],
+) -> tuple[str, int | None, dict]:
+    subjects = base["subjects"]
+    position = base["position"]
+    depth = _frontier_depth_value(position)
+    kind_weight = FRONTIER_KIND_WEIGHTS.get(base["kind"], 0)
+    case_bonus, case_why = _frontier_case_bonus(base, cases_by_id, case_counts)
+    value = max(0, min(60, depth + kind_weight + case_bonus))
+
+    years = _frontier_years(vital_map, subjects)
+    labels = _frontier_subject_labels(labels_by_person, subjects)
+    place_words = _place_tokens(labels)
+    matches = _frontier_coverage_matches(years, place_words)
+    best_match = _frontier_best_coverage(matches)
+    coverage_bonus = 0
+    if best_match is not None:
+        coverage_bonus = 12 if best_match[1] == 2 else 6
+
+    dated_bonus = 6 if _frontier_has_dated_subject(vital_map, subjects) else 0
+    spouse_bonus = 5 if _frontier_has_accepted_spouse(active_links, subjects) else 0
+    place_bonus = 7 if labels else 0
+    tractability = max(0, min(30, dated_bonus + spouse_bonus + place_bonus + coverage_bonus))
+
+    penalty = _frontier_penalty(evidence_rows, subjects)
+    offline_match = _frontier_best_coverage(matches, "offline", True)
+    online_match = _frontier_best_coverage(matches, "online", True)
+    if offline_match is not None and (online_match is None or penalty == 20):
+        channel = "offline"
+        suggested_match = offline_match
+    else:
+        channel = "online"
+        suggested_match = online_match if online_match is not None else best_match
+    suggested_row = suggested_match[0] if suggested_match is not None else None
+
+    why: list[str] = []
+    if position is None:
+        why.append(f"pedigree position missing: +{depth}")
+    else:
+        why.append(f"pedigree position {position}: +{depth}")
+    why.append(f"kind {base['kind']}: +{kind_weight}")
+    if case_why:
+        why.append(case_why)
+    if dated_bonus:
+        why.append(f"dated subject: +{dated_bonus}")
+    if spouse_bonus:
+        why.append(f"accepted spouse: +{spouse_bonus}")
+    if place_bonus:
+        why.append(f"place label: +{place_bonus}")
+    if coverage_bonus and best_match is not None:
+        why.append(f"record coverage {best_match[0]['collection']}: +{coverage_bonus}")
+    if penalty:
+        why.append(f"prior negative searches: -{penalty}")
+
+    item = {
+        "target": base["target"],
+        "kind": base["kind"],
+        "subjects": subjects,
+        "score": value + tractability - penalty,
+        "value": value,
+        "tractability": tractability,
+        "penalty": penalty,
+        "why": why,
+        "suggested_next_record": _frontier_record_suggestion(
+            suggested_row, people_by_id, subjects, years),
+        "case_refs": base["case_refs"],
+    }
+    return channel, position, item
+
+
+def _frontier_sort_key(entry: tuple[int | None, dict]) -> tuple[int, int, int, str]:
+    position, item = entry
+    sort_position = position if position is not None else 999
+    return (-item["score"], -item["value"], sort_position, item["target"])
+
+
+def frontier(root: Path) -> dict:
+    people_by_id, active_links, _all_links, gaps = _family_core(root)
+    cases_by_id = _cases(root)
+    vital_map = vitals(root)
+    labels_by_person = _frontier_place_labels(_geo_events(root))
+    evidence_rows = _evidence_rows(root)
+    base_items = _frontier_base_items(people_by_id, active_links, gaps, vital_map)
+    case_counts = _frontier_case_counts(base_items, cases_by_id)
+
+    channels: dict[str, list[tuple[int | None, dict]]] = {"online": [], "offline": []}
+    for base in base_items:
+        channel, position, item = _frontier_scored_item(
+            base, people_by_id, active_links, vital_map, labels_by_person,
+            evidence_rows, cases_by_id, case_counts)
+        channels[channel].append((position, item))
+
+    return {
+        "online": [item for _position, item in sorted(channels["online"], key=_frontier_sort_key)],
+        "offline": [item for _position, item in sorted(channels["offline"], key=_frontier_sort_key)],
+    }
 
 
 def _geo_axis(target_labels: list[str], candidate_places: list) -> tuple[str | None, str]:

@@ -782,6 +782,16 @@ def command_contradictions(args: argparse.Namespace, root: Path) -> int:
     return stop({"command": "contradictions", "ok": code == 0, **report}, code)
 
 
+def command_frontier(args: argparse.Namespace, root: Path) -> int:
+    report = family_rules.frontier(root)
+    if args.top is not None:
+        report = {
+            "online": report["online"][:args.top],
+            "offline": report["offline"][:args.top],
+        }
+    return stop({"command": "frontier", "ok": True, **report}, 0)
+
+
 def command_adjudicate(args: argparse.Namespace, root: Path) -> int:
     raw = sys.stdin.read()
     if not raw.strip():
@@ -949,6 +959,26 @@ def command_case_update(args: argparse.Namespace, root: Path) -> int:
         if target is None:
             return stop({"command": "case.update", "ok": False,
                          "errors": [f"unknown case id {args.case_id!r}"]}, 1)
+
+        if args.status == "closed" and target.get("status") != "closed":
+            report = family_rules.contradictions(root)
+            case_people = set(target.get("person_refs") or [])
+            blocking = [
+                finding for finding in report["findings"]
+                if finding["severity"] == "violation"
+                and case_people & set(finding["persons"])
+            ]
+            if blocking:
+                return stop({
+                    "command": "case.update", "ok": False, "written": False,
+                    "errors": [
+                        f"cannot close {args.case_id}: {finding['rule']} violation "
+                        f"involving "
+                        f"{', '.join(sorted(case_people & set(finding['persons'])))}"
+                        f" - {finding['detail']}"
+                        for finding in blocking
+                    ],
+                }, 1)
 
         changed: dict[str, Any] = {}
         for name in CASE_SCALAR_FLAGS:
@@ -1965,6 +1995,8 @@ def command_status(_args: argparse.Namespace, root: Path) -> int:
         status: sum(row.get("status") == status for row in gap_rows)
         for status in ("open", "resolved")
     }
+    contradiction_counts = family_rules.contradictions(root)["counts"]
+    frontier_report = family_rules.frontier(root)
     healthy = all(validators.values())
     return stop(
         {
@@ -1979,6 +2011,14 @@ def command_status(_args: argparse.Namespace, root: Path) -> int:
             },
             "cases": cases,
             "evidence": {"total": sum(by_shard.values()), "by_shard": by_shard},
+            "contradictions": {
+                "violations": contradiction_counts["violation"],
+                "conflicts": contradiction_counts["conflict"],
+                "advisories": contradiction_counts["advisory"],
+            },
+            "frontier_top": [
+                item["target"] for item in frontier_report["online"][:3]
+            ],
             "latest_trace": latest_trace(root),
         },
         0 if healthy else 1,
@@ -2102,6 +2142,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     adjudicate = attach_error(sub.add_parser("adjudicate", add_help=False))
     adjudicate.set_defaults(handler=command_adjudicate)
+
+    frontier = attach_error(sub.add_parser("frontier", add_help=False))
+    frontier.add_argument("--top", type=int)
+    frontier.set_defaults(handler=command_frontier)
 
     status = attach_error(sub.add_parser("status", add_help=False))
     status.set_defaults(handler=command_status)

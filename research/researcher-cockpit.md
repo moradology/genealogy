@@ -90,6 +90,33 @@ Names are generated with `./gen build people-index` and checked by the gate.
 - `./gen ancestors person.ID` reports the upward graph and unresolved frontier.
   `./gen path person.A person.B` reports the shortest parent/spouse chain.
 
+### Reasoning layer
+
+- `./gen contradictions [--strict]` sweeps the family graph with the encoded
+  rules: parent ages, posthumous births, marriage ages, evidence hygiene, and
+  multiple-parent groupings. Violations are impossibilities on accepted dated
+  data; recorded conflicts and advisories never gate anything. `--strict`
+  exits 1 only on violations.
+- `echo '<claim json>' | ./gen adjudicate` judges a same_person or parent_of
+  claim across chronology, name (with the recorded variant classes), middle,
+  geography, and spouse axes, and surfaces recorded negative memory: not_found
+  search logs, rejected relationship tombstones, resolved gaps, and
+  exclusion_target features. The verdict is advisory - the envelope travels
+  with a proposal; it never blocks a write.
+- `./gen frontier [--top N]` ranks the open research edge (open gaps, weak
+  lead/open parent links, undated direct-line ancestors) with a deterministic
+  integer rubric, splitting online work from offline-only leads. Start
+  research sessions here.
+- `./gen status` includes the contradiction counts and top frontier targets.
+  `./gen case update --status closed` refuses while a violation touches the
+  case's people; demote the offending link to hypothesis or fix the data.
+
+Each reasoning verb reproduced an existing trusted conclusion before first
+use on new ones: the contradictions sweep classifies the recorded dual-Ford
+conflict without gating it, adjudicate re-derives all four Marjorie Clemans
+same-name eliminations, and frontier reproduces the Marjorie offline
+records-to-order ranking.
+
 Use each command's `--help` for its full flags and output contract. Write
 commands accept canonical IDs only; filename aliases are not a write format.
 
@@ -197,7 +224,6 @@ scripts or agent prompts must not depend on them.
 
 ### Possible truth and reasoning commands
 
-- `adjudicate`, `frontier`, and `contradictions`
 - `descendants`
 - `recall`
 
