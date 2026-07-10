@@ -18,6 +18,7 @@ from dataclasses import dataclass
 from html.parser import HTMLParser
 from pathlib import Path, PurePosixPath
 from typing import Any
+from urllib.parse import urlparse
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -47,7 +48,7 @@ REQUIRED_FIELDS = frozenset(
         "local_assets",
     }
 )
-OPTIONAL_FIELDS = frozenset({"citation_gap"})
+OPTIONAL_FIELDS = frozenset({"citation_gap", "cache_provenance"})
 RECORD_TYPES = frozenset(
     {
         "census",
@@ -70,6 +71,11 @@ CASE_ID_RE = re.compile(r"case\.\d{2}\Z")
 PULL_RE = re.compile(r"\d{2}\Z")
 SHA256_RE = re.compile(r"[0-9a-f]{64}\Z")
 URL_RE = re.compile(r"https?://\S+\Z")
+CACHE_KEY_RE = re.compile(r"record-[0-9a-f]{16}\Z")
+CACHE_RECORD_ADDRESS_RE = re.compile(r"record/(\d+)/(\d+)\Z")
+CACHE_TIMESTAMP_RE = re.compile(
+    r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z\Z"
+)
 # Avoid matching ordinary nine-digit collection/record ids. Compact digits are
 # sensitive only when explicitly labelled as a Social Security number.
 FORMATTED_SSN_RE = re.compile(r"(?<!\d)\d{3}[- ]\d{2}[- ]\d{4}(?!\d)")
@@ -361,6 +367,171 @@ def _validate_acquisition(
     return None
 
 
+def _validate_cache_provenance(
+    record: dict[str, Any], where: str, errors: list[str]
+) -> None:
+    provenance = record.get("cache_provenance")
+    if provenance is None:
+        return
+    expected = {
+        "provider",
+        "cache_key",
+        "cache_schema",
+        "cache_version",
+        "data_sha256",
+        "fetched_at",
+        "record_address",
+        "requested_url",
+        "final_url",
+        "url_gap",
+    }
+    if not isinstance(provenance, dict):
+        errors.append(f"{where}: cache_provenance must be an object")
+        return
+    if set(provenance) != expected:
+        errors.append(
+            f"{where}: cache_provenance fields must be exactly {sorted(expected)}"
+        )
+        return
+    if provenance["provider"] != "Ancestry":
+        errors.append(f"{where}: cache_provenance.provider must be 'Ancestry'")
+    key = provenance["cache_key"]
+    if not isinstance(key, str) or CACHE_KEY_RE.fullmatch(key) is None:
+        errors.append(
+            f"{where}: cache_provenance.cache_key must be a record cache key"
+        )
+    address = provenance["record_address"]
+    address_match = (
+        CACHE_RECORD_ADDRESS_RE.fullmatch(address)
+        if isinstance(address, str)
+        else None
+    )
+    if address_match is None:
+        errors.append(
+            f"{where}: cache_provenance.record_address must use record/COLL/ID"
+        )
+    elif isinstance(key, str):
+        collection, record_id = address_match.groups()
+        raw_key = f"record|collection={collection}|id={record_id}"
+        expected_key = "record-" + hashlib.sha1(raw_key.encode()).hexdigest()[:16]
+        if key != expected_key:
+            errors.append(
+                f"{where}: cache_provenance.cache_key does not match record_address"
+            )
+    if provenance["cache_schema"] != "gen.ancestry.cache":
+        errors.append(
+            f"{where}: cache_provenance.cache_schema must be 'gen.ancestry.cache'"
+        )
+    version = provenance["cache_version"]
+    if type(version) is not int or version < 1:
+        errors.append(
+            f"{where}: cache_provenance.cache_version must be a positive integer"
+        )
+    digest = provenance["data_sha256"]
+    if not isinstance(digest, str) or SHA256_RE.fullmatch(digest) is None:
+        errors.append(
+            f"{where}: cache_provenance.data_sha256 must be 64 lowercase hex digits"
+        )
+    fetched_at = provenance["fetched_at"]
+    if (
+        not isinstance(fetched_at, str)
+        or CACHE_TIMESTAMP_RE.fullmatch(fetched_at) is None
+    ):
+        errors.append(
+            f"{where}: cache_provenance.fetched_at must be a UTC timestamp"
+        )
+    parsed_urls: dict[str, Any] = {}
+    for field in ("requested_url", "final_url"):
+        url = provenance[field]
+        if url is None:
+            continue
+        if not isinstance(url, str) or URL_RE.fullmatch(url) is None:
+            errors.append(f"{where}: cache_provenance.{field} must be an HTTP URL")
+            continue
+        try:
+            parsed = urlparse(url)
+        except ValueError:
+            errors.append(
+                f"{where}: cache_provenance.{field} must be a valid URL"
+            )
+            continue
+        parsed_urls[field] = parsed
+        host = (parsed.hostname or "").lower()
+        if parsed.scheme != "https" or not (
+            host == "ancestry.com" or host.endswith(".ancestry.com")
+        ):
+            errors.append(
+                f"{where}: cache_provenance.{field} must be an Ancestry HTTPS URL"
+            )
+    requested = parsed_urls.get("requested_url")
+    final = parsed_urls.get("final_url")
+    requested_match = (
+        re.fullmatch(r"/search/collections/(\d+)/records/(\d+)/?", requested.path)
+        if requested is not None
+        else None
+    )
+    final_match = None
+    if final is not None:
+        final_match = re.fullmatch(
+            r"/search/collections/(\d+)/records/(\d+)/?", final.path
+        )
+        if final_match is None:
+            discovery = re.fullmatch(
+                r"/discoveryui-content/view/(\d+):(\d+)/?", final.path
+            )
+            if discovery is not None:
+                final_match = (discovery.group(2), discovery.group(1))
+    if requested is not None and requested_match is None:
+        errors.append(
+            f"{where}: cache_provenance.requested_url must identify one collection record"
+        )
+    requested_identity = (
+        requested_match.groups() if requested_match is not None else None
+    )
+    final_identity = (
+        final_match.groups()
+        if hasattr(final_match, "groups")
+        else final_match
+    )
+    if final is not None and final_identity is None:
+        errors.append(
+            f"{where}: cache_provenance.final_url must identify one collection record"
+        )
+    elif requested_identity is not None and final_identity is not None and final_identity != requested_identity:
+        errors.append(
+            f"{where}: cache_provenance requested/final record identities differ"
+        )
+    address_identity = address_match.groups() if address_match is not None else None
+    for field, identity in (
+        ("requested_url", requested_identity),
+        ("final_url", final_identity),
+    ):
+        if identity is not None and address_identity is not None and identity != address_identity:
+            errors.append(
+                f"{where}: cache_provenance.{field} does not match record_address"
+            )
+    url_gap = provenance["url_gap"]
+    missing_urls = [
+        field
+        for field in ("requested_url", "final_url")
+        if provenance[field] is None
+    ]
+    if missing_urls:
+        if not isinstance(url_gap, str) or not url_gap.strip():
+            errors.append(
+                f"{where}: cache_provenance.url_gap must explain missing acquisition URLs"
+            )
+    elif url_gap is not None:
+        errors.append(
+            f"{where}: cache_provenance.url_gap must be null when acquisition URLs are present"
+        )
+    acquisition = record.get("acquisition")
+    if isinstance(acquisition, dict) and acquisition.get("provider") != "Ancestry":
+        errors.append(
+            f"{where}: cache-backed evidence acquisition.provider must be 'Ancestry'"
+        )
+
+
 def _validate_record(
     record: Any,
     where: str,
@@ -425,8 +596,17 @@ def _validate_record(
     for url in urls:
         if not URL_RE.fullmatch(url):
             errors.append(f"{where}: invalid source URL {url!r}")
+    provenance = record.get("cache_provenance")
+    if isinstance(provenance, dict):
+        for field in ("requested_url", "final_url"):
+            url = provenance.get(field)
+            if isinstance(url, str) and url not in urls:
+                errors.append(
+                    f"{where}: cache_provenance.{field} must appear in source_urls"
+                )
 
     _validate_privacy(record, where, errors)
+    _validate_cache_provenance(record, where, errors)
     pull_key = _validate_acquisition(
         record, where, root, require_local_assets, errors
     )

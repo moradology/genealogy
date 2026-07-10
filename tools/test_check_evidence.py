@@ -13,6 +13,11 @@ from pathlib import Path
 from check_evidence import EXPECTED_SHARDS, ROOT, validate_repository
 
 
+def ancestry_record_cache_key(collection: str = "6742", record_id: str = "1") -> str:
+    raw = f"record|collection={collection}|id={record_id}"
+    return "record-" + hashlib.sha1(raw.encode()).hexdigest()[:16]
+
+
 def valid_record() -> dict:
     return {
         "id": "ev.test.record",
@@ -222,6 +227,169 @@ class EvidenceValidatorTests(unittest.TestCase):
         record["acquisition"]["local_dirs"] = []
         self.fixture.write([record])
         self.assertTrue(self.fixture.validate().ok)
+
+    def test_valid_record_cache_provenance_is_accepted(self) -> None:
+        record = valid_record()
+        record["acquisition"]["provider"] = "Ancestry"
+        record["source_urls"] = [
+            "https://www.ancestry.com/search/collections/6742/records/1"
+        ]
+        record["cache_provenance"] = {
+            "provider": "Ancestry",
+            "cache_key": ancestry_record_cache_key(),
+            "cache_schema": "gen.ancestry.cache",
+            "cache_version": 3,
+            "data_sha256": "1" * 64,
+            "fetched_at": "2026-07-09T20:48:33Z",
+            "record_address": "record/6742/1",
+            "requested_url": "https://www.ancestry.com/search/collections/6742/records/1",
+            "final_url": "https://www.ancestry.com/search/collections/6742/records/1",
+            "url_gap": None,
+        }
+        self.fixture.write([record])
+        self.assertTrue(self.fixture.validate().ok, self.fixture.validate().errors)
+
+    def test_cache_provenance_rejects_non_record_key(self) -> None:
+        record = valid_record()
+        record["acquisition"]["provider"] = "Ancestry"
+        record["cache_provenance"] = {
+            "provider": "Ancestry",
+            "cache_key": "search-0123456789abcdef",
+            "cache_schema": "gen.ancestry.cache",
+            "cache_version": 3,
+            "data_sha256": "1" * 64,
+            "fetched_at": "2026-07-09T20:48:33Z",
+            "record_address": "record/6742/1",
+            "requested_url": "https://www.ancestry.com/search/collections/6742/?name=Test_Person",
+            "final_url": "https://www.ancestry.com/search/collections/6742?name=Test_Person",
+            "url_gap": None,
+        }
+        self.fixture.write([record])
+        self.assert_error_contains(
+            "must be a record cache key", self.fixture.validate()
+        )
+
+    def test_cache_provenance_rejects_non_ancestry_urls(self) -> None:
+        record = valid_record()
+        record["acquisition"]["provider"] = "Ancestry"
+        record["cache_provenance"] = {
+            "provider": "Ancestry",
+            "cache_key": ancestry_record_cache_key(),
+            "cache_schema": "gen.ancestry.cache",
+            "cache_version": 3,
+            "data_sha256": "1" * 64,
+            "fetched_at": "2026-07-09T20:48:33Z",
+            "record_address": "record/6742/1",
+            "requested_url": "https://example.test/search/collections/6742/records/1",
+            "final_url": "https://example.test/search/collections/6742/records/1",
+            "url_gap": None,
+        }
+        self.fixture.write([record])
+        self.assert_error_contains(
+            "must be an Ancestry HTTPS URL", self.fixture.validate()
+        )
+
+    def test_cache_provenance_rejects_malformed_url_without_crashing(self) -> None:
+        record = valid_record()
+        record["acquisition"]["provider"] = "Ancestry"
+        malformed = "https://[bad/search/collections/6742/records/1"
+        record["source_urls"] = [malformed]
+        record["cache_provenance"] = {
+            "provider": "Ancestry",
+            "cache_key": ancestry_record_cache_key(),
+            "cache_schema": "gen.ancestry.cache",
+            "cache_version": 3,
+            "data_sha256": "1" * 64,
+            "fetched_at": "2026-07-09T20:48:33Z",
+            "record_address": "record/6742/1",
+            "requested_url": malformed,
+            "final_url": malformed,
+            "url_gap": None,
+        }
+        self.fixture.write([record])
+        self.assert_error_contains("must be a valid URL", self.fixture.validate())
+
+    def test_cache_provenance_final_url_must_be_a_source_url(self) -> None:
+        record = valid_record()
+        record["acquisition"]["provider"] = "Ancestry"
+        record["cache_provenance"] = {
+            "provider": "Ancestry",
+            "cache_key": ancestry_record_cache_key(),
+            "cache_schema": "gen.ancestry.cache",
+            "cache_version": 3,
+            "data_sha256": "1" * 64,
+            "fetched_at": "2026-07-09T20:48:33Z",
+            "record_address": "record/6742/1",
+            "requested_url": "https://www.ancestry.com/search/collections/6742/records/1",
+            "final_url": "https://www.ancestry.com/search/collections/6742/records/1",
+            "url_gap": None,
+        }
+        self.fixture.write([record])
+        self.assert_error_contains(
+            "final_url must appear in source_urls", self.fixture.validate()
+        )
+
+    def test_cache_provenance_accepts_explicit_legacy_url_gap(self) -> None:
+        record = valid_record()
+        record["acquisition"]["provider"] = "Ancestry"
+        record["source_urls"] = []
+        record["cache_provenance"] = {
+            "provider": "Ancestry",
+            "cache_key": ancestry_record_cache_key(),
+            "cache_schema": "gen.ancestry.cache",
+            "cache_version": 3,
+            "data_sha256": "1" * 64,
+            "fetched_at": "2026-07-09T20:48:33Z",
+            "record_address": "record/6742/1",
+            "requested_url": None,
+            "final_url": None,
+            "url_gap": "Legacy acquisition did not retain URLs; refresh required.",
+        }
+        self.fixture.write([record])
+        self.assertTrue(self.fixture.validate().ok, self.fixture.validate().errors)
+
+    def test_cache_provenance_rejects_missing_urls_without_gap(self) -> None:
+        record = valid_record()
+        record["acquisition"]["provider"] = "Ancestry"
+        record["source_urls"] = []
+        record["cache_provenance"] = {
+            "provider": "Ancestry",
+            "cache_key": ancestry_record_cache_key(),
+            "cache_schema": "gen.ancestry.cache",
+            "cache_version": 3,
+            "data_sha256": "1" * 64,
+            "fetched_at": "2026-07-09T20:48:33Z",
+            "record_address": "record/6742/1",
+            "requested_url": None,
+            "final_url": None,
+            "url_gap": None,
+        }
+        self.fixture.write([record])
+        self.assert_error_contains(
+            "url_gap must explain missing acquisition URLs", self.fixture.validate()
+        )
+
+    def test_cache_provenance_key_must_match_record_address(self) -> None:
+        record = valid_record()
+        record["acquisition"]["provider"] = "Ancestry"
+        url = "https://www.ancestry.com/search/collections/6742/records/1"
+        record["source_urls"] = [url]
+        record["cache_provenance"] = {
+            "provider": "Ancestry",
+            "cache_key": ancestry_record_cache_key("6742", "2"),
+            "cache_schema": "gen.ancestry.cache",
+            "cache_version": 3,
+            "data_sha256": "1" * 64,
+            "fetched_at": "2026-07-09T20:48:33Z",
+            "record_address": "record/6742/1",
+            "requested_url": url,
+            "final_url": url,
+            "url_gap": None,
+        }
+        self.fixture.write([record])
+        self.assert_error_contains(
+            "cache_key does not match record_address", self.fixture.validate()
+        )
 
     def test_present_asset_checksum_is_verified(self) -> None:
         asset = self.fixture.root / "research/pulls/test-batch/01-test/record.png"

@@ -83,6 +83,10 @@ def gap() -> dict[str, object]:
         "evidence_refs": [],
         "source_refs": [],
         "public_anchor": "gap.c.father",
+        "status": "open",
+        "resolution_note": "",
+        "resolved_on": None,
+        "owner_follow_up_required": False,
         "pedigree": {"Z": [], "M": [], "D": [], "C": [2]},
     }
 
@@ -285,6 +289,36 @@ with tempfile.TemporaryDirectory(prefix="people-projection-test-") as td:
         "unowned conflict fails",
         result.returncode != 0 and "explicit gap" in result.stderr,
         result.stderr,
+    )
+
+    # A retained rejected edge is not a live pedigree candidate.
+    write_fixture(root)
+    rows = [json.loads(line) for line in relationships_path.read_text().splitlines()]
+    retained = []
+    for row in rows:
+        if row["node_type"] == "gap":
+            continue
+        if row["id"] == "relationship.c.father_two":
+            row["status"] = "rejected"
+            row["provenance_note"] += " Rejected on 2026-07-09: fixture adjudication."
+        retained.append(row)
+    relationships_path.write_text(
+        "".join(json.dumps(row, separators=(",", ":")) + "\n" for row in retained),
+        encoding="utf-8",
+    )
+    result = run(root)
+    check("rejected candidate projection succeeds", result.returncode == 0, result.stderr)
+    retained_payload = payload((root / "index.html").read_text())
+    retained_by_id = {entry["i"]: entry for entry in retained_payload["people"]}
+    check(
+        "active candidate receives slot",
+        retained_by_id["person.c.father_one"]["ah"] == [2],
+        retained_by_id,
+    )
+    check(
+        "rejected candidate has no slot",
+        retained_by_id["person.c.father_two"]["ah"] == [],
+        retained_by_id,
     )
 
     # Even an unplaced hypothesis cycle is unsafe for graph consumers.

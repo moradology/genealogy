@@ -24,6 +24,12 @@ ALLOWED_STATUS = frozenset({"open", "in_conflict", "needs_pull", "closed"})
 ALLOWED_BRANCH = frozenset({"zimmerman", "mundell", "dible", "connelly"})
 # Docket text fields are plain unicode: never raw HTML, never pasted entities.
 ENTITY_RE = re.compile(r"&#?[a-zA-Z0-9]+;")
+TRACE_FILE_RE = re.compile(
+    r"(?P<date>\d{4}-\d{2}-\d{2})-(?P<slug>[a-z0-9]+(?:-[a-z0-9]+)*)\.md\Z"
+)
+TRACE_ID_RE = re.compile(
+    r"trace\.\d{4}-\d{2}-\d{2}\.[a-z0-9]+(?:-[a-z0-9]+)*\Z"
+)
 
 
 def read_jsonl(path: Path) -> list[dict]:
@@ -67,12 +73,32 @@ def evidence_case_index(root: Path = ROOT) -> dict[str, set[str]]:
     return index
 
 
+def canonical_trace_ids(trace_dir: Path | None = None) -> set[str]:
+    """Return trace front-matter identities, never filename aliases."""
+
+    directory = trace_dir or ROOT / "research" / "reasoning-traces"
+    trace_ids: set[str] = set()
+    for path in sorted(directory.glob("20*.md")):
+        match = TRACE_FILE_RE.fullmatch(path.name)
+        if match is None:
+            continue
+        expected = f"trace.{match.group('date')}.{match.group('slug')}"
+        id_match = re.search(
+            r"^id:\s*(trace\.[a-z0-9.-]+)\s*$",
+            path.read_text(encoding="utf-8"),
+            flags=re.MULTILINE,
+        )
+        if id_match is not None and id_match.group(1) == expected:
+            trace_ids.add(expected)
+    return trace_ids
+
+
 def core_failures(
     records: list[dict],
     gaps: list[dict],
     person_ids: set[str],
     evidence_cases: dict[str, set[str]],
-    trace_names: set[str],
+    trace_ids: set[str],
 ) -> list[str]:
     failures = []
     seen = set()
@@ -123,9 +149,13 @@ def core_failures(
             elif case_id not in evidence_cases[evidence_id]:
                 failures.append(
                     f"{case_id} evidence ref {evidence_id} does not reciprocally list the case")
-        for trace_name in record["trace_refs"]:
-            if trace_name not in trace_names:
-                failures.append(f"{case_id} missing trace {trace_name}")
+        for trace_id in record["trace_refs"]:
+            if not isinstance(trace_id, str) or TRACE_ID_RE.fullmatch(trace_id) is None:
+                failures.append(
+                    f"{case_id} trace ref must be a canonical trace id: {trace_id!r}"
+                )
+            elif trace_id not in trace_ids:
+                failures.append(f"{case_id} missing trace id {trace_id}")
 
     expected = [f"case.{number:02d}" for number in range(1, len(seen) + 1)]
     actual = [record.get("id") for record in records]
@@ -153,8 +183,7 @@ def core_failures(
 
 def main() -> int:
     records = read_jsonl(CASES)
-    trace_dir = ROOT / "research" / "reasoning-traces"
-    traces = {path.name for path in trace_dir.glob("20*.md")}
+    traces = canonical_trace_ids()
     failures = core_failures(
         records,
         canonical_gaps(),

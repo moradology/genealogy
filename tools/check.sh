@@ -16,6 +16,7 @@ uv run tools/build_docket.py --check
 uv run tools/test_build_docket.py
 uv run tools/check_evidence.py
 uv run tools/test_check_evidence.py
+uv run tools/test_gen_evidence_draft.py
 uv run tools/check_cases.py
 uv run tools/test_check_cases.py
 uv run tools/check_traces.py

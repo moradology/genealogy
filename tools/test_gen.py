@@ -55,6 +55,14 @@ for word in (
     "cached",
     "--cache-only",
     "DELETE-DURABLE-ANCESTRY-RECORDS",
+    "a miss joins the",
+    "evidence draft",
+    "case list",
+    "relationship update",
+    "gap resolve",
+    "session stats",
+    "cache migrate",
+    "--exact-name",
 ):
     check(f"help mentions {word}", word in r.stdout, r.stdout[:300])
 
@@ -71,7 +79,7 @@ check("build help is not json", not r.stdout.strip().startswith("{"), r.stdout[:
 # 1c. ancestry help forwards to the subtool's argparse (works offline, no browser)
 r = run(["ancestry", "--help"])
 check("ancestry help exit 0", r.returncode == 0, (r.stdout + r.stderr)[:300])
-for word in ("goto", "addresses:", "navigated", "human-paced"):
+for word in ("goto", "addresses:", "navigated", "human-paced", "no --cache-only preflight is needed"):
     check(f"ancestry help mentions {word}", word in r.stdout, r.stdout[:400])
 r = run(["ancestry", "goto", "--help"])
 check("goto help exit 0", r.returncode == 0, (r.stdout + r.stderr)[:300])
@@ -85,6 +93,43 @@ check(
     "--include-records" in r.stdout and "--confirm" in r.stdout,
     r.stdout[:400],
 )
+
+# 1d. Canonical store verbs are wired through the repository entry point and
+# expose plain-text help without touching any truth store.
+for command, expected in (
+    ("evidence", "evidence draft"),
+    ("case", "case list"),
+    ("relationship", "relationship update"),
+    ("gap", "gap resolve"),
+    ("ancestors", "frontier lists"),
+    ("path", "Shortest chain"),
+):
+    r = run([command, "--help"])
+    check(f"{command} help exit 0", r.returncode == 0, (r.stdout + r.stderr)[:300])
+    check(f"{command} help describes command", expected in r.stdout, r.stdout[:400])
+    check(f"{command} help is not json", not r.stdout.strip().startswith("{"), r.stdout[:80])
+
+with patch.object(gen_cli, "handler_store", return_value=0) as store_handler:
+    check(
+        "relationship wrapper returns store result",
+        gen_cli.handler_relationship(["update", "relationship.example", "--validate-only"], False) == 0,
+    )
+    store_handler.assert_called_once_with(
+        "relationship", ["update", "relationship.example", "--validate-only"], False
+    )
+with patch.object(gen_cli, "handler_store", return_value=0) as store_handler:
+    check(
+        "gap wrapper returns store result",
+        gen_cli.handler_gap(
+            ["resolve", "gap.example", "--parent", "person.example", "--role", "father"],
+            False,
+        ) == 0,
+    )
+    store_handler.assert_called_once_with(
+        "gap",
+        ["resolve", "gap.example", "--parent", "person.example", "--role", "father"],
+        False,
+    )
 
 # 2. `build <target> --check` prints exactly one JSON object whose ok mirrors
 #    the wrapped tool's exit code. Deliberately does NOT require ok==true:

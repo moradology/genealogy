@@ -9,6 +9,7 @@ open work belong in explicit gap rows, never in synthetic person rows.
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import json
 import re
 import sys
@@ -67,6 +68,10 @@ GAP_FIELDS = frozenset(
         "evidence_refs",
         "source_refs",
         "public_anchor",
+        "status",
+        "resolution_note",
+        "resolved_on",
+        "owner_follow_up_required",
         "pedigree",
     }
 )
@@ -75,10 +80,11 @@ BRANCHES = frozenset({"zimmerman", "mundell", "dible", "connelly"})
 ROLES = frozenset({"anchor", "ancestor", "collateral", "candidate"})
 CONFIDENCES = frozenset({"documented", "strong", "lead", "open"})
 RELATIONSHIP_TYPES = frozenset({"parent_of", "spouse_of"})
-RELATIONSHIP_STATUSES = frozenset({"accepted", "hypothesis"})
+RELATIONSHIP_STATUSES = frozenset({"accepted", "hypothesis", "rejected"})
 GAP_TYPES = frozenset(
     {"parentage", "frontier", "candidate_parentage", "research_cluster"}
 )
+GAP_STATUSES = frozenset({"open", "resolved"})
 OPEN_ROLES = frozenset(
     {"father", "mother", "parents", "earlier_ancestors", "origin"}
 )
@@ -461,7 +467,11 @@ def _validate_relationship(
             pair_key = (relationship_type, first, second)
         else:
             pair_key = (relationship_type, person_a, person_b)
-            if person_a in person_ids and person_b in person_ids:
+            if (
+                status != "rejected"
+                and person_a in person_ids
+                and person_b in person_ids
+            ):
                 parent_edge = (person_a, person_b)
                 if status == "accepted" and parent_role in {"father", "mother"}:
                     accepted_parent_role = (person_b, parent_role)
@@ -532,6 +542,46 @@ def _validate_gap(
     _validate_public_anchor(
         row.get("public_anchor"), GAP_ID_RE, html_ids, where, errors
     )
+    gap_status = _enum(row, "status", GAP_STATUSES, where, errors)
+    resolution_note = row.get("resolution_note")
+    if not isinstance(resolution_note, str):
+        errors.append(f"{where}: resolution_note must be a string")
+        resolution_note = ""
+    resolved_on = row.get("resolved_on")
+    if resolved_on is not None:
+        if not isinstance(resolved_on, str):
+            errors.append(f"{where}: resolved_on must be null or an ISO date")
+        else:
+            try:
+                parsed_date = dt.date.fromisoformat(resolved_on)
+            except ValueError:
+                errors.append(f"{where}: resolved_on must be null or an ISO date")
+            else:
+                if parsed_date.isoformat() != resolved_on:
+                    errors.append(f"{where}: resolved_on must use YYYY-MM-DD")
+    owner_follow_up = row.get("owner_follow_up_required")
+    if type(owner_follow_up) is not bool:
+        errors.append(f"{where}: owner_follow_up_required must be boolean")
+
+    if gap_status == "open" and resolved_on is not None:
+        errors.append(f"{where}: open gap resolved_on must be null")
+    if gap_status == "resolved":
+        if roles:
+            errors.append(f"{where}: resolved gap open_roles must be empty")
+        if row.get("candidate_persons"):
+            errors.append(f"{where}: resolved gap candidate_persons must be empty")
+        if not resolution_note.strip():
+            errors.append(f"{where}: resolved gap resolution_note must not be empty")
+        if resolved_on is None:
+            errors.append(f"{where}: resolved gap resolved_on is required")
+        if row.get("public_anchor") is not None and owner_follow_up is not True:
+            errors.append(
+                f"{where}: resolved public gap must require owner follow-up"
+            )
+    if owner_follow_up is True and not resolution_note.strip():
+        errors.append(
+            f"{where}: owner follow-up requires a non-empty resolution_note"
+        )
 
     pedigree = row.get("pedigree")
     if not isinstance(pedigree, dict):
@@ -568,6 +618,8 @@ def _validate_gap(
                     )
                 else:
                     occupied_slots[key] = gap_id or where
+        if gap_status == "resolved" and any(pedigree.get(code, []) for code in PEDIGREE_KEYS):
+            errors.append(f"{where}: resolved gap pedigree slots must be empty")
     return gap_id if gap_id and GAP_ID_RE.fullmatch(gap_id) else None
 
 

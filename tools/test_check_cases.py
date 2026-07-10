@@ -18,13 +18,13 @@ SPEC.loader.exec_module(check_cases)
 records = check_cases.read_jsonl(ROOT / "research" / "cases" / "cases.jsonl")
 gaps = check_cases.canonical_gaps()
 person_ids = check_cases.canonical_person_ids()
-trace_names = {path.name for path in (ROOT / "research" / "reasoning-traces").glob("20*.md")}
+trace_ids = check_cases.canonical_trace_ids()
 evidence_cases = check_cases.evidence_case_index()
 
 
 def failures(candidate, candidate_gaps=gaps, candidate_evidence=evidence_cases):
     return check_cases.core_failures(
-        candidate, candidate_gaps, person_ids, candidate_evidence, trace_names)
+        candidate, candidate_gaps, person_ids, candidate_evidence, trace_ids)
 
 
 problems = []
@@ -73,6 +73,16 @@ bad_ref = copy.deepcopy(records)
 bad_ref[0]["evidence_refs"] = ["ev.missing"]
 if not any("unresolved evidence ref" in failure for failure in failures(bad_ref)):
     problems.append("unresolved evidence mutation survived")
+
+legacy_trace = copy.deepcopy(records)
+legacy_trace[0]["trace_refs"] = ["2026-07-08-zodrow-death-certificates-validation.md"]
+if not any("canonical trace id" in failure for failure in failures(legacy_trace)):
+    problems.append("legacy trace filename mutation survived")
+
+missing_trace = copy.deepcopy(records)
+missing_trace[0]["trace_refs"] = ["trace.2026-07-09.does-not-exist"]
+if not any("missing trace id" in failure for failure in failures(missing_trace)):
+    problems.append("unresolved canonical trace mutation survived")
 
 missing_reciprocal = copy.deepcopy(evidence_cases)
 first_case = records[0]

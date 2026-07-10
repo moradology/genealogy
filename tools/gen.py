@@ -52,23 +52,31 @@ def usage() -> str:
         "and the durable acquisition store in research/cache/ancestry - one",
         "latest validated snapshot is kept per page/query, so revisits are free):",
         "  ancestry search --collection N --name Given_Surname",
-        "                  [--birth YEAR] [--limit K] [--fresh|--cache-only]",
-        "  ancestry record --collection N --id RECORD_ID [--fresh|--cache-only]",
-        "  ancestry household --collection N --id RECORD_ID [--fresh|--cache-only]",
+        "                  [--birth YEAR] [--place P] [--spouse Given_Surname]",
+        "                  [--birthplace P] [--exact-name] [--agent ID]",
+        "                  [--limit K] [--fresh|--cache-only]",
+        "  ancestry record --collection N --id RECORD_ID [--agent ID] [--fresh|--cache-only]",
+        "  ancestry household --collection N --id RECORD_ID [--agent ID] [--fresh|--cache-only]",
         "  ancestry goto <address> [--agent ID] [--fresh|--cache-only]",
         "  ancestry open [N] [--agent ID] [--fresh|--cache-only]",
         "  ancestry where | next | prev | back  [--agent ID]",
+        "  ancestry session stats|reset --agent ID [--confirm RESET-ANCESTRY-SESSION]",
         "  ancestry cache stats|list [--kind K]",
+        "  ancestry cache migrate [--kind K]",
         "  ancestry cache clear (--kind K|--all)",
         "                  [--include-records --confirm DELETE-DURABLE-ANCESTRY-RECORDS]",
         "",
         "  Addresses:  record/COLL/ID",
-        "              search/COLL?name=Given_Surname&birth=YEAR",
+        "              search/COLL?name=Given_Surname&birth=YEAR&place=P&",
+        "                  spouse=Given_Surname&birthplace=P&exact=true",
         "              collection/COLL",
         '  Result fields: "cached":true  = served from cache, Ancestry untouched;',
         '                 "navigated":false = logical location moved from cache',
         "                 without driving the browser tab.",
-        "  --cache-only: fail on a miss without probing Chrome or Ancestry.",
+        "  Default reads: return a valid cache hit immediately; a miss joins the",
+        "                 paced queue and fetches live after a lock-time recheck.",
+        "  --cache-only: fail on a miss without probing Chrome or Ancestry; use",
+        "                only when live access is forbidden, not as a preflight.",
         "",
         "Store commands (the canonical research truth stores; every write is",
         "validated against the repository contracts before it lands, under a",
@@ -77,6 +85,9 @@ def usage() -> str:
         "               [--validate-only]      (one evidence record as JSON on stdin;",
         "                                       privacy_review.status='passed' required;",
         "                                       acquisition.pull auto-assigned)",
+        "  evidence draft --from-cache record/COLL/ID --id ev.ID",
+        "               Build a review-required draft from one cached record;",
+        "               cache-only, with citation and immutable provenance metadata",
         "  trace new --slug S --title T [--date D] [--case-refs a,b] [--person-refs ...]",
         "            [--evidence-refs ...] [--source-refs ...] [--geo-refs ...]",
         "            [--confidence C] [--outcome S] [--next-action S]",
@@ -85,6 +96,13 @@ def usage() -> str:
         "              [--add-person-ref P] [--validate-only]",
         "                              Mutate one case; regenerates the docket",
         "                              region and restamps index.html atomically",
+        "  case list [--status S[,S]] [--branch B[,B]]",
+        "                              List canonical cases with optional filters",
+        "  relationship update <relationship.id> [mutation/ref flags] [--validate-only]",
+        "                              Validate and atomically update a family edge",
+        "  gap resolve <gap.id> --parent person.id --role father|mother",
+        "              --evidence-ref ev.id [resolution flags] [--validate-only]",
+        "                              Resolve one parent slot and regenerate projection",
         "  show <id>                   Any case/evidence/source/trace/geo/person/",
         "                              relationship/gap id ->",
         "                              the record + everything referencing it",
@@ -153,6 +171,7 @@ COMMAND_HELP = {
     ]),
     "evidence": "\n".join([
         "Usage: ./gen evidence add --shard <zimmerman|mundell|dible|connelly> [--validate-only]",
+        "       ./gen evidence draft --from-cache record/COLL/ID --id ev.ID [options]",
         "",
         "Append ONE evidence record (JSON object on stdin) to the canonical store.",
         "Safety contract: refuses without an explicit privacy attestation",
@@ -162,6 +181,13 @@ COMMAND_HELP = {
         "atomically under the store lock. --validate-only never writes.",
         "",
         'JSON: {"command":"evidence.add","ok":...,"written":bool,"id":...,"shard":...,"pull":...}',
+        "",
+        "draft reads one validated record cache entry and never probes Chrome or",
+        "Ancestry. Required: --id ev.ID. Options: --record-type TYPE, --title TITLE,",
+        "--batch BATCH, and repeatable --person-ref/--case-ref. It returns a",
+        "canonical-shaped draft with cache_provenance, pending privacy review,",
+        "review warnings, and no write. An unchanged draft is rejected by add.",
+        'JSON: {"command":"evidence.draft","ok":...,"cache":{...},"draft":{...},"requires_review":[...]}',
         "Errors carry the repository validator's messages verbatim.",
     ]),
     "trace": "\n".join([
@@ -178,7 +204,11 @@ COMMAND_HELP = {
         'JSON: {"command":"trace.new","ok":...,"path":...,"id":...}',
     ]),
     "case": "\n".join([
-        "Usage: ./gen case update <case.id> [flags]",
+        "Usage: ./gen case list [--status S[,S]] [--branch B[,B]]",
+        "       ./gen case update <case.id> [flags]",
+        "",
+        "list returns canonical case records, optionally filtered by one or more",
+        "comma-separated statuses or branches.",
         "",
         "Mutate ONE canonical case record, truth-first and atomically:",
         "  --status S            open|in_conflict|needs_pull|closed",
@@ -186,7 +216,7 @@ COMMAND_HELP = {
         "  --display-prose S     richer docket paragraph override ('' clears it)",
         "  --source-note S       the docket's source shorthand (required field)",
         "  --add-evidence-ref E  idempotent append (repeatable)",
-        "  --add-trace-ref T     idempotent append (repeatable)",
+        "  --add-trace-ref T     canonical trace.* id; idempotent append (repeatable)",
         "  --add-person-ref P    idempotent append (repeatable)",
         "  --validate-only       full semantic + render validation, no writes",
         "",
@@ -198,6 +228,43 @@ COMMAND_HELP = {
         "",
         'JSON: {"command":"case.update","ok":...,"written":...,"changed":{...},',
         '       "added":{...},"already_present":{...},"docket":...,"stamp":...}',
+    ]),
+    "relationship": "\n".join([
+        "Usage: ./gen relationship update <relationship.id> [flags]",
+        "",
+        "Atomically mutate one canonical family edge and regenerate/restamp the",
+        "people projection. Flags:",
+        "  --status accepted|hypothesis|rejected",
+        "  --confidence documented|strong|lead|open",
+        "  --provenance-note TEXT",
+        "  --add-evidence-ref ev.ID   (repeatable)",
+        "  --add-source-ref src.ID     (repeatable)",
+        "  --add-case-ref case.NN      (repeatable)",
+        "  --validate-only",
+        "A status change requires a new provenance note. References are sorted,",
+        "deduplicated, and validated before any write. Rejected edges retain",
+        "their canonical ids, refs, and prior provenance, but graph traversal",
+        "and pedigree projection ignore them.",
+        "",
+        'JSON: {"command":"relationship.update","ok":...,"written":...,"id":...,"projection":...}',
+    ]),
+    "gap": "\n".join([
+        "Usage: ./gen gap resolve <gap.id> --parent person.ID --role father|mother",
+        "         --evidence-ref ev.ID [--child person.ID] [--source-ref src.ID]",
+        "         [--reject-relationship relationship.ID] [--confidence C]",
+        "         [--provenance-note TEXT] [--validate-only]",
+        "",
+        "Resolve one role on a parentage/candidate-parentage gap. The command",
+        "creates or promotes the accepted parent edge, requires every competing",
+        "hypothesis to be rejected explicitly, narrows remaining roles/pedigree",
+        "slots, retains rejected edges as inspectable canonical records, records",
+        "durable resolution provenance, and regenerates the people projection and",
+        "stamp. An identical replay is a no-op or repairs an interrupted projection.",
+        "A fully resolved public gap remains a",
+        "canonical resolved tombstone and reports owner_follow_up_required because",
+        "person-card prose belongs to the owner.",
+        "",
+        'JSON: {"command":"gap.resolve","ok":...,"written":...,"relationship_id":...,"resolved":...,"remaining_open_roles":[...]}',
     ]),
     "ancestors": "\n".join([
         "Usage: ./gen ancestors <person.id>",
@@ -398,6 +465,25 @@ def handler_store(command: str, argv: list[str], pretty: bool) -> int:
 
 
 def handler_evidence(argv: list[str], pretty: bool) -> int:
+    if argv and argv[0] == "draft":
+        result = subprocess.run(
+            [sys.executable, "tools/gen_evidence_draft.py", *argv[1:]],
+            cwd=ROOT,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        out = (result.stdout or "").strip()
+        if not out.startswith("{"):
+            return json_error(
+                "evidence.draft",
+                "subtool produced no JSON",
+                pretty,
+                returncode=result.returncode,
+                stderr=(result.stderr or "").strip()[-800:],
+            )
+        emit(json.loads(out), pretty)
+        return result.returncode
     return handler_store("evidence", argv, pretty)
 
 
@@ -415,6 +501,14 @@ def handler_status(argv: list[str], pretty: bool) -> int:
 
 def handler_case(argv: list[str], pretty: bool) -> int:
     return handler_store("case", argv, pretty)
+
+
+def handler_relationship(argv: list[str], pretty: bool) -> int:
+    return handler_store("relationship", argv, pretty)
+
+
+def handler_gap(argv: list[str], pretty: bool) -> int:
+    return handler_store("gap", argv, pretty)
 
 
 def handler_ancestors(argv: list[str], pretty: bool) -> int:
@@ -439,6 +533,8 @@ def dispatch(argv: list[str]) -> int:
         "evidence": handler_evidence,
         "trace": handler_trace,
         "case": handler_case,
+        "relationship": handler_relationship,
+        "gap": handler_gap,
         "ancestors": handler_ancestors,
         "path": handler_path,
         "show": handler_show,

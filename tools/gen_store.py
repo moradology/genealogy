@@ -20,6 +20,7 @@ TOOLS_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(TOOLS_DIR))
 
 import build_docket  # noqa: E402
+import build_people_index  # noqa: E402
 import check_cases  # noqa: E402
 import check_evidence  # noqa: E402
 import check_family_core  # noqa: E402
@@ -40,6 +41,9 @@ KINDS = (
 )
 TRACE_SLUG_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*\Z")
 TRACE_DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}\Z")
+TRACE_ID_RE = re.compile(
+    r"trace\.\d{4}-\d{2}-\d{2}\.[a-z0-9]+(?:-[a-z0-9]+)*\Z"
+)
 
 
 def emit(payload: dict[str, Any]) -> None:
@@ -472,6 +476,36 @@ def trace_documents(root: Path) -> list[tuple[Path, dict[str, Any]]]:
     return documents
 
 
+def trace_id_index(root: Path) -> dict[str, str]:
+    """Map each canonical trace identity to its on-disk document name."""
+
+    return {
+        fields["id"]: path.name
+        for path, fields in trace_documents(root)
+        if isinstance(fields.get("id"), str)
+    }
+
+
+def canonical_trace_refs(
+    root: Path, refs: list[str]
+) -> tuple[list[str], list[str]]:
+    """Validate canonical trace ids without accepting filename aliases."""
+
+    index = trace_id_index(root)
+    resolved: list[str] = []
+    errors: list[str] = []
+    for ref in refs:
+        if not TRACE_ID_RE.fullmatch(ref):
+            errors.append(
+                f"trace ref must be a canonical trace.<date>.<slug> id: {ref!r}"
+            )
+        elif ref not in index:
+            errors.append(f"unknown trace id {ref!r}")
+        else:
+            resolved.append(ref)
+    return resolved, errors
+
+
 def people_records(root: Path) -> list[dict[str, Any]]:
     return read_jsonl(root / "research" / "people" / "people.jsonl")
 
@@ -619,7 +653,12 @@ def family_core(root: Path) -> tuple[dict[str, dict], list[dict], list[dict]]:
         if r.get("node_type") == "person"
     }
     rows = read_jsonl(root / "research" / "people" / "relationships.jsonl")
-    links = [r for r in rows if r.get("node_type") == "relationship"]
+    links = [
+        r
+        for r in rows
+        if r.get("node_type") == "relationship"
+        and r.get("status") != "rejected"
+    ]
     gaps = [r for r in rows if r.get("node_type") == "gap"]
     return people, links, gaps
 
@@ -670,7 +709,10 @@ def command_ancestors(args: argparse.Namespace, root: Path) -> int:
                     "via": link["id"],
                 })
             for gap in gaps_for(gaps, person_id):
-                if "parents" in gap["open_roles"] and gap not in frontier:
+                if (
+                    set(gap["open_roles"]) & {"father", "mother", "parents"}
+                    and gap not in frontier
+                ):
                     frontier.append(gap)
         if layer:
             generations.append(layer)
@@ -763,8 +805,9 @@ def validate_case_records(root: Path, records: list[dict[str, Any]]) -> tuple[bo
     """Semantic validation of a CANDIDATE case list against the real repo
     context — the docket byte contract is guaranteed separately, by rendering
     through the same build_docket.render path the gate checks."""
-    trace_dir = root / "research" / "reasoning-traces"
-    trace_names = {path.name for path in trace_dir.glob("20*.md")}
+    trace_ids = check_cases.canonical_trace_ids(
+        root / "research" / "reasoning-traces"
+    )
     failures = check_cases.core_failures(
         records,
         check_cases.canonical_gaps(
@@ -774,7 +817,7 @@ def validate_case_records(root: Path, records: list[dict[str, Any]]) -> tuple[bo
             root / "research" / "people" / "people.jsonl"
         ),
         check_cases.evidence_case_index(root),
-        trace_names,
+        trace_ids,
     )
     frames_root = root / "research" / "search-frames"
     for path in sorted((frames_root / "uncased").glob("*.md")):
@@ -796,6 +839,46 @@ def validate_cases(root: Path) -> tuple[bool, list[str]]:
 
 CASE_SCALAR_FLAGS = ("status", "summary", "display_prose", "source_note")
 CASE_ADD_FLAGS = ("evidence_refs", "trace_refs", "person_refs")
+CASE_STATUSES = ("open", "in_conflict", "needs_pull", "closed")
+CASE_BRANCHES = SHARDS
+
+
+def csv_filter_values(raw: str | None) -> list[str]:
+    if raw is None:
+        return []
+    return sorted(set(part.strip() for part in raw.split(",") if part.strip()))
+
+
+def command_case_list(args: argparse.Namespace, root: Path) -> int:
+    statuses = csv_filter_values(args.status)
+    branches = csv_filter_values(args.branch)
+    errors: list[str] = []
+    unknown_statuses = sorted(set(statuses) - set(CASE_STATUSES))
+    unknown_branches = sorted(set(branches) - set(CASE_BRANCHES))
+    if unknown_statuses:
+        errors.append(f"unknown case statuses: {unknown_statuses}")
+    if unknown_branches:
+        errors.append(f"unknown case branches: {unknown_branches}")
+    if errors:
+        return stop({"command": "case.list", "ok": False, "errors": errors}, 1)
+
+    records = read_jsonl(root / "research" / "cases" / "cases.jsonl")
+    selected = [
+        dict(record)
+        for record in records
+        if (not statuses or record.get("status") in statuses)
+        and (not branches or record.get("branch") in branches)
+    ]
+    return stop(
+        {
+            "command": "case.list",
+            "ok": True,
+            "filters": {"status": statuses, "branch": branches},
+            "count": len(selected),
+            "cases": selected,
+        },
+        0,
+    )
 
 
 def render_docket_html(root: Path, records: list[dict[str, Any]]) -> tuple[str, str]:
@@ -811,10 +894,12 @@ def render_docket_html(root: Path, records: list[dict[str, Any]]) -> tuple[str, 
 
 def command_case_update(args: argparse.Namespace, root: Path) -> int:
     mutations = [name for name in CASE_SCALAR_FLAGS if getattr(args, name) is not None]
-    additions = {name: getattr(args, f"add_{name[:-1]}") or [] for name in CASE_ADD_FLAGS}
-    if not mutations and not any(additions.values()):
+    requested_additions = {
+        name: getattr(args, f"add_{name[:-1]}") or [] for name in CASE_ADD_FLAGS
+    }
+    if not mutations and not any(requested_additions.values()):
         return stop({"command": "case.update", "ok": False, "errors": ["nothing to update"]}, 1)
-    if args.status is not None and args.status not in ("open", "in_conflict", "needs_pull", "closed"):
+    if args.status is not None and args.status not in CASE_STATUSES:
         return stop({"command": "case.update", "ok": False,
                      "errors": [f"invalid status {args.status!r}"]}, 1)
     if args.source_note == "":
@@ -824,6 +909,22 @@ def command_case_update(args: argparse.Namespace, root: Path) -> int:
     cases_path = root / "research" / "cases" / "cases.jsonl"
     with open(store_lock_path(root), "w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
+
+        trace_refs, trace_errors = canonical_trace_refs(
+            root, requested_additions["trace_refs"]
+        )
+        if trace_errors:
+            return stop(
+                {
+                    "command": "case.update",
+                    "ok": False,
+                    "written": False,
+                    "errors": trace_errors,
+                },
+                1,
+            )
+        additions = dict(requested_additions)
+        additions["trace_refs"] = trace_refs
 
         records = read_jsonl(cases_path)
         target = next((r for r in records if r.get("id") == args.case_id), None)
@@ -875,7 +976,8 @@ def command_case_update(args: argparse.Namespace, root: Path) -> int:
         if args.validate_only:
             return stop({"command": "case.update", "ok": True, "written": False,
                          "validate_only": True, "id": args.case_id,
-                         "changed": changed, "added": added, "already_present": already}, 0)
+                         "changed": changed, "added": added,
+                         "already_present": already}, 0)
 
         if not noop:
             atomic_replace(cases_path, candidate)
@@ -886,6 +988,923 @@ def command_case_update(args: argparse.Namespace, root: Path) -> int:
             "repaired": "docket" if noop else None,
             "docket": "regenerated", "stamp": stamp_value,
         }, 0)
+
+
+def relationships_path(root: Path) -> Path:
+    return root / "research" / "people" / "relationships.jsonl"
+
+
+def family_candidate_bytes(records: list[dict[str, Any]]) -> bytes:
+    return "".join(compact_json(record) + "\n" for record in records).encode(
+        "utf-8"
+    )
+
+
+def validate_candidate_family(root: Path, candidate: bytes):
+    """Validate would-be family rows without exposing partial real state."""
+
+    with tempfile.TemporaryDirectory(prefix="gen-family-validate-") as td:
+        candidate_path = Path(td) / "relationships.jsonl"
+        candidate_path.write_bytes(candidate)
+        return check_family_core.validate_repository(
+            root=root, relationships_path=candidate_path
+        )
+
+
+def render_candidate_family_html(
+    root: Path, candidate: bytes
+) -> tuple[str, str, int]:
+    """Render and stamp the family projection from candidate relationships.
+
+    ``build_people_index`` deliberately reads a root-shaped tree.  A minimal
+    temporary root lets it enforce its complete projection contract before
+    either the canonical JSONL or ``index.html`` is changed.
+    """
+
+    with tempfile.TemporaryDirectory(prefix="gen-family-render-") as td:
+        candidate_root = Path(td)
+        people_dir = candidate_root / "research" / "people"
+        people_dir.mkdir(parents=True)
+        (people_dir / "people.jsonl").write_bytes(
+            (root / "research" / "people" / "people.jsonl").read_bytes()
+        )
+        (people_dir / "relationships.jsonl").write_bytes(candidate)
+        (candidate_root / "index.html").write_bytes(
+            (root / "index.html").read_bytes()
+        )
+        _original, rendered, payload = build_people_index.build(candidate_root)
+    stamped, stamp_value = stamp_tool.stamped_html(rendered)
+    return stamped, stamp_value, len(payload["people"])
+
+
+RELATIONSHIP_SCALAR_FLAGS = ("status", "confidence", "provenance_note")
+RELATIONSHIP_ADD_FLAGS = ("evidence_refs", "source_refs", "case_refs")
+
+
+def command_relationship_update(args: argparse.Namespace, root: Path) -> int:
+    mutations = [
+        name
+        for name in RELATIONSHIP_SCALAR_FLAGS
+        if getattr(args, name) is not None
+    ]
+    additions = {
+        name: getattr(args, f"add_{name[:-1]}") or []
+        for name in RELATIONSHIP_ADD_FLAGS
+    }
+    if not mutations and not any(additions.values()):
+        return stop(
+            {
+                "command": "relationship.update",
+                "ok": False,
+                "errors": ["nothing to update"],
+            },
+            1,
+        )
+    if args.status is not None and args.status not in (
+        "accepted",
+        "hypothesis",
+        "rejected",
+    ):
+        return stop(
+            {
+                "command": "relationship.update",
+                "ok": False,
+                "errors": [f"invalid relationship status {args.status!r}"],
+            },
+            1,
+        )
+    if args.confidence is not None and args.confidence not in (
+        "documented",
+        "strong",
+        "lead",
+        "open",
+    ):
+        return stop(
+            {
+                "command": "relationship.update",
+                "ok": False,
+                "errors": [f"invalid relationship confidence {args.confidence!r}"],
+            },
+            1,
+        )
+    if args.provenance_note == "":
+        return stop(
+            {
+                "command": "relationship.update",
+                "ok": False,
+                "errors": ["provenance_note cannot be empty"],
+            },
+            1,
+        )
+
+    path = relationships_path(root)
+    with open(store_lock_path(root), "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        records = read_jsonl(path)
+        target = next(
+            (
+                record
+                for record in records
+                if record.get("id") == args.relationship_id
+                and record.get("node_type") == "relationship"
+            ),
+            None,
+        )
+        if target is None:
+            return stop(
+                {
+                    "command": "relationship.update",
+                    "ok": False,
+                    "errors": [
+                        f"unknown relationship id {args.relationship_id!r}"
+                    ],
+                },
+                1,
+            )
+        if (
+            args.status is not None
+            and args.status != target.get("status")
+            and args.provenance_note is None
+        ):
+            return stop(
+                {
+                    "command": "relationship.update",
+                    "ok": False,
+                    "written": False,
+                    "errors": [
+                        "--provenance-note is required when relationship status changes"
+                    ],
+                },
+                1,
+            )
+
+        scalar_values = {
+            name: getattr(args, name) for name in RELATIONSHIP_SCALAR_FLAGS
+        }
+        if args.status == "rejected" and target.get("status") != "rejected":
+            scalar_values["provenance_note"] = (
+                f"{target['provenance_note'].rstrip()} Rejected on {today()}: "
+                f"{args.provenance_note}"
+            )
+        elif args.status == "rejected" and args.provenance_note is not None:
+            replay_suffix = re.compile(
+                r" Rejected on \d{4}-\d{2}-\d{2}: "
+                + re.escape(args.provenance_note)
+                + r"\Z"
+            )
+            if replay_suffix.search(target["provenance_note"]):
+                scalar_values["provenance_note"] = target["provenance_note"]
+            else:
+                scalar_values["provenance_note"] = (
+                    f"{target['provenance_note'].rstrip()} Rejection note updated "
+                    f"on {today()}: {args.provenance_note}"
+                )
+        elif (
+            target.get("status") == "rejected"
+            and args.status is not None
+            and args.status != "rejected"
+        ):
+            scalar_values["provenance_note"] = (
+                f"{target['provenance_note'].rstrip()} Status changed to "
+                f"{args.status} on {today()}: {args.provenance_note}"
+            )
+
+        changed: dict[str, bool] = {}
+        for name in RELATIONSHIP_SCALAR_FLAGS:
+            value = scalar_values[name]
+            if value is None:
+                continue
+            changed[name] = target.get(name) != value
+            target[name] = value
+
+        added: dict[str, list[str]] = {}
+        already: dict[str, list[str]] = {}
+        for name, values in additions.items():
+            existing = target[name]
+            added[name] = sorted(set(values) - set(existing))
+            already[name] = sorted(set(values) & set(existing))
+            target[name] = sorted(set(existing) | set(values))
+
+        candidate = family_candidate_bytes(records)
+        validation = validate_candidate_family(root, candidate)
+        if not validation.ok:
+            return stop(
+                {
+                    "command": "relationship.update",
+                    "ok": False,
+                    "written": False,
+                    "errors": list(validation.errors),
+                },
+                1,
+            )
+        try:
+            final_html, stamp_value, projection_count = render_candidate_family_html(
+                root, candidate
+            )
+        except build_people_index.ProjectionError as exc:
+            return stop(
+                {
+                    "command": "relationship.update",
+                    "ok": False,
+                    "written": False,
+                    "errors": [f"family projection failed: {exc}"],
+                },
+                1,
+            )
+
+        original = path.read_bytes()
+        html_path = root / "index.html"
+        html_current = html_path.read_text(encoding="utf-8") == final_html
+        noop = candidate == original
+        result_fields = {
+            "id": args.relationship_id,
+            "changed": changed,
+            "added": added,
+            "already_present": already,
+        }
+        if args.validate_only:
+            return stop(
+                {
+                    "command": "relationship.update",
+                    "ok": True,
+                    "written": False,
+                    "validate_only": True,
+                    **result_fields,
+                },
+                0,
+            )
+        if noop and html_current:
+            return stop(
+                {
+                    "command": "relationship.update",
+                    "ok": True,
+                    "written": False,
+                    "noop": True,
+                    "repaired": None,
+                    **result_fields,
+                },
+                0,
+            )
+
+        if not noop:
+            atomic_replace(path, candidate)
+        atomic_replace(html_path, final_html.encode("utf-8"))
+        return stop(
+            {
+                "command": "relationship.update",
+                "ok": True,
+                "written": True,
+                "repaired": "people-index" if noop else None,
+                "projection": "regenerated",
+                "projection_count": projection_count,
+                "stamp": stamp_value,
+                **result_fields,
+            },
+            0,
+        )
+
+
+def relationship_id_for_parent(parent_id: str, child_id: str) -> str:
+    parent_key = parent_id.removeprefix("person.").replace(".", "_")
+    child_key = child_id.removeprefix("person.").replace(".", "_")
+    return f"relationship.parent.{parent_key}-to-{child_key}"
+
+
+def remaining_parent_roles(open_roles: list[str], resolved_role: str) -> list[str]:
+    if "parents" in open_roles:
+        return ["mother" if resolved_role == "father" else "father"]
+    return sorted(role for role in open_roles if role != resolved_role)
+
+
+def remaining_pedigree(
+    pedigree: dict[str, list[int]], roles: list[str]
+) -> dict[str, list[int]]:
+    keep_father = "father" in roles or "parents" in roles
+    keep_mother = "mother" in roles or "parents" in roles
+    return {
+        code: [
+            slot
+            for slot in slots
+            if (slot % 2 == 0 and keep_father)
+            or (slot % 2 == 1 and keep_mother)
+        ]
+        for code, slots in pedigree.items()
+    }
+
+
+def gap_resolution_note(
+    args: argparse.Namespace,
+    child_id: str,
+    relationship_id: str,
+    evidence_refs: list[str],
+    source_refs: list[str],
+    case_refs: list[str],
+    rejected_ids: set[str],
+) -> str:
+    """Persist both human reasoning and an exact replay signature."""
+
+    resolution_refs = [*evidence_refs, *source_refs, *case_refs]
+    base = args.provenance_note or (
+        f"Resolved {args.role} of {child_id} as {args.parent} through "
+        f"{relationship_id}, citing {', '.join(resolution_refs)}."
+    )
+    action = {
+        "parent": args.parent,
+        "child": child_id,
+        "role": args.role,
+        "relationship_id": relationship_id,
+        "confidence": args.confidence,
+        "evidence_refs": sorted(set(args.evidence_ref)),
+        "source_refs": sorted(set(args.source_ref or [])),
+        "rejected_relationship_ids": sorted(rejected_ids),
+    }
+    return f"{base.rstrip()} Resolution action: {compact_json(action)}"
+
+
+def exact_gap_resolution_replay(
+    *,
+    gap: dict[str, Any],
+    selected: dict[str, Any] | None,
+    role: str,
+    confidence: str,
+    resolution_note: str,
+    evidence_refs: list[str],
+    source_refs: list[str],
+    case_refs: list[str],
+    rejected_rows: list[dict[str, Any]],
+    rejected_ids: set[str],
+) -> bool:
+    """Recognize only the exact, fully-landed action encoded in truth."""
+
+    if selected is None:
+        return False
+    if (
+        selected.get("status") != "accepted"
+        or selected.get("parent_role") != role
+        or selected.get("confidence") != confidence
+        or selected.get("provenance_note") != resolution_note
+    ):
+        return False
+    if not set(evidence_refs).issubset(selected.get("evidence_refs") or []):
+        return False
+    if not set(source_refs).issubset(selected.get("source_refs") or []):
+        return False
+    if not set(case_refs).issubset(selected.get("case_refs") or []):
+        return False
+    if (
+        gap.get("resolution_note") != resolution_note
+        or gap.get("evidence_refs") != evidence_refs
+        or gap.get("source_refs") != source_refs
+        or gap.get("status") not in {"open", "resolved"}
+    ):
+        return False
+    open_roles = gap.get("open_roles") or []
+    if role in open_roles or "parents" in open_roles:
+        return False
+    if gap.get("status") == "resolved" and (
+        open_roles
+        or gap.get("candidate_persons")
+        or any(gap.get("pedigree", {}).values())
+        or not gap.get("resolved_on")
+    ):
+        return False
+    if gap.get("status") == "open" and gap.get("resolved_on") is not None:
+        return False
+    if {row.get("id") for row in rejected_rows} != rejected_ids:
+        return False
+    for row in rejected_rows:
+        if (
+            row.get("status") != "rejected"
+            or resolution_note not in (row.get("provenance_note") or "")
+            or not set(evidence_refs).issubset(row.get("evidence_refs") or [])
+            or not set(source_refs).issubset(row.get("source_refs") or [])
+            or not set(case_refs).issubset(row.get("case_refs") or [])
+        ):
+            return False
+    return True
+
+
+def finish_gap_replay(
+    args: argparse.Namespace,
+    root: Path,
+    records: list[dict[str, Any]],
+    result_fields: dict[str, Any],
+) -> int:
+    """Validate landed truth, then no-op or repair its generated projection."""
+
+    candidate = family_candidate_bytes(sorted(records, key=lambda record: record["id"]))
+    validation = validate_candidate_family(root, candidate)
+    if not validation.ok:
+        return stop(
+            {
+                "command": "gap.resolve",
+                "ok": False,
+                "written": False,
+                "errors": list(validation.errors),
+            },
+            1,
+        )
+    try:
+        final_html, stamp_value, projection_count = render_candidate_family_html(
+            root, candidate
+        )
+    except build_people_index.ProjectionError as exc:
+        return stop(
+            {
+                "command": "gap.resolve",
+                "ok": False,
+                "written": False,
+                "errors": [f"family projection failed: {exc}"],
+            },
+            1,
+        )
+
+    if args.validate_only:
+        return stop(
+            {
+                "command": "gap.resolve",
+                "ok": True,
+                "written": False,
+                "validate_only": True,
+                "replay": True,
+                **result_fields,
+            },
+            0,
+        )
+    html_path = root / "index.html"
+    if html_path.read_text(encoding="utf-8") == final_html:
+        return stop(
+            {
+                "command": "gap.resolve",
+                "ok": True,
+                "written": False,
+                "noop": True,
+                "replay": True,
+                "repaired": None,
+                **result_fields,
+            },
+            0,
+        )
+    atomic_replace(html_path, final_html.encode("utf-8"))
+    return stop(
+        {
+            "command": "gap.resolve",
+            "ok": True,
+            "written": True,
+            "noop": False,
+            "replay": True,
+            "repaired": "people-index",
+            "projection": "regenerated",
+            "projection_count": projection_count,
+            "stamp": stamp_value,
+            **result_fields,
+        },
+        0,
+    )
+
+
+def command_gap_resolve(args: argparse.Namespace, root: Path) -> int:
+    if args.role not in ("father", "mother"):
+        return stop(
+            {
+                "command": "gap.resolve",
+                "ok": False,
+                "errors": ["role must be 'father' or 'mother'"],
+            },
+            1,
+        )
+    if args.confidence not in ("documented", "strong", "lead", "open"):
+        return stop(
+            {
+                "command": "gap.resolve",
+                "ok": False,
+                "errors": [f"invalid relationship confidence {args.confidence!r}"],
+            },
+            1,
+        )
+    if args.provenance_note == "":
+        return stop(
+            {
+                "command": "gap.resolve",
+                "ok": False,
+                "errors": ["provenance_note cannot be empty"],
+            },
+            1,
+        )
+
+    path = relationships_path(root)
+    with open(store_lock_path(root), "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        records = read_jsonl(path)
+        gap = next(
+            (
+                record
+                for record in records
+                if record.get("id") == args.gap_id
+                and record.get("node_type") == "gap"
+            ),
+            None,
+        )
+        if gap is None:
+            return stop(
+                {
+                    "command": "gap.resolve",
+                    "ok": False,
+                    "errors": [f"unknown gap id {args.gap_id!r}"],
+                },
+                1,
+            )
+        if gap.get("gap_type") not in ("parentage", "candidate_parentage"):
+            return stop(
+                {
+                    "command": "gap.resolve",
+                    "ok": False,
+                    "errors": [
+                        "gap resolve only supports parentage and "
+                        "candidate_parentage gaps"
+                    ],
+                },
+                1,
+            )
+        subjects = gap.get("subject_persons") or []
+        child_id = args.child
+        if child_id is None:
+            if len(subjects) != 1:
+                return stop(
+                    {
+                        "command": "gap.resolve",
+                        "ok": False,
+                        "errors": [
+                            "--child is required when a gap has multiple subjects"
+                        ],
+                    },
+                    1,
+                )
+            child_id = subjects[0]
+        if child_id not in subjects:
+            return stop(
+                {
+                    "command": "gap.resolve",
+                    "ok": False,
+                    "errors": [f"child {child_id!r} is not a subject of {args.gap_id}"],
+                },
+                1,
+            )
+
+        people = {record["id"] for record in people_records(root)}
+        if args.parent not in people:
+            return stop(
+                {
+                    "command": "gap.resolve",
+                    "ok": False,
+                    "errors": [f"unknown parent person id {args.parent!r}"],
+                },
+                1,
+            )
+        selected = next(
+            (
+                record
+                for record in records
+                if record.get("node_type") == "relationship"
+                and record.get("relationship_type") == "parent_of"
+                and record.get("person_a") == args.parent
+                and record.get("person_b") == child_id
+            ),
+            None,
+        )
+        if selected is not None and selected.get("parent_role") != args.role:
+            return stop(
+                {
+                    "command": "gap.resolve",
+                    "ok": False,
+                    "errors": [
+                        f"existing relationship {selected['id']} has role "
+                        f"{selected.get('parent_role')!r}, not {args.role!r}"
+                    ],
+                },
+                1,
+            )
+
+        rejected_ids = set(args.reject_relationship or [])
+        if rejected_ids and args.provenance_note is None:
+            return stop(
+                {
+                    "command": "gap.resolve",
+                    "ok": False,
+                    "written": False,
+                    "errors": [
+                        "--provenance-note is required when competing "
+                        "relationships are rejected"
+                    ],
+                },
+                1,
+            )
+        rejected_rows = [
+            record
+            for record in records
+            if record.get("id") in rejected_ids
+            and record.get("node_type") == "relationship"
+        ]
+        evidence_refs = sorted(
+            set(gap.get("evidence_refs") or []) | set(args.evidence_ref)
+        )
+        source_refs = sorted(
+            set(gap.get("source_refs") or []) | set(args.source_ref or [])
+        )
+        case_refs = sorted(set(gap.get("case_refs") or []))
+        if selected is None:
+            relationship_id = relationship_id_for_parent(args.parent, child_id)
+        else:
+            relationship_id = selected["id"]
+
+        resolution_note = gap_resolution_note(
+            args,
+            child_id,
+            relationship_id,
+            evidence_refs,
+            source_refs,
+            case_refs,
+            rejected_ids,
+        )
+        replay_fields = {
+            "gap_id": args.gap_id,
+            "relationship_id": relationship_id,
+            "parent": args.parent,
+            "child": child_id,
+            "role": args.role,
+            "resolved": gap.get("status") == "resolved",
+            "canonical_gap_state": (
+                "resolved_tombstone"
+                if gap.get("status") == "resolved"
+                else "open"
+            ),
+            "remaining_open_roles": gap.get("open_roles") or [],
+            "rejected_relationship_ids": sorted(rejected_ids),
+            "owner_follow_up_required": gap.get("owner_follow_up_required"),
+            "owner_anchor": (
+                gap.get("public_anchor")
+                if gap.get("owner_follow_up_required")
+                else None
+            ),
+        }
+        if exact_gap_resolution_replay(
+            gap=gap,
+            selected=selected,
+            role=args.role,
+            confidence=args.confidence,
+            resolution_note=resolution_note,
+            evidence_refs=evidence_refs,
+            source_refs=source_refs,
+            case_refs=case_refs,
+            rejected_rows=rejected_rows,
+            rejected_ids=rejected_ids,
+        ):
+            return finish_gap_replay(args, root, records, replay_fields)
+
+        if gap.get("status") != "open":
+            return stop(
+                {
+                    "command": "gap.resolve",
+                    "ok": False,
+                    "errors": [
+                        f"gap {args.gap_id} is already {gap.get('status')!r}"
+                    ],
+                },
+                1,
+            )
+        open_roles = gap.get("open_roles") or []
+        if args.role not in open_roles and "parents" not in open_roles:
+            return stop(
+                {
+                    "command": "gap.resolve",
+                    "ok": False,
+                    "errors": [
+                        f"{args.role} is not open on {args.gap_id}; "
+                        f"open roles are {open_roles}"
+                    ],
+                },
+                1,
+            )
+        if selected is not None and selected.get("status") == "rejected":
+            return stop(
+                {
+                    "command": "gap.resolve",
+                    "ok": False,
+                    "errors": [
+                        f"selected relationship {selected['id']} is rejected"
+                    ],
+                },
+                1,
+            )
+
+        competitors = [
+            record
+            for record in records
+            if record.get("node_type") == "relationship"
+            and record.get("relationship_type") == "parent_of"
+            and record.get("status") != "rejected"
+            and record.get("person_b") == child_id
+            and record.get("parent_role") == args.role
+            and record.get("person_a") != args.parent
+        ]
+        accepted_competitors = [
+            record["id"]
+            for record in competitors
+            if record.get("status") == "accepted"
+        ]
+        if accepted_competitors:
+            return stop(
+                {
+                    "command": "gap.resolve",
+                    "ok": False,
+                    "errors": [
+                        "cannot replace accepted competing relationships: "
+                        + ", ".join(sorted(accepted_competitors))
+                    ],
+                },
+                1,
+            )
+        competitor_ids = {record["id"] for record in competitors}
+        if rejected_ids != competitor_ids:
+            missing = sorted(competitor_ids - rejected_ids)
+            extra = sorted(rejected_ids - competitor_ids)
+            details = []
+            if missing:
+                details.append(
+                    "explicit --reject-relationship required for " + ", ".join(missing)
+                )
+            if extra:
+                details.append(
+                    "not competing hypothesis relationships: " + ", ".join(extra)
+                )
+            return stop(
+                {
+                    "command": "gap.resolve",
+                    "ok": False,
+                    "written": False,
+                    "errors": details,
+                },
+                1,
+            )
+        if selected is None and any(
+            record.get("id") == relationship_id for record in records
+        ):
+            return stop(
+                {
+                    "command": "gap.resolve",
+                    "ok": False,
+                    "errors": [
+                        f"derived relationship id already exists: {relationship_id}"
+                    ],
+                },
+                1,
+            )
+
+        if selected is None:
+            selected = {
+                "id": relationship_id,
+                "node_type": "relationship",
+                "relationship_type": "parent_of",
+                "person_a": args.parent,
+                "person_b": child_id,
+                "parent_role": args.role,
+                "status": "accepted",
+                "confidence": args.confidence,
+                "branches": sorted(gap["branches"]),
+                "evidence_refs": evidence_refs,
+                "source_refs": source_refs,
+                "case_refs": case_refs,
+                "provenance_note": resolution_note,
+            }
+            records.append(selected)
+        else:
+            selected["status"] = "accepted"
+            selected["confidence"] = args.confidence
+            selected["branches"] = sorted(
+                set(selected["branches"]) | set(gap["branches"])
+            )
+            selected["evidence_refs"] = sorted(
+                set(selected["evidence_refs"]) | set(evidence_refs)
+            )
+            selected["source_refs"] = sorted(
+                set(selected["source_refs"]) | set(source_refs)
+            )
+            selected["case_refs"] = sorted(
+                set(selected["case_refs"]) | set(case_refs)
+            )
+            selected["provenance_note"] = resolution_note
+
+        for competitor in competitors:
+            if competitor["id"] not in rejected_ids:
+                continue
+            competitor["status"] = "rejected"
+            competitor["evidence_refs"] = sorted(
+                set(competitor["evidence_refs"]) | set(evidence_refs)
+            )
+            competitor["source_refs"] = sorted(
+                set(competitor["source_refs"]) | set(source_refs)
+            )
+            competitor["case_refs"] = sorted(
+                set(competitor["case_refs"]) | set(case_refs)
+            )
+            competitor["provenance_note"] = (
+                f"{competitor['provenance_note'].rstrip()} Rejected on {today()} "
+                f"while resolving {args.gap_id} in favor of {relationship_id}. "
+                f"{resolution_note}"
+            )
+        roles = remaining_parent_roles(open_roles, args.role)
+        resolved_people = {args.parent} | {
+            record.get("person_a") for record in competitors
+        }
+        gap["candidate_persons"] = sorted(
+            set(gap.get("candidate_persons") or []) - resolved_people
+        )
+        gap["open_roles"] = roles
+        gap["pedigree"] = remaining_pedigree(gap["pedigree"], roles)
+        gap["evidence_refs"] = evidence_refs
+        gap["source_refs"] = source_refs
+        owner_anchor = gap.get("public_anchor")
+        owner_follow_up_required = owner_anchor is not None
+        gap["resolution_note"] = resolution_note
+        gap["owner_follow_up_required"] = owner_follow_up_required
+        gap["status"] = "open"
+        gap["resolved_on"] = None
+        if not roles:
+            gap["candidate_persons"] = []
+            gap["pedigree"] = {code: [] for code in ("Z", "M", "D", "C")}
+            gap["status"] = "resolved"
+            gap["resolved_on"] = today()
+
+        records.sort(key=lambda record: record["id"])
+        candidate = family_candidate_bytes(records)
+        validation = validate_candidate_family(root, candidate)
+        if not validation.ok:
+            return stop(
+                {
+                    "command": "gap.resolve",
+                    "ok": False,
+                    "written": False,
+                    "errors": list(validation.errors),
+                },
+                1,
+            )
+        try:
+            final_html, stamp_value, projection_count = render_candidate_family_html(
+                root, candidate
+            )
+        except build_people_index.ProjectionError as exc:
+            return stop(
+                {
+                    "command": "gap.resolve",
+                    "ok": False,
+                    "written": False,
+                    "errors": [f"family projection failed: {exc}"],
+                },
+                1,
+            )
+
+        result_fields = {
+            "gap_id": args.gap_id,
+            "relationship_id": relationship_id,
+            "parent": args.parent,
+            "child": child_id,
+            "role": args.role,
+            "resolved": not roles,
+            "canonical_gap_state": "resolved_tombstone" if not roles else "open",
+            "remaining_open_roles": roles,
+            "rejected_relationship_ids": sorted(rejected_ids),
+            "owner_follow_up_required": owner_follow_up_required,
+            "owner_anchor": owner_anchor if owner_follow_up_required else None,
+        }
+        if args.validate_only:
+            return stop(
+                {
+                    "command": "gap.resolve",
+                    "ok": True,
+                    "written": False,
+                    "validate_only": True,
+                    **result_fields,
+                },
+                0,
+            )
+
+        atomic_replace(path, candidate)
+        atomic_replace(root / "index.html", final_html.encode("utf-8"))
+        return stop(
+            {
+                "command": "gap.resolve",
+                "ok": True,
+                "written": True,
+                "noop": False,
+                "replay": False,
+                "repaired": None,
+                "projection": "regenerated",
+                "projection_count": projection_count,
+                "stamp": stamp_value,
+                **result_fields,
+            },
+            0,
+        )
 
 
 def latest_trace(root: Path) -> str:
@@ -919,6 +1938,15 @@ def command_status(_args: argparse.Namespace, root: Path) -> int:
         "cases": cases_ok,
         "traces": traces_result.ok,
     }
+    gap_rows = [
+        row
+        for row in family_records(root)
+        if row.get("node_type") == "gap"
+    ]
+    gap_statuses = {
+        status: sum(row.get("status") == status for row in gap_rows)
+        for status in ("open", "resolved")
+    }
     healthy = all(validators.values())
     return stop(
         {
@@ -929,6 +1957,7 @@ def command_status(_args: argparse.Namespace, root: Path) -> int:
                 "people": family_result.person_count,
                 "relationships": family_result.relationship_count,
                 "gaps": family_result.gap_count,
+                "gaps_by_status": gap_statuses,
             },
             "cases": cases,
             "evidence": {"total": sum(by_shard.values()), "by_shard": by_shard},
@@ -978,6 +2007,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     case = attach_error(sub.add_parser("case", add_help=False))
     case_sub = case.add_subparsers(dest="case_command", required=True)
+    case_list = attach_error(case_sub.add_parser("list", add_help=False))
+    case_list.add_argument("--status")
+    case_list.add_argument("--branch")
+    case_list.set_defaults(handler=command_case_list)
     case_update = attach_error(case_sub.add_parser("update", add_help=False))
     case_update.add_argument("case_id")
     case_update.add_argument("--status")
@@ -989,6 +2022,48 @@ def build_parser() -> argparse.ArgumentParser:
     case_update.add_argument("--add-person-ref", dest="add_person_ref", action="append")
     case_update.add_argument("--validate-only", action="store_true")
     case_update.set_defaults(handler=command_case_update)
+
+    relationship = attach_error(sub.add_parser("relationship", add_help=False))
+    relationship_sub = relationship.add_subparsers(
+        dest="relationship_command", required=True
+    )
+    relationship_update = attach_error(
+        relationship_sub.add_parser("update", add_help=False)
+    )
+    relationship_update.add_argument("relationship_id")
+    relationship_update.add_argument("--status")
+    relationship_update.add_argument("--confidence")
+    relationship_update.add_argument("--provenance-note", dest="provenance_note")
+    relationship_update.add_argument(
+        "--add-evidence-ref", dest="add_evidence_ref", action="append"
+    )
+    relationship_update.add_argument(
+        "--add-source-ref", dest="add_source_ref", action="append"
+    )
+    relationship_update.add_argument(
+        "--add-case-ref", dest="add_case_ref", action="append"
+    )
+    relationship_update.add_argument("--validate-only", action="store_true")
+    relationship_update.set_defaults(handler=command_relationship_update)
+
+    gap = attach_error(sub.add_parser("gap", add_help=False))
+    gap_sub = gap.add_subparsers(dest="gap_command", required=True)
+    gap_resolve = attach_error(gap_sub.add_parser("resolve", add_help=False))
+    gap_resolve.add_argument("gap_id")
+    gap_resolve.add_argument("--parent", required=True)
+    gap_resolve.add_argument("--child")
+    gap_resolve.add_argument("--role", required=True)
+    gap_resolve.add_argument(
+        "--evidence-ref", dest="evidence_ref", action="append", required=True
+    )
+    gap_resolve.add_argument("--source-ref", dest="source_ref", action="append")
+    gap_resolve.add_argument(
+        "--reject-relationship", dest="reject_relationship", action="append"
+    )
+    gap_resolve.add_argument("--confidence", default="strong")
+    gap_resolve.add_argument("--provenance-note", dest="provenance_note")
+    gap_resolve.add_argument("--validate-only", action="store_true")
+    gap_resolve.set_defaults(handler=command_gap_resolve)
 
     show = attach_error(sub.add_parser("show", add_help=False))
     show.add_argument("id")

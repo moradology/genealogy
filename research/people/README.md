@@ -10,6 +10,20 @@ This directory is the single reviewed source for people and family connections.
   case references. Gaps describe unknown or disputed relatives without inventing
   placeholder people.
 
+Relationship `status` is `accepted`, `hypothesis`, or `rejected`. Rejected
+relationships remain canonical and inspectable: resolution evidence is unioned
+into their typed refs and a dated rejection is appended to the original
+provenance note. Graph traversal and pedigree projection ignore them.
+
+Every gap has an explicit lifecycle. `status` is `open` or `resolved`;
+`resolution_note` records the durable adjudication, `resolved_on` is an ISO date
+or null, and `owner_follow_up_required` says whether the hand-authored public
+card still needs revision. Evidence, source, and case support remains in the
+typed `*_refs` fields. A resolved public gap remains as a canonical tombstone:
+it keeps its stable id and `public_anchor`, but has no open roles, candidates,
+or pedigree slots. This prevents stale page anchors and historical references
+from becoming dangling ids while keeping it off the active ancestor frontier.
+
 Life events and places do not belong here; they remain in
 `ancestry_geospatial.geojson`.
 

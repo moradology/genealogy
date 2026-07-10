@@ -45,15 +45,15 @@ PEOPLE_INDEX = {
 }
 
 # Hand-authored docket in the CURRENT page style: entities, a two-segment refs
-# div, and one MALFORMED div (trace filename embedded in the middle segment,
+# div, and one MALFORMED div (trace id embedded in the middle segment,
 # no third pipe) mirroring the real case.07.
 HAND_DOCKET = (
     '<div id="case.01"><div><b>case.01</b><h3>Alpha &amp; entities</h3><b>OPEN</b></div>'
     "<p>Q: alpha &mdash; with an entity dash.</p>"
-    '<div><a href="#person.alpha">Z-12/13</a>|1885 KS census; notes|2026-01-01-alpha-trace.md</div></div>\n'
+    '<div><a href="#person.alpha">Z-12/13</a>|1885 KS census; notes|trace.2026-01-01.alpha-trace</div></div>\n'
     '<div id="case.02"><div><b>case.02</b><h3>Beta-&gt;arrow</h3><b>IN CONFLICT</b></div>'
     "<p>Q: beta.</p>"
-    '<div><a href="#person.beta">M-3</a>|Beta memorials 2026-01-02-beta-trace.md</div></div>\n'
+    '<div><a href="#person.beta">M-3</a>|Beta memorials trace.2026-01-02.beta-trace</div></div>\n'
 )
 
 HTML_TEMPLATE = (
@@ -97,7 +97,7 @@ def make_fixture(tmp: Path) -> Path:
         (root / "research" / "reasoning-traces" / name).write_text("---\n---\n")
     records = [
         case_record("case.01", "Alpha & entities", "Q: alpha — with an entity dash.", "open",
-                    ["person.alpha", "person.alpha_wife"], ["2026-01-01-alpha-trace.md"],
+                    ["person.alpha", "person.alpha_wife"], ["trace.2026-01-01.alpha-trace"],
                     source_note="1885 KS census; notes"),
         case_record("case.02", "Beta->arrow", "Q: beta.", "in_conflict",
                     ["person.beta"], [], source_note="Beta memorials"),
@@ -127,7 +127,7 @@ with tempfile.TemporaryDirectory(prefix="build-docket-test-") as td:
     check("arrow escaped roundtrip", "Beta-&gt;arrow" in html)
     check("label derived from blob", '<a href="#person.alpha">Z-12/13</a>' in html)
     check("status label mapped", "<b>IN CONFLICT</b>" in html)
-    check("trace ref rendered", "|2026-01-01-alpha-trace.md</div>" in html)
+    check("trace ref rendered", "|trace.2026-01-01.alpha-trace</div>" in html)
     check("corrigenda untouched", "hand-authored corrigendum stays untouched" in html)
 
     # ---- 3. idempotence + --check green, then stale after a JSONL edit ----

@@ -20,6 +20,8 @@ where researchers author facts.
 ./gen build people-index --check
 ./gen build source-index --check
 ./gen show person.doyle_zimmerman
+./gen case list --status open,in_conflict,needs_pull
+./gen ancestors person.evelyn_mundell
 ./gen status
 ./gen stamp
 ./gen ancestry cache stats
@@ -63,18 +65,52 @@ Names are generated with `./gen build people-index` and checked by the gate.
 - `./gen stamp [--write|--check|--deployed]` manages the public-page content
   fingerprint. With no flag it checks the local stamp.
 
+### Canonical research workflow
+
+- `./gen evidence draft --from-cache record/COLL/ID --id ev.ID` produces a
+  review-required evidence draft from a validated cached record. It is strictly
+  offline and carries citation fields, cache provenance, and explicit review
+  warnings; it does not write the draft.
+- `./gen evidence add --shard BRANCH [--validate-only]` validates and appends a
+  reviewed evidence object supplied on standard input.
+- `./gen trace new ...` creates a canonical reasoning trace, and `./gen case
+  update case.NN ...` links reviewed evidence and traces into a case.
+- `./gen case list [--status CSV] [--branch CSV]` returns canonical case records
+  with optional filters.
+- `./gen relationship update relationship.ID ... [--validate-only]` updates a
+  family edge and atomically regenerates the people projection. Status changes
+  require a provenance note. Rejected edges retain their stable ids, structured
+  refs, and prior provenance but are excluded from traversal and pedigree output.
+- `./gen gap resolve gap.ID --parent person.ID --role father|mother
+  --evidence-ref ev.ID ... [--validate-only]` resolves one parent role. Every
+  competing same-role hypothesis must be rejected explicitly; a partial
+  resolution remains on the ancestor frontier. Rejected hypotheses remain
+  inspectable canonical rows. Replaying the exact landed action is idempotent
+  and repairs a stale projection after an interrupted two-file write.
+- `./gen ancestors person.ID` reports the upward graph and unresolved frontier.
+  `./gen path person.A person.B` reports the shortest parent/spouse chain.
+
+Use each command's `--help` for its full flags and output contract. Write
+commands accept canonical IDs only; filename aliases are not a write format.
+
 ### Ancestry acquisition
 
 These commands use the already-running, logged-in Chrome session; they never
 launch a browser. A live read is shared, queued, and human-paced across agents.
-Cached reads and the `where`, `next`, `prev`, and `back` commands do not contact
-Ancestry. Add `--cache-only` when even a cache miss must remain offline;
-`--cache-only` and `--fresh` cannot be combined.
+Live-capable reads are cache-first by default: a valid stored result returns
+immediately, while a miss automatically joins the shared paced queue, is
+rechecked under the lock, and then fetches live. Do not preflight ordinary
+reads with `--cache-only`. Use `--cache-only` only when a miss must remain
+offline, such as before live research is approved. `where`, `next`, `prev`, and
+`back` never contact Ancestry. `--cache-only` and `--fresh` cannot be combined.
 
 ```text
-./gen ancestry search --collection N --name Given_Surname [--birth YEAR] [--limit K] [--fresh | --cache-only]
-./gen ancestry record --collection N --id RECORD_ID [--fresh | --cache-only]
-./gen ancestry household --collection N --id RECORD_ID [--fresh | --cache-only]
+./gen ancestry search --collection N --name Given_Surname
+    [--birth YEAR] [--place PLACE] [--spouse Given_Surname]
+    [--birthplace PLACE] [--exact-name] [--agent ID] [--limit K]
+    [--fresh | --cache-only]
+./gen ancestry record --collection N --id RECORD_ID [--agent ID] [--fresh | --cache-only]
+./gen ancestry household --collection N --id RECORD_ID [--agent ID] [--fresh | --cache-only]
 
 ./gen ancestry goto <address> [--agent ID] [--fresh | --cache-only]
 ./gen ancestry open [N] [--agent ID] [--fresh | --cache-only]
@@ -83,8 +119,12 @@ Ancestry. Add `--cache-only` when even a cache miss must remain offline;
 ./gen ancestry prev [--agent ID]
 ./gen ancestry back [--agent ID]
 
+./gen ancestry session stats --agent ID
+./gen ancestry session reset --agent ID --confirm RESET-ANCESTRY-SESSION
+
 ./gen ancestry cache stats [--kind K]
 ./gen ancestry cache list [--kind K]
+./gen ancestry cache migrate [--kind K]
 ./gen ancestry cache clear (--kind K | --all)
     [--include-records --confirm DELETE-DURABLE-ANCESTRY-RECORDS]
 ```
@@ -101,7 +141,7 @@ Options belong after their Ancestry subcommand. For example:
 Supported addresses are:
 
 - `record/COLL/ID`
-- `search/COLL?name=Given_Surname&birth=YEAR`
+- `search/COLL?name=Given_Surname&birth=YEAR&place=PLACE&spouse=Given_Surname&birthplace=PLACE&exact=true`
 - `collection/COLL`
 
 Use `./gen ancestry --help` or, for example,
@@ -114,11 +154,17 @@ The account is one shared, rate-sensitive resource. Agents should use only
 
 1. The machine-global queue and pacing state live under
    `~/.gen-cockpit/ancestry/`. Real requests take one inter-process lock, and a
-   shared timestamp spaces requests across every agent.
+   shared timestamp spaces requests across every agent. Each agent also has a
+   guarded, resettable accounting session that counts cache reads and real hits;
+   failed live HTTP or parse attempts count because they consume account budget.
 2. Structured results live under `research/cache/ancestry/`. This directory is
    ignored by Git because the acquired material is restricted. Record and
-   household views share the same stored record. `--fresh` intentionally
-   bypasses a stored result; `--cache-only` turns a miss into an offline error.
+   household views share the same stored record. A normal command reads this
+   store first and automatically queues a live fetch on a miss. `--fresh`
+   intentionally bypasses a stored result; `--cache-only` turns a miss into an
+   offline error and should not be used as a routine preflight.
+   Version-2 entries require the explicit offline `cache migrate` hard cutover;
+   version-3 payloads include an integrity digest.
    Removing durable record entries requires both `--include-records` and the
    displayed confirmation phrase, including when `--all` is used.
 3. Each `--agent ID` has its own logical location, result cursor, history, and
@@ -132,17 +178,17 @@ The account is one shared, rate-sensitive resource. Agents should use only
    read through a compatibility path.
 6. Before a live response is stored, the tool verifies the expected Ancestry
    address, rejects login and challenge pages, and validates the parsed shape.
-   Searches must also contain a result matching the requested name or an
-   explicit no-results message. One latest validated snapshot is kept per
+   Searches durably distinguish matching results, explicit no-results pages,
+   and a first page containing only unrelated names; completeness warnings make
+   page-one negatives explicit. One latest validated snapshot is kept per
    logical page or query; `--fresh` atomically replaces it.
 
 Current limits are deliberate and visible: searches read only the first page,
 and there are no `up`, household-member navigation, or tab-cleanup commands.
-Search-page validation checks that at least one result resembles the requested
-name, or that the page explicitly reports no results. The current page markup
-does not let the tool independently prove that a birth-year filter remained
-applied, so uncertain pages fail without being stored and birth-filtered results
-still require researcher review.
+Search-page validation distinguishes matching, explicit-empty, and unrelated
+page-one outcomes. It also proves that Ancestry retained every requested filter
+in the final URL. That verifies request retention, not the index's internal
+matching semantics, so filtered results still require researcher review.
 
 ## FUTURE ideas — not CLI commands
 
@@ -152,7 +198,7 @@ scripts or agent prompts must not depend on them.
 ### Possible truth and reasoning commands
 
 - `adjudicate`, `frontier`, and `contradictions`
-- `ancestors`, `descendants`, and `path`
+- `descendants`
 - `recall`
 
 ### Possible projection and session commands
@@ -190,6 +236,10 @@ Completed foundation:
    generated public people registry, pedigree, and Index of Names.
 6. Validated evidence and trace writes plus cross-store `show` and fast `status`
    commands.
+7. Canonical case listing, family-edge updates, parent-gap resolution, ancestor
+   frontiers and relationship paths.
+8. Review-required evidence drafts from validated Ancestry record cache entries,
+   including literal citation metadata and immutable cache provenance.
 
 Next, if graph-backed searching proves useful:
 

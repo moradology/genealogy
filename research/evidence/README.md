@@ -39,6 +39,7 @@ Every record has these fields:
 | `person_refs`, `case_refs` | Complete current subject/case index for the record. Every support/oppose endpoint must also appear here. |
 | `privacy_review` | Required attestation that possibly living people and sensitive identifiers were excluded from tracked text. |
 | `acquisition` | Provider, batch, unique two-digit logical pull number, and zero or more ignored local pull directories. Open-web records use an empty list when no local artifact was retained. |
+| `cache_provenance` | Optional structured provenance for a record drafted from the private Ancestry acquisition store: canonical `record/COLL/ID` address, validated cache key/schema/version, immutable payload SHA-256, fetch timestamp, and requested/final URLs. The key locates a mutable latest snapshot; the digest identifies the exact parsed payload used. URL-less legacy acquisitions retain null URLs plus an explicit `url_gap`; URLs are never reconstructed or guessed. |
 | `source_urls` | Original record URLs when available. URLs are leads, never substitutes for citations. |
 | `transcription` | Concise, privacy-safe transcription or abstract of the material facts and conflicts. |
 | `local_assets` | Optional ignored files under `research/pulls/`, each with a role and optional SHA-256 checksum. |
@@ -91,6 +92,19 @@ The source notes did not preserve enough metadata to make every citation complet
 
 Close a gap by editing the canonical record and removing or narrowing its
 `citation_gap`; do not reconstruct missing details by guessing.
+
+## Drafting from the Ancestry acquisition store
+
+`./gen evidence draft --from-cache record/COLL/ID --id ev.ID` reads one already-cached,
+validated record and emits a canonical-shaped evidence draft with citation
+fields and `cache_provenance`. It never falls back to a live request. The draft
+deliberately carries a pending privacy review and placeholder transcription, so
+passing it unchanged to `evidence add` fails. Review the record, exclude living
+people and sensitive identifiers, correct the citation and interpretation, set
+canonical subject/case refs, and only then attest `privacy_review.status` as
+`passed`. A migrated legacy record that never retained acquisition URLs still
+produces a draft: its provenance contains the canonical record address, null URL
+fields, and an explicit `url_gap`/refresh warning rather than a fabricated URL.
 
 ## Validation
 

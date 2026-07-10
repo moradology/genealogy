@@ -66,6 +66,10 @@ def open_gap() -> dict:
         "evidence_refs": [],
         "source_refs": ["src.test.record"],
         "public_anchor": "gap.avery-mother",
+        "status": "open",
+        "resolution_note": "",
+        "resolved_on": None,
+        "owner_follow_up_required": False,
         "pedigree": {"Z": [3], "M": [], "D": [], "C": []},
     }
 
@@ -233,6 +237,18 @@ class FamilyCoreValidatorTests(unittest.TestCase):
         self.fixture.rows.append(reverse)
         self.assert_error_contains("contains a cycle")
 
+    def test_rejected_parent_is_retained_but_excluded_from_cycles(self) -> None:
+        reverse = parent_relationship()
+        reverse["id"] = "relationship.anchor-parent-rejected"
+        reverse["person_a"] = "person.avery-anchor"
+        reverse["person_b"] = "person.alex-senior"
+        reverse["status"] = "rejected"
+        reverse["provenance_note"] += " Rejected on 2026-07-09: test conflict."
+        self.fixture.rows.append(reverse)
+        result = self.fixture.validate()
+        self.assertTrue(result.ok, result.errors)
+        self.assertEqual(result.relationship_count, 2)
+
     def test_disconnected_hypothesis_parent_cycle_is_rejected(self) -> None:
         self.fixture.people.extend(
             [
@@ -320,6 +336,21 @@ class FamilyCoreValidatorTests(unittest.TestCase):
         duplicate["public_anchor"] = None
         self.fixture.rows.append(duplicate)
         self.assert_error_contains("pedigree slot Z-3")
+
+    def test_resolved_gap_requires_durable_resolution_state(self) -> None:
+        gap = self.fixture.rows[1]
+        gap["status"] = "resolved"
+        gap["candidate_persons"] = []
+        gap["open_roles"] = []
+        gap["pedigree"] = {"Z": [], "M": [], "D": [], "C": []}
+        gap["resolution_note"] = "The cited record identifies the remaining parent."
+        gap["resolved_on"] = "2026-07-09"
+        gap["owner_follow_up_required"] = True
+        result = self.fixture.validate()
+        self.assertTrue(result.ok, result.errors)
+
+        gap["resolved_on"] = None
+        self.assert_error_contains("resolved gap resolved_on is required")
 
     def test_unknown_schema_field_is_rejected(self) -> None:
         self.fixture.people[0]["legacy_id"] = "old-shape"

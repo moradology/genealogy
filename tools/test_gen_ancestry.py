@@ -14,6 +14,7 @@ import stat
 import sys
 import tempfile
 import unittest
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager, redirect_stdout
 from pathlib import Path
 from types import SimpleNamespace
@@ -33,6 +34,16 @@ FIXTURE = (
     "Example Wife\t45\tWife\n"
     "Example Son\n\t\n10\n\t\nSon\n"
     "Save this record?\nSource\nSource Citation\n"
+    "Year: 1940; Census Place: Example County; Sheet: 8A\n"
+    "Source Information\nAncestry.com. 1940 United States Federal Census [database on-line].\n"
+)
+
+PRE_1880_FIXTURE = (
+    "View\nDavid Durham\n1860 United States Federal Census\nDetail\n"
+    "Name\tDavid Durham\nAge\t26\nDwelling Number\t595\nFamily Number\t595\n"
+    "Household Members (Name)\tAge\n"
+    "Nancy A Durham\n2/12\nDavid Durham\n26\nVirginia Durham\n17\nAmerica E Durham\n1\n"
+    "Source\nSource Citation\n1860; District 1, Muhlenberg, Kentucky; dwelling 595.\n"
 )
 
 
@@ -40,13 +51,14 @@ def row(collection: str = "6224", record_id: str = "100") -> dict:
     return {
         "record_id": record_id,
         "url": f"https://www.ancestry.com/search/collections/{collection}/records/{record_id}",
+        "primary_name": "Example Person",
         "cells": ["Example Person", "1911"],
         "text": "Example Person 1911 Kansas",
     }
 
 
 def search_loc(collection: str = "6224") -> dict:
-    return {"type": "search", "collection": collection, "name": "Example_Person", "birth": "1911"}
+    return ga.search_location(collection, "Example_Person", birth="1911")
 
 
 def search_data(collection: str = "6224") -> dict:
@@ -57,10 +69,20 @@ def search_data(collection: str = "6224") -> dict:
         "collection": collection,
         "name": "Example_Person",
         "birth": "1911",
+        "place": "",
+        "spouse": "",
+        "birthplace": "",
+        "exact_name": False,
         "count": len(rows),
         "outcome": "results",
+        "result_set": ga.search_result_set_metadata("results"),
         "results": rows,
     }
+
+
+def search_meta(collection: str = "6224") -> dict:
+    loc = search_loc(collection)
+    return {"kind": "search", "collection": collection, **ga.search_filters(loc)}
 
 
 def record_loc(collection: str = "6224", record_id: str = "100") -> dict:
@@ -75,6 +97,19 @@ def record_data(collection: str = "6224", record_id: str = "100") -> dict:
         "record_id": record_id,
         "fields": {"Name": "Example Person", "Age": "29"},
         "household": [{"name": "Example Head", "age": "58", "relation": "Head"}],
+        "household_extraction": {
+            "present": True,
+            "complete": True,
+            "dwelling_complete": None,
+            "method": "table",
+            "columns": ["name", "age", "relation"],
+            "warnings": [],
+        },
+        "citation_metadata": {
+            "complete": True,
+            "fields": {"source_citation": "Example citation", "source_information": "Example source"},
+            "warnings": [],
+        },
     }
 
 
@@ -89,6 +124,7 @@ def temporary_runtime():
             "LOCK_PATH": state / "queue.lock",
             "LAST_PATH": state / "last_request",
             "AGENTS_DIR": state / "agents",
+            "SESSIONS_DIR": state / "sessions",
             "TABS_PATH": state / "tabs.json",
         }
         with patch.multiple(ga, **values):
@@ -108,17 +144,48 @@ class ParsingTests(unittest.TestCase):
         self.assertEqual(fields["Name"], "Example Person")
         self.assertEqual(fields["Occupation"], "Mechanic")
         self.assertNotIn("Example Head", " ".join(fields.values()))
-        triples = [(m["name"], m["age"], m["relation"]) for m in ga.parse_household(FIXTURE)]
+        household, extraction = ga.parse_household(FIXTURE, "2442")
+        triples = [(m["name"], m["age"], m["relation"]) for m in household]
         self.assertEqual(
             triples,
             [("Example Head", "58", "Head"), ("Example Wife", "45", "Wife"), ("Example Son", "10", "Son")],
         )
+        self.assertFalse(extraction["complete"])
+        self.assertEqual(extraction["method"], "inner_text")
+        citation = ga.parse_citation_metadata(FIXTURE)
+        self.assertTrue(citation["complete"])
+        self.assertIn("Sheet: 8A", citation["fields"]["source_citation"])
+
+    def test_pre_1880_household_uses_two_columns_without_shifting(self):
+        household, extraction = ga.parse_household(PRE_1880_FIXTURE, "7667")
+        self.assertEqual(
+            household,
+            [
+                {"name": "Nancy A Durham", "age": "2/12", "relation": None},
+                {"name": "David Durham", "age": "26", "relation": None},
+                {"name": "Virginia Durham", "age": "17", "relation": None},
+                {"name": "America E Durham", "age": "1", "relation": None},
+            ],
+        )
+        self.assertFalse(extraction["complete"])
+        self.assertIsNone(extraction["dwelling_complete"])
+        self.assertTrue(any("complete census dwelling" in warning for warning in extraction["warnings"]))
+
+    def test_semantic_table_reports_complete_parser_but_unknown_dwelling_scope(self):
+        household, extraction = ga.parse_household_table(
+            {"headers": ["Household Members (Name)", "Age"], "rows": [["A J Haden", "45"], ["Sophia Haden", "43"]]},
+            "7667",
+        )
+        self.assertEqual(household[0], {"name": "A J Haden", "age": "45", "relation": None})
+        self.assertTrue(extraction["complete"])
+        self.assertIsNone(extraction["dwelling_complete"])
+        self.assertTrue(extraction["warnings"])
 
     def test_address_grammar_and_urls(self):
         rec = ga.parse_address("record/2442/58087568")
         self.assertEqual(rec, {"type": "record", "collection": "2442", "id": "58087568"})
         search = ga.parse_address("search/6224?name=Example_Person&birth=1912")
-        self.assertEqual(search, {"type": "search", "collection": "6224", "name": "Example_Person", "birth": "1912"})
+        self.assertEqual(search, ga.search_location("6224", "Example_Person", birth="1912"))
         self.assertEqual(ga.parse_address("collection/6224"), {"type": "collection", "collection": "6224"})
         self.assertIsNone(ga.parse_address("record/not-numeric/1"))
         self.assertIsNone(ga.parse_address("search/6224?name=&other=x"))
@@ -130,6 +197,14 @@ class ParsingTests(unittest.TestCase):
             ga.url_for(search),
             "https://www.ancestry.com/search/collections/6224/?name=Example_Person&birth=1912",
         )
+        filtered = ga.parse_address(
+            "search/6224?name=Example_Person&birth=1912&place=Smith_Kansas&spouse=Mary_Person&birthplace=Kansas&exact=true"
+        )
+        self.assertEqual(
+            ga.url_for(filtered),
+            "https://www.ancestry.com/search/collections/6224/?name=Example_Person&birth=1912_Kansas&residence=Smith_Kansas&spouse=Mary_Person&name_x=1_1",
+        )
+        self.assertNotEqual(ga.location_key(filtered), ga.location_key(search))
         collection = {"type": "collection", "collection": "6224"}
         self.assertEqual(
             ga.location_key(collection),
@@ -161,14 +236,27 @@ class ValidationTests(unittest.TestCase):
 
     def test_parsed_shapes_are_strict(self):
         ga.validate_search_rows([row()], "6224")
-        ga.validate_record_data({"Name": "Example Person"}, [])
+        empty_extraction = {
+            "present": False,
+            "complete": True,
+            "dwelling_complete": None,
+            "method": "none",
+            "columns": [],
+            "warnings": [],
+        }
+        incomplete_citation = {
+            "complete": False,
+            "fields": {},
+            "warnings": ["citation unavailable"],
+        }
+        ga.validate_record_data({"Name": "Example Person"}, [], empty_extraction, incomplete_citation)
         with self.assertRaisesRegex(ga.CockpitError, "another collection"):
             ga.validate_search_rows([row("9999")], "6224")
         with self.assertRaisesRegex(ga.CockpitError, "no detail fields"):
-            ga.validate_record_data({}, [])
+            ga.validate_record_data({}, [], empty_extraction, incomplete_citation)
         malformed = {"name": "Example", "age": "1"}
         with self.assertRaisesRegex(ga.CockpitError, "household member"):
-            ga.validate_record_data({"Name": "Example"}, [malformed])
+            ga.validate_record_data({"Name": "Example"}, [malformed], empty_extraction, incomplete_citation)
         ga.validate_response(SimpleNamespace(status=200))
         with self.assertRaisesRegex(ga.CockpitError, "unsuccessful HTTP"):
             ga.validate_response(SimpleNamespace(status=429))
@@ -181,12 +269,38 @@ class ValidationTests(unittest.TestCase):
             "results",
         )
         fuzzy_loc = {**search_loc(), "name": "Leora_Mundell"}
-        fuzzy = {**row(), "cells": ["Leora Mendell"], "text": "Leora Mendell 1937 Denver"}
+        fuzzy = {**row(), "primary_name": "Leora Mendell", "cells": ["Leora Mendell"], "text": "Leora Mendell 1937 Denver"}
         self.assertEqual(ga.validate_search_outcome(fuzzy_loc, "Search results", [fuzzy]), "results")
 
-        unrelated = {**row(), "cells": ["Someone Else"], "text": "Someone Else 1911 Kansas"}
-        with self.assertRaisesRegex(ga.CockpitError, "unrelated"):
-            ga.validate_search_outcome(search_loc(), "Search results", [unrelated])
+        unrelated = {**row(), "primary_name": "Someone Else", "cells": ["Someone Else"], "text": "Someone Else 1911 Kansas"}
+        self.assertEqual(
+            ga.validate_search_outcome(search_loc(), "Search results", [unrelated]),
+            "no-matching-results-on-page",
+        )
+        spouse_only = {**row(), "primary_name": "Someone Else", "cells": ["Someone Else", "Example Person"]}
+        self.assertEqual(
+            ga.validate_search_outcome(search_loc(), "Search results", [spouse_only]),
+            "no-matching-results-on-page",
+        )
+        exact_loc = {**search_loc(), "exact_name": True}
+        variant = {**row(), "primary_name": "Exemple Person"}
+        self.assertEqual(
+            ga.validate_search_outcome(exact_loc, "Search results", [variant]),
+            "no-matching-results-on-page",
+        )
+        three_word_exact = {**exact_loc, "name": "Example_Middle_Person"}
+        self.assertEqual(
+            ga.validate_search_outcome(three_word_exact, "Search results", [row()]),
+            "no-matching-results-on-page",
+        )
+        self.assertEqual(
+            ga.validate_search_outcome(
+                three_word_exact,
+                "Search results",
+                [{**row(), "primary_name": "Example Middle Person"}],
+            ),
+            "results",
+        )
         with self.assertRaisesRegex(ga.CockpitError, "stable result state"):
             ga.validate_search_outcome(search_loc(), "Search page still loading", [])
         self.assertEqual(
@@ -208,7 +322,7 @@ class ValidationTests(unittest.TestCase):
 
     def test_browser_boundary_is_mocked_and_validated(self):
         class Page:
-            url = "https://www.ancestry.com/search/collections/6224/?name=Example_Person"
+            url = "https://www.ancestry.com/search/collections/6224/?name=Example_Person&birth=1911"
 
             def goto(self, *_args, **_kwargs):
                 return SimpleNamespace(status=200)
@@ -227,6 +341,23 @@ class ValidationTests(unittest.TestCase):
         self.assertEqual(data, search_data())
         self.assertEqual(meta["final_url"], Page.url)
 
+    def test_final_search_url_must_retain_all_requested_filters(self):
+        loc = ga.search_location(
+            "6224",
+            "Example_Person",
+            birth="1911",
+            place="Smith_Kansas",
+            spouse="Mary_Person",
+            birthplace="Kansas",
+            exact_name=True,
+        )
+        ga.validate_final_search_query(loc, ga.url_for(loc))
+        with self.assertRaisesRegex(ga.CockpitError, "dropped or changed"):
+            ga.validate_final_search_query(
+                loc,
+                "https://www.ancestry.com/search/collections/6224/?name=Example_Person&birth=1911_Kansas",
+            )
+
 
 class DurableStoreTests(unittest.TestCase):
     def test_cache_and_state_writes_are_versioned_atomic_and_private(self):
@@ -237,6 +368,7 @@ class DurableStoreTests(unittest.TestCase):
             cache_path = ga.CACHE_DIR / f"{key}.json"
             envelope = json.loads(cache_path.read_text())
             self.assertEqual((envelope["schema"], envelope["version"]), (ga.CACHE_SCHEMA, ga.CACHE_VERSION))
+            self.assertRegex(envelope["meta"]["data_sha256"], r"^[0-9a-f]{64}$")
             self.assertEqual(stat.S_IMODE(cache_path.stat().st_mode), 0o600)
             self.assertEqual(stat.S_IMODE(ga.CACHE_DIR.stat().st_mode), 0o700)
             self.assertEqual(list(ga.CACHE_DIR.glob(".*.tmp")), [])
@@ -250,6 +382,13 @@ class DurableStoreTests(unittest.TestCase):
             self.assertEqual(stat.S_IMODE(ga.AGENTS_DIR.stat().st_mode), 0o700)
             self.assertEqual(ga.load_agent("alice"), state)
 
+            session = ga.session_summary("alice")
+            session_path = ga.SESSIONS_DIR / f"{ga.agent_disk_key('alice')}.json"
+            self.assertEqual(session["live_hits"], 0)
+            self.assertTrue(session_path.exists())
+            self.assertEqual(stat.S_IMODE(session_path.stat().st_mode), 0o600)
+            self.assertEqual(stat.S_IMODE(ga.SESSIONS_DIR.stat().st_mode), 0o700)
+
             tabs = ga.new_tabs_state()
             ga.save_json(ga.TABS_PATH, tabs)
             self.assertEqual(ga.load_tabs(), tabs)
@@ -258,7 +397,7 @@ class DurableStoreTests(unittest.TestCase):
             pacing = json.loads(ga.LAST_PATH.read_text())
             self.assertEqual(
                 (pacing["schema"], pacing["version"], pacing["last_request_epoch"]),
-                (ga.REQUEST_STATE_SCHEMA, ga.STATE_VERSION, 1234.5),
+                (ga.REQUEST_STATE_SCHEMA, ga.REQUEST_STATE_VERSION, 1234.5),
             )
             self.assertEqual(stat.S_IMODE(ga.TABS_PATH.stat().st_mode), 0o600)
             self.assertEqual(stat.S_IMODE(ga.LAST_PATH.stat().st_mode), 0o600)
@@ -285,6 +424,74 @@ class DurableStoreTests(unittest.TestCase):
             }))
             with self.assertRaisesRegex(ga.CockpitError, "unsupported ancestry cache format"):
                 ga.cache_read("search-v1")
+
+    def test_cache_payload_digest_detects_tampering(self):
+        with temporary_runtime():
+            key = ga.location_key(record_loc())
+            ga.cache_write(key, record_data(), {"kind": "record", "collection": "6224", "id": "100"})
+            path = ga.CACHE_DIR / f"{key}.json"
+            envelope = json.loads(path.read_text())
+            envelope["data"]["fields"]["Age"] = "30"
+            ga.atomic_write_json(path, envelope)
+            with self.assertRaisesRegex(ga.CockpitError, "digest mismatch"):
+                ga.cache_read_envelope(key)
+
+    def test_explicit_v2_migration_preserves_data_and_marks_record_extraction_untrusted(self):
+        with temporary_runtime():
+            ga.ensure_state()
+            old_search_key = ga.cache_key(
+                "search", {"collection": "6224", "name": "Example_Person", "birth": "1911"}
+            )
+            legacy_search_data = search_data()
+            for field in ("place", "spouse", "birthplace", "exact_name", "result_set"):
+                legacy_search_data.pop(field)
+            legacy_search_data["results"] = [
+                {key: value for key, value in row().items() if key != "primary_name"}
+            ]
+            ga.atomic_write_json(ga.CACHE_DIR / f"{old_search_key}.json", {
+                "schema": ga.CACHE_SCHEMA,
+                "version": 2,
+                "meta": {
+                    "kind": "search",
+                    "collection": "6224",
+                    "name": "Example_Person",
+                    "birth": "1911",
+                    "fetched_at": "2026-01-01T00:00:00Z",
+                },
+                "data": legacy_search_data,
+            })
+            legacy_record_data = record_data()
+            legacy_record_data.pop("household_extraction")
+            legacy_record_data.pop("citation_metadata")
+            record_key = ga.location_key(record_loc())
+            ga.atomic_write_json(ga.CACHE_DIR / f"{record_key}.json", {
+                "schema": ga.CACHE_SCHEMA,
+                "version": 2,
+                "meta": {
+                    "kind": "record",
+                    "collection": "6224",
+                    "id": "100",
+                    "fetched_at": "2026-01-01T00:00:00Z",
+                },
+                "data": legacy_record_data,
+            })
+
+            with patch.object(sys, "argv", ["gen ancestry", "cache", "stats"]):
+                code, before = captured(ga.main)
+            self.assertEqual(code, 1)
+            self.assertIn("cache migrate", before["error"])
+
+            with patch.object(sys, "argv", ["gen ancestry", "cache", "migrate"]):
+                code, migrated = captured(ga.main)
+            self.assertEqual(code, 0)
+            self.assertEqual(migrated["migrated"], 2)
+            self.assertFalse((ga.CACHE_DIR / f"{old_search_key}.json").exists())
+            search_meta_out, search_out = ga.cache_read_location(search_loc())
+            self.assertEqual(search_out["results"][0]["primary_name"], "Example Person")
+            self.assertEqual(search_meta_out["migrated_from_version"], 2)
+            _record_meta, record_out = ga.cache_read_location(record_loc())
+            self.assertFalse(record_out["household_extraction"]["complete"])
+            self.assertIn("legacy extraction untrusted", record_out["household_extraction"]["warnings"][0])
 
     def test_cache_envelope_requires_strict_timestamp(self):
         loc = search_loc()
@@ -322,6 +529,7 @@ class DurableStoreTests(unittest.TestCase):
             with self.assertRaisesRegex(ga.CockpitError, "cache miss"):
                 ga.cached_or_fetch(
                     "search-miss",
+                    agent="alice",
                     fresh=False,
                     cache_only=True,
                     fetch=fetch,
@@ -339,6 +547,7 @@ class DurableStoreTests(unittest.TestCase):
                 fetch = Mock()
                 got, was_cached = ga.cached_or_fetch(
                     "search-race",
+                    agent="alice",
                     fresh=False,
                     cache_only=False,
                     fetch=fetch,
@@ -357,6 +566,7 @@ class DurableStoreTests(unittest.TestCase):
             with self.assertRaises(ga.CockpitError):
                 ga.cached_or_fetch(
                     "search-invalid",
+                    agent="alice",
                     fresh=False,
                     cache_only=False,
                     fetch=lambda: ({"ok": True}, {"final_url": "https://www.ancestry.com"}),
@@ -370,14 +580,52 @@ class DurableStoreTests(unittest.TestCase):
             key = ga.location_key(search_loc())
             data, cached = ga.cached_or_fetch(
                 key,
+                agent="alice",
                 fresh=False,
                 cache_only=False,
                 fetch=lambda: (search_data(), {"final_url": ga.url_for(search_loc())}),
-                meta={"kind": "search", "collection": "6224", "name": "Example_Person", "birth": "1911"},
+                meta=search_meta(),
                 validate=lambda value: ga.validate_location_data(search_loc(), value),
             )
             self.assertFalse(cached)
             self.assertEqual(data, ga.cache_read(key))
+            self.assertEqual(ga.session_summary("alice")["live_hits"], 1)
+
+    def test_no_matching_results_on_page_is_a_durable_terminal_outcome(self):
+        with temporary_runtime(), patch.object(ga, "cdp_up", return_value=True), patch.object(ga, "throttle"):
+            loc = search_loc()
+            unrelated = {**row(), "primary_name": "Someone Else", "cells": ["Someone Else"]}
+            data = {
+                **search_data(),
+                "outcome": "no-matching-results-on-page",
+                "result_set": ga.search_result_set_metadata("no-matching-results-on-page"),
+                "results": [unrelated],
+            }
+            key = ga.location_key(loc)
+            first, cached = ga.cached_or_fetch(
+                key,
+                agent="alice",
+                fresh=False,
+                cache_only=False,
+                fetch=lambda: (data, {"final_url": ga.url_for(loc)}),
+                meta=search_meta(),
+                validate=lambda value: ga.validate_location_data(loc, value),
+            )
+            self.assertFalse(cached)
+            self.assertEqual(first["outcome"], "no-matching-results-on-page")
+            with patch.object(ga, "cdp_up") as cdp:
+                second, cached = ga.cached_or_fetch(
+                    key,
+                    agent="alice",
+                    fresh=False,
+                    cache_only=False,
+                    fetch=Mock(),
+                    meta=search_meta(),
+                    validate=lambda value: ga.validate_location_data(loc, value),
+                )
+            self.assertTrue(cached)
+            self.assertEqual(second, first)
+            cdp.assert_not_called()
 
     def test_record_clear_requires_two_explicit_confirmations(self):
         with temporary_runtime():
@@ -387,7 +635,7 @@ class DurableStoreTests(unittest.TestCase):
             ga.cache_write(
                 search_key,
                 search_data(),
-                {"kind": "search", "collection": "6224", "name": "Example_Person", "birth": "1911"},
+                search_meta(),
             )
             args = SimpleNamespace(action="clear", kind=None, all=True, include_records=False, confirm=None)
             code, output = captured(ga.cmd_cache, args)
@@ -461,7 +709,7 @@ class DurableStoreTests(unittest.TestCase):
             ga.cache_write(
                 ga.location_key(search_loc()),
                 search_data(),
-                {"kind": "search", "collection": "6224", "name": "Example_Person", "birth": "1911"},
+                search_meta(),
             )
             args = SimpleNamespace(action="stats", kind="record")
             code, output = captured(ga.cmd_cache, args)
@@ -520,6 +768,143 @@ class DurableStoreTests(unittest.TestCase):
                 code, output = captured(ga.main)
             self.assertEqual(code, 1)
             self.assertIn("only valid with cache clear", output["error"])
+
+
+class SessionAccountingTests(unittest.TestCase):
+    def test_live_failures_are_charged_but_cache_only_and_cdp_down_are_not(self):
+        with temporary_runtime(), patch.object(ga, "throttle"):
+            with patch.object(ga, "cdp_up", return_value=False):
+                with self.assertRaisesRegex(ga.CockpitError, "cdp browser"):
+                    ga.cached_or_fetch(
+                        "missing",
+                        agent="alice",
+                        fresh=False,
+                        cache_only=False,
+                        fetch=Mock(),
+                        meta={"kind": "record"},
+                        validate=lambda _value: None,
+                    )
+            self.assertEqual(ga.session_summary("alice")["live_hits"], 0)
+
+            with self.assertRaisesRegex(ga.CockpitError, "cache miss"):
+                ga.cached_or_fetch(
+                    "missing",
+                    agent="alice",
+                    fresh=False,
+                    cache_only=True,
+                    fetch=Mock(),
+                    meta={"kind": "record"},
+                    validate=lambda _value: None,
+                )
+            self.assertEqual(ga.session_summary("alice")["live_hits"], 0)
+
+            with patch.object(ga, "cdp_up", return_value=True):
+                with self.assertRaisesRegex(ga.CockpitError, "fetch failed"):
+                    ga.cached_or_fetch(
+                        "missing",
+                        agent="alice",
+                        fresh=True,
+                        cache_only=False,
+                        fetch=Mock(side_effect=ga.CockpitError("fetch failed")),
+                        meta={"kind": "record"},
+                        validate=lambda _value: None,
+                    )
+            session = ga.session_summary("alice")
+            self.assertEqual(session["live_hits"], 1)
+            self.assertEqual(session["by_kind"]["record"]["live"], 1)
+
+    def test_session_updates_are_serialized_across_contending_workers(self):
+        with temporary_runtime():
+            def charge(_index):
+                with ga.cache_lock():
+                    ga.record_session_access("alice", "search", cached=False)
+
+            with ThreadPoolExecutor(max_workers=4) as pool:
+                list(pool.map(charge, range(12)))
+            session = ga.session_summary("alice")
+            self.assertEqual(session["live_hits"], 12)
+            self.assertEqual(session["by_kind"]["search"]["live"], 12)
+
+    def test_session_stats_and_guarded_reset(self):
+        with temporary_runtime():
+            with ga.cache_lock():
+                ga.record_session_access("alice", "collection", cached=False)
+            with patch.object(sys, "argv", ["gen ancestry", "session", "stats", "--agent", "alice"]):
+                code, stats = captured(ga.main)
+            self.assertEqual(code, 0)
+            self.assertEqual(stats["session"]["live_hits"], 1)
+            old_session_id = stats["session"]["session_id"]
+
+            with patch.object(sys, "argv", ["gen ancestry", "session", "reset", "--agent", "alice"]):
+                code, refused = captured(ga.main)
+            self.assertEqual(code, 1)
+            self.assertIn(ga.SESSION_RESET_CONFIRMATION, refused["error"])
+
+            with patch.object(sys, "argv", [
+                "gen ancestry", "session", "reset", "--agent", "alice",
+                "--confirm", ga.SESSION_RESET_CONFIRMATION,
+            ]):
+                code, reset = captured(ga.main)
+            self.assertEqual(code, 0)
+            self.assertEqual(reset["session"]["live_hits"], 0)
+            self.assertNotEqual(reset["session"]["session_id"], old_session_id)
+
+    def test_stateless_record_accepts_agent_and_emits_session(self):
+        with temporary_runtime():
+            loc = record_loc()
+            ga.cache_write(ga.location_key(loc), record_data(), {"kind": "record", "collection": "6224", "id": "100"})
+            with patch.object(sys, "argv", [
+                "gen ancestry", "record", "--collection", "6224", "--id", "100",
+                "--agent", "alice", "--cache-only",
+            ]):
+                code, output = captured(ga.main)
+            self.assertEqual(code, 0)
+            self.assertEqual(output["agent"], "alice")
+            self.assertEqual(output["session"]["live_hits"], 0)
+            self.assertEqual(output["session"]["cache_hits"], 1)
+
+    def test_stateless_search_cli_canonically_applies_every_filter(self):
+        with temporary_runtime(), patch.object(ga, "cdp_up") as cdp:
+            loc = ga.search_location(
+                "6224",
+                "Example_Person",
+                birth="1911",
+                place="Smith_Kansas",
+                spouse="Mary_Person",
+                birthplace="Kansas",
+                exact_name=True,
+            )
+            data = {**search_data(), **ga.search_filters(loc)}
+            ga.cache_write(
+                ga.location_key(loc),
+                data,
+                {"kind": "search", "collection": "6224", **ga.search_filters(loc)},
+            )
+            with patch.object(sys, "argv", [
+                "gen ancestry", "search", "--collection", "6224", "--name", "Example_Person",
+                "--birth", "1911", "--place", "Smith_Kansas", "--spouse", "Mary_Person",
+                "--birthplace", "Kansas", "--exact-name", "--agent", "alice", "--cache-only",
+            ]):
+                code, output = captured(ga.main)
+            self.assertEqual(code, 0)
+            self.assertTrue(output["cached"])
+            self.assertEqual({field: output[field] for field in ga.SEARCH_TEXT_FILTERS}, {
+                "birth": "1911",
+                "place": "Smith_Kansas",
+                "spouse": "Mary_Person",
+                "birthplace": "Kansas",
+            })
+            self.assertTrue(output["exact_name"])
+            cdp.assert_not_called()
+
+    def test_stale_agent_state_is_rejected_after_search_schema_cutover(self):
+        with temporary_runtime():
+            ga.ensure_state()
+            path = ga.AGENTS_DIR / f"{ga.agent_disk_key('alice')}.json"
+            stale = {**ga.new_agent_state(), "version": ga.AGENT_STATE_VERSION - 1}
+            ga.atomic_write_json(path, stale)
+            with self.assertRaisesRegex(ga.CockpitError, "unsupported agent state"):
+                ga.load_agent("alice")
 
 
 class NavigationTests(unittest.TestCase):

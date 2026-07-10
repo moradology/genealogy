@@ -9,6 +9,7 @@ to prove that every generated link has a real target.
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import html as html_lib
 import json
 import re
@@ -82,6 +83,10 @@ GAP_FIELDS = frozenset(
         "evidence_refs",
         "source_refs",
         "public_anchor",
+        "status",
+        "resolution_note",
+        "resolved_on",
+        "owner_follow_up_required",
         "pedigree",
     }
 )
@@ -283,7 +288,7 @@ def load_family_core(
                 raise ProjectionError(
                     f"{where}: relationship endpoints must be distinct"
                 )
-            if row["status"] not in {"accepted", "hypothesis"}:
+            if row["status"] not in {"accepted", "hypothesis", "rejected"}:
                 raise ProjectionError(f"{where}.status is invalid")
             if row["confidence"] not in CONFIDENCES:
                 raise ProjectionError(f"{where}.confidence is invalid")
@@ -370,6 +375,62 @@ def load_family_core(
             for field in ("evidence_refs", "source_refs"):
                 _require_sorted_strings(row[field], f"{where}.{field}")
             _optional_anchor(row["public_anchor"], GAP_ID_RE, f"{where}.public_anchor")
+            if row["status"] not in {"open", "resolved"}:
+                raise ProjectionError(f"{where}.status is invalid")
+            if not isinstance(row["resolution_note"], str):
+                raise ProjectionError(f"{where}.resolution_note must be a string")
+            if row["resolved_on"] is not None:
+                if not isinstance(row["resolved_on"], str):
+                    raise ProjectionError(
+                        f"{where}.resolved_on must be null or an ISO date"
+                    )
+                try:
+                    parsed_date = dt.date.fromisoformat(row["resolved_on"])
+                except ValueError as exc:
+                    raise ProjectionError(
+                        f"{where}.resolved_on must be null or an ISO date"
+                    ) from exc
+                if parsed_date.isoformat() != row["resolved_on"]:
+                    raise ProjectionError(
+                        f"{where}.resolved_on must use YYYY-MM-DD"
+                    )
+            if type(row["owner_follow_up_required"]) is not bool:
+                raise ProjectionError(
+                    f"{where}.owner_follow_up_required must be boolean"
+                )
+            if row["status"] == "open" and row["resolved_on"] is not None:
+                raise ProjectionError(f"{where}: open gap resolved_on must be null")
+            if row["status"] == "resolved":
+                if open_roles:
+                    raise ProjectionError(
+                        f"{where}: resolved gap open_roles must be empty"
+                    )
+                if candidates:
+                    raise ProjectionError(
+                        f"{where}: resolved gap candidate_persons must be empty"
+                    )
+                if not row["resolution_note"].strip():
+                    raise ProjectionError(
+                        f"{where}: resolved gap resolution_note must not be empty"
+                    )
+                if row["resolved_on"] is None:
+                    raise ProjectionError(
+                        f"{where}: resolved gap resolved_on is required"
+                    )
+                if (
+                    row["public_anchor"] is not None
+                    and row["owner_follow_up_required"] is not True
+                ):
+                    raise ProjectionError(
+                        f"{where}: resolved public gap must require owner follow-up"
+                    )
+            if (
+                row["owner_follow_up_required"]
+                and not row["resolution_note"].strip()
+            ):
+                raise ProjectionError(
+                    f"{where}: owner follow-up requires a resolution note"
+                )
             pedigree = row["pedigree"]
             if not isinstance(pedigree, dict) or set(pedigree) != set(
                 BRANCH_CODES.values()
@@ -405,6 +466,12 @@ def load_family_core(
                             f"{occupied_gap_slots[key]} and {gap_id}"
                         )
                     occupied_gap_slots[key] = gap_id
+            if row["status"] == "resolved" and any(
+                pedigree[code] for code in BRANCH_CODES.values()
+            ):
+                raise ProjectionError(
+                    f"{where}: resolved gap pedigree slots must be empty"
+                )
             identifier = gap_id
             gaps.append(row)
         else:
@@ -425,6 +492,7 @@ def _parent_map(
     for relationship in relationships:
         if (
             relationship["relationship_type"] == "parent_of"
+            and relationship["status"] != "rejected"
             and branch in relationship["branches"]
         ):
             key = (relationship["person_b"], relationship["parent_role"])
@@ -439,7 +507,10 @@ def _require_parent_acyclic(
 
     children: dict[str, list[str]] = {person["id"]: [] for person in people}
     for relationship in relationships:
-        if relationship["relationship_type"] == "parent_of":
+        if (
+            relationship["relationship_type"] == "parent_of"
+            and relationship["status"] != "rejected"
+        ):
             children[relationship["person_a"]].append(relationship["person_b"])
 
     state: dict[str, int] = {}
@@ -607,7 +678,7 @@ def build_payload(
                 "a": code,
                 "k": "gap",
                 "ah": slots,
-                "t": "open",
+                "t": "documented" if gap["status"] == "resolved" else "open",
                 "h": gap["public_anchor"],
             }
             if gap["case_refs"]:
