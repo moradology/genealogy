@@ -667,8 +667,8 @@ function ok(label, cond, detail) {
   // with page height. Budget = larger platform's measure + 500. Re-measure
   // procedure: local measure + 1,200 (covers CI drift + headroom), confirm on the
   // next CI run. Prior local measures: 19,700 pre-W2, 23,511 post-W2, 26,132
-  // post-W4, 26,703 post-correction, 29,725 post-W5 Docket, 31,108 post-plate-keys, 36,462 post-Slate-3 reader layer, 37,742 post-Mundell/Clemans intake.
-  ok('L2 page height within layout budget (<38942)', desktop.scrollH < 38942, desktop.scrollH);
+  // post-W4, 26,703 post-correction, 29,725 post-W5 Docket, 31,108 post-plate-keys, 36,462 post-Slate-3 reader layer, 37,742 post-Mundell/Clemans intake, 40,935 post family-card air pass (owner-approved keepsake readability: line-height 1.62, card padding, grid gaps).
+  ok('L2 page height within layout budget (<42135)', desktop.scrollH < 42135, desktop.scrollH);
 
   for (const [w, h] of [[320, 700], [390, 844], [768, 1024], [1024, 768]]) {
     await page.setViewportSize({ width: w, height: h });
