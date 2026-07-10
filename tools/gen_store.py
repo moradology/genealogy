@@ -21,11 +21,21 @@ sys.path.insert(0, str(TOOLS_DIR))
 
 import check_cases  # noqa: E402
 import check_evidence  # noqa: E402
+import check_family_core  # noqa: E402
 import check_traces  # noqa: E402
 
 
 SHARDS = ("zimmerman", "mundell", "dible", "connelly")
-KINDS = ("case", "evidence", "source", "trace", "geo", "person")
+KINDS = (
+    "case",
+    "evidence",
+    "source",
+    "trace",
+    "geo",
+    "person",
+    "relationship",
+    "gap",
+)
 TRACE_SLUG_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*\Z")
 TRACE_DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}\Z")
 
@@ -155,6 +165,29 @@ def atomic_replace(path: Path, data: bytes) -> None:
     tmp = path.with_name(path.name + ".tmp")
     tmp.write_bytes(data)
     os.replace(tmp, path)
+
+
+def atomic_create(path: Path, data: bytes) -> None:
+    """Publish a complete new file without ever replacing an existing path.
+
+    The payload is written and synced under a unique, exclusively-created
+    temporary name in the destination directory. Linking that inode into its
+    final name is atomic and fails with ``FileExistsError`` if anything already
+    owns the destination, including a writer that does not honor our flock.
+    """
+    fd, tmp_name = tempfile.mkstemp(
+        prefix=f".{path.name}.", suffix=".tmp", dir=path.parent
+    )
+    tmp = Path(tmp_name)
+    try:
+        with os.fdopen(fd, "wb") as stream:
+            os.fchmod(stream.fileno(), 0o644)
+            stream.write(data)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.link(tmp, path)
+    finally:
+        tmp.unlink(missing_ok=True)
 
 
 def validate_candidate_evidence(root: Path, shard: str, candidate: bytes):
@@ -382,7 +415,17 @@ def command_trace_new(args: argparse.Namespace, root: Path) -> int:
                 1,
             )
 
-        path.write_text(content, encoding="utf-8")
+        try:
+            atomic_create(path, content.encode("utf-8"))
+        except FileExistsError:
+            return stop(
+                {
+                    "command": "trace.new",
+                    "ok": False,
+                    "errors": [f"trace already exists: {filename}"],
+                },
+                1,
+            )
         return stop(
             {
                 "command": "trace.new",
@@ -411,8 +454,11 @@ def trace_documents(root: Path) -> list[tuple[Path, dict[str, Any]]]:
 
 
 def people_records(root: Path) -> list[dict[str, Any]]:
-    html = (root / "index.html").read_text(encoding="utf-8")
-    return check_cases.people_index(html)
+    return read_jsonl(root / "research" / "people" / "people.jsonl")
+
+
+def family_records(root: Path) -> list[dict[str, Any]]:
+    return read_jsonl(root / "research" / "people" / "relationships.jsonl")
 
 
 def geo_records(root: Path) -> list[tuple[str, dict[str, Any]]]:
@@ -455,8 +501,13 @@ def resolve_id(root: Path, wanted: str) -> tuple[str | None, dict[str, Any] | No
             return "geo", record, {wanted}
 
     for record in people_records(root):
-        if record.get("i") == wanted:
+        if record.get("id") == wanted:
             return "person", record, {wanted}
+
+    for record in family_records(root):
+        if record.get("id") == wanted:
+            kind = "gap" if record.get("node_type") == "gap" else "relationship"
+            return kind, record, {wanted}
 
     return None, None, {wanted}
 
@@ -468,6 +519,19 @@ def record_refs(record: dict[str, Any], fields: tuple[str, ...]) -> set[str]:
         if isinstance(value, list):
             refs.update(item for item in value if isinstance(item, str))
     return refs
+
+
+def nested_strings(value: Any):
+    """Yield exact string values from a JSON-shaped record."""
+
+    if isinstance(value, str):
+        yield value
+    elif isinstance(value, dict):
+        for nested in value.values():
+            yield from nested_strings(nested)
+    elif isinstance(value, list):
+        for nested in value:
+            yield from nested_strings(nested)
 
 
 def referenced_by(root: Path, aliases: set[str]) -> dict[str, list[str]]:
@@ -492,10 +556,39 @@ def referenced_by(root: Path, aliases: set[str]) -> dict[str, list[str]]:
         if refs & aliases and isinstance(fields.get("id"), str):
             traces.append(fields["id"])
 
+    relationships: list[str] = []
+    for record in family_records(root):
+        refs = record_refs(
+            record,
+            (
+                "evidence_refs",
+                "source_refs",
+                "case_refs",
+                "subject_persons",
+                "candidate_persons",
+            ),
+        )
+        for field in ("person_a", "person_b"):
+            value = record.get(field)
+            if isinstance(value, str):
+                refs.add(value)
+        if refs & aliases and isinstance(record.get("id"), str):
+            relationships.append(record["id"])
+
+    geo: list[str] = []
+    for geo_id, record in geo_records(root):
+        # Feature ids are definitions; only their content can refer to another
+        # record. Exact-value matching avoids treating names or URLs as ids.
+        content = record.get("properties", record)
+        if set(nested_strings(content)) & aliases:
+            geo.append(geo_id)
+
     return {
         "cases": sorted(cases),
         "evidence": sorted(evidence),
         "traces": sorted(traces),
+        "relationships": sorted(relationships),
+        "geo": sorted(set(geo)),
     }
 
 
@@ -528,14 +621,17 @@ def command_show(args: argparse.Namespace, root: Path) -> int:
 def validate_cases(root: Path) -> tuple[bool, list[str]]:
     html = (root / "index.html").read_text(encoding="utf-8")
     records = read_jsonl(root / "research" / "cases" / "cases.jsonl")
-    person_ids = set(re.findall(r'id="(person\.[A-Za-z0-9_.-]+)"', html))
     trace_dir = root / "research" / "reasoning-traces"
     trace_names = {path.name for path in trace_dir.glob("20*.md")}
     failures = check_cases.core_failures(
         records,
         check_cases.docket_records(html),
-        check_cases.people_index(html),
-        person_ids,
+        check_cases.canonical_gaps(
+            root / "research" / "people" / "relationships.jsonl"
+        ),
+        check_cases.canonical_person_ids(
+            root / "research" / "people" / "people.jsonl"
+        ),
         check_cases.evidence_case_index(root),
         trace_names,
     )
@@ -561,6 +657,7 @@ def latest_trace(root: Path) -> str:
 
 
 def command_status(_args: argparse.Namespace, root: Path) -> int:
+    family_result = check_family_core.validate_repository(root=root)
     evidence_result = check_evidence.validate_repository(root=root)
     cases_ok, _case_errors = validate_cases(root)
     traces_result = check_traces.validate_repository(root=root)
@@ -578,6 +675,7 @@ def command_status(_args: argparse.Namespace, root: Path) -> int:
         for shard in SHARDS
     }
     validators = {
+        "family": family_result.ok,
         "evidence": evidence_result.ok,
         "cases": cases_ok,
         "traces": traces_result.ok,
@@ -588,6 +686,11 @@ def command_status(_args: argparse.Namespace, root: Path) -> int:
             "command": "status",
             "ok": healthy,
             "validators": validators,
+            "family": {
+                "people": family_result.person_count,
+                "relationships": family_result.relationship_count,
+                "gaps": family_result.gap_count,
+            },
             "cases": cases,
             "evidence": {"total": sum(by_shard.values()), "by_shard": by_shard},
             "latest_trace": latest_trace(root),

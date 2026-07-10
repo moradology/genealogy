@@ -5,7 +5,7 @@ date: 2026-07-07
 status: active
 confidence: lead
 case_refs: ["case.02"]
-person_refs: ["person.catherine_zinkle", "person.zimmerman.john_paul", "person.zimmerman.michael"]
+person_refs: ["person.zimmerman.john_paul", "person.zimmerman.michael", "person.zinkle.catherine"]
 evidence_refs: []
 source_refs: ["src.archion-mainhardt-eheregister-1850-1870-band-15.6bdbdcfb", "src.archion-mainhardt-familienregister-1808-1918-band-25.fe546c15", "src.archion-mainhardt-taufregister-1835-1843-band-7.5c81429a", "src.archion-mainhardt-taufregister-1859-1877-band-9.baf3f1e8", "src.john-paul-zimmerman-familysearch.68be8f2c", "src.michael-john-zimmerman-sr-familysearch.8c643069", "src.paul-michael-zimmerman-familysearch.e53a9c95"]
 geo_refs: ["event.zimmerman.john_paul_household.1880", "event.zimmerman.michael_birth.1869-10-25", "family_link.john_paul_household_to_michael", "target.zimmerman.mainhardt_archion"]

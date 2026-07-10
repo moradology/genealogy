@@ -4,7 +4,9 @@
 from __future__ import annotations
 
 import copy
+import json
 import sys
+import tempfile
 from pathlib import Path
 
 import check_traces
@@ -30,6 +32,65 @@ if universe_errors:
     problems.append(f"canonical universes fail: {universe_errors}")
 if failures(documents):
     problems.append(f"baseline reasoning traces fail: {failures(documents)}")
+
+with tempfile.TemporaryDirectory() as temp_dir:
+    fixture_root = Path(temp_dir)
+    for directory in (
+        "research/cases",
+        "research/people",
+        "research/sources",
+        "research/evidence",
+    ):
+        (fixture_root / directory).mkdir(parents=True, exist_ok=True)
+    (fixture_root / "research/cases/cases.jsonl").write_text(
+        json.dumps({"id": "case.01", "node_type": "case"}) + "\n",
+        encoding="utf-8",
+    )
+    (fixture_root / "research/people/people.jsonl").write_text(
+        json.dumps({"id": "person.canonical", "node_type": "person"})
+        + "\n"
+        + json.dumps(
+            {"id": "person.test-hyphen.extra", "node_type": "person"}
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    (fixture_root / "research/sources/sources.jsonl").write_text(
+        json.dumps({"id": "src.test"}) + "\n", encoding="utf-8"
+    )
+    (fixture_root / "research/evidence/test.jsonl").write_text(
+        json.dumps({"id": "ev.test"}) + "\n", encoding="utf-8"
+    )
+    (fixture_root / "index.html").write_text(
+        '<div id="person.html_only"></div>', encoding="utf-8"
+    )
+    (fixture_root / "ancestry_geospatial.geojson").write_text(
+        json.dumps(
+            {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "id": "event.geo-only",
+                        "properties": {"person_id": "person.geo_only"},
+                        "geometry": None,
+                    }
+                ],
+                "place_registry": {},
+            }
+        ),
+        encoding="utf-8",
+    )
+    fixture_universes, fixture_errors = check_traces.load_universes(fixture_root)
+    if fixture_errors:
+        problems.append(f"canonical-only universe fixture fails: {fixture_errors}")
+    if fixture_universes.people != frozenset(
+        {"person.canonical", "person.test-hyphen.extra"}
+    ):
+        problems.append(
+            "HTML/Geo-only person leaked into the canonical trace universe: "
+            f"{sorted(fixture_universes.people)}"
+        )
 
 missing_frontmatter = copy.deepcopy(documents)
 name = "2026-07-08-slate3-evidence-gates.md"

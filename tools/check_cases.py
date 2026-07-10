@@ -12,6 +12,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES = ROOT / "research" / "cases" / "cases.jsonl"
+PEOPLE = ROOT / "research" / "people" / "people.jsonl"
+RELATIONSHIPS = ROOT / "research" / "people" / "relationships.jsonl"
 ALLOWED_STATUS = frozenset({"open", "in_conflict", "needs_pull", "closed"})
 ALLOWED_BRANCH = frozenset({"zimmerman", "mundell", "dible", "connelly"})
 CASE_RE = re.compile(
@@ -43,14 +45,24 @@ def docket_records(html: str) -> dict[str, dict[str, str]]:
     return records
 
 
-def people_index(html: str) -> list[dict]:
-    match = re.search(
-        r'<script[^>]*type="application/json"[^>]*id="people-index"[^>]*>(.*?)</script>',
-        html,
-        re.S | re.I,
-    )
-    assert match is not None
-    return json.loads(match.group(1))["people"]
+def canonical_person_ids(path: Path = PEOPLE) -> set[str]:
+    """Return the only person-reference universe: canonical actual people."""
+
+    return {
+        record["id"]
+        for record in read_jsonl(path)
+        if record.get("node_type") == "person" and isinstance(record.get("id"), str)
+    }
+
+
+def canonical_gaps(path: Path = RELATIONSHIPS) -> list[dict]:
+    """Return canonical unresolved-family records used by the public projection."""
+
+    return [
+        record
+        for record in read_jsonl(path)
+        if record.get("node_type") == "gap"
+    ]
 
 
 def evidence_case_index(root: Path = ROOT) -> dict[str, set[str]]:
@@ -64,7 +76,7 @@ def evidence_case_index(root: Path = ROOT) -> dict[str, set[str]]:
 def core_failures(
     records: list[dict],
     docket: dict[str, dict[str, str]],
-    people: list[dict],
+    gaps: list[dict],
     person_ids: set[str],
     evidence_cases: dict[str, set[str]],
     trace_names: set[str],
@@ -125,28 +137,35 @@ def core_failures(
                 failures.append(
                     f"{case_id} Docket {field} drift: {projected[field]!r} != {canonical[field]!r}")
 
-    for person in people:
-        case_id = person.get("c")
-        if not case_id:
+    for gap in gaps:
+        gap_id = gap.get("id", "<gap without id>")
+        case_refs = gap.get("case_refs")
+        if not isinstance(case_refs, list):
+            failures.append(f"{gap_id} case_refs must be a list")
             continue
-        if case_id not in by_id:
-            failures.append(f"{person.get('i')} points to unknown {case_id}")
-        elif person.get("t") == "open" and by_id[case_id]["status"] == "closed":
-            failures.append(f"open slot {person.get('i')} points to closed {case_id}")
+        if gap.get("public_anchor") is not None and not case_refs:
+            failures.append(f"published gap {gap_id} must cite an open case")
+        for case_id in case_refs:
+            if case_id not in by_id:
+                failures.append(f"{gap_id} points to unknown {case_id}")
+            elif (
+                gap.get("public_anchor") is not None
+                and by_id[case_id]["status"] == "closed"
+            ):
+                failures.append(f"published gap {gap_id} points to closed {case_id}")
     return failures
 
 
 def main() -> int:
     html = (ROOT / "index.html").read_text()
     records = read_jsonl(CASES)
-    person_ids = set(re.findall(r'id="(person\.[A-Za-z0-9_.-]+)"', html))
     trace_dir = ROOT / "research" / "reasoning-traces"
     traces = {path.name for path in trace_dir.glob("20*.md")}
     failures = core_failures(
         records,
         docket_records(html),
-        people_index(html),
-        person_ids,
+        canonical_gaps(),
+        canonical_person_ids(),
         evidence_case_index(),
         traces,
     )
@@ -163,7 +182,10 @@ def main() -> int:
             print(failure, file=sys.stderr)
         print(f"check_cases: {len(failures)} failure(s)", file=sys.stderr)
         return 1
-    print(f"check_cases: {len(records)} canonical cases match the Docket and open-slot contract")
+    print(
+        f"check_cases: {len(records)} canonical cases match the Docket "
+        "and published-gap contract"
+    )
     return 0
 
 

@@ -50,6 +50,16 @@ class EvidenceFixture:
         self._tmp = tempfile.TemporaryDirectory()
         self.root = Path(self._tmp.name)
         (self.root / "research/evidence").mkdir(parents=True)
+        (self.root / "research/people").mkdir(parents=True)
+        (self.root / "research/cases").mkdir(parents=True)
+        (self.root / "research/people/people.jsonl").write_text(
+            json.dumps({"id": "person.test", "node_type": "person"}) + "\n",
+            encoding="utf-8",
+        )
+        (self.root / "research/cases/cases.jsonl").write_text(
+            json.dumps({"id": "case.01", "node_type": "case"}) + "\n",
+            encoding="utf-8",
+        )
         (self.root / "index.html").write_text(
             '<div id="person.test"></div><section id="case.01"></section>',
             encoding="utf-8",
@@ -95,6 +105,19 @@ class EvidenceValidatorTests(unittest.TestCase):
         self.assertEqual(result.record_count, 1)
         self.assertEqual(result.pull_count, 1)
 
+    def test_canonical_hyphenated_multisegment_person_id_is_accepted(self) -> None:
+        person_id = "person.test-hyphen.extra"
+        (self.fixture.root / "research/people/people.jsonl").write_text(
+            json.dumps({"id": person_id, "node_type": "person"}) + "\n",
+            encoding="utf-8",
+        )
+        record = valid_record()
+        record["person_refs"] = [person_id]
+        record["supports"] = ["case.01", person_id]
+        self.fixture.write([record])
+        result = self.fixture.validate()
+        self.assertTrue(result.ok, result.errors)
+
     def test_duplicate_evidence_id_is_rejected(self) -> None:
         first = valid_record()
         second = copy.deepcopy(first)
@@ -115,6 +138,37 @@ class EvidenceValidatorTests(unittest.TestCase):
         record["supports"] = ["case.01", "person.missing"]
         self.fixture.write([record])
         self.assert_error_contains("unresolved person/case reference", self.fixture.validate())
+
+    def test_html_and_geo_only_person_is_rejected(self) -> None:
+        """Presentation data cannot create a person identity after cutover."""
+
+        record = valid_record()
+        record["person_refs"] = ["person.presentation_only"]
+        record["supports"] = ["case.01", "person.presentation_only"]
+        self.fixture.write([record])
+        (self.fixture.root / "index.html").write_text(
+            '<div id="person.presentation_only"></div><section id="case.01"></section>',
+            encoding="utf-8",
+        )
+        (self.fixture.root / "ancestry_geospatial.geojson").write_text(
+            json.dumps(
+                {
+                    "type": "FeatureCollection",
+                    "features": [
+                        {
+                            "type": "Feature",
+                            "id": "event.presentation-only",
+                            "properties": {"person_id": "person.presentation_only"},
+                            "geometry": None,
+                        }
+                    ],
+                }
+            ),
+            encoding="utf-8",
+        )
+        self.assert_error_contains(
+            "unresolved person/case reference", self.fixture.validate()
+        )
 
     def test_support_endpoint_must_be_in_subject_refs(self) -> None:
         record = valid_record()

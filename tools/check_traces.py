@@ -42,12 +42,12 @@ TRACE_FILE_RE = re.compile(
 )
 TRACE_ID_RE = re.compile(r"trace\.\d{4}-\d{2}-\d{2}\.[a-z0-9]+(?:-[a-z0-9]+)*\Z")
 CASE_ID_RE = re.compile(r"case\.\d{2}\Z")
-PERSON_ID_RE = re.compile(r"person\.[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)*\Z")
+PERSON_ID_RE = re.compile(r"person\.[a-z0-9]+(?:[._-][a-z0-9]+)*\Z")
 EVIDENCE_ID_RE = re.compile(r"ev\.[a-z0-9]+(?:[._-][a-z0-9]+)*\Z")
 SOURCE_ID_RE = re.compile(r"src\.[a-z0-9][A-Za-z0-9_.-]*\Z")
 
 BODY_CASE_RE = re.compile(r"\bcase\.\d{2}\b")
-BODY_PERSON_RE = re.compile(r"\bperson\.[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)*\b")
+BODY_PERSON_RE = re.compile(r"\bperson\.[a-z0-9]+(?:[._-][a-z0-9]+)*\b")
 BODY_EVIDENCE_RE = re.compile(r"\bev\.[a-z0-9]+(?:[._-][a-z0-9]+)*\b")
 BODY_SOURCE_RE = re.compile(r"\bsrc\.[a-z0-9][A-Za-z0-9_.-]*[A-Za-z0-9]\b")
 
@@ -77,17 +77,6 @@ class ValidationResult:
         return not self.errors
 
 
-def _strings(value: Any):
-    if isinstance(value, str):
-        yield value
-    elif isinstance(value, dict):
-        for nested in value.values():
-            yield from _strings(nested)
-    elif isinstance(value, list):
-        for nested in value:
-            yield from _strings(nested)
-
-
 def _read_jsonl_ids(path: Path, label: str, errors: list[str]) -> set[str]:
     ids: set[str] = set()
     if not path.is_file():
@@ -111,6 +100,36 @@ def _read_jsonl_ids(path: Path, label: str, errors: list[str]) -> set[str]:
     return ids
 
 
+def _read_canonical_people(path: Path, errors: list[str]) -> set[str]:
+    """Load actual people only from the canonical family store."""
+
+    ids: set[str] = set()
+    if not path.is_file():
+        errors.append(f"missing canonical person store: {path}")
+        return ids
+    for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        where = f"{path}:{line_number}"
+        if not line.strip():
+            errors.append(f"{where}: blank lines are not allowed in canonical JSONL")
+            continue
+        try:
+            record = json.loads(line)
+        except json.JSONDecodeError as exc:
+            errors.append(f"{where}: invalid person JSON: {exc}")
+            continue
+        if not isinstance(record, dict) or record.get("node_type") != "person":
+            errors.append(f"{where}: canonical person record must have node_type 'person'")
+            continue
+        value = record.get("id")
+        if not isinstance(value, str) or PERSON_ID_RE.fullmatch(value) is None:
+            errors.append(f"{where}: invalid canonical person id {value!r}")
+        elif value in ids:
+            errors.append(f"{where}: duplicate canonical person id {value}")
+        else:
+            ids.add(value)
+    return ids
+
+
 def load_universes(root: Path = ROOT) -> tuple[Universes, list[str]]:
     root = root.resolve()
     errors: list[str] = []
@@ -126,17 +145,9 @@ def load_universes(root: Path = ROOT) -> tuple[Universes, list[str]]:
                 errors.append(f"duplicate canonical evidence id across shards: {evidence_id}")
             evidence.add(evidence_id)
 
-    people: set[str] = set()
-    html_path = root / "index.html"
-    if not html_path.is_file():
-        errors.append("missing index.html; cannot resolve trace person refs")
-    else:
-        people.update(
-            re.findall(
-                r"\bid\s*=\s*['\"](person\.[A-Za-z0-9_.-]+)['\"]",
-                html_path.read_text(encoding="utf-8"),
-            )
-        )
+    people = _read_canonical_people(
+        root / "research/people/people.jsonl", errors
+    )
 
     geo: set[str] = set()
     geo_path = root / "ancestry_geospatial.geojson"
@@ -157,10 +168,6 @@ def load_universes(root: Path = ROOT) -> tuple[Universes, list[str]]:
             registry = geojson.get("place_registry") or {}
             if isinstance(registry, dict):
                 geo.update(key for key in registry if isinstance(key, str))
-            for value in _strings(geojson):
-                if PERSON_ID_RE.fullmatch(value):
-                    people.add(value)
-
     return (
         Universes(
             cases=frozenset(cases),

@@ -5,7 +5,7 @@ date: 2026-07-08
 status: resolved
 confidence: documented
 case_refs: ["case.13", "case.20"]
-person_refs: ["person.long.john_franklin", "person.long.robert_nelson", "person.rev_robert_long"]
+person_refs: ["person.long.john_franklin", "person.long.robert_nelson", "person.long.robert_rev"]
 evidence_refs: []
 source_refs: ["src.chalkley-chronicles-of-the-scotch-irish-settlement-vol-2.266c0d94", "src.chapman-pike-county-1880.6975c649", "src.fulton-jefferson-county-iowa-vol-1.9efd1642", "src.goodspeed-posey-county-1886.0f726b9b"]
 geo_refs: ["event.long.jf_marriage.1826-02-23", "event.long.robert_ann_marriage.1857-02-19", "path.long_sleight"]

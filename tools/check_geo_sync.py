@@ -4,8 +4,8 @@
 Every displayed event must have a geojson feature with the same id, the
 same Point coordinates, and matching fields (display name on the left,
 geojson property on the right): type/event_type, date/date, sort/date_sort,
-person/person_name, place/place_label, anchor/anchor,
-confidence/confidence. Any forward mismatch fails.
+person/person_name (or label for non-person context), place/place_label,
+anchor/anchor, confidence/confidence. Any forward mismatch fails.
 
 The reverse direction -- geojson life_event features with no display twin
 -- is a printed report only: which events appear on the plates is an
@@ -66,9 +66,13 @@ def main() -> int:
         elif geometry.get("coordinates") != event["coords"]:
             failures.append(f"{event['id']}: coords {event['coords']} vs geojson {geometry.get('coordinates')}")
         for html_key, geo_key in FIELD_PAIRS:
-            if event.get(html_key) != props.get(geo_key):
+            geo_value = props.get(geo_key)
+            if html_key == "person" and geo_value is None:
+                geo_value = props.get("label")
+            if event.get(html_key) != geo_value:
                 failures.append(
-                    f"{event['id']}: {html_key} {event.get(html_key)!r} vs geojson {geo_key} {props.get(geo_key)!r}")
+                    f"{event['id']}: {html_key} {event.get(html_key)!r} "
+                    f"vs geojson {geo_key} {geo_value!r}")
 
     if failures:
         for line in failures:

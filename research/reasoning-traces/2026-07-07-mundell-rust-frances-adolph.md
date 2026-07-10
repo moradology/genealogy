@@ -3,13 +3,13 @@ id: trace.2026-07-07.mundell-rust-frances-adolph
 title: "Mundell Rust Frances Adolph Identity Path"
 date: 2026-07-07
 status: active
-confidence: possible
-case_refs: ["case.05"]
-person_refs: ["person.evelyn_mundell", "person.mary_frances_rust", "person.mundell.homer", "person.mundell.walter"]
+confidence: strong
+case_refs: ["case.05", "case.06"]
+person_refs: ["person.ethel_b_rupert", "person.evelyn_mundell", "person.mary_frances_rust", "person.mundell.homer", "person.mundell.walter", "person.rust.john_f"]
 evidence_refs: ["ev.ancestry.1940-adolph-mundell"]
 source_refs: ["src.clarence-aison-rust-ancestry-search-result-lead.032fa923", "src.evelyn-delores-zimmerman-obituary-baalmann-mortuary.e1d95407", "src.mary-frances-rust-forum-post-genealogy-com-archive.0356175c", "src.nces-logan-county-public-school-search.afc503a6", "src.reamsville-cemetery-interment-net.656f3e01", "src.sarah-alice-cantwell-mundell-forum-post-genealogy-com-archive.c515f29b", "src.walter-william-mundell-familysearch.bd666c67", "src.william-bryan-rust-find-a-grave.95e736d4"]
 geo_refs: ["event.evelyn_mundell.winona_residence_school", "event.mundell.walter_frances_marriage.1910", "event.rust.frances_birth.1894-06-06", "target.rust.frances_adolph_strawn_beloit"]
-outcome: "Later census evidence supports the Rust-to-Adolph identity; the possible later Strawn identity remains open."
+outcome: "Later census evidence establishes the Rust-to-Adolph identity and John F. Rust/Ethel Rupert parentage; the possible later Strawn identity remains open."
 next_action: "Obtain a marriage, obituary, or household record that directly connects Frances Adolph to Frances Strawn."
 ---
 
@@ -19,9 +19,9 @@ next_action: "Obtain a marriage, obituary, or household record that directly con
 
 Who was Evelyn Mundell Zimmerman's grandmother Frances Adolph, and is she the same woman as Mary Frances Rust who married Walter William Mundell?
 
-## Working Hypothesis
+## Conclusion And Remaining Hypothesis
 
-Mary Frances Rust married Walter William Mundell, had Homer Clair Mundell, later married a man surnamed Adolph, and is the grandmother Frances Adolph who raised Evelyn and is connected to Winona High School. The later Lyle Strawn/Beloit clue may identify the same woman after another marriage.
+Mary Frances Rust married Walter William Mundell, had Homer Clair Mundell, later married a man surnamed Adolph, and is the grandmother Frances Adolph who raised Evelyn and is connected to Winona High School. The 1900, 1905, and 1910 censuses also establish John F. Rust and Ethel B. Rupert as her parents. The later Lyle Strawn/Beloit clue may identify the same woman after another marriage.
 
 ## Why It Is Plausible
 
@@ -32,8 +32,8 @@ Mary Frances Rust married Walter William Mundell, had Homer Clair Mundell, later
 
 ## What Is Not Proved
 
-- Same-person proof has not yet tied Mary Frances Rust Mundell to Frances Adolph with a marriage, census, obituary, probate, guardianship, or school record.
-- John F. Rust and Ethel B. Rupert are only candidate parents for Mary Frances Rust until Smith County records prove the connection.
+- A primary record still has not tied Mary Frances Rust/Adolph to the later Lyle Strawn marriage.
+- John F. Rust's proposed parents, John Aissen Rust and Frauke Folkerts Everwyn, remain an upstream hypothesis tracked in case.06.
 - Winona school/local records have not yet been checked for Evelyn's guardian or household.
 
 ## Next Moves
@@ -42,7 +42,7 @@ Mary Frances Rust married Walter William Mundell, had Homer Clair Mundell, later
 2. Search for a Frances Rust/Mundell marriage to an Adolph, likely in Kansas.
 3. Search Logan County and Winona records for Evelyn Mundell living with Frances Adolph.
 4. Search Beloit and Mitchell County records for Frances Adolph Strawn or Frances Rust Strawn.
-5. Pull Smith County records for Mary Frances Rust, William Bryan Rust, Clarence Aison Rust, John F. Rust, and Ethel B. Rupert.
+5. Keep the upstream John Aissen/Frauke parentage work in case.06 distinct from this resolved parent-child step.
 
 ## Index Terms
 

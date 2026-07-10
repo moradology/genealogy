@@ -756,8 +756,8 @@
         "mundell"
       ],
       "evidence_role": "reference",
-      "blurb": "Search-result child list includes F. John Rust; use only as a candidate link until Smith County records prove Mary Frances Rust's parents.",
-      "search_text": "John Aissen Rust, Find a Grave Search-result child list includes F. John Rust; use only as a candidate link until Smith County records prove Mary Frances Rust's parents."
+      "blurb": "Search-result child list supports F. John as a possible child of John Aissen Rust; use it only for that still-open upstream link, not the now-established Mary Frances parentage.",
+      "search_text": "John Aissen Rust, Find a Grave Search-result child list supports F. John as a possible child of John Aissen Rust; use it only for that still-open upstream link, not the now-established Mary Frances parentage."
     },
     {
       "id": "src.nces-logan-county-public-school-search.afc503a6",

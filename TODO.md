@@ -12,7 +12,9 @@ archive as a current task list.
 - `research/sources/sources.jsonl` is the canonical source registry.
 - `research/evidence/*.jsonl` contains privacy-reviewed pulled-record metadata.
 - `research/cases/cases.jsonl` is the append-only Docket.
-- `index.html`, `source-index.json`, and the derived graph database are projections.
+- `research/people/*.jsonl` is the canonical people, relationship, and family-gap core.
+- `index.html` and `source-index.json` are projections. Any future graph database
+  must also be a disposable projection; no graph loader or index exists yet.
 - Raw subscription images stay local under ignored `research/pulls/` paths.
 - No living people or sensitive personal identifiers enter tracked/public content.
 - Run `sh tools/check.sh` before landing a change.
@@ -22,8 +24,8 @@ archive as a current task list.
 - [x] Finish the evidence hard cutover: migrate all 23 logical subscription pulls,
   validate their references, and link landed findings to stable `ev.*` ids.
 - [x] Normalize every reasoning trace to the current front-matter contract.
-- [x] Reconcile the Rust/Adolph resolved identity across the GeoJSON, traces, and
-  residual-person registry while leaving the still-open Strawn step explicit.
+- [x] Reconcile the Rust/Adolph identity and Rust parentage across the canonical
+  family core, GeoJSON, and traces while leaving the upstream and Strawn steps explicit.
 - [x] Complete one evidence-reviewed advancement or durable negative for each
   branch research lane:
   - Zimmerman: the 1851 Nauer/Wand household is documented; Thomas's parentage stays open.
@@ -51,4 +53,4 @@ archive as a current task list.
 - Every retained pull has tracked, sanitized metadata.
 - Every open pedigree slot points to a non-closed case.
 - No case, trace, GeoJSON target, or search frame contradicts a settled verdict.
-- The full gate passes, including privacy, evidence, case, and browser checks.
+- The full gate passes, including family, privacy, evidence, case, and browser checks.

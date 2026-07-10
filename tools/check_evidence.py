@@ -65,13 +65,11 @@ STATUSES = frozenset({"found", "not_found", "partial"})
 CONFIDENCES = frozenset({"high", "medium", "low", "not_applicable"})
 
 EVIDENCE_ID_RE = re.compile(r"ev\.[a-z0-9]+(?:[._-][a-z0-9]+)*\Z")
-PERSON_ID_RE = re.compile(r"person\.[A-Za-z0-9_.-]+\Z")
+PERSON_ID_RE = re.compile(r"person\.[a-z0-9]+(?:[._-][a-z0-9]+)*\Z")
 CASE_ID_RE = re.compile(r"case\.\d{2}\Z")
 PULL_RE = re.compile(r"\d{2}\Z")
 SHA256_RE = re.compile(r"[0-9a-f]{64}\Z")
 URL_RE = re.compile(r"https?://\S+\Z")
-HTML_REF_RE = re.compile(r"\bid\s*=\s*['\"]((?:person|case)\.[A-Za-z0-9_.-]+)['\"]")
-
 # Avoid matching ordinary nine-digit collection/record ids. Compact digits are
 # sensitive only when explicitly labelled as a Social Security number.
 FORMATTED_SSN_RE = re.compile(r"(?<!\d)\d{3}[- ]\d{2}[- ]\d{4}(?!\d)")
@@ -131,43 +129,66 @@ def collect_record_card_refs(root: Path, errors: list[str]) -> list[str]:
     return refs
 
 
-def _strings(value: Any):
-    if isinstance(value, str):
-        yield value
-    elif isinstance(value, dict):
-        for nested in value.values():
-            yield from _strings(nested)
-    elif isinstance(value, list):
-        for nested in value:
-            yield from _strings(nested)
+def _canonical_ids(
+    path: Path,
+    label: str,
+    expected_node_type: str,
+    grammar: re.Pattern[str],
+    errors: list[str],
+) -> set[str]:
+    """Read one canonical ID store without consulting a presentation."""
+
+    ids: set[str] = set()
+    if not path.is_file():
+        errors.append(f"missing canonical {label} store: {path}")
+        return ids
+    for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        where = f"{path}:{line_number}"
+        if not line.strip():
+            errors.append(f"{where}: blank lines are not allowed in canonical JSONL")
+            continue
+        try:
+            record = json.loads(line)
+        except json.JSONDecodeError as exc:
+            errors.append(f"{where}: invalid {label} JSON: {exc.msg} at column {exc.colno}")
+            continue
+        if not isinstance(record, dict):
+            errors.append(f"{where}: canonical {label} record must be an object")
+            continue
+        value = record.get("id")
+        if record.get("node_type") != expected_node_type:
+            errors.append(
+                f"{where}: canonical {label} node_type must be {expected_node_type!r}"
+            )
+            continue
+        if not isinstance(value, str) or grammar.fullmatch(value) is None:
+            errors.append(f"{where}: invalid canonical {label} id {value!r}")
+            continue
+        if value in ids:
+            errors.append(f"{where}: duplicate canonical {label} id {value!r}")
+            continue
+        ids.add(value)
+    return ids
 
 
 def collect_reference_universe(root: Path, errors: list[str]) -> set[str]:
-    """Collect current person/case ids from the two existing public truths."""
+    """Collect person and case ids only from their canonical JSONL stores."""
 
-    refs: set[str] = set()
-    html_path = root / "index.html"
-    geo_path = root / "ancestry_geospatial.geojson"
-
-    if not html_path.is_file():
-        errors.append("index.html is missing; cannot validate evidence references")
-    else:
-        refs.update(HTML_REF_RE.findall(html_path.read_text(encoding="utf-8")))
-
-    if not geo_path.is_file():
-        errors.append(
-            "ancestry_geospatial.geojson is missing; cannot validate evidence references"
-        )
-    else:
-        try:
-            geo = json.loads(geo_path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError as exc:
-            errors.append(f"ancestry_geospatial.geojson is invalid JSON: {exc}")
-        else:
-            for value in _strings(geo):
-                if PERSON_ID_RE.fullmatch(value) or CASE_ID_RE.fullmatch(value):
-                    refs.add(value)
-    return refs
+    people = _canonical_ids(
+        root / "research/people/people.jsonl",
+        "person",
+        "person",
+        PERSON_ID_RE,
+        errors,
+    )
+    cases = _canonical_ids(
+        root / "research/cases/cases.jsonl",
+        "case",
+        "case",
+        CASE_ID_RE,
+        errors,
+    )
+    return people | cases
 
 
 def _nonempty_string(record: dict[str, Any], field: str, where: str, errors: list[str]) -> None:

@@ -61,7 +61,11 @@ for word in (
 # 1b. per-command help: ./gen build --help is plain text, exits 0, lists targets
 r = run(["build", "--help"])
 check("build help exit 0", r.returncode == 0, r.stderr[:200])
-check("build help lists targets", "basemap" in r.stdout and "source-index" in r.stdout, r.stdout[:300])
+check(
+    "build help lists targets",
+    "basemap" in r.stdout and "people-index" in r.stdout and "source-index" in r.stdout,
+    r.stdout[:300],
+)
 check("build help is not json", not r.stdout.strip().startswith("{"), r.stdout[:80])
 
 # 1c. ancestry help forwards to the subtool's argparse (works offline, no browser)
@@ -86,7 +90,7 @@ check(
 #    the wrapped tool's exit code. Deliberately does NOT require ok==true:
 #    concurrent edits to index.html legitimately make --check report stale, and
 #    this test's contract is the JSON envelope, not repo cleanliness.
-for target in ("source-index",):
+for target in ("source-index", "people-index"):
     r = run(["build", target, "--check"])
     obj = json.loads(r.stdout)  # no try/except: invalid JSON crashes = failure
     check(f"build {target} ok is bool", isinstance(obj.get("ok"), bool), r.stdout[:200])

@@ -1,28 +1,14 @@
 #!/usr/bin/env python3
-"""Verify the cross-reference id universe is closed.
+"""Verify that every cross-reference resolves to a canonical definition.
 
-Definitions and references are kept strictly apart, so a typo in a
-reference can no longer define itself (the flaw in the previous version
-of this checker). Definitions: verifiedEventData ids and person./case.
-anchors in index.html, geojson feature-level ids, the geojson top-level
-place_registry (top level, not metadata -- the old path silently read
-nothing), the frozen RESIDUAL_PERSONS set (union spouses/collaterals with
-no HTML card), and the source ledger. References: research markdown
-(reasoning traces and search frames), geojson link endpoints and route
-sequences, every geojson person.* token (must resolve to an HTML anchor
-or a residual), and the familyLinkData block in index.html.
+Person identity has one source: research/people/people.jsonl. HTML and
+GeoJSON person tokens are references to that store and can never define a
+person. Canonical gaps come from relationships.jsonl; case/event anchors remain
+public projections; feature/place/source definitions retain their existing
+stores. Retired person ids are forbidden even if they appear in a projection.
 
-Also enforced: geojson feature ids unique; familyLinkData ids match
-geojson link_id set exactly; familyLinkData endpoints resolve to
-verifiedEventData (the map runtime draws only those); every geojson
-source_refs URL is in the ledger; ledger URLs unique; id grammar for
-person.* and case.*; RESIDUAL_PERSONS is exactly the set of geojson
-person.* tokens with no HTML anchor -- no stale entries, no entries
-that have quietly gained a card; RETIRED_ALIASES (ids renamed away from
-in past slates) may never resurface in a geojson token or a trace/frame
-reference, and can't be laundered back in through RESIDUAL_PERSONS;
-case.* refs must name a case in the bounded PLANNED_CASES manifest, so
-an unopened docket can't be typo'd into silent dormancy.
+The checker also enforces unique GeoJSON feature ids, parity between map link
+records and familyLinkData, valid map endpoints, and source-ledger URL closure.
 
 Run: uv run tools/check_refs.py
 """
@@ -36,11 +22,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-ID_RE = re.compile(r"\b(src|event|person|place|case)\.[A-Za-z0-9_.-]+\b")
-# Anchors are single-segment (person.doyle_zimmerman); everyone else is
-# person.<surname>.<given> — at most one extra dot (Slate 1 id grammar).
-PERSON_GRAMMAR = re.compile(r"person\.[a-z0-9_]+(\.[a-z0-9_]+)?\Z")
+ID_RE = re.compile(r"\b(src|event|person|place|case|gap)\.[A-Za-z0-9_.-]+\b")
+# Keep this identical to the canonical family-core grammar. Projections do not
+# get to retain a narrower legacy spelling rule.
+PERSON_GRAMMAR = re.compile(r"person\.[a-z0-9]+(?:[._-][a-z0-9]+)*\Z")
 CASE_GRAMMAR = re.compile(r"case\.\d{2}\Z")
+GAP_GRAMMAR = re.compile(r"gap\.[a-z0-9]+(?:[._-][a-z0-9]+)*\Z")
 # Person tokens can appear inside prose fields (evidence_note,
 # research_question, exclusion_note, ...), not just id-typed fields, so
 # this is matched against every string value rather than plucked by key.
@@ -54,55 +41,10 @@ PERSON_TOKEN_RE = re.compile(r"\bperson\.[A-Za-z0-9_.-]+\b")
 # separate words on either side.
 URL_SPAN_RE = re.compile(r"\S*://\S*")
 
-# Geojson person.* tokens (person_id, participants, candidate_people,
-# candidate_person, ancestor_person, collateral_persons, or a person.*
-# mention anywhere else in a feature's properties) that resolve to no
-# index.html person.* anchor: union spouses and collaterals named only
-# inside a combined "Person + Spouse" card that belongs to their
-# partner's id, so they never got a card of their own, plus candidate
-# identities still under research. Shrinks when the people-index (W4)
-# gives them entries; new geojson person ids must either match an HTML
-# anchor or be added here deliberately.
-RESIDUAL_PERSONS = frozenset({
-    "person.ann_ghent_sleight",
-    "person.antonette_grams",
-    "person.betsy_wasson",
-    "person.catherina_marie_koeberger",
-    "person.catherine_zinkle",
-    "person.clarence_aison_rust",
-    "person.cora_mcclellan",
-    "person.dorothea_meyer",
-    "person.edwin_reid",
-    "person.elizabeth_j_haden",
-    "person.elizabeth_jane_brown",
-    "person.ethel_b_rupert",
-    "person.julia_dible",
-    "person.lovina_parker_love",
-    "person.lyle_strawn",
-    # EXCLUDED same-name individual, referenced by the exclusion target.
-    "person.marjorie_opal_clemans",
-    "person.mary_frances_rust",
-    "person.mary_viola_beach",
-    "person.nancy_ann_turner",
-    "person.nomdje_n_rust",
-    "person.paul_michael_zimmerman",
-    "person.rev_robert_long",
-    "person.robert_reid",
-    "person.sarah_hoge",
-    "person.sarah_sally_lewis_tompkins",
-    "person.sophia_reid",
-    "person.virginia_ann_ford",
-    "person.william_bryan_rust",
-})
-
 # Old person.* ids retired by past renames (Slate 1 W1's grammar cutover,
 # 26 ids; plus six ids folded together by later data repairs). A retired
-# id must never resurface as a walked geojson token or a trace/frame
-# reference -- that would silently reintroduce a split identity under an
-# id nothing else points to. RETIRED_TO_CANONICAL names the replacement
-# for the failure message; RESIDUAL_PERSONS and RETIRED_ALIASES must stay
-# disjoint (asserted below) so a stale alias can't be laundered back in
-# by adding it to the residual set instead of fixing the reference.
+# id must never resurface in canonical data or a projection. The mapping names
+# the replacement for a useful failure message; it is not an alias resolver.
 RETIRED_TO_CANONICAL = {
     "person.doyle_jule_zimmerman": "person.doyle_zimmerman",
     "person.evelyn_delores_mundell": "person.evelyn_mundell",
@@ -138,12 +80,11 @@ RETIRED_TO_CANONICAL = {
     "person.marjorie_clemans": "person.clemans.marjorie",
     "person.marjorie_clemans_mundell": "person.clemans.marjorie",
     "person.frances_adolph": "person.mary_frances_rust",
+    "person.catherine_zinkle": "person.zinkle.catherine",
+    "person.rev_robert_long": "person.long.robert_rev",
+    "person.betsy_wasson": "person.wasson.betsy",
 }
 RETIRED_ALIASES = frozenset(RETIRED_TO_CANONICAL)
-
-_retired_residual_overlap = RESIDUAL_PERSONS & RETIRED_ALIASES
-assert not _retired_residual_overlap, (
-    f"RESIDUAL_PERSONS and RETIRED_ALIASES overlap: {sorted(_retired_residual_overlap)}")
 
 def canonical_case_ids() -> frozenset[str]:
     """Load the append-only case universe from the canonical JSONL truth."""
@@ -155,6 +96,74 @@ def canonical_case_ids() -> frozenset[str]:
 # One authoritative Docket registry. New cases land in cases.jsonl first; the
 # page, frames, and checkers are projections validated by check_cases.py.
 PLANNED_CASES = canonical_case_ids()
+
+
+def canonical_family_ids(
+    root: Path, failures: list[str]
+) -> tuple[set[str], set[str]]:
+    """Load actual people and gaps from the canonical family JSONL stores."""
+
+    people: set[str] = set()
+    gaps: set[str] = set()
+    people_path = root / "research/people/people.jsonl"
+    relationships_path = root / "research/people/relationships.jsonl"
+
+    if not people_path.is_file():
+        failures.append(f"missing canonical person store: {people_path}")
+    else:
+        for line_number, line in enumerate(
+            people_path.read_text(encoding="utf-8").splitlines(), 1
+        ):
+            where = f"{people_path}:{line_number}"
+            if not line.strip():
+                failures.append(f"{where}: blank lines are not allowed in JSONL")
+                continue
+            try:
+                record = json.loads(line)
+            except json.JSONDecodeError as exc:
+                failures.append(f"{where}: invalid person JSON: {exc}")
+                continue
+            if not isinstance(record, dict) or record.get("node_type") != "person":
+                failures.append(f"{where}: canonical person record must have node_type 'person'")
+                continue
+            value = record.get("id")
+            if not isinstance(value, str):
+                failures.append(f"{where}: canonical person record has no string id")
+            elif value in people:
+                failures.append(f"{where}: duplicate canonical person id {value}")
+            elif value in RETIRED_ALIASES:
+                failures.append(
+                    f"{where}: retired person id {value} is forbidden; "
+                    f"use {RETIRED_TO_CANONICAL[value]} instead"
+                )
+            else:
+                people.add(value)
+
+    if not relationships_path.is_file():
+        failures.append(f"missing canonical relationship store: {relationships_path}")
+    else:
+        for line_number, line in enumerate(
+            relationships_path.read_text(encoding="utf-8").splitlines(), 1
+        ):
+            where = f"{relationships_path}:{line_number}"
+            if not line.strip():
+                failures.append(f"{where}: blank lines are not allowed in JSONL")
+                continue
+            try:
+                record = json.loads(line)
+            except json.JSONDecodeError as exc:
+                failures.append(f"{where}: invalid relationship JSON: {exc}")
+                continue
+            if not isinstance(record, dict) or record.get("node_type") != "gap":
+                continue
+            value = record.get("id")
+            if not isinstance(value, str):
+                failures.append(f"{where}: canonical gap record has no string id")
+            elif value in gaps:
+                failures.append(f"{where}: duplicate canonical gap id {value}")
+            else:
+                gaps.add(value)
+    return people, gaps
 
 
 def iter_person_tokens(value):
@@ -183,13 +192,22 @@ def family_link_block(html: str) -> str:
     return html[start:html.index("];", start)]
 
 
-def collect_definitions(html: str, geo: dict, ledger: dict, failures: list[str]) -> set[str]:
+def collect_definitions(
+    html: str,
+    geo: dict,
+    ledger: dict,
+    failures: list[str],
+    root: Path = ROOT,
+) -> set[str]:
     ids: set[str] = set()
+    people, gaps = canonical_family_ids(root, failures)
+    ids.update(people)
+    ids.update(gaps)
     for record in ledger["sources"]:
         ids.add(record["id"])
     for match in re.finditer(r'"id":"(event\.[^"]+)"', html):
         ids.add(match.group(1))
-    for match in re.finditer(r'id="((?:person|case)\.[A-Za-z0-9_.-]+)"', html):
+    for match in re.finditer(r'id="(case\.[A-Za-z0-9_.-]+)"', html):
         ids.add(match.group(1))
     seen_fids: set[str] = set()
     for feature in geo["features"]:
@@ -200,20 +218,37 @@ def collect_definitions(html: str, geo: dict, ledger: dict, failures: list[str])
         if fid in seen_fids:
             failures.append(f"duplicate feature id {fid}")
         seen_fids.add(fid)
-    ids.update(seen_fids)
-    ids.update(k for k in geo.get("place_registry") or {} if isinstance(k, str))
-    ids.update(RESIDUAL_PERSONS)
+    for fid in seen_fids:
+        if fid.startswith(("person.", "gap.")):
+            failures.append(
+                f"geojson feature id {fid} cannot define canonical family identity"
+            )
+        else:
+            ids.add(fid)
+    for key in geo.get("place_registry") or {}:
+        if not isinstance(key, str):
+            continue
+        if key.startswith(("person.", "gap.")):
+            failures.append(
+                f"geojson place_registry key {key} cannot define canonical family identity"
+            )
+        else:
+            ids.add(key)
     return ids
 
 
-def collect_references(geo: dict) -> list[tuple[str, str]]:
+def collect_references(
+    html: str, geo: dict, root: Path = ROOT
+) -> list[tuple[str, str]]:
     refs: list[tuple[str, str]] = []
-    paths = sorted((ROOT / "research" / "reasoning-traces").glob("*.md"))
-    frames_dir = ROOT / "research" / "search-frames"
+    for match in re.finditer(r'id="((?:person|gap)\.[A-Za-z0-9_.-]+)"', html):
+        refs.append(("index.html anchor", match.group(1)))
+    paths = sorted((root / "research" / "reasoning-traces").glob("*.md"))
+    frames_dir = root / "research" / "search-frames"
     if frames_dir.exists():
         paths.extend(sorted(frames_dir.rglob("*.md")))
     for path in paths:
-        origin = str(path.relative_to(ROOT))
+        origin = str(path.relative_to(root))
         for match in ID_RE.finditer(path.read_text()):
             refs.append((origin, match.group(0).rstrip(".")))
     for feature in geo["features"]:
@@ -274,26 +309,11 @@ def check_source_urls(geo: dict, ledger: dict, failures: list[str]) -> None:
 def check_grammar(ids: set[str], failures: list[str]) -> None:
     for value in sorted(ids):
         if value.startswith("person.") and PERSON_GRAMMAR.fullmatch(value) is None:
-            failures.append(f"person id violates grammar person.[a-z0-9_]+: {value}")
+            failures.append(f"person id violates canonical grammar: {value}")
         if value.startswith("case.") and CASE_GRAMMAR.fullmatch(value) is None:
             failures.append(f"case id violates grammar case.NN: {value}")
-
-
-def check_residuals(html: str, geo: dict, failures: list[str]) -> None:
-    """RESIDUAL_PERSONS must track reality in both directions, so it can't
-    drift into a second, unreviewed identity list: every entry must still
-    be cited somewhere in the geojson, and none may have gained an
-    index.html card (that's a forced cutover, not an addition -- the
-    residual entry is removed the same change the card lands)."""
-    geo_person_tokens: set[str] = set()
-    for feature in geo["features"]:
-        geo_person_tokens.update(iter_person_tokens(feature.get("properties") or {}))
-    html_anchors = set(re.findall(r'id="(person\.[A-Za-z0-9_.-]+)"', html))
-    for value in sorted(RESIDUAL_PERSONS):
-        if value not in geo_person_tokens:
-            failures.append(f"RESIDUAL_PERSONS {value} no longer occurs in geojson; delete it")
-        if value in html_anchors:
-            failures.append(f"RESIDUAL_PERSONS {value} now has an index.html anchor; remove it from RESIDUAL_PERSONS")
+        if value.startswith("gap.") and GAP_GRAMMAR.fullmatch(value) is None:
+            failures.append(f"gap id violates canonical grammar: {value}")
 
 
 def main() -> int:
@@ -303,36 +323,22 @@ def main() -> int:
 
     failures: list[str] = []
     known = collect_definitions(html, geo, ledger, failures)
-    references = collect_references(geo)
-    # case.* resolution is dormant until the Docket lands its anchors in
-    # index.html (Slate 1 W5): validation traces legitimately cite future
-    # cases. Once ANY case anchor exists, every case ref must resolve.
-    # Dormancy is bounded by PLANNED_CASES either way: a case ref outside
-    # that manifest is a typo, not a future case, and fails immediately.
-    docket_live = any(k.startswith("case.") for k in known)
-    pending_cases = set()
+    references = collect_references(html, geo)
     for origin, ref in references:
-        if ref in known:
-            continue
         if ref in RETIRED_ALIASES:
             failures.append(
                 f"retired alias {ref} referenced from {origin}; use {RETIRED_TO_CANONICAL[ref]} instead")
+            continue
+        if ref in known:
             continue
         if ref.startswith("case."):
             if ref not in PLANNED_CASES:
                 failures.append(f"UNRESOLVED {ref} referenced from {origin}: unknown case id (not in PLANNED_CASES)")
                 continue
-            if not docket_live:
-                pending_cases.add(ref)
-                continue
         failures.append(f"UNRESOLVED {ref} referenced from {origin}")
-    if pending_cases:
-        print(f"check_refs: {len(pending_cases)} case refs pending the Docket "
-              f"({', '.join(sorted(pending_cases))})")
     check_links(html, geo, failures)
     check_source_urls(geo, ledger, failures)
     check_grammar(known | {ref for _, ref in references}, failures)
-    check_residuals(html, geo, failures)
 
     if failures:
         for line in failures:

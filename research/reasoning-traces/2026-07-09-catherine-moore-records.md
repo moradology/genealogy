@@ -5,7 +5,7 @@ date: 2026-07-09
 status: active
 confidence: strong
 case_refs: ["case.10"]
-person_refs: ["person.dible.zephaniah", "person.moore.catherine_parents"]
+person_refs: ["person.dible.zephaniah", "person.moore.catherine"]
 evidence_refs: ["ev.familysearch.1860-1886-catherine-moore"]
 source_refs: ["src.1860-united-states-census-zephaniah-and-catherine-dible-household.a6d85618", "src.1886-marriage-application-of-mary-e-dible.a8b4f7ba", "src.history-of-wapello-county-iowa-and-representative-citizens.c9420f9b"]
 geo_refs: []

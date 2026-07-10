@@ -1,7 +1,7 @@
 # The researcher's cockpit
 
-Status: PARTIALLY BUILT. This document separates the commands that work today
-from ideas that still need design or implementation.
+Status: FOUNDATION BUILT. This document separates the commands that work today
+from graph-based research ideas that still need design or implementation.
 
 The canonical local entry point is `./gen`, run from the repository root. It is
 not installed as a machine-wide `gen` command. `tools/gen.py` and the smaller
@@ -17,7 +17,10 @@ where researchers author facts.
 
 ```sh
 ./gen --help
+./gen build people-index --check
 ./gen build source-index --check
+./gen show person.doyle_zimmerman
+./gen status
 ./gen stamp
 ./gen ancestry cache stats
 ./gen gate
@@ -32,14 +35,31 @@ tool output is carried in the JSON `output` field.
 `--write` after an intentional `index.html` change. `--deployed` is the only
 stamp mode that contacts the published site.
 
+### Research stores and orientation
+
+- `./gen evidence add --shard <branch>` reads one evidence record as JSON from
+  standard input, validates the whole store, and writes only if every check passes.
+  Add `--validate-only` to test without writing.
+- `./gen trace new --slug <slug> --title <title> ...` creates a validated reasoning
+  trace with its case, person, evidence, source, and place references.
+- `./gen show <id>` resolves any case, evidence, source, trace, GeoJSON, person,
+  relationship, or gap id and reports everything that refers to it.
+- `./gen status` runs the fast family, evidence, case, and trace checks and reports
+  family counts, case status, evidence totals, and the newest trace. It is offline
+  and does not run the browser acceptance test.
+
+People and family links are authored in `research/people/people.jsonl` and
+`research/people/relationships.jsonl`. The public registry, pedigree, and Index of
+Names are generated with `./gen build people-index` and checked by the gate.
+
 ## BUILT command surface
 
 ### Repository maintenance
 
 - `./gen gate` runs the same complete gate as CI.
 - `./gen build <target> [--check]` builds or verifies one generated artifact.
-  Targets are `basemap`, `fonts`, `citation-backlinks`, `plate-keys`, and
-  `source-index`.
+  Targets are `basemap`, `fonts`, `citation-backlinks`, `plate-keys`,
+  `people-index`, and `source-index`.
 - `./gen stamp [--write|--check|--deployed]` manages the public-page content
   fingerprint. With no flag it checks the local stamp.
 
@@ -129,21 +149,8 @@ still require researcher review.
 The names below are planning vocabulary only. `./gen` rejects them today, and
 scripts or agent prompts must not depend on them.
 
-### Canonical people and relationships
-
-- Decide where people, names, parent-child links, unions, and identity claims
-  are authored.
-- Remove the remaining split between the public HTML and Python-held lists.
-- Define the privacy and evidence rules for every relationship.
-
-This decision comes before treating graph-backed cockpit answers as part of the
-research workflow. It is intentionally still open for discussion; work on a
-rebuildable graph index can proceed in parallel without settling it by accident.
-
 ### Possible truth and reasoning commands
 
-- `add-evidence`, `add-node`, and `add-edge`
-- `show` and `validate`
 - `adjudicate`, `frontier`, and `contradictions`
 - `ancestors`, `descendants`, and `path`
 - `recall`
@@ -151,7 +158,6 @@ rebuildable graph index can proceed in parallel without settling it by accident.
 ### Possible projection and session commands
 
 - `project`
-- `status`
 - `log`
 - `web`
 
@@ -180,9 +186,14 @@ Completed foundation:
 3. Canonical evidence, source, case, and reasoning-trace files with validators.
 4. Race-safe, versioned private acquisitions; offline-only mode; validated
    page parsing; and cursor-preserving navigation.
+5. Canonical people and relationship files, strict family validation, and the
+   generated public people registry, pedigree, and Index of Names.
+6. Validated evidence and trace writes plus cross-store `show` and fast `status`
+   commands.
 
-Next, before expanding the command surface:
+Next, if graph-backed searching proves useful:
 
-1. Agree on the canonical people-and-relationships model.
-2. Only then expose the smallest graph-backed reasoning commands worth
-   maintaining.
+1. Build a disposable CozoDB index from the canonical files. No loader or index
+   exists yet.
+2. Reproduce a trusted conclusion, such as the Marjorie identity decision.
+3. Expose only the smallest graph-backed reasoning commands worth maintaining.

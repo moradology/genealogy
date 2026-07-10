@@ -21,6 +21,8 @@ The goal is breadth plus honesty. The public page presents the current working t
 
 - `index.html` - the hosted static artifact.
 - `ancestry_geospatial.geojson` - machine-readable geography for verified events, temporal paths, research targets, and family links.
+- `research/people/people.jsonl` - the canonical registry: one actual deceased person per line.
+- `research/people/relationships.jsonl` - canonical parent, spouse, and unresolved-family-gap records.
 - `research/` - durable evidence records, cases, reasoning traces, search frames, and source registries.
 - `gen` - the repository-local command-line entry point for checks, builds, stamps, and guarded Ancestry reads.
 - `tools/build_source_index.py` - builds the searchable source index from canonical `sources.jsonl` and checks the public ledger projection.
@@ -32,6 +34,7 @@ Research notes live under `research/` so useful reasoning does not get buried in
 - `research/evidence/` holds privacy-reviewed JSONL metadata for pulled records; restricted raw images remain local.
 - `research/cases/cases.jsonl` is the append-only structured Docket.
 - `research/reasoning-traces/` captures fruitful chains of reasoning: question, hypothesis, evidence used, why the inference is plausible, why it is not proved, and the next record pull.
+- `research/people/` holds the reviewed people and family relationships used by every other tool.
 - `research/sources/sources.jsonl` is the canonical source registry; `source-index.json` is generated from it.
 - `research/sources/README.md` documents the source-index fields and search patterns.
 
@@ -68,6 +71,25 @@ Important conventions:
 - Preserve existing ids unless correcting an error.
 - Keep speculative paths visually and structurally distinct from documented/strong paths.
 
+## Family Core
+
+People and family connections are authored only in `research/people/people.jsonl`
+and `research/people/relationships.jsonl`. Each person row represents one real,
+deceased historical person. Parent and spouse links are separate typed records;
+unknown or disputed parentage is an explicit gap tied to a research case, never a
+made-up person.
+
+The public pedigree registry and Index of Names are generated from those files:
+
+```sh
+./gen build people-index
+./gen build people-index --check
+```
+
+Life events and places remain in `ancestry_geospatial.geojson`. Any future graph
+database will be a disposable search aid built from these reviewed files, not a
+second source of truth.
+
 ## Source Index
 
 Add or edit sources in `research/sources/sources.jsonl`, then make the matching
@@ -95,7 +117,10 @@ Useful local commands:
 
 ```sh
 ./gen --help
+./gen build people-index --check
 ./gen build source-index --check
+./gen show person.doyle_zimmerman
+./gen status
 ./gen stamp
 ./gen gate
 ```
@@ -109,10 +134,10 @@ Run the single gate before committing:
 ./gen gate
 ```
 
-It validates GeoJSON, evidence, cases, sources, and reasoning traces; checks every
-cross-reference and generated projection; runs the offline cockpit regression tests;
-syntax-checks the inline JavaScript; and runs the browser acceptance spec. CI runs the
-same underlying `tools/check.sh` script on every push.
+It validates the family core, GeoJSON, evidence, cases, sources, and reasoning
+traces; checks every cross-reference and generated projection; runs the offline
+cockpit regression tests; syntax-checks the inline JavaScript; and runs the browser
+acceptance spec. CI runs the same underlying `tools/check.sh` script on every push.
 
 ## Publishing
 
@@ -123,6 +148,7 @@ Normal update flow:
 ```sh
 git status -sb
 ./gen build source-index
+./gen build people-index
 ./gen stamp --write
 ./gen gate
 git add index.html ancestry_geospatial.geojson research tools README.md gen

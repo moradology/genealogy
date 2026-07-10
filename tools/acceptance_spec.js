@@ -79,13 +79,17 @@ function ok(label, cond, detail) {
   // reset to measured+10% = 24910. TREATY MATH: remaining declared program
   // costs are ~21.6KB (Slate 2) + ~19.3KB (Slate 3) + W5/W6 (~5KB net
   // after the W5 stub-table retirement) -> projected ~323KB against the
-  // hard 358,400 ceiling. S9 is a per-wave RATCHET (re-measured to
+  // hard 358,400 ceiling. The 2026-07-09 family-core hard cutover deliberately
+  // replaces combined couple labels with 117 individual name records and 18
+  // explicit gaps; that reviewed projection moves the hard ceiling to 384,000.
+  // S9 is otherwise a per-wave RATCHET (re-measured to
   // +10% at each landing per the documented procedure), so planned
   // waves will legitimately re-measure past this value; the ceiling is
   // the constraint that never moves. Margin is thin: every wave
   // declares its cost and looks for offsetting cuts. Peers bump
-  // budgets only via a declared SPEC DELTA; total never exceeds 358400 (owner ruling 2026-07-08; was 327680).
-  ok('S9 total payload within owner ceiling', srcBytes <= 358400, srcBytes);
+  // budgets only via a declared SPEC DELTA; total never exceeds 384000
+  // (family-core ruling 2026-07-09; prior owner ceiling 358400).
+  ok('S9 total payload within owner ceiling', srcBytes <= 384000, srcBytes);
   ok('S10 embedded fonts within budget',
     (src.match(/data:font\/woff2;base64,[A-Za-z0-9+\/=]+/g) || []).join('').length < 45153);
   ok('S11 baked path constants within budget',
@@ -348,7 +352,8 @@ function ok(label, cond, detail) {
       firstOpen: sec ? !!sec.querySelector('details[open]') : false,
       persons: document.querySelectorAll('.person').length,
       personWithoutIds: document.querySelectorAll('.person:not([id])').length,
-      personIds: [...document.querySelectorAll('.person[id^="person."]')].map((el) => el.id),
+      personIds: [...document.querySelectorAll('.person[id^="person."], .person[id^="gap."]')]
+        .map((el) => el.id),
       breadth: document.body.textContent.includes('The goal here is breadth plus honesty'),
       geojsonLink: !!document.querySelector('a[href="ancestry_geospatial.geojson"]'),
       evidenceRows: evidenceRows.length,
@@ -365,12 +370,12 @@ function ok(label, cond, detail) {
   ok('C3 every source has a link', content.sourcesWithAnchor === SOURCE_ITEMS, content.sourcesWithAnchor);
   ok('C4 sources grouped, first open', content.groups >= 5 && content.firstOpen, content.groups);
   ok('C5 person entry count matches', content.persons === PERSON_DIVS, content.persons);
-  const idRe = /^person\.[a-z0-9_.]+$/;
-  ok('C8 person ids stamped and unique',
+  const idRe = /^(?:person|gap)\.[a-z0-9]+(?:[._-][a-z0-9]+)*$/;
+  ok('C8 family rows have canonical person or gap ids',
     content.personIds.length === PERSON_IDS &&
     content.personWithoutIds === 0 &&
     new Set(content.personIds).size === PERSON_IDS &&
-    content.personIds.every((id) => idRe.test(id) && (id.slice('person.'.length).match(/\./g) || []).length <= 1),
+    content.personIds.every((id) => idRe.test(id)),
     JSON.stringify({ ids: content.personIds.length, bare: content.personWithoutIds }));
   ok('C6 method note preserved', content.breadth);
   ok('C7 geojson link preserved', content.geojsonLink);
@@ -425,7 +430,7 @@ function ok(label, cond, detail) {
     citationContract.failures.length === 0,
     JSON.stringify(citationContract));
   ok('C14a every documented or strong person row cites the Source Ledger',
-    content.evidenceRows === 38 && content.evidenceRowsWithoutCitation.length === 0,
+    content.evidenceRows === 39 && content.evidenceRowsWithoutCitation.length === 0,
     JSON.stringify(content.evidenceRowsWithoutCitation));
   const stemCheck = await page.evaluate((stemDivs) => {
     const expected = [
@@ -503,7 +508,7 @@ function ok(label, cond, detail) {
       .map((a) => a.getAttribute('href'))
       .filter((href) => !href || !href.startsWith('#') || !document.getElementById(decodeURIComponent(href.slice(1))));
     const registryPeople = JSON.parse(document.getElementById('people-index').textContent)
-      .people.filter((p) => p.k !== 'slot').length;
+      .people.filter((p) => p.k === 'person').length;
     return {
       exists: true,
       entries: links.length,

@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import copy
 import importlib.util
-import re
 import sys
 from pathlib import Path
 
@@ -19,15 +18,15 @@ SPEC.loader.exec_module(check_cases)
 html = (ROOT / "index.html").read_text()
 records = check_cases.read_jsonl(ROOT / "research" / "cases" / "cases.jsonl")
 docket = check_cases.docket_records(html)
-people = check_cases.people_index(html)
-person_ids = set(re.findall(r'id="(person\.[A-Za-z0-9_.-]+)"', html))
+gaps = check_cases.canonical_gaps()
+person_ids = check_cases.canonical_person_ids()
 trace_names = {path.name for path in (ROOT / "research" / "reasoning-traces").glob("20*.md")}
 evidence_cases = check_cases.evidence_case_index()
 
 
-def failures(candidate, candidate_people=people, candidate_evidence=evidence_cases):
+def failures(candidate, candidate_gaps=gaps, candidate_evidence=evidence_cases):
     return check_cases.core_failures(
-        candidate, docket, candidate_people, person_ids, candidate_evidence, trace_names)
+        candidate, docket, candidate_gaps, person_ids, candidate_evidence, trace_names)
 
 
 problems = []
@@ -45,9 +44,32 @@ if not any("append-only and sequential" in failure for failure in failures(gap))
     problems.append("case sequence gap mutation survived")
 
 closed = copy.deepcopy(records)
-next(record for record in closed if record["id"] == "case.23")["status"] = "closed"
-if not any("open slot" in failure for failure in failures(closed)):
-    problems.append("open-slot-to-closed-case mutation survived")
+published_case = next(record["id"] for record in records if record["status"] != "closed")
+synthetic_gap = {
+    "id": "gap.test.published",
+    "node_type": "gap",
+    "case_refs": [published_case],
+    "public_anchor": "gap.test.published",
+}
+next(record for record in closed if record["id"] == published_case)["status"] = "closed"
+if not any(
+    "published gap" in failure
+    for failure in failures(closed, candidate_gaps=gaps + [synthetic_gap])
+):
+    problems.append("published-gap-to-closed-case mutation survived")
+
+unknown_gap_case = copy.deepcopy(synthetic_gap)
+unknown_gap_case["case_refs"] = ["case.99"]
+if not any(
+    "points to unknown case.99" in failure
+    for failure in failures(records, candidate_gaps=gaps + [unknown_gap_case])
+):
+    problems.append("unresolved canonical gap case mutation survived")
+
+bad_person = copy.deepcopy(records)
+bad_person[0]["person_refs"] = ["person.presentation_only"]
+if not any("unresolved person ref" in failure for failure in failures(bad_person)):
+    problems.append("noncanonical presentation-only person mutation survived")
 
 bad_ref = copy.deepcopy(records)
 bad_ref[0]["evidence_refs"] = ["ev.missing"]
@@ -68,4 +90,4 @@ if problems:
     for problem in problems:
         print(problem, file=sys.stderr)
     raise SystemExit(1)
-print("test_check_cases: all 5 mutations rejected")
+print("test_check_cases: all 7 mutations rejected")

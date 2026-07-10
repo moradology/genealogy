@@ -5,7 +5,7 @@ date: 2026-07-09
 status: active
 confidence: strong
 case_refs: ["case.17"]
-person_refs: ["person.claar.samuel_dove", "person.hoyle.mary_margaret_parents"]
+person_refs: ["person.claar.samuel_dove", "person.hoyle.mary_margaret"]
 evidence_refs: ["ev.ancestry.1895-claar-marriage-search", "ev.ksgenweb.1895-claar-hogle-index"]
 source_refs: ["src.decatur-county-kansas-bride-marriage-index-g-h-ksgenweb.7cb90aec", "src.decatur-county-kansas-groom-marriage-index-c-f-ksgenweb.e5ee851c"]
 geo_refs: []

@@ -5,7 +5,7 @@ date: 2026-07-08
 status: resolved
 confidence: documented
 case_refs: ["case.01", "case.21", "case.23"]
-person_refs: ["person.fleckenstein.catherine_parents", "person.zodrow.cecilia", "person.zodrow.john", "person.zodrow.julius_collateral", "person.zodrow.leonard_ferdinand"]
+person_refs: ["person.fleckenstein.catherine", "person.zodrow.cecilia", "person.zodrow.john", "person.zodrow.julius_collateral", "person.zodrow.leonard_ferdinand"]
 evidence_refs: ["ev.ancestry.1910-zodrow", "ev.ancestry.1920-zodrow", "ev.ancestry.1997-cecilia-obituary-index"]
 source_refs: ["src.cecilia-zodrow-zimmerman-find-a-grave.5586b816", "src.hedwig-hattie-zodrow-schroer-find-a-grave.8fde6214", "src.julius-henry-zodrow-find-a-grave.b2c95ae2", "src.leonard-ferdinand-zodrow-find-a-grave.7870a1b4"]
 geo_refs: ["event.zodrow.john_death.1915-03-15", "event.zodrow.julius_death.1959-03-13"]

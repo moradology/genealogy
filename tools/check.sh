@@ -8,6 +8,10 @@ uv run python -c "import json; json.load(open('ancestry_geospatial.geojson')); p
 uv run python -c "import json; json.load(open('research/sources/source-index.json')); print('source-index ok')"
 uv run tools/build_source_index.py --check
 uv run tools/build_citation_backlinks.py --check
+uv run tools/check_family_core.py
+uv run tools/test_check_family_core.py
+uv run tools/build_people_index.py --check
+uv run tools/test_build_people_index.py
 uv run tools/check_evidence.py
 uv run tools/test_check_evidence.py
 uv run tools/check_cases.py

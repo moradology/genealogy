@@ -29,7 +29,13 @@ def check(name: str, cond: bool, detail: object = "") -> None:
 def make_fixture(tmp: Path) -> Path:
     root = tmp / "repo"
     root.mkdir()
-    for rel in ("research/cases", "research/evidence", "research/sources", "research/reasoning-traces"):
+    for rel in (
+        "research/cases",
+        "research/evidence",
+        "research/people",
+        "research/sources",
+        "research/reasoning-traces",
+    ):
         shutil.copytree(REPO / rel, root / rel)
     for rel in ("index.html", "ancestry_geospatial.geojson"):
         shutil.copy(REPO / rel, root / rel)
@@ -81,6 +87,7 @@ with tempfile.TemporaryDirectory(prefix="gen-store-test-") as td:
     check("add ok", o.get("ok") is True and r.returncode == 0, r.stdout[:300] + r.stderr[:300])
     check("add reports id", o.get("id") == "ev.test.alpha", o)
     check("add auto pull is 2-digit", isinstance(o.get("pull"), str) and len(o["pull"]) == 2 and o["pull"].isdigit(), o)
+    first_pull = o.get("pull")
     lines = [json.loads(x) for x in shard_path.read_text().splitlines() if x.strip()]
     added = [x for x in lines if x["id"] == "ev.test.alpha"]
     check("added line present", len(added) == 1, len(added))
@@ -129,6 +136,7 @@ with tempfile.TemporaryDirectory(prefix="gen-store-test-") as td:
     tpath = root / "research/reasoning-traces/2026-07-09-test-thread.md"
     check("trace file exists", tpath.exists())
     text = tpath.read_text()
+    trace_original = tpath.read_bytes()
     check("trace id derived", "id: trace.2026-07-09.test-thread" in text, text[:200])
     check("trace case refs sorted", text.find('"case.05"') < text.find('"case.08"'), text[:400])
     check("trace person refs sorted",
@@ -137,6 +145,7 @@ with tempfile.TemporaryDirectory(prefix="gen-store-test-") as td:
     # ---- trace new: refusing to overwrite ----
     r = store(root, "trace", "new", "--slug", "test-thread", "--title", "Again", "--date", "2026-07-09")
     check("trace overwrite refused", r.returncode != 0 and json.loads(r.stdout)["ok"] is False, r.stdout[:200])
+    check("trace overwrite preserves original bytes", tpath.read_bytes() == trace_original)
 
     # ---- trace new: bad ref fails validation and the file is not left behind ----
     r = store(root, "trace", "new", "--slug", "bad-refs", "--title", "Bad", "--date", "2026-07-09",
@@ -158,6 +167,40 @@ with tempfile.TemporaryDirectory(prefix="gen-store-test-") as td:
     o = json.loads(r.stdout)
     check("show evidence ok", o.get("ok") is True and o.get("kind") == "evidence", r.stdout[:200])
 
+    # ---- show: canonical people and family-core rows (never HTML scraping) ----
+    r = store(root, "show", "person.doyle_zimmerman")
+    o = json.loads(r.stdout)
+    check("show person ok", o.get("ok") is True and o.get("kind") == "person", r.stdout[:200])
+    check(
+        "show person canonical shape",
+        o.get("record", {}).get("display_name") == "Doyle Julius Zimmerman",
+        o.get("record"),
+    )
+    check(
+        "show person reverse relationships",
+        "relationship.parent.zimmerman_leonard-to-doyle_zimmerman"
+        in o.get("referenced_by", {}).get("relationships", []),
+        o.get("referenced_by"),
+    )
+    check(
+        "show person reverse geo events",
+        "event.doyle_zimmerman.birth.1930-04-12"
+        in o.get("referenced_by", {}).get("geo", []),
+        o.get("referenced_by"),
+    )
+
+    r = store(root, "show", "relationship.parent.zimmerman_leonard-to-doyle_zimmerman")
+    o = json.loads(r.stdout)
+    check(
+        "show relationship ok",
+        o.get("ok") is True and o.get("kind") == "relationship",
+        r.stdout[:200],
+    )
+
+    r = store(root, "show", "gap.fleckenstein.catherine.parents")
+    o = json.loads(r.stdout)
+    check("show gap ok", o.get("ok") is True and o.get("kind") == "gap", r.stdout[:200])
+
     # ---- show: unknown id ----
     r = store(root, "show", "nope.nothing")
     check("show unknown rc", r.returncode != 0 and json.loads(r.stdout)["ok"] is False, r.stdout[:200])
@@ -166,11 +209,13 @@ with tempfile.TemporaryDirectory(prefix="gen-store-test-") as td:
     r = store(root, "evidence", "add", "--shard", "mundell", stdin=json.dumps(valid_record("ev.test.epsilon")))
     o2 = json.loads(r.stdout)
     check("second add ok", o2.get("ok") is True, r.stdout[:300])
-    check("second pull distinct", o2.get("pull") != o.get("pull"), (o.get("pull"), o2.get("pull")))
+    check("second pull distinct", o2.get("pull") != first_pull, (first_pull, o2.get("pull")))
 
     # ---- no temp-file litter in the evidence dir after adds/refusals ----
     litter = list((root / "research/evidence").glob("*.tmp"))
     check("no tmp litter", not litter, litter)
+    trace_litter = list((root / "research/reasoning-traces").glob("*.tmp"))
+    check("no trace tmp litter", not trace_litter, trace_litter)
 
     # ---- status: fast dashboard, no Playwright; ok mirrors exit code ----
     r = store(root, "status")
@@ -180,6 +225,8 @@ with tempfile.TemporaryDirectory(prefix="gen-store-test-") as td:
     check("status cases histogram", isinstance(o.get("cases", {}).get("open"), int), o.get("cases"))
     check("status evidence counts", isinstance(o.get("evidence", {}).get("total"), int), o.get("evidence"))
     check("status validators subfield", isinstance(o.get("validators"), dict) and o["validators"], o.get("validators"))
+    check("status family validator", o.get("validators", {}).get("family") is True, o.get("validators"))
+    check("status family counts", o.get("family", {}).get("people") == 117, o.get("family"))
     check("status names latest trace", bool(o.get("latest_trace")), o.get("latest_trace"))
 
     # ---- status on an UNHEALTHY store: ok false AND nonzero exit ----

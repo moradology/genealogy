@@ -116,7 +116,7 @@ ROUTE_META = [
     ("path.nauer", "route.nauer", "zimmerman", "solid", ["convergence", "zimmerman"]),
     ("path.nauer_candidate_lorenz", "route.nauer_candidate", "zimmerman", "conjectural", ["zimmerman"]),
     ("path.mundell", "route.mundell_rust", "mundell", "solid", ["convergence", "mundell"]),
-    ("path.rust_candidate_john_f_ethel_b_rupert", "route.rust_candidate", "mundell", "conjectural", ["mundell"]),
+    ("path.rust_upstream_and_frances_identity", "route.rust_candidate", "mundell", "conjectural", ["mundell"]),
     ("path.dible_surname", "route.dible_surname", "dible", "solid", ["convergence", "dible"]),
     ("path.long_sleight", "route.long_sleight", "dible", "solid", ["convergence", "dible"]),
     ("path.mcclelland_love", "route.mcclelland_love", "dible", "conjectural", ["dible"]),

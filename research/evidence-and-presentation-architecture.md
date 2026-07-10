@@ -1,8 +1,10 @@
 # Architecture: an evidence layer under an assembly (presentation) layer
 
-Status: FOUNDATION IMPLEMENTED 2026-07-09. The evidence, case, source, and trace
-contracts described here are live. The graph database is a derived CozoDB reasoning
-index, never an authoring source; see `embedded-graph-db-options.md`.
+Status: FOUNDATION IMPLEMENTED 2026-07-09. The evidence, case, source, trace, person,
+and relationship contracts described here are live. CozoDB has been selected for a
+possible future search index, but no loader or database index exists yet. If built,
+it will be disposable and never an authoring source; see
+`embedded-graph-db-options.md`.
 
 ## The source-of-truth story (decisive)
 
@@ -26,25 +28,30 @@ the evidence graph) plays the role foreign keys would, in pre-commit/CI. You *ca
 broken state; the gate stops it from shipping. That's "constraints as a check" instead of
 "constraints as an engine" — the right trade when diffable, hand-editable text is the goal.
 
-So: **text is truth; the gate is its integrity; CozoDB is a derived reasoning index; the
-viz is a derived projection; binaries are files referenced by path.** Nothing authoritative
-is binary.
+So: **text is truth; the gate is its integrity; the public indexes are generated
+projections; binaries are files referenced by path.** Nothing authoritative is binary.
+A future CozoDB index may consume the text, but it will not own or change it.
 
 **Format of the truth** (text, but which text):
-- **Research data → JSONL** (one case, source, or evidence record per line). Line-delimited records give
+- **Research data → JSONL** (one person, relationship, gap, case, source, or evidence record per line). Line-delimited records give
   *clean line-level git diffs*, are appendable and greppable, and dodge JSON's noisy
   whitespace/reordering diffs. Current truth lives in `cases.jsonl`, `sources.jsonl`,
-  and branch-sharded `evidence/*.jsonl`; graph nodes and edges are derived from them.
+  `people/people.jsonl`, `people/relationships.jsonl`, and branch-sharded
+  `evidence/*.jsonl`.
 - **Discovery threads → Markdown + front-matter** (prose reasoning; the `reasoning-traces/`
   already are this).
 - **Geo → keep `ancestry_geospatial.geojson`** (already the geo truth; it's line-editable text).
 - **Binaries → filesystem**, referenced by `path`.
 
-**Current cutover.** Cases, evidence, and sources now have canonical Git-tracked stores.
-`index.html` is checked against the case and source registries, visible record cards name
-canonical `ev.*` records, and `source-index.json` is generated from `sources.jsonl`.
-Reasoning traces use one strict frontmatter contract. Person prose remains hand-authored,
-but every Documented or Strong row must cite the Source Ledger.
+**Current cutover.** Cases, evidence, sources, people, relationships, and family gaps
+now have canonical Git-tracked stores. The family files contain one real deceased
+person per row, 155 typed parent or spouse links, and 18 explicit gap records.
+`index.html` is checked against the case and source registries; its people registry,
+pedigree positions, and Index of Names are generated from the family files. Visible
+record cards name canonical `ev.*` records, and `source-index.json` is generated from
+`sources.jsonl`. Reasoning traces use one strict frontmatter contract. Hand-authored
+person prose remains presentation, and every Documented or Strong row must cite the
+Source Ledger.
 
 **The one honest exception.** If this were multi-user, write-heavy, and integrity-critical
 operationally, storage-engine-enforced constraints + transactions would outweigh diffability,
@@ -70,14 +77,18 @@ the evidence layer, and every claim it makes can be clicked back to its proof.
 | Layer piece | Where it lives today |
 |---|---|
 | Evidence records | `research/evidence/*.jsonl`; private images remain under ignored `research/pulls/**` |
+| People | `research/people/people.jsonl`; one actual deceased person per row |
+| Parent, spouse, and gap records | `research/people/relationships.jsonl`; 155 relationships and 18 gaps |
 | Source catalogue | `research/sources/sources.jsonl`; `source-index.json` is generated |
 | Structured event data + confidence + source_refs | `ancestry_geospatial.geojson` |
 | Discovery threads | strict `research/reasoning-traces/*.md` frontmatter plus prose |
 | Open threads / questions | `research/cases/cases.jsonl`, checked against the public Docket |
 | Citations pointing back | superscripts → Source Ledger; record cards → canonical evidence ids |
+| Public family indexes | generated into `index.html` with `./gen build people-index` |
 
-Every piece now has a stable address and a checked relationship to the others. The graph
-loader consumes those addresses; it does not introduce a second record format.
+Every piece now has a stable address and a checked relationship to the others. A
+future graph loader may consume those addresses, but it may not introduce a second
+authoring format.
 
 ## The concrete shape
 
@@ -90,15 +101,22 @@ contract is in `research/evidence/README.md`. Visible record cards point to thes
 people, evidence, sources, places, outcome, and next action. The Docket links the live
 question; the trace explains how the evidence was weighed.
 
+**People and relationships** live in two family JSONL files. People are real,
+deceased historical individuals with stable ids, names, branches, confidence, privacy,
+and public anchors. Parent and spouse links are separate records with evidence, source,
+and case references. Unknown or disputed relatives are case-backed gaps rather than
+invented people. `tools/check_family_core.py` enforces this contract.
+
 **Claims (optional, only if it earns its keep)** — a fact a person card asserts. Minimal:
 `id`, `statement`, `evidence: [...]`, `confidence`. Don't build this unless the gate below
 needs it; the person card + its citations may be claim enough.
 
-**The presentation layer** stays hand-authored under a gate-enforced contract: every
-Documented or Strong person row cites the Source Ledger, every visible record card resolves
-to canonical evidence, every Docket entry matches its canonical case, and all references
-resolve. Local private assets receive checksum validation when mounted but are never
-required in a public clone.
+**The presentation layer** keeps narrative cards hand-authored under a gate-enforced
+contract. Its embedded people registry, pedigree, and Index of Names are generated
+from the family core with `./gen build people-index`. Every Documented or Strong person
+row cites the Source Ledger, every visible record card resolves to canonical evidence,
+every Docket entry matches its canonical case, and all references resolve. Local private
+assets receive checksum validation when mounted but are never required in a public clone.
 
 ## Pointing back "in an elegant fashion"
 
@@ -123,31 +141,31 @@ Thirty evidence records — the initial subscription migration, later subscripti
 and four open-web findings — are linked to canonical cases and traces and guarded by strict
 validators and mutation tests. The same contract spans all four family branches.
 
-## Database boundary
+## Planned database boundary
 
 Genealogy is natively a graph: people, events, places, evidence, sources, cases, and
-reasoning traces are nodes joined by typed relationships. The project now uses **CozoDB as
-an embedded, derived reasoning index** for that graph.
+reasoning traces are joined by relationships. **CozoDB is the selected engine for a
+possible future derived search index. No Cozo loader or index is implemented today.**
 
-The boundary is strict:
+If that work proceeds, the boundary is strict:
 
 - Researchers author only the Git-tracked JSONL, Markdown, GeoJSON, and presentation text.
 - Validators reject unresolved or one-sided references before data can land.
-- The Cozo loader rebuilds the index from those files; graph rows are disposable.
+- A loader must rebuild the index only from those files; database rows are disposable.
 - Cozo may traverse, rank, and help plan searches, but it may not originate or overwrite a
   canonical fact.
 - The public artifact stays static and offline. It never ships the database or depends on a
   database service.
 
-This gives the search tooling a graph query surface without sacrificing readable diffs,
-hand editing, or long-term archival files.
+That would give search tooling a relationship-query surface without sacrificing
+readable diffs, hand editing, or long-term archival files.
 
 ### The real prize: encoded opinions as a reasoning layer for automated search
 
-The graph earns its place by making **genealogical opinions explicit** so automated search
-can be principled and cumulative instead of re-deriving judgment each session. Cozo is the
-query surface; the durable value remains the rules and decisions expressed against ids from
-the canonical text.
+A graph index would earn its place by making **genealogical opinions explicit** so
+automated search can be principled and cumulative instead of re-deriving judgment each
+session. Cozo could provide the query surface; the durable value would remain the rules
+and decisions expressed against ids from the canonical text.
 
 **The opinions worth encoding** (several already exist, informally — this makes them
 repeatable rather than living in my head each session):
@@ -174,8 +192,9 @@ repeatable rather than living in my head each session):
 through the constraints (contradiction check); when a name search returns N same-names, it
 scores each against the graph; between sessions it reads the frontier ranking to pick the
 next target and the negative memory to skip dead ends. The agent proposes; the encoded
-opinions dispose. That's the graph's genuine utility here: a **reasoning substrate for
-search**, realized as constraints and queries over the derived Cozo graph.
+opinions dispose. That is the graph's potential utility here: a **reasoning substrate
+for search**, if it is later realized as constraints and queries over a derived Cozo
+index.
 
 This is arguably the highest-leverage thing to build, and it pairs with the evidence layer:
 the evidence graph is the data; the opinions are the rules that walk it.
@@ -185,19 +204,20 @@ the evidence graph is the data; the opinions are the rules that walk it.
 Different record types share one deliberate JSONL envelope. Their record-specific detail
 lives in the privacy-safe transcription; adding a new canonical field or record type is a
 hard schema migration with validator and test changes, not an untracked property added only
-inside Cozo.
+inside a database.
 
 Scans, PDFs, and photographs remain filesystem assets. Canonical evidence stores their
 paths, roles, and optional checksums; subscription captures stay ignored under
-`research/pulls/**`. Cozo indexes metadata and relationships only. It does not store the
-paperwork as blobs.
+`research/pulls/**`. A future Cozo index may hold metadata and relationships only; it
+must not store the paperwork as blobs.
 
-### Chosen derived index
+### Selected future derived index
 
-CozoDB is embedded, serverless, rebuildable, and suited to ancestry paths and relationship
-patterns. Research tools may use it for graph traversal, candidate ranking, negative memory,
-and search planning. The index is never shipped in the public artifact, edited as research
-truth, or accepted as evidence without a canonical record and normal review.
+CozoDB was selected because it is embedded, serverless, rebuildable, and suited to
+ancestry paths and relationship patterns. If implemented, research tools may use it for
+path finding, candidate ranking, negative memory, and search planning. The index must
+never ship in the public artifact, be edited as research truth, or count as evidence
+without a canonical record and normal review.
 
 ## Decisions made
 
@@ -205,4 +225,5 @@ truth, or accepted as evidence without a canonical record and normal review.
 2. No claims layer yet; case/person references plus citations carry the current assertions.
 3. Inline record cards point to canonical evidence ids; a separate evidence view is deferred.
 4. The evidence contract landed before any page split.
-5. CozoDB is the sole graph index and remains a derived consumer of canonical text.
+5. CozoDB is the selected engine for future graph indexing; no loader or index exists
+   yet, and any implementation must remain a disposable consumer of canonical text.

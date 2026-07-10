@@ -6,9 +6,15 @@ This directory stores durable research memory for the genealogy artifact.
 
 - `cases/` - the canonical append-only research docket and its current status.
 - `evidence/` - canonical, branch-sharded JSONL metadata for acquired records and documented negative searches; see its README for the schema and privacy contract.
+- `people/` - canonical deceased-person records, parent and spouse links, and explicit unresolved-family gaps.
 - `reasoning-traces/` - structured notes for fruitful reasoning chains that should survive beyond chat history.
 - `search-frames/` - case-owned search plans, repositories, variants, and completed-search notes.
 - `sources/` - source listings, indexing blurbs, source ids, source-type tags, and retrieval notes.
+
+The public people registry, pedigree positions, and Index of Names in `index.html`
+are generated from `people/people.jsonl` and `people/relationships.jsonl`. Edit the
+JSONL files, run `./gen build people-index`, then run `./gen gate`. Life events and
+places remain in the repository-root GeoJSON.
 
 ## When To Add A Reasoning Trace
 
