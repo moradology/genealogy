@@ -31,7 +31,6 @@ from typing import NoReturn
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_docket  # noqa: E402
-import build_stems  # noqa: E402
 import family_display  # noqa: E402
 
 LAYOUT_PATH = "research/people/layout.jsonl"
@@ -179,7 +178,7 @@ def render_block(block: dict, context: dict) -> str:
                 stem_row = context["stems"].get(item)
                 if stem_row is None:
                     fail(f"layout item {item!r} has no stems.jsonl row")
-                items_html.append(build_stems.render_stem(
+                items_html.append(family_display.render_stem(
                     stem_row, context["people"], context["links"]))
             else:
                 items_html.append(render_card(
@@ -266,8 +265,8 @@ def splice(source: str, blocks: list[dict], rendered: dict[str, str]) -> str:
             close_start = updated.rindex("</div>", open_end, close_index)
             old_interior = updated[open_end:close_start]
             new_interior = rendered[block["id"]]
-            old_text = build_stems.visible_text(old_interior)
-            new_text = build_stems.visible_text(new_interior)
+            old_text = family_display.visible_text(old_interior)
+            new_text = family_display.visible_text(new_interior)
             if old_text != new_text:
                 fail(f"bootstrap {block['id']}: the hand region's words differ "
                      "from the store render; refusing to replace words the "

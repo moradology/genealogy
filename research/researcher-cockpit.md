@@ -60,8 +60,10 @@ Names are generated with `./gen build people-index` and checked by the gate.
 
 - `./gen gate` runs the same complete gate as CI.
 - `./gen build <target> [--check]` builds or verifies one generated artifact.
-  Targets are `basemap`, `fonts`, `citation-backlinks`, `plate-keys`,
-  `people-index`, and `source-index`.
+  Targets are `basemap`, `fonts`, `citation-backlinks`, `docket`,
+  `plate-keys`, `people-index`, `source-index`, and `family` - the last
+  regenerates every person card, gap card, inline stem, and record card
+  from the display blocks and layout in the truth stores.
 - `./gen stamp [--write|--check|--deployed]` manages the public-page content
   fingerprint. With no flag it checks the local stamp.
 

@@ -14,8 +14,6 @@ uv run tools/build_people_index.py --check
 uv run tools/test_build_people_index.py
 uv run tools/build_docket.py --check
 uv run tools/test_build_docket.py
-uv run tools/build_stems.py --check
-uv run tools/test_build_stems.py
 uv run tools/build_family.py --check
 uv run tools/test_build_family.py
 uv run tools/check_evidence.py
@@ -33,7 +31,6 @@ uv run tools/test_gen_ancestry.py
 uv run tools/test_gen_store.py
 uv run tools/test_family_rules.py
 uv run tools/test_family_display.py
-uv run tools/test_extract_family_display.py
 uv run tools/build_plate_keys.py --check
 if [ -d tools/basemap-data ]; then
   uv run tools/build_basemap.py --check

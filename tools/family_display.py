@@ -14,12 +14,14 @@ from __future__ import annotations
 
 import html as html_module
 import json
+import re
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import NoReturn
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import family_rules  # noqa: E402
 from check_family_core import TOKEN_RE  # noqa: E402
 
 SOURCES_PATH = "research/sources/sources.jsonl"
@@ -211,6 +213,58 @@ def render_person_card(*, row_id: str, title_html: str, ahnen_text: str,
     parts.append(record_cards_html)
     parts.append("</div>")
     return "".join(parts)
+
+
+TAG_STRIP_RE = re.compile(r"<[^>]+>")
+
+
+def visible_text(fragment: str) -> str:
+    """Collapse a fragment to its space-normalized, entity-decoded text."""
+    return " ".join(html_module.unescape(TAG_STRIP_RE.sub(" ", fragment)).split())
+
+
+def stem_short_name(row: dict, people: dict[str, dict], person_id: str) -> str:
+    override = (row.get("short_names") or {}).get(person_id)
+    if isinstance(override, str) and override:
+        return override
+    return people[person_id]["display_name"].split()[0]
+
+
+def render_stem(row: dict, people: dict[str, dict], links: list[dict]) -> str:
+    """A descent stem: editorial words from the store row, confidence tag and
+    weakest-step pair computed from the live relationship chain."""
+    where = f"stems.jsonl {row['id']!r}"
+    chains = family_rules.parent_chains(links, row["anchor"], row["target"])
+    if not chains:
+        fail(f"{where}: no upward parent chain from {row['anchor']} to {row['target']}")
+    if len(chains) > 1:
+        fail(f"{where}: {len(chains)} distinct chains from {row['anchor']} to "
+             f"{row['target']}; stems require exactly one")
+    for link in chains[0]:
+        if link.get("status") != "accepted":
+            fail(f"{where}: chain link {link.get('id')!r} has status "
+                 f"{link.get('status')!r}; a descent stem may only claim a "
+                 "fully accepted chain")
+    weakest = family_rules.weakest_parent_step(chains[0])
+    confidence = weakest.get("confidence")
+    if confidence not in TAG_LABELS:
+        fail(f"{where}: weakest link {weakest.get('id')!r} has unknown "
+             f"confidence {confidence!r}")
+    pair = (f"{_escape(stem_short_name(row, people, weakest['person_b']))}"
+            f"–{_escape(stem_short_name(row, people, weakest['person_a']))}")
+    note = f"weakest step: {pair}"
+    suffix = row.get("note_suffix")
+    if suffix:
+        note += f", {_escape(suffix)}"
+    href = "#" + people[row["target"]]["public_anchor"]
+    return (
+        '<div class="stem"><span class="stem-label">descent</span> '
+        f'{_escape(row["from_label"])} <span class="stem-arrow">→</span> '
+        f'{_escape(row["via_prose"])} <a href="{href}">{_escape(row["link_text"])}</a> '
+        f'<span class="stem-arrow">→</span> {_escape(row["line_label"])} '
+        f'<span class="tag {confidence}">{TAG_LABELS[confidence]}</span> '
+        f'<span class="stem-note">{note}</span></div>'
+    )
 
 
 class _StreamParser(HTMLParser):

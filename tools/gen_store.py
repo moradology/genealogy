@@ -23,7 +23,6 @@ sys.path.insert(0, str(TOOLS_DIR))
 import build_docket  # noqa: E402
 import build_people_index  # noqa: E402
 import build_family  # noqa: E402
-import build_stems  # noqa: E402
 import check_cases  # noqa: E402
 import check_evidence  # noqa: E402
 import check_family_core  # noqa: E402
@@ -1101,12 +1100,6 @@ def render_candidate_family_html(
                     shutil.copytree(root / rel, target_dir)
             (candidate_root / "index.html").write_text(rendered, encoding="utf-8")
             _family_original, rendered, _family_count = build_family.build(candidate_root)
-        if stems_path.exists():
-            # Stems derive their tags from the candidate relationships: a
-            # confidence or status change must re-render them in the same
-            # atomic projection pass.
-            (candidate_root / "index.html").write_text(rendered, encoding="utf-8")
-            _stems_original, rendered, _stem_count = build_stems.build(candidate_root)
     stamped, stamp_value = stamp_tool.stamped_html(rendered)
     return stamped, stamp_value, len(payload["people"])
 

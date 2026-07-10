@@ -254,15 +254,6 @@ with tempfile.TemporaryDirectory(prefix="build-family-test-") as td:
           '<span class="tag lead">Working lead</span>' in
           (root / "index.html").read_text(encoding="utf-8"), result.stdout)
 
-    # 5. build_stems skips layout-claimed stems entirely
-    result = subprocess.run(
-        [sys.executable, str(REPO / "tools/build_stems.py"),
-         "--root", str(root), "--check"],
-        capture_output=True, text=True)
-    check("build_stems skips claimed stems",
-          result.returncode == 0 and "0 stems" in result.stdout,
-          result.stdout + result.stderr)
-
     # 6. Bootstrap refuses when the hand region carries words the store lacks
     tampered = HAND_REGION.replace("Documented at the seat.",
                                    "Documented at the seat, they say.")
