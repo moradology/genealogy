@@ -25,6 +25,7 @@ BUILD_TARGETS = {
     "people-index": "tools/build_people_index.py",
     "source-index": "tools/build_source_index.py",
     "stems": "tools/build_stems.py",
+    "family": "tools/build_family.py",
 }
 WRITE_FLAG_TARGETS = frozenset({"basemap", "fonts"})
 
@@ -43,7 +44,7 @@ def usage() -> str:
         "  gate                        Run the full gate (tools/check.sh)",
         "  build <target> [--check]    Rebuild, or verify with --check, one of:",
         "                              basemap fonts citation-backlinks docket",
-        "                              plate-keys people-index source-index stems",
+        "                              plate-keys people-index source-index stems family",
         "  stamp [--write|--check|--deployed]",
         "                              Deploy fingerprint (tools/stamp.py)",
         "                              (no flag means --check)",

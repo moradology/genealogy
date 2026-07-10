@@ -186,6 +186,10 @@ def splice(source: str, rows: list[dict], rendered: dict[str, str],
             updated = (updated[: match.end(1)] + rendered[row["id"]]
                        + updated[match.start(2):])
         return updated
+    if not rows:
+        # Every stem is claimed by a layout block (build_family renders them
+        # inline); nothing here to manage and no markers to bootstrap.
+        return source
     hand = list(HAND_STEM_RE.finditer(source))
     if len(hand) != len(rows):
         fail(f"bootstrap: index.html has {len(hand)} hand stems but stems.jsonl "

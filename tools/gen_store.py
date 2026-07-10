@@ -9,6 +9,7 @@ import fcntl
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -21,6 +22,7 @@ sys.path.insert(0, str(TOOLS_DIR))
 
 import build_docket  # noqa: E402
 import build_people_index  # noqa: E402
+import build_family  # noqa: E402
 import build_stems  # noqa: E402
 import check_cases  # noqa: E402
 import check_evidence  # noqa: E402
@@ -1089,6 +1091,16 @@ def render_candidate_family_html(
             (root / "index.html").read_bytes()
         )
         _original, rendered, payload = build_people_index.build(candidate_root)
+        layout_exists = (root / "research" / "people" / "layout.jsonl").exists()
+        if layout_exists:
+            # Family blocks render person/gap cards and inline stems from the
+            # candidate relationships in the same atomic projection pass.
+            for rel in ("research/evidence", "research/sources"):
+                target_dir = candidate_root / rel
+                if not target_dir.exists():
+                    shutil.copytree(root / rel, target_dir)
+            (candidate_root / "index.html").write_text(rendered, encoding="utf-8")
+            _family_original, rendered, _family_count = build_family.build(candidate_root)
         if stems_path.exists():
             # Stems derive their tags from the candidate relationships: a
             # confidence or status change must re-render them in the same
