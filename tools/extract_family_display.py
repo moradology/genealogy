@@ -443,45 +443,10 @@ def store_by_id(rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     return by_id
 
 
-def registry_groups(entries: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
-    groups: dict[str, list[dict[str, Any]]] = {}
-    for entry in entries:
-        anchor = entry.get("h")
-        if isinstance(anchor, str) and anchor:
-            groups.setdefault(anchor, []).append(entry)
-    return groups
-
-
-def entry_slots(entry: dict[str, Any]) -> list[int]:
-    slots = entry.get("ah")
-    if not isinstance(slots, list):
-        return []
-    return [slot for slot in slots if isinstance(slot, int) and not isinstance(slot, bool)]
-
-
-def sorted_slotted_members(members: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    slotted = [member for member in members if entry_slots(member)]
-    return sorted(slotted, key=lambda member: (min(entry_slots(member)), members.index(member)))
-
-
-def derived_title(members: list[dict[str, Any]]) -> str | None:
-    ordered = sorted_slotted_members(members)
-    if not ordered:
-        ordered = members
-    names = [member.get("n") for member in ordered if isinstance(member.get("n"), str)]
-    return " + ".join(names) if names else None
-
-
-def derived_ahnen(members: list[dict[str, Any]]) -> str | None:
-    slots: list[int] = []
-    branch = None
-    for member in members:
-        if branch is None and isinstance(member.get("a"), str):
-            branch = member["a"]
-        slots.extend(entry_slots(member))
-    if branch is None:
-        return None
-    return family_display.ahnen_label(branch, slots)
+registry_groups = family_display.registry_groups
+entry_slots = family_display.entry_slots
+derived_title = family_display.derived_title
+derived_ahnen = family_display.derived_ahnen
 
 
 def tag_class(head: dict[str, Any], row_id: str, refusals: list[str]) -> str:

@@ -91,6 +91,50 @@ def render_prose(value: str, cite_codes: dict[str, str],
     return "".join(parts)
 
 
+def registry_groups(entries: list[dict]) -> dict[str, list[dict]]:
+    """Registry entries grouped by their card anchor (the 'h' field)."""
+    groups: dict[str, list[dict]] = {}
+    for entry in entries:
+        anchor = entry.get("h")
+        if isinstance(anchor, str) and anchor:
+            groups.setdefault(anchor, []).append(entry)
+    return groups
+
+
+def entry_slots(entry: dict) -> list[int]:
+    slots = entry.get("ah")
+    if not isinstance(slots, list):
+        return []
+    return [slot for slot in slots
+            if isinstance(slot, int) and not isinstance(slot, bool)]
+
+
+def derived_title(members: list[dict]) -> str | None:
+    """Rule: slotted members' display names joined ' + ' in slot order."""
+    slotted = [member for member in members if entry_slots(member)]
+    ordered = sorted(
+        slotted, key=lambda member: (min(entry_slots(member)),
+                                     members.index(member)))
+    if not ordered:
+        ordered = members
+    names = [member.get("n") for member in ordered
+             if isinstance(member.get("n"), str)]
+    return " + ".join(names) if names else None
+
+
+def derived_ahnen(members: list[dict]) -> str | None:
+    """Rule: branch code + every member slot through ahnen_label."""
+    slots: list[int] = []
+    branch = None
+    for member in members:
+        if branch is None and isinstance(member.get("a"), str):
+            branch = member["a"]
+        slots.extend(entry_slots(member))
+    if branch is None:
+        return None
+    return ahnen_label(branch, slots)
+
+
 def ahnen_label(branch: str, slots: list[int]) -> str | None:
     """Z-1, M-4·5, D-16·20, Z-24–27; None when the row holds no slots."""
     if not slots:
