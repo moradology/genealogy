@@ -390,7 +390,24 @@ def command_trace_new(args: argparse.Namespace, root: Path) -> int:
         "---",
         "",
     ]
-    content = "\n".join(fields) + trace_body_from_template(root, args.title)
+    if args.body_file is not None:
+        body_path = Path(args.body_file)
+        if not body_path.is_file():
+            return stop(
+                {"command": "trace.new", "ok": False,
+                 "errors": [f"body file not found: {args.body_file}"]},
+                1,
+            )
+        body = body_path.read_text(encoding="utf-8")
+        if not body.strip():
+            return stop(
+                {"command": "trace.new", "ok": False, "errors": ["body file is empty"]},
+                1,
+            )
+        body = body.rstrip() + "\n"
+    else:
+        body = trace_body_from_template(root, args.title)
+    content = "\n".join(fields) + body
 
     # Existence check, validation, and creation all happen under the store
     # flock, and the validation runs against a temp copy of the trace dir: the
@@ -834,6 +851,7 @@ def build_parser() -> argparse.ArgumentParser:
     trace_new.add_argument("--geo-refs")
     trace_new.add_argument("--outcome")
     trace_new.add_argument("--next-action")
+    trace_new.add_argument("--body-file", dest="body_file")
     trace_new.set_defaults(handler=command_trace_new)
 
     case = attach_error(sub.add_parser("case", add_help=False))

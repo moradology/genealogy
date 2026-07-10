@@ -614,6 +614,7 @@ def new_agent_state() -> dict:
         "results": [],
         "cursor": 0,
         "history": [],
+        "last_search": None,
     }
 
 
@@ -886,6 +887,9 @@ def go_to_location(
     if loc["type"] == "search":
         state["results"] = data.get("results", [])
         state["cursor"] = 0
+        # The iteration context outlives the current location: next/prev/open
+        # keep working after this agent moves onto a record.
+        state["last_search"] = {"location": loc, "results": state["results"], "cursor": 0}
     else:
         state["results"] = []
         state["cursor"] = 0
@@ -907,22 +911,43 @@ def cmd_where(args) -> int:
     state = load_agent(agent)
     loc = state.get("location")
     cursor_at = None
-    if loc and loc.get("type") == "search":
-        res, cur = state.get("results", []), state.get("cursor", 0)
-        cursor_at = {"cursor": cur, "count": len(res), "result": res[cur] if 0 <= cur < len(res) else None}
+    search = active_search(state)
+    if search is not None:
+        res, cur = search["results"], search["cursor"]
+        cursor_at = {"cursor": cur, "count": len(res), "result": res[cur] if 0 <= cur < len(res) else None,
+                     "search": search["location"], "live": search["live"]}
     emit({"command": "ancestry.where", "ok": True, "agent": agent, "location": loc,
           "history_depth": len(state.get("history", [])), "cursor_at": cursor_at})
     return 0
 
 
+def active_search(state: dict) -> dict | None:
+    """The agent's live iteration context: the current search when standing on
+    one, else the persisted last_search (so opening a record never consumes
+    the ability to keep stepping/opening results)."""
+    loc = state.get("location")
+    if isinstance(loc, dict) and loc.get("type") == "search" and state.get("results"):
+        return {"location": loc, "results": state["results"], "cursor": state.get("cursor", 0), "live": True}
+    last = state.get("last_search")
+    if isinstance(last, dict) and last.get("results"):
+        return {"location": last.get("location"), "results": last["results"], "cursor": last.get("cursor", 0), "live": False}
+    return None
+
+
 def step(agent: str, delta: int, command: str) -> int:
     state = load_agent(agent)
-    res = state.get("results", [])
-    if not res:
+    search = active_search(state)
+    if search is None:
         emit({"command": command, "ok": False, "error": "no active search; goto a search first", "agent": agent})
         return 1
-    cur = max(0, min(len(res) - 1, state.get("cursor", 0) + delta))
-    state["cursor"] = cur
+    res = search["results"]
+    cur = max(0, min(len(res) - 1, search["cursor"] + delta))
+    if search["live"]:
+        state["cursor"] = cur
+        if isinstance(state.get("last_search"), dict):
+            state["last_search"]["cursor"] = cur
+    else:
+        state["last_search"]["cursor"] = cur
     save_agent(agent, state)
     emit({"command": command, "ok": True, "agent": agent, "cursor": cur, "count": len(res), "result": res[cur]})
     return 0
@@ -939,15 +964,16 @@ def cmd_prev(args) -> int:
 def cmd_open(args) -> int:
     agent = agent_id(args.agent)
     state = load_agent(agent)
-    loc = state.get("location")
+    search = active_search(state)
+    if search is None:
+        emit({"command": "ancestry.open", "ok": False, "error": "no active search; goto a search first", "agent": agent})
+        return 1
+    loc = search["location"]
     if not isinstance(loc, dict) or loc.get("type") != "search":
         emit({"command": "ancestry.open", "ok": False, "error": "no active search; goto a search first", "agent": agent})
         return 1
-    res = state.get("results", [])
-    if not res:
-        emit({"command": "ancestry.open", "ok": False, "error": "no active search results", "agent": agent})
-        return 1
-    n = args.n if args.n is not None else state.get("cursor", 0)
+    res = search["results"]
+    n = args.n if args.n is not None else search["cursor"]
     if not (0 <= n < len(res)):
         emit({"command": "ancestry.open", "ok": False, "error": "index out of range", "n": n, "count": len(res)})
         return 1
@@ -959,6 +985,9 @@ def cmd_open(args) -> int:
         emit({"command": "ancestry.open", "ok": False, "error": "active result does not belong to the active collection", "agent": agent})
         return 1
     record = {"type": "record", "collection": loc["collection"], "id": row["record_id"]}
+    if isinstance(state.get("last_search"), dict):
+        state["last_search"]["cursor"] = n
+        save_agent(agent, state)
     return go_to_location(
         agent,
         record,

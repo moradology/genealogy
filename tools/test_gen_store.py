@@ -153,6 +153,20 @@ with tempfile.TemporaryDirectory(prefix="gen-store-test-") as td:
     check("trace bad ref refused", r.returncode != 0 and json.loads(r.stdout)["ok"] is False, r.stdout[:300])
     check("trace bad ref cleaned up", not (root / "research/reasoning-traces/2026-07-09-bad-refs.md").exists())
 
+    # ---- trace new --body-file: authored body instead of template ----
+    body_md = Path(td) / "body.md"
+    body_md.write_text("# Authored Body\n\nReal prose instead of placeholders.\n")
+    r = store(root, "trace", "new", "--slug", "authored-body", "--title", "Authored", "--date", "2026-07-09",
+              "--body-file", str(body_md))
+    o = json.loads(r.stdout)
+    check("body-file trace ok", o.get("ok") is True, r.stdout[:300])
+    authored = (root / "research/reasoning-traces/2026-07-09-authored-body.md").read_text()
+    check("body-file content used", "Real prose instead of placeholders." in authored)
+    check("body-file no template placeholders", "State the current best hypothesis" not in authored)
+    r = store(root, "trace", "new", "--slug", "missing-body", "--title", "X", "--date", "2026-07-09",
+              "--body-file", str(Path(td) / "nope.md"))
+    check("missing body file refused", r.returncode != 0 and json.loads(r.stdout)["ok"] is False, r.stdout[:200])
+
     # ---- show: a case, with reverse references ----
     r = store(root, "show", "case.05")
     o = json.loads(r.stdout)

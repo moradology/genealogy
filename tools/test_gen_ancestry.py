@@ -620,5 +620,39 @@ class NavigationTests(unittest.TestCase):
             self.assertEqual(output["error"], "no active search; goto a search first")
 
 
+class LastSearchSurvivalTests(unittest.TestCase):
+    def test_next_and_open_survive_standing_on_a_record(self):
+        with temporary_runtime():
+            rows = [row(record_id="100"), row(record_id="101")]
+            state = ga.new_agent_state()
+            state["location"] = record_loc(record_id="100")
+            state["last_search"] = {"location": search_loc(), "results": rows, "cursor": 0}
+            ga.save_agent("alice", state)
+
+            code, output = captured(ga.cmd_next, SimpleNamespace(agent="alice"))
+            self.assertEqual(code, 0)
+            self.assertEqual(output["cursor"], 1)
+            self.assertEqual(output["result"]["record_id"], "101")
+
+            with patch.object(ga, "go_to_location", return_value=0) as goto:
+                code = ga.cmd_open(SimpleNamespace(agent="alice", n=None, fresh=False, cache_only=False))
+            self.assertEqual(code, 0)
+            opened = goto.call_args.args[1]
+            self.assertEqual(opened, {"type": "record", "collection": "6224", "id": "101"})
+            persisted = ga.load_agent("alice")
+            self.assertEqual(persisted["last_search"]["cursor"], 1)
+
+    def test_where_reports_surviving_search_context(self):
+        with temporary_runtime():
+            state = ga.new_agent_state()
+            state["location"] = record_loc()
+            state["last_search"] = {"location": search_loc(), "results": [row()], "cursor": 0}
+            ga.save_agent("alice", state)
+            code, output = captured(ga.cmd_where, SimpleNamespace(agent="alice"))
+            self.assertEqual(code, 0)
+            self.assertEqual(output["cursor_at"]["live"], False)
+            self.assertEqual(output["cursor_at"]["count"], 1)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
