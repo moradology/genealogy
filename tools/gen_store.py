@@ -19,10 +19,12 @@ from typing import Any
 TOOLS_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(TOOLS_DIR))
 
+import build_docket  # noqa: E402
 import check_cases  # noqa: E402
 import check_evidence  # noqa: E402
 import check_family_core  # noqa: E402
 import check_traces  # noqa: E402
+import stamp as stamp_tool  # noqa: E402
 
 
 SHARDS = ("zimmerman", "mundell", "dible", "connelly")
@@ -618,14 +620,14 @@ def command_show(args: argparse.Namespace, root: Path) -> int:
     )
 
 
-def validate_cases(root: Path) -> tuple[bool, list[str]]:
-    html = (root / "index.html").read_text(encoding="utf-8")
-    records = read_jsonl(root / "research" / "cases" / "cases.jsonl")
+def validate_case_records(root: Path, records: list[dict[str, Any]]) -> tuple[bool, list[str]]:
+    """Semantic validation of a CANDIDATE case list against the real repo
+    context — the docket byte contract is guaranteed separately, by rendering
+    through the same build_docket.render path the gate checks."""
     trace_dir = root / "research" / "reasoning-traces"
     trace_names = {path.name for path in trace_dir.glob("20*.md")}
     failures = check_cases.core_failures(
         records,
-        check_cases.docket_records(html),
         check_cases.canonical_gaps(
             root / "research" / "people" / "relationships.jsonl"
         ),
@@ -647,6 +649,104 @@ def validate_cases(root: Path) -> tuple[bool, list[str]]:
                 f"search-frame directory has no canonical case: {path.relative_to(root)}"
             )
     return not failures, failures
+
+
+def validate_cases(root: Path) -> tuple[bool, list[str]]:
+    return validate_case_records(root, read_jsonl(root / "research" / "cases" / "cases.jsonl"))
+
+
+CASE_SCALAR_FLAGS = ("status", "summary", "display_prose", "source_note")
+CASE_ADD_FLAGS = ("evidence_refs", "trace_refs", "person_refs")
+
+
+def render_docket_html(root: Path, records: list[dict[str, Any]]) -> tuple[str, str]:
+    """Compose the two index.html mutations in memory: regenerated docket
+    region + fresh deploy stamp. Pure; hard-fails (SystemExit) on missing
+    markers/anchors or unknown person refs, BEFORE any file is written."""
+    source = (root / "index.html").read_text(encoding="utf-8")
+    people = build_docket.people_index(source)
+    markup = build_docket.render_cases(records, people)
+    spliced = build_docket.splice_cases(source, markup)
+    return stamp_tool.stamped_html(spliced)
+
+
+def command_case_update(args: argparse.Namespace, root: Path) -> int:
+    mutations = [name for name in CASE_SCALAR_FLAGS if getattr(args, name) is not None]
+    additions = {name: getattr(args, f"add_{name[:-1]}") or [] for name in CASE_ADD_FLAGS}
+    if not mutations and not any(additions.values()):
+        return stop({"command": "case.update", "ok": False, "errors": ["nothing to update"]}, 1)
+    if args.status is not None and args.status not in ("open", "in_conflict", "needs_pull", "closed"):
+        return stop({"command": "case.update", "ok": False,
+                     "errors": [f"invalid status {args.status!r}"]}, 1)
+    if args.source_note == "":
+        return stop({"command": "case.update", "ok": False,
+                     "errors": ["source_note is required and cannot be cleared"]}, 1)
+
+    cases_path = root / "research" / "cases" / "cases.jsonl"
+    with open(store_lock_path(root), "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+
+        records = read_jsonl(cases_path)
+        target = next((r for r in records if r.get("id") == args.case_id), None)
+        if target is None:
+            return stop({"command": "case.update", "ok": False,
+                         "errors": [f"unknown case id {args.case_id!r}"]}, 1)
+
+        changed: dict[str, Any] = {}
+        for name in CASE_SCALAR_FLAGS:
+            value = getattr(args, name)
+            if value is None:
+                continue
+            if name == "display_prose" and value == "":
+                # documented spelling for "clear the override, render summary"
+                changed[name] = target.pop(name, None) is not None
+                continue
+            if name == "status":
+                changed[name] = [target.get(name), value]
+            else:
+                changed[name] = target.get(name) != value
+            target[name] = value
+        added: dict[str, list[str]] = {}
+        already: dict[str, list[str]] = {}
+        for name, values in additions.items():
+            existing = target.setdefault(name, [])
+            added[name], already[name] = [], []
+            for value in values:
+                if value in existing:
+                    already[name].append(value)
+                else:
+                    existing.append(value)
+                    added[name].append(value)
+
+        candidate = "".join(compact_json(r) + "\n" for r in records).encode("utf-8")
+        original = cases_path.read_bytes()
+        noop = candidate == original
+
+        ok, errors = validate_case_records(root, records)
+        if not ok:
+            return stop({"command": "case.update", "ok": False, "written": False,
+                         "errors": errors}, 1)
+        final_html, stamp_value = render_docket_html(root, records)
+        html_path = root / "index.html"
+        html_current = html_path.read_text(encoding="utf-8") == final_html
+
+        if noop and html_current:
+            return stop({"command": "case.update", "ok": True, "written": False,
+                         "noop": True, "repaired": None, "id": args.case_id}, 0)
+        if args.validate_only:
+            return stop({"command": "case.update", "ok": True, "written": False,
+                         "validate_only": True, "id": args.case_id,
+                         "changed": changed, "added": added, "already_present": already}, 0)
+
+        if not noop:
+            atomic_replace(cases_path, candidate)
+        atomic_replace(html_path, final_html.encode("utf-8"))
+        return stop({
+            "command": "case.update", "ok": True, "written": True, "id": args.case_id,
+            "changed": changed, "added": added, "already_present": already,
+            "repaired": "docket" if noop else None,
+            "docket": "regenerated", "stamp": stamp_value,
+        }, 0)
 
 
 def latest_trace(root: Path) -> str:
@@ -735,6 +835,20 @@ def build_parser() -> argparse.ArgumentParser:
     trace_new.add_argument("--outcome")
     trace_new.add_argument("--next-action")
     trace_new.set_defaults(handler=command_trace_new)
+
+    case = attach_error(sub.add_parser("case", add_help=False))
+    case_sub = case.add_subparsers(dest="case_command", required=True)
+    case_update = attach_error(case_sub.add_parser("update", add_help=False))
+    case_update.add_argument("case_id")
+    case_update.add_argument("--status")
+    case_update.add_argument("--summary")
+    case_update.add_argument("--display-prose", dest="display_prose")
+    case_update.add_argument("--source-note", dest="source_note")
+    case_update.add_argument("--add-evidence-ref", dest="add_evidence_ref", action="append")
+    case_update.add_argument("--add-trace-ref", dest="add_trace_ref", action="append")
+    case_update.add_argument("--add-person-ref", dest="add_person_ref", action="append")
+    case_update.add_argument("--validate-only", action="store_true")
+    case_update.set_defaults(handler=command_case_update)
 
     show = attach_error(sub.add_parser("show", add_help=False))
     show.add_argument("id")

@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
-"""Validate canonical case JSONL and its presentation/search projections."""
+"""Validate the canonical case JSONL store (semantic checks only).
+
+The public docket is a GENERATED projection of this store: byte-identity with
+the render is enforced by `build_docket.py --check` in the gate, so this
+validator no longer parses or drift-compares the HTML docket. It owns the
+JSONL contract: field shape, id sequence, cross-store references, the
+published-gap rules, and the search-frame closure.
+"""
 
 from __future__ import annotations
 
-import html as html_lib
 import json
 import re
 import sys
@@ -16,33 +22,21 @@ PEOPLE = ROOT / "research" / "people" / "people.jsonl"
 RELATIONSHIPS = ROOT / "research" / "people" / "relationships.jsonl"
 ALLOWED_STATUS = frozenset({"open", "in_conflict", "needs_pull", "closed"})
 ALLOWED_BRANCH = frozenset({"zimmerman", "mundell", "dible", "connelly"})
-CASE_RE = re.compile(
-    r'<div id="(?P<id>case\.\d{2})"><div><b>[^<]+</b><h3>(?P<title>.*?)</h3>'
-    r'<b>(?P<status>.*?)</b></div><p>(?P<summary>.*?)</p><div>.*?</div></div>',
-    re.S,
-)
+# Docket text fields are plain unicode: never raw HTML, never pasted entities.
+ENTITY_RE = re.compile(r"&#?[a-zA-Z0-9]+;")
 
 
 def read_jsonl(path: Path) -> list[dict]:
     return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
 
 
-def plain(value: str) -> str:
-    value = re.sub(r"<[^>]+>", "", value)
-    return re.sub(r"\s+", " ", html_lib.unescape(value)).strip()
-
-
-def docket_records(html: str) -> dict[str, dict[str, str]]:
-    start = html.index('<section class="sheet" id="docket">')
-    end = html.index('<section class="sheet" id="wanted">')
-    records = {}
-    for match in CASE_RE.finditer(html[start:end]):
-        records[match.group("id")] = {
-            "title": plain(match.group("title")),
-            "status": match.group("status").lower().replace(" ", "_"),
-            "summary": plain(match.group("summary")),
-        }
-    return records
+def _lint_text(case_id: str, field: str, value: str, failures: list[str], forbid_pipe: bool = False) -> None:
+    if "<" in value:
+        failures.append(f"{case_id} {field} must not contain raw HTML ('<')")
+    if ENTITY_RE.search(value):
+        failures.append(f"{case_id} {field} must hold plain unicode, not HTML entities")
+    if forbid_pipe and "|" in value:
+        failures.append(f"{case_id} {field} must not contain '|' (docket field separator)")
 
 
 def canonical_person_ids(path: Path = PEOPLE) -> set[str]:
@@ -75,7 +69,6 @@ def evidence_case_index(root: Path = ROOT) -> dict[str, set[str]]:
 
 def core_failures(
     records: list[dict],
-    docket: dict[str, dict[str, str]],
     gaps: list[dict],
     person_ids: set[str],
     evidence_cases: dict[str, set[str]],
@@ -86,7 +79,7 @@ def core_failures(
     by_id = {}
     required = {
         "id", "node_type", "branch", "title", "status", "summary",
-        "person_refs", "evidence_refs", "trace_refs",
+        "source_note", "person_refs", "evidence_refs", "trace_refs",
     }
     for line_number, record in enumerate(records, start=1):
         missing = required - set(record)
@@ -108,6 +101,19 @@ def core_failures(
             failures.append(f"{case_id} invalid status {record['status']!r}")
         if not record["title"] or not record["summary"]:
             failures.append(f"{case_id} title and summary are required")
+        if not record["source_note"]:
+            failures.append(f"{case_id} source_note is required")
+        _lint_text(case_id, "title", record["title"], failures)
+        _lint_text(case_id, "summary", record["summary"], failures)
+        _lint_text(case_id, "source_note", record["source_note"], failures, forbid_pipe=True)
+        if "display_prose" in record:
+            if not record["display_prose"]:
+                failures.append(
+                    f"{case_id} display_prose must be non-empty when present (omit it to render summary)")
+            else:
+                _lint_text(case_id, "display_prose", record["display_prose"], failures)
+        if not record["person_refs"]:
+            failures.append(f"{case_id} person_refs must not be empty")
         for person_id in record["person_refs"]:
             if person_id not in person_ids:
                 failures.append(f"{case_id} unresolved person ref {person_id}")
@@ -125,17 +131,6 @@ def core_failures(
     actual = [record.get("id") for record in records]
     if actual != expected:
         failures.append(f"case ids must be append-only and sequential: {actual} != {expected}")
-    if set(docket) != seen:
-        failures.append(
-            f"Docket ids differ from canonical cases: missing={sorted(seen - set(docket))} "
-            f"extra={sorted(set(docket) - seen)}")
-    for case_id in sorted(seen & set(docket)):
-        canonical = by_id[case_id]
-        projected = docket[case_id]
-        for field in ("title", "status", "summary"):
-            if canonical[field] != projected[field]:
-                failures.append(
-                    f"{case_id} Docket {field} drift: {projected[field]!r} != {canonical[field]!r}")
 
     for gap in gaps:
         gap_id = gap.get("id", "<gap without id>")
@@ -157,13 +152,11 @@ def core_failures(
 
 
 def main() -> int:
-    html = (ROOT / "index.html").read_text()
     records = read_jsonl(CASES)
     trace_dir = ROOT / "research" / "reasoning-traces"
     traces = {path.name for path in trace_dir.glob("20*.md")}
     failures = core_failures(
         records,
-        docket_records(html),
         canonical_gaps(),
         canonical_person_ids(),
         evidence_case_index(),
@@ -183,8 +176,8 @@ def main() -> int:
         print(f"check_cases: {len(failures)} failure(s)", file=sys.stderr)
         return 1
     print(
-        f"check_cases: {len(records)} canonical cases match the Docket "
-        "and published-gap contract"
+        f"check_cases: {len(records)} canonical cases satisfy the store "
+        "and published-gap contract (docket bytes: build_docket --check)"
     )
     return 0
 

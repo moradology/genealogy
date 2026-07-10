@@ -40,17 +40,26 @@ def current_stamp(html: str) -> str | None:
     return match.group(0).split('content="')[1].rstrip('">')
 
 
-def write() -> int:
-    html = HTML.read_text()
+def stamped_html(html: str) -> tuple[str, str]:
+    """Pure restamp: return (html with a current stamp, the stamp string).
+
+    The single source of truth for the stamp format; the CLI write() and the
+    cockpit's chained case-update write both go through it. Requires the stamp
+    meta (or its placeholder position) to already exist in the document.
+    """
     date = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d")
     if STAMP_RE.search(html) is None:
         anchor = "</title>\n"
         if anchor not in html:
-            print("no </title> anchor found", file=sys.stderr)
-            return 1
+            raise SystemExit("stamp: no </title> anchor found")
         html = html.replace(anchor, anchor + "  " + PLACEHOLDER + "\n", 1)
     stamp = f"{digest_of(html)} {date}"
-    HTML.write_text(STAMP_RE.sub(f'<meta name="deploy-stamp" content="{stamp}">', html))
+    return STAMP_RE.sub(f'<meta name="deploy-stamp" content="{stamp}">', html), stamp
+
+
+def write() -> int:
+    html, stamp = stamped_html(HTML.read_text())
+    HTML.write_text(html)
     print(f"stamped: {stamp}")
     return 0
 

@@ -20,6 +20,7 @@ BUILD_TARGETS = {
     "basemap": "tools/build_basemap.py",
     "fonts": "tools/build_fonts.py",
     "citation-backlinks": "tools/build_citation_backlinks.py",
+    "docket": "tools/build_docket.py",
     "plate-keys": "tools/build_plate_keys.py",
     "people-index": "tools/build_people_index.py",
     "source-index": "tools/build_source_index.py",
@@ -40,7 +41,7 @@ def usage() -> str:
         "Repository commands:",
         "  gate                        Run the full gate (tools/check.sh)",
         "  build <target> [--check]    Rebuild, or verify with --check, one of:",
-        "                              basemap fonts citation-backlinks",
+        "                              basemap fonts citation-backlinks docket",
         "                              plate-keys people-index source-index",
         "  stamp [--write|--check|--deployed]",
         "                              Deploy fingerprint (tools/stamp.py)",
@@ -79,6 +80,11 @@ def usage() -> str:
         "  trace new --slug S --title T [--date D] [--case-refs a,b] [--person-refs ...]",
         "            [--evidence-refs ...] [--source-refs ...] [--geo-refs ...]",
         "            [--confidence C] [--outcome S] [--next-action S]",
+        "  case update <case.id> [--status S] [--summary S] [--display-prose S]",
+        "              [--source-note S] [--add-evidence-ref E] [--add-trace-ref T]",
+        "              [--add-person-ref P] [--validate-only]",
+        "                              Mutate one case; regenerates the docket",
+        "                              region and restamps index.html atomically",
         "  show <id>                   Any case/evidence/source/trace/geo/person/",
         "                              relationship/gap id ->",
         "                              the record + everything referencing it",
@@ -122,6 +128,7 @@ COMMAND_HELP = {
         "  basemap             Natural Earth projection/paths/routes regions",
         "  fonts               Subsetted woff2 data-URI block",
         "  citation-backlinks  'Cited by' backlinks in the Source Ledger",
+        "  docket              The Docket case divs (from research/cases)",
         "  plate-keys          Plate marker keys, ledger, and numerals",
         "  people-index        Pedigree registry and static Index of Names",
         "  source-index        research/sources/source-index.json",
@@ -166,6 +173,28 @@ COMMAND_HELP = {
         "passes, so a failure leaves nothing behind.",
         "",
         'JSON: {"command":"trace.new","ok":...,"path":...,"id":...}',
+    ]),
+    "case": "\n".join([
+        "Usage: ./gen case update <case.id> [flags]",
+        "",
+        "Mutate ONE canonical case record, truth-first and atomically:",
+        "  --status S            open|in_conflict|needs_pull|closed",
+        "  --summary S           the docket paragraph (unless display_prose set)",
+        "  --display-prose S     richer docket paragraph override ('' clears it)",
+        "  --source-note S       the docket's source shorthand (required field)",
+        "  --add-evidence-ref E  idempotent append (repeatable)",
+        "  --add-trace-ref T     idempotent append (repeatable)",
+        "  --add-person-ref P    idempotent append (repeatable)",
+        "  --validate-only       full semantic + render validation, no writes",
+        "",
+        "Under the store lock: validates the candidate store, renders the docket",
+        "region + fresh deploy stamp in memory, then writes cases.jsonl and",
+        "index.html (both atomic). A no-op rerun self-repairs a stale docket",
+        "(crash recovery). Evidence must already list the case in case_refs:",
+        "run ./gen evidence add first, then case update --add-evidence-ref.",
+        "",
+        'JSON: {"command":"case.update","ok":...,"written":...,"changed":{...},',
+        '       "added":{...},"already_present":{...},"docket":...,"stamp":...}',
     ]),
     "show": "\n".join([
         "Usage: ./gen show <id>",
@@ -363,6 +392,10 @@ def handler_status(argv: list[str], pretty: bool) -> int:
     return handler_store("status", argv, pretty)
 
 
+def handler_case(argv: list[str], pretty: bool) -> int:
+    return handler_store("case", argv, pretty)
+
+
 def dispatch(argv: list[str]) -> int:
     args, pretty = split_global_flags(argv)
     if not args or args[0] in {"--help", "-h"}:
@@ -376,6 +409,7 @@ def dispatch(argv: list[str]) -> int:
         "ancestry": handler_ancestry,
         "evidence": handler_evidence,
         "trace": handler_trace,
+        "case": handler_case,
         "show": handler_show,
         "status": handler_status,
     }

@@ -15,9 +15,7 @@ assert SPEC is not None and SPEC.loader is not None
 check_cases = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(check_cases)
 
-html = (ROOT / "index.html").read_text()
 records = check_cases.read_jsonl(ROOT / "research" / "cases" / "cases.jsonl")
-docket = check_cases.docket_records(html)
 gaps = check_cases.canonical_gaps()
 person_ids = check_cases.canonical_person_ids()
 trace_names = {path.name for path in (ROOT / "research" / "reasoning-traces").glob("20*.md")}
@@ -26,7 +24,7 @@ evidence_cases = check_cases.evidence_case_index()
 
 def failures(candidate, candidate_gaps=gaps, candidate_evidence=evidence_cases):
     return check_cases.core_failures(
-        candidate, docket, candidate_gaps, person_ids, candidate_evidence, trace_names)
+        candidate, candidate_gaps, person_ids, candidate_evidence, trace_names)
 
 
 problems = []
@@ -86,8 +84,28 @@ if not any(
 ):
     problems.append("missing reciprocal case ref mutation survived")
 
+no_note = copy.deepcopy(records)
+no_note[0]["source_note"] = ""
+if not any("source_note is required" in failure for failure in failures(no_note)):
+    problems.append("empty source_note mutation survived")
+
+piped_note = copy.deepcopy(records)
+piped_note[0]["source_note"] = "census|shorthand"
+if not any("must not contain '|'" in failure for failure in failures(piped_note)):
+    problems.append("piped source_note mutation survived")
+
+entity_prose = copy.deepcopy(records)
+entity_prose[0]["display_prose"] = "prose with &mdash; entity"
+if not any("plain unicode" in failure for failure in failures(entity_prose)):
+    problems.append("entity display_prose mutation survived")
+
+empty_prose = copy.deepcopy(records)
+empty_prose[0]["display_prose"] = ""
+if not any("display_prose must be non-empty" in failure for failure in failures(empty_prose)):
+    problems.append("empty display_prose mutation survived")
+
 if problems:
     for problem in problems:
         print(problem, file=sys.stderr)
     raise SystemExit(1)
-print("test_check_cases: all 7 mutations rejected")
+print("test_check_cases: all 11 mutations rejected")

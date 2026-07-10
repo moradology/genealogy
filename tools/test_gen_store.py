@@ -217,6 +217,54 @@ with tempfile.TemporaryDirectory(prefix="gen-store-test-") as td:
     trace_litter = list((root / "research/reasoning-traces").glob("*.tmp"))
     check("no trace tmp litter", not trace_litter, trace_litter)
 
+    # ---- case update: truth-first chained write (cases.jsonl + docket + stamp) ----
+    html_path = root / "index.html"
+    cases_store = root / "research/cases/cases.jsonl"
+    html_before = html_path.read_bytes()
+    sentinel = "Q: explain Leora/William Rogers. UPDATED-BY-TEST sentinel summary."
+    r = store(root, "case", "update", "case.08",
+              "--summary", sentinel,
+              "--add-person-ref", "person.clemans.marjorie")
+    o = json.loads(r.stdout)
+    check("case update ok", o.get("ok") is True and o.get("written") is True, r.stdout[:400] + r.stderr[:200])
+    check("case update changed summary", o.get("changed", {}).get("summary") is True, o.get("changed"))
+    check("case update added person ref", o.get("added", {}).get("person_refs") == ["person.clemans.marjorie"], o.get("added"))
+    check("case update reports stamp", bool(o.get("stamp")), o.get("stamp"))
+    check("docket regenerated with new summary", sentinel in html_path.read_text())
+    check("index.html actually rewritten", html_path.read_bytes() != html_before)
+    updated = [json.loads(x) for x in cases_store.read_text().splitlines() if x.strip() and json.loads(x)["id"] == "case.08"][0]
+    check("cases.jsonl carries new summary", "UPDATED-BY-TEST" in updated["summary"])
+
+    # ---- identical rerun: pure no-op ----
+    r = store(root, "case", "update", "case.08", "--summary", sentinel,
+              "--add-person-ref", "person.clemans.marjorie")
+    o = json.loads(r.stdout)
+    check("case update noop", o.get("noop") is True and o.get("written") is False, r.stdout[:300])
+
+    # ---- crash recovery: stale docket region self-repairs on a no-op rerun ----
+    html_path.write_text(html_path.read_text().replace(sentinel, "STALE DOCKET BYTES."))
+    r = store(root, "case", "update", "case.08", "--summary", sentinel,
+              "--add-person-ref", "person.clemans.marjorie")
+    o = json.loads(r.stdout)
+    check("repair reported", o.get("repaired") == "docket", r.stdout[:300])
+    check("repair restored region", sentinel in html_path.read_text())
+
+    # ---- validate-only: no writes ----
+    before_pair = (html_path.read_bytes(), cases_store.read_bytes())
+    r = store(root, "case", "update", "case.08", "--summary", "another candidate", "--validate-only")
+    o = json.loads(r.stdout)
+    check("case validate-only ok", o.get("ok") is True and o.get("validate_only") is True, r.stdout[:300])
+    check("case validate-only no writes",
+          (html_path.read_bytes(), cases_store.read_bytes()) == before_pair)
+
+    # ---- refusals: unknown id; closing a case a published gap points to ----
+    r = store(root, "case", "update", "case.99", "--summary", "x")
+    check("unknown case refused", r.returncode != 0 and json.loads(r.stdout)["ok"] is False, r.stdout[:200])
+    r = store(root, "case", "update", "case.14", "--status", "closed")
+    o = json.loads(r.stdout)
+    check("published-gap close refused", r.returncode != 0 and o["ok"] is False, r.stdout[:300])
+    check("refusal names the gap rule", "gap" in " ".join(o.get("errors", [])).lower(), o.get("errors"))
+
     # ---- status: fast dashboard, no Playwright; ok mirrors exit code ----
     r = store(root, "status")
     o = json.loads(r.stdout)
