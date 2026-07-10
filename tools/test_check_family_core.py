@@ -539,6 +539,26 @@ class DisplayBlockTests(unittest.TestCase):
             alias_anchors=["person.casey-candidate"])
         self.assert_error_contains("unknown display fields")
 
+    def test_cite_token_must_resolve(self) -> None:
+        self.fixture.people[0]["display"] = display_block(
+            details="Claimed.{{cite:src.missing.deadbeef}}")
+        self.assert_error_contains("cites unknown source")
+
+    def test_case_token_must_resolve(self) -> None:
+        self.fixture.people[0]["display"] = display_block(
+            details="See {{case:case.99}}.")
+        self.assert_error_contains("unknown case")
+
+    def test_link_token_must_resolve(self) -> None:
+        self.fixture.people[0]["display"] = display_block(
+            identity="Spouse of {{link:#person.nobody|Nobody}}.")
+        self.assert_error_contains("links unknown anchor")
+
+    def test_plain_override_fields_reject_tokens(self) -> None:
+        self.fixture.people[0]["display"] = display_block(
+            card_name="A {{vs}} B")
+        self.assert_error_contains("must not carry tokens")
+
     def test_whitelists_stay_in_parity_with_projection(self) -> None:
         import build_people_index
         import check_family_core
