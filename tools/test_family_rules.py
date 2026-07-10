@@ -111,7 +111,7 @@ with tempfile.TemporaryDirectory(prefix="family-rules-test-") as td:
 
     # ============ Phase 0: vitals ============
     root = make_root(tmp / "v", [person("person.a"), person("person.b"), person("person.c"),
-                                 person("person.d")], [], [
+                                 person("person.d"), person("person.e")], [], [
         event("person.a", "birth", "1900-05-01", "1900-05-01"),
         event("person.a", "death", "1960", "1960-01-01"),
         event("person.b", "birth", "about 1851", "1851-01-01"),
@@ -119,6 +119,8 @@ with tempfile.TemporaryDirectory(prefix="family-rules-test-") as td:
         event("person.c", "birth", "1882", "1882-01-01"),          # conflicting years
         event("person.c", "death_or_burial", "1930", "1930-01-01"),
         event("person.a", "marriage", "1922-06-14", "1922-06-14"),
+        event("person.e", "death", "1930", "1930-01-01"),
+        event("person.e", "death", "1935", "1935-01-01"),          # conflicting deaths
     ])
     v = family_rules.vitals(root)
     check("vitals full date", v["person.a"]["birth_year"] == 1900 and v["person.a"]["birth_approx"] is False, v.get("person.a"))
@@ -128,6 +130,8 @@ with tempfile.TemporaryDirectory(prefix="family-rules-test-") as td:
     check("vitals conflict keeps earliest", v["person.c"]["birth_year"] == 1880, v.get("person.c"))
     check("vitals conflict recorded", bool(v["person.c"]["conflicts"]), v.get("person.c"))
     check("vitals death_or_burial maps", v["person.c"]["death_year"] == 1930, v.get("person.c"))
+    check("vitals conflict keeps latest death", v["person.e"]["death_year"] == 1935, v.get("person.e"))
+    check("vitals death conflict recorded", bool(v["person.e"]["conflicts"]), v.get("person.e"))
     check("vitals undated absent", "person.d" not in v, sorted(v))
 
     # ============ Phase 1: contradictions ============
@@ -159,6 +163,57 @@ with tempfile.TemporaryDirectory(prefix="family-rules-test-") as td:
                       event("person.k", "birth", "1910", "1910-01-01")])
     out = family_rules.contradictions(root)
     check("rejected link never enters rules", not out["findings"], out["findings"])
+    check("rejected link excluded from coverage",
+          out["coverage"]["checkable"]["parent_age"] == 0, out["coverage"])
+
+    # R1 exact boundaries (accepted, no approx): limits are 12 <= age, mother <= 55, father <= 65
+    def parent_age_root(name: str, role: str, parent_birth: int, child_birth: int,
+                        approx: bool = False) -> Path:
+        raw = f"about {parent_birth}" if approx else str(parent_birth)
+        return make_root(tmp / name, [person("person.p"), person("person.k")],
+                         [plink("person.p", "person.k", role)],
+                         [event("person.p", "birth", raw, f"{parent_birth}-01-01"),
+                          event("person.k", "birth", str(child_birth), f"{child_birth}-01-01")])
+
+    out = family_rules.contradictions(parent_age_root("b1", "father", 1800, 1865))
+    check("R1 father 65 ok", not find(out["findings"], "parent-age"), out["findings"])
+    out = family_rules.contradictions(parent_age_root("b2", "father", 1800, 1866))
+    r1 = find(out["findings"], "parent-age")
+    check("R1 father 66 violation", bool(r1) and r1[0]["severity"] == "violation", out["findings"])
+    out = family_rules.contradictions(parent_age_root("b3", "mother", 1800, 1855))
+    check("R1 mother 55 ok", not find(out["findings"], "parent-age"), out["findings"])
+    out = family_rules.contradictions(parent_age_root("b4", "mother", 1800, 1856))
+    check("R1 mother 56 violation", bool(find(out["findings"], "parent-age")), out["findings"])
+    out = family_rules.contradictions(parent_age_root("b5", "father", 1800, 1812))
+    check("R1 age 12 ok", not find(out["findings"], "parent-age"), out["findings"])
+    out = family_rules.contradictions(parent_age_root("b6", "father", 1800, 1811))
+    check("R1 age 11 violation", bool(find(out["findings"], "parent-age")), out["findings"])
+    out = family_rules.contradictions(parent_age_root("b7", "father", 1800, 1811, approx=True))
+    check("R1 age 11 approx widened ok", not find(out["findings"], "parent-age"), out["findings"])
+    out = family_rules.contradictions(parent_age_root("b8", "father", 1800, 1866, approx=True))
+    check("R1 father 66 approx widened ok", not find(out["findings"], "parent-age"), out["findings"])
+
+    # R3 father-death gap policy: 0 ok, 1 strained advisory, 2 violation, 2+approx strained
+    def father_death_root(name: str, death: int, birth: int, approx: bool = False) -> Path:
+        raw = f"about {death}" if approx else str(death)
+        return make_root(tmp / name, [person("person.p"), person("person.k")],
+                         [plink("person.p", "person.k", "father")],
+                         [event("person.p", "death", raw, f"{death}-01-01"),
+                          event("person.k", "birth", str(birth), f"{birth}-01-01")])
+
+    out = family_rules.contradictions(father_death_root("fd0", 1900, 1900))
+    check("R3 same year ok", not find(out["findings"], "father-dead-before-birth"), out["findings"])
+    out = family_rules.contradictions(father_death_root("fd1", 1900, 1901))
+    fd = find(out["findings"], "father-dead-before-birth")
+    check("R3 gap 1 advisory strained", bool(fd) and fd[0]["severity"] == "advisory"
+          and fd[0].get("subtype") == "strained", fd)
+    out = family_rules.contradictions(father_death_root("fd2", 1900, 1902))
+    fd = find(out["findings"], "father-dead-before-birth")
+    check("R3 gap 2 violation", bool(fd) and fd[0]["severity"] == "violation", fd)
+    out = family_rules.contradictions(father_death_root("fd3", 1900, 1902, approx=True))
+    fd = find(out["findings"], "father-dead-before-birth")
+    check("R3 gap 2 approx advisory strained", bool(fd) and fd[0]["severity"] == "advisory"
+          and fd[0].get("subtype") == "strained", fd)
 
     # R2 violation: accepted mother died 1905, child born 1910
     root = make_root(tmp / "r2", [person("person.m"), person("person.k")],
@@ -202,27 +257,58 @@ with tempfile.TemporaryDirectory(prefix="family-rules-test-") as td:
           and r9[0].get("subtype") == "recorded_conflict", r9)
     check("R9 conflict keeps clean", out["clean"] is True, out["counts"])
 
+    # R9 hypotheses with NO shared case ref -> advisory unlinked_parent_hypotheses
+    root = make_root(tmp / "r9u", [person("person.f1"), person("person.f2"), person("person.k")],
+                     [plink("person.f1", "person.k", "father", status="hypothesis", confidence="open", cases=["case.01"]),
+                      plink("person.f2", "person.k", "father", status="hypothesis", confidence="open", cases=["case.02"])], [])
+    out = family_rules.contradictions(root)
+    r9 = find(out["findings"], "multiple-parent")
+    check("R9 unlinked hypotheses advisory", bool(r9) and r9[0]["severity"] == "advisory"
+          and r9[0].get("subtype") == "unlinked_parent_hypotheses", r9)
+
     # R7 predicate: both ref lists empty fires; source_refs-backed does not
     root = make_root(tmp / "r7", [person("person.f"), person("person.k"), person("person.g")],
                      [plink("person.f", "person.k", "father", confidence="strong", src=[]),
                       plink("person.g", "person.k", "mother", confidence="strong", src=["src.ok"])], [])
     out = family_rules.contradictions(root)
     r7 = find(out["findings"], "confidence-vs-evidence")
-    check("R7 fires only on both-empty", len(r7) == 1 and "person.f" in r7[0]["links"][0], r7)
+    check("R7 fires only on both-empty", len(r7) == 1, r7)
+    check("R7 links are pure relationship ids", bool(r7)
+          and r7[0]["links"] == ["relationship.parent.f-to-k"], r7)
+    check("R7 persons carry the link endpoints", bool(r7)
+          and r7[0]["persons"] == ["person.f", "person.k"], r7)
 
-    # R8: OPEN gap citing a closed case -> advisory; resolved gap ignored
+    # R8: OPEN gap citing a closed case -> advisory; resolved gap ignored;
+    # a legacy gap row with NO status field counts as open
+    legacy_gap = gap_row("gap.test.legacy", ["person.a"], ["case.01"])
+    del legacy_gap["status"]
     root = make_root(tmp / "r8", [person("person.a")],
                      [gap_row("gap.test.open", ["person.a"], ["case.01"]),
-                      gap_row("gap.test.resolved", ["person.a"], ["case.01"], status="resolved")],
+                      gap_row("gap.test.resolved", ["person.a"], ["case.01"], status="resolved"),
+                      legacy_gap],
                      [], cases=[case_row("case.01", "closed")])
     out = family_rules.contradictions(root)
     r8 = find(out["findings"], "gap-cites-closed-case")
-    check("R8 open gap advisory", len(r8) == 1 and r8[0]["severity"] == "advisory", r8)
+    check("R8 open + legacy gaps advisory, resolved ignored",
+          len(r8) == 2 and all(f["severity"] == "advisory" for f in r8), r8)
 
     # Determinism: identical runs, identical JSON
     a = json.dumps(family_rules.contradictions(root), sort_keys=False)
     b = json.dumps(family_rules.contradictions(root), sort_keys=False)
     check("deterministic output", a == b)
+
+    # Total sort: findings that tie on (severity, rule, first person) must come out
+    # in the same order regardless of input row order
+    tie_people = [person("person.f"), person("person.k1"), person("person.k2")]
+    tie_rows = [plink("person.f", "person.k1", "father", confidence="strong", src=[]),
+                plink("person.f", "person.k2", "father", confidence="strong", src=[])]
+    out_fwd = family_rules.contradictions(
+        make_root(tmp / "sortA", tie_people, tie_rows, []))
+    out_rev = family_rules.contradictions(
+        make_root(tmp / "sortB", tie_people, list(reversed(tie_rows)), []))
+    check("sort is total across input order",
+          json.dumps(out_fwd["findings"]) == json.dumps(out_rev["findings"]),
+          (out_fwd["findings"], out_rev["findings"]))
 
     # Coverage block shape
     check("coverage people count", out["coverage"]["people"] == 1, out["coverage"])

@@ -13,7 +13,7 @@ SEVERITY_RANK = {"violation": 0, "conflict": 1, "advisory": 2}
 
 def _read_jsonl(path: Path) -> list[dict]:
     rows: list[dict] = []
-    for line in path.read_text().splitlines():
+    for line in path.read_text(encoding="utf-8").splitlines():
         if line.strip():
             rows.append(json.loads(line))
     return rows
@@ -35,7 +35,7 @@ def _cases(root: Path) -> dict[str, dict]:
 
 
 def _geo_events(root: Path) -> list[dict]:
-    data = json.loads((root / "ancestry_geospatial.geojson").read_text())
+    data = json.loads((root / "ancestry_geospatial.geojson").read_text(encoding="utf-8"))
     return [
         feature
         for feature in data.get("features", [])
@@ -349,16 +349,12 @@ def _confidence_findings(active_links: list[dict]) -> list[dict]:
             continue
         if link.get("evidence_refs", []) != [] or link.get("source_refs", []) != []:
             continue
-        link_ref = _link_id(link)
-        person_a = link.get("person_a")
-        if isinstance(person_a, str) and person_a not in link_ref:
-            link_ref = f"{link_ref} {person_a}"
         findings.append(
             _finding(
                 "confidence-vs-evidence",
                 "advisory",
                 _person_pair(link),
-                [link_ref],
+                [_link_id(link)],
                 _link_case_refs(link),
                 f"{_link_id(link)} is {link.get('confidence')} with no evidence_refs or source_refs",
             )
@@ -560,7 +556,11 @@ def _sort_findings(findings: list[dict]) -> list[dict]:
         key=lambda finding: (
             SEVERITY_RANK[finding["severity"]],
             finding["rule"],
-            finding["persons"][0] if finding["persons"] else "",
+            tuple(finding["persons"]),
+            tuple(finding["links"]),
+            tuple(finding["case_refs"]),
+            finding.get("subtype", ""),
+            finding["detail"],
         ),
     )
 
