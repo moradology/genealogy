@@ -78,6 +78,142 @@ GAP_FIELDS = frozenset(
 
 BRANCHES = frozenset({"zimmerman", "mundell", "dible", "connelly"})
 ROLES = frozenset({"anchor", "ancestor", "collateral", "candidate"})
+
+# ---- optional display block: prose fields for the generated family cards ----
+DISPLAY_REQUIRED = frozenset({"identity", "details"})
+DISPLAY_OPTIONAL = frozenset(
+    {"card_name", "title_override", "ahnen_override", "vitals",
+     "cameos", "record_cards"}
+)
+GAP_DISPLAY_OPTIONAL = DISPLAY_OPTIONAL | frozenset({"alias_anchors"})
+CAMEO_FIELDS = frozenset(
+    {"src", "alt", "width", "height", "credit_url", "credit_label"}
+)
+DISPLAY_PROSE_FIELDS = ("identity", "details", "vitals", "card_name",
+                        "title_override", "ahnen_override")
+# One token: {{vs}}, {{cite:src.x}}, {{case:case.nn}}, {{link:#a|Label}},
+# {{url:https://...|Label}}. Anything else brace-shaped is an error.
+TOKEN_RE = re.compile(
+    r"\{\{(?:"
+    r"vs"
+    r"|cite:src\.[A-Za-z0-9][A-Za-z0-9._-]*"
+    r"|case:case\.[a-z0-9][a-z0-9._-]*"
+    r"|link:#[A-Za-z0-9][A-Za-z0-9._-]*\|[^{}|]+"
+    r"|url:https?://[^{}|]+\|[^{}|]+"
+    r")\}\}"
+)
+DISPLAY_ENTITY_RE = re.compile(r"&#?[a-zA-Z0-9]+;")
+EVIDENCE_REF_RE = re.compile(r"ev\.[A-Za-z0-9][A-Za-z0-9._-]*")
+
+
+def _lint_display_prose(
+    value: Any, field: str, where: str, errors: list[str]
+) -> None:
+    if not isinstance(value, str) or not value:
+        errors.append(f"{where}: display.{field} must be a non-empty string")
+        return
+    if "<" in value:
+        errors.append(f"{where}: display.{field} must not contain raw HTML ('<')")
+    if DISPLAY_ENTITY_RE.search(value):
+        errors.append(
+            f"{where}: display.{field} must hold plain unicode, not HTML entities"
+        )
+    stripped = TOKEN_RE.sub("", value)
+    if "{" in stripped or "}" in stripped:
+        errors.append(
+            f"{where}: display.{field} contains a malformed or unknown token; "
+            "allowed: {{vs}}, {{cite:src.*}}, {{case:case.*}}, "
+            "{{link:#anchor|Label}}, {{url:https://...|Label}}"
+        )
+
+
+def _validate_display(
+    row: dict[str, Any],
+    where: str,
+    person_ids: set[str],
+    errors: list[str],
+    *,
+    gap: bool,
+) -> None:
+    display = row.get("display")
+    if display is None:
+        return
+    if not isinstance(display, dict):
+        errors.append(f"{where}: display must be an object")
+        return
+    if row.get("public_anchor") != row.get("id"):
+        errors.append(
+            f"{where}: display is allowed only on card-owner rows "
+            "(public_anchor == id)"
+        )
+    optional = GAP_DISPLAY_OPTIONAL if gap else DISPLAY_OPTIONAL
+    missing = sorted(DISPLAY_REQUIRED - set(display))
+    unknown = sorted(set(display) - DISPLAY_REQUIRED - optional)
+    if missing:
+        errors.append(f"{where}: missing display fields: {missing}")
+    if unknown:
+        errors.append(f"{where}: unknown display fields: {unknown}")
+    for field in DISPLAY_PROSE_FIELDS:
+        if field in display:
+            _lint_display_prose(display[field], field, where, errors)
+    cameos = display.get("cameos")
+    if cameos is not None:
+        if not isinstance(cameos, list) or not cameos:
+            errors.append(f"{where}: display.cameos must be a non-empty list")
+            cameos = []
+        for position, cameo in enumerate(cameos, start=1):
+            spot = f"{where}: display cameo {position}"
+            if not isinstance(cameo, dict):
+                errors.append(f"{spot} must be an object")
+                continue
+            if set(cameo) != CAMEO_FIELDS:
+                errors.append(
+                    f"{spot} fields must be exactly {sorted(CAMEO_FIELDS)}"
+                )
+                continue
+            for field in ("src", "alt", "credit_label"):
+                value = cameo[field]
+                if not isinstance(value, str) or not value or "<" in value:
+                    errors.append(f"{spot} {field} must be plain non-empty text")
+            for field in ("width", "height"):
+                value = cameo[field]
+                if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
+                    errors.append(f"{spot} {field} must be a positive integer")
+            credit_url = cameo["credit_url"]
+            if not isinstance(credit_url, str) or not credit_url.startswith(
+                ("http://", "https://")
+            ):
+                errors.append(f"{spot} credit_url must be an http(s) URL")
+    record_cards = display.get("record_cards")
+    if record_cards is not None:
+        if (not isinstance(record_cards, list) or not record_cards
+                or len(set(map(str, record_cards))) != len(record_cards)):
+            errors.append(
+                f"{where}: display.record_cards must be a non-empty list of "
+                "unique evidence ids"
+            )
+        else:
+            for ref in record_cards:
+                if not isinstance(ref, str) or not EVIDENCE_REF_RE.fullmatch(ref):
+                    errors.append(
+                        f"{where}: display.record_cards entry {ref!r} is not an "
+                        "ev.* evidence id"
+                    )
+    alias_anchors = display.get("alias_anchors")
+    if alias_anchors is not None:
+        if (not isinstance(alias_anchors, list) or not alias_anchors
+                or len(set(map(str, alias_anchors))) != len(alias_anchors)):
+            errors.append(
+                f"{where}: display.alias_anchors must be a non-empty list of "
+                "unique person ids"
+            )
+        else:
+            for ref in alias_anchors:
+                if not isinstance(ref, str) or ref not in person_ids:
+                    errors.append(
+                        f"{where}: display.alias_anchors entry {ref!r} is not a "
+                        "known person id"
+                    )
 CONFIDENCES = frozenset({"documented", "strong", "lead", "open"})
 RELATIONSHIP_TYPES = frozenset({"parent_of", "spouse_of"})
 RELATIONSHIP_STATUSES = frozenset({"accepted", "hypothesis", "rejected"})
@@ -186,13 +322,17 @@ def _projection_ids(root: Path) -> set[str] | None:
 
 
 def _exact_fields(
-    row: dict[str, Any], expected: frozenset[str], where: str, errors: list[str]
+    row: dict[str, Any],
+    expected: frozenset[str],
+    where: str,
+    errors: list[str],
+    optional: frozenset[str] = frozenset(),
 ) -> bool:
     actual = set(row)
-    if actual == expected:
+    if expected <= actual <= expected | optional:
         return True
     missing = sorted(expected - actual)
-    unknown = sorted(actual - expected)
+    unknown = sorted(actual - expected - optional)
     if missing:
         errors.append(f"{where}: missing fields: {missing}")
     if unknown:
@@ -374,7 +514,9 @@ def _validate_person(
     if not isinstance(row, dict):
         errors.append(f"{where}: person row must be an object")
         return None
-    _exact_fields(row, PERSON_FIELDS, where, errors)
+    _exact_fields(row, PERSON_FIELDS, where, errors,
+                  optional=frozenset({"display"}))
+    _validate_display(row, where, set(), errors, gap=False)
     person_id = _nonempty_string(row, "id", where, errors)
     if person_id is not None and not PERSON_ID_RE.fullmatch(person_id):
         errors.append(f"{where}: invalid person id {person_id!r}")
@@ -494,7 +636,9 @@ def _validate_gap(
     occupied_slots: dict[tuple[str, int], str],
     errors: list[str],
 ) -> str | None:
-    _exact_fields(row, GAP_FIELDS, where, errors)
+    _exact_fields(row, GAP_FIELDS, where, errors,
+                  optional=frozenset({"display"}))
+    _validate_display(row, where, person_ids, errors, gap=True)
     gap_id = _nonempty_string(row, "id", where, errors)
     if gap_id is not None and not GAP_ID_RE.fullmatch(gap_id):
         errors.append(f"{where}: invalid gap id {gap_id!r}")

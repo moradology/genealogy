@@ -143,12 +143,15 @@ def _load_jsonl(path: Path) -> list[dict[str, Any]]:
 
 
 def _require_exact_fields(
-    row: dict[str, Any], expected: frozenset[str], where: str
+    row: dict[str, Any],
+    expected: frozenset[str],
+    where: str,
+    optional: frozenset[str] = frozenset(),
 ) -> None:
-    if set(row) == expected:
+    if expected <= set(row) <= expected | optional:
         return
     missing = sorted(expected - set(row))
-    unknown = sorted(set(row) - expected)
+    unknown = sorted(set(row) - expected - optional)
     details = []
     if missing:
         details.append(f"missing {missing}")
@@ -205,7 +208,8 @@ def load_family_core(
     anchors: dict[str, list[str]] = {branch: [] for branch in BRANCH_ORDER}
     for line_number, person in enumerate(people, 1):
         where = f"{PEOPLE_PATH}:{line_number}"
-        _require_exact_fields(person, PERSON_FIELDS, where)
+        _require_exact_fields(person, PERSON_FIELDS, where,
+                              optional=frozenset({"display"}))
         person_id = _require_string(person["id"], f"{where}.id")
         if not PERSON_ID_RE.fullmatch(person_id):
             raise ProjectionError(
@@ -331,7 +335,8 @@ def load_family_core(
             identifier = relationship_id
             relationships.append(row)
         elif node_type == "gap":
-            _require_exact_fields(row, GAP_FIELDS, where)
+            _require_exact_fields(row, GAP_FIELDS, where,
+                                  optional=frozenset({"display"}))
             gap_id = _require_string(row["id"], f"{where}.id")
             if not GAP_ID_RE.fullmatch(gap_id):
                 raise ProjectionError(f"{where}.id is not a gap id: {gap_id!r}")

@@ -437,5 +437,118 @@ class CanonicalFamilyRegressionTests(unittest.TestCase):
         )
 
 
+def display_block(**overrides) -> dict:
+    block = {
+        "identity": "Avery anchor; spouse of {{link:#person.alex-senior|Alex}}.",
+        "details": ("Documented at the county seat.{{cite:src.test.record}} "
+                    "See {{case:case.01}} and {{url:https://example.org/x|the notice}}."),
+    }
+    block.update(overrides)
+    return block
+
+
+class DisplayBlockTests(unittest.TestCase):
+    """The optional display block: person/gap prose fields for the generated
+    family cards. Allowed only on card-owner rows; plain-unicode prose with
+    the {{...}} token grammar; cameo and record-card shapes enforced."""
+
+    def setUp(self) -> None:
+        self.fixture = FamilyCoreFixture()
+
+    def tearDown(self) -> None:
+        self.fixture.close()
+
+    def assert_error_contains(self, needle: str) -> None:
+        result = self.fixture.validate()
+        self.assertFalse(result.ok, result.errors)
+        self.assertTrue(
+            any(needle in error for error in result.errors),
+            f"expected {needle!r} in {result.errors!r}",
+        )
+
+    def test_full_display_block_is_accepted(self) -> None:
+        self.fixture.people[0]["display"] = display_block(
+            card_name="Avery A. Anchor",
+            vitals="b. 1900 - m. 1922{{vs}}1923 - d. 1980",
+            cameos=[{"src": "images/people/avery.jpg", "alt": "Avery at the farm",
+                     "width": 137, "height": 157,
+                     "credit_url": "https://example.org/avery",
+                     "credit_label": "Photo: county archive"}],
+            record_cards=["ev.test.record"],
+        )
+        result = self.fixture.validate()
+        self.assertTrue(result.ok, result.errors)
+
+    def test_gap_display_with_alias_anchors_is_accepted(self) -> None:
+        self.fixture.rows[1]["display"] = display_block(
+            alias_anchors=["person.casey-candidate"])
+        result = self.fixture.validate()
+        self.assertTrue(result.ok, result.errors)
+
+    def test_display_on_non_owner_row_is_rejected(self) -> None:
+        self.fixture.people[1]["public_anchor"] = "person.avery-anchor"
+        self.fixture.people[1]["display"] = display_block()
+        self.assert_error_contains("card-owner")
+
+    def test_unknown_display_field_is_rejected(self) -> None:
+        self.fixture.people[0]["display"] = display_block(prose="nope")
+        self.assert_error_contains("unknown display fields")
+
+    def test_missing_identity_is_rejected(self) -> None:
+        block = display_block()
+        del block["identity"]
+        self.fixture.people[0]["display"] = block
+        self.assert_error_contains("missing display fields")
+
+    def test_raw_html_in_display_prose_is_rejected(self) -> None:
+        self.fixture.people[0]["display"] = display_block(
+            details="a <b>bold</b> claim")
+        self.assert_error_contains("raw HTML")
+
+    def test_entities_in_display_prose_are_rejected(self) -> None:
+        self.fixture.people[0]["display"] = display_block(
+            details="a &ndash; b")
+        self.assert_error_contains("plain unicode")
+
+    def test_malformed_tokens_are_rejected(self) -> None:
+        for bad in ("{{cite:not-a-source}}", "{{teleport:x}}",
+                    "{{link:#person.alex-senior}}", "{{cite:src.x} }",
+                    "stray }} closer", "open {{ brace"):
+            self.fixture.people[0]["display"] = display_block(details=bad)
+            self.assert_error_contains("token")
+
+    def test_cameo_shape_is_enforced(self) -> None:
+        self.fixture.people[0]["display"] = display_block(
+            cameos=[{"src": "images/people/avery.jpg", "alt": "Avery",
+                     "width": 137, "credit_url": "https://example.org",
+                     "credit_label": "Photo"}])
+        self.assert_error_contains("cameo")
+
+    def test_record_card_refs_must_be_evidence_ids(self) -> None:
+        self.fixture.people[0]["display"] = display_block(
+            record_cards=["source.notes"])
+        self.assert_error_contains("record_cards")
+
+    def test_alias_anchor_must_resolve(self) -> None:
+        self.fixture.rows[1]["display"] = display_block(
+            alias_anchors=["person.nobody"])
+        self.assert_error_contains("alias_anchors")
+
+    def test_alias_anchors_are_gap_only(self) -> None:
+        self.fixture.people[0]["display"] = display_block(
+            alias_anchors=["person.casey-candidate"])
+        self.assert_error_contains("unknown display fields")
+
+    def test_whitelists_stay_in_parity_with_projection(self) -> None:
+        import build_people_index
+        import check_family_core
+        self.assertEqual(check_family_core.PERSON_FIELDS,
+                         build_people_index.PERSON_FIELDS)
+        self.assertEqual(check_family_core.GAP_FIELDS,
+                         build_people_index.GAP_FIELDS)
+        self.assertEqual(check_family_core.RELATIONSHIP_FIELDS,
+                         build_people_index.RELATIONSHIP_FIELDS)
+
+
 if __name__ == "__main__":
     unittest.main()

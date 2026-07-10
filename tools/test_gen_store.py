@@ -360,6 +360,31 @@ with tempfile.TemporaryDirectory(prefix="gen-store-test-") as td:
     o = json.loads(r.stdout)
     check("relationship update idempotent", o.get("noop") is True, r.stdout[:300])
 
+    # ---- display blocks on person rows survive the family write path ----
+    people_store = root / "research/people/people.jsonl"
+    people_rows = [json.loads(line)
+                   for line in people_store.read_text().splitlines() if line.strip()]
+    for person_row in people_rows:
+        if person_row["id"] == "person.clemans.marjorie":
+            person_row["display"] = {
+                "identity": "Evelyn's mother in the Clemans branch.",
+                "details": ("Documented by the 1933 marriage record."
+                            "{{cite:src.test.display}}"),
+            }
+    people_store.write_text(
+        "".join(json.dumps(row, separators=(",", ":")) + "\n"
+                for row in people_rows), encoding="utf-8")
+    people_with_display = people_store.read_bytes()
+    r = store(root, "relationship", "update", relationship_id,
+              "--status", "accepted", "--confidence", "strong",
+              "--provenance-note", "Direct test evidence replaces the working hypothesis.",
+              "--add-evidence-ref", "ev.test.alpha")
+    o = json.loads(r.stdout)
+    check("display row survives relationship update",
+          r.returncode == 0 and o.get("noop") is True, r.stdout[:300])
+    check("display block preserved byte-identically",
+          people_store.read_bytes() == people_with_display)
+
     prior_provenance = relationship["provenance_note"]
     r = store(root, "relationship", "update", relationship_id,
               "--status", "rejected",
