@@ -708,7 +708,9 @@ def _sort_text(value: str) -> str:
     ).casefold()
 
 
-def build_name_index(people: list[dict[str, Any]]) -> str:
+def build_name_index(people: list[dict[str, Any]],
+                     assignments: dict[str, str] | None = None,
+                     current_page: str = "index.html") -> str:
     names: list[tuple[str, str, str]] = []
     for person in people:
         anchor = person["public_anchor"]
@@ -729,8 +731,15 @@ def build_name_index(people: list[dict[str, Any]]) -> str:
         if letter != prior_letter:
             lines.append(f'    <li class="index-letter">{html_lib.escape(letter)}</li>')
             prior_letter = letter
+        prefix = ""
+        if assignments is not None:
+            page = assignments.get(anchor)
+            if page is None:
+                raise ProjectionError(f"no page assignment for anchor {anchor!r}")
+            if page != current_page:
+                prefix = page
         lines.append(
-            f'    <li><a href="#{html_lib.escape(anchor, quote=True)}">'
+            f'    <li><a href="{prefix}#{html_lib.escape(anchor, quote=True)}">'
             f"{html_lib.escape(name)}</a></li>"
         )
     lines.extend(["  </ul>", "</section>"])
@@ -793,13 +802,23 @@ def _one_name_section(source: str) -> re.Match[str]:
     return matches[0]
 
 
-def render_html(
-    source: str,
-    payload: dict[str, Any],
-    people: list[dict[str, Any]],
-) -> str:
-    parser = _IdParser()
-    parser.feed(source)
+def _registry_script(entries: list[dict[str, Any]]) -> str:
+    json_text = json.dumps({"v": 2, "people": entries}, ensure_ascii=True,
+                           separators=(",", ":"))
+    json_text = (
+        json_text.replace("<", "\\u003c")
+        .replace(">", "\\u003e")
+        .replace("&", "\\u0026")
+    )
+    return f'<script type="application/json" id="people-index">{json_text}</script>'
+
+
+def validate_targets(page_ids: dict[str, dict[str, int]],
+                     payload: dict[str, Any],
+                     people: list[dict[str, Any]],
+                     assignments: dict[str, str]) -> None:
+    """Every projected link target occurs exactly once SITE-WIDE, on the page
+    the page map assigns."""
     targets = {
         entry["h"] for entry in payload["people"] if isinstance(entry.get("h"), str)
     }
@@ -808,29 +827,30 @@ def render_html(
         for person in people
         if person["public_anchor"] is not None
     )
-    bad_targets = [
-        f"{target} ({parser.ids[target]} matches)"
-        for target in sorted(targets)
-        if parser.ids[target] != 1
-    ]
-    if bad_targets:
+    problems: list[str] = []
+    for target in sorted(targets):
+        total = sum(ids.get(target, 0) for ids in page_ids.values())
+        if total != 1:
+            problems.append(f"{target} ({total} matches site-wide)")
+            continue
+        owner = next(page for page, ids in page_ids.items() if ids.get(target, 0))
+        assigned = assignments.get(target)
+        if assigned is not None and assigned != owner:
+            problems.append(f"{target} (on {owner}, assigned {assigned})")
+    if problems:
         raise ProjectionError(
-            "projected link targets must occur exactly once in index.html: "
-            + ", ".join(bad_targets)
+            "projected link targets must occur exactly once on their assigned "
+            "page: " + ", ".join(problems)
         )
 
-    json_text = json.dumps(payload, ensure_ascii=True, separators=(",", ":"))
-    json_text = (
-        json_text.replace("<", "\\u003c")
-        .replace(">", "\\u003e")
-        .replace("&", "\\u0026")
-    )
-    script = f'<script type="application/json" id="people-index">{json_text}</script>'
-    section = build_name_index(people)
-    replacements = [
-        (_one_people_script(source).span(), script),
-        (_one_name_section(source).span(), section),
-    ]
+
+def render_page(page: str, source: str, entries: list[dict[str, Any]],
+                people: list[dict[str, Any]],
+                assignments: dict[str, str] | None) -> str:
+    replacements = [(_one_people_script(source).span(), _registry_script(entries))]
+    if page == "index.html":
+        section = build_name_index(people, assignments, page)
+        replacements.append((_one_name_section(source).span(), section))
     rendered = source
     for (start, end), replacement in sorted(replacements, reverse=True):
         rendered = rendered[:start] + replacement + rendered[end:]
@@ -875,11 +895,41 @@ def build(root: Path) -> tuple[str, str, dict[str, Any]]:
             "pedigree gaps need public_anchor values: " + ", ".join(missing_gap_public)
         )
 
-    html_path = root / "index.html"
-    if not html_path.is_file():
-        raise ProjectionError(f"missing presentation file: {html_path}")
-    original = html_path.read_text(encoding="utf-8")
-    return original, render_html(original, payload, people), payload
+    import page_map  # lazy: page_map imports this module's ProjectionError
+
+    assignments = page_map.page_assignments(root)
+    split = page_map.split_branches(root)
+    split_codes = {BRANCH_CODES[branch] for branch in split}
+    pages = ["index.html"] + [page_map.BRANCH_PAGES[branch]
+                              for branch in sorted(split)]
+    sources: dict[str, str] = {}
+    page_ids: dict[str, dict[str, int]] = {}
+    for page in pages:
+        page_path = root / page
+        if not page_path.is_file():
+            raise ProjectionError(f"missing presentation file: {page_path}")
+        sources[page] = page_path.read_text(encoding="utf-8")
+        parser = _IdParser()
+        parser.feed(sources[page])
+        page_ids[page] = dict(parser.ids)
+    validate_targets(page_ids, payload, people, assignments)
+    code_entries: dict[str, list[dict[str, Any]]] = {}
+    for entry in payload["people"]:
+        code_entries.setdefault(entry["a"], []).append(entry)
+    rendereds: dict[str, str] = {}
+    for page in pages:
+        if page == "index.html":
+            entries = [entry for entry in payload["people"]
+                       if entry["a"] not in split_codes]
+            rendereds[page] = render_page(page, sources[page], entries, people,
+                                          assignments if split else None)
+        else:
+            branch = next(b for b, p in page_map.BRANCH_PAGES.items()
+                          if p == page)
+            entries = code_entries.get(BRANCH_CODES[branch], [])
+            rendereds[page] = render_page(page, sources[page], entries, people,
+                                          assignments)
+    return sources, rendereds, payload
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -898,11 +948,12 @@ def main(argv: list[str] | None = None) -> int:
         print(f"build_people_index: {exc}", file=sys.stderr)
         return 1
 
-    html_path = root / "index.html"
+    stale = sorted(page for page in rendered
+                   if original[page] != rendered[page])
     if args.check:
-        if original != rendered:
+        if stale:
             print(
-                f"{html_path} people projection is out of date; "
+                f"{', '.join(stale)} people projection is out of date; "
                 "run uv run tools/build_people_index.py",
                 file=sys.stderr,
             )
@@ -910,9 +961,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"people projection current: {len(payload['people'])} entries")
         return 0
 
-    if original != rendered:
-        html_path.write_text(rendered, encoding="utf-8")
-    print(f"updated {html_path}: {len(payload['people'])} entries")
+    for page in stale:
+        (root / page).write_text(rendered[page], encoding="utf-8")
+    print(f"updated {', '.join(stale) if stale else 'nothing'}: "
+          f"{len(payload['people'])} entries")
     return 0
 
 

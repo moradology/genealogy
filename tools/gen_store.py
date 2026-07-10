@@ -1090,7 +1090,9 @@ def render_candidate_family_html(
         (candidate_root / "index.html").write_bytes(
             (root / "index.html").read_bytes()
         )
-        _original, rendered, payload = build_people_index.build(candidate_root)
+        _originals, rendered_pages, payload = build_people_index.build(
+            candidate_root)
+        rendered = rendered_pages["index.html"]
         layout_exists = (root / "research" / "people" / "layout.jsonl").exists()
         if layout_exists:
             # Family blocks render person/gap cards and inline stems from the

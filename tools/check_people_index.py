@@ -25,7 +25,7 @@ def main() -> int:
         print(f"check_people_index: {exc}", file=sys.stderr)
         return 1
 
-    if original != rendered:
+    if original != rendered:  # dicts: any page drift
         failures.append(
             "generated people blocks drifted; run uv run tools/build_people_index.py"
         )
@@ -58,7 +58,8 @@ def main() -> int:
                 occupied[key] = str(identifier)
 
     row_ids = set(
-        re.findall(r'<div class="person" id="((?:person|gap)\.[^"]+)"', original)
+        re.findall(r'<div class="person" id="((?:person|gap)\.[^"]+)"',
+                   "\n".join(original.values()))
     )
     missing_rows = sorted(row_ids - hrefs)
     if missing_rows:

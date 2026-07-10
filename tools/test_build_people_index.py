@@ -383,7 +383,7 @@ with tempfile.TemporaryDirectory(prefix="people-projection-test-") as td:
     result = run(root)
     check(
         "missing target rejected",
-        result.returncode != 0 and "person.z.father (0 matches)" in result.stderr,
+        result.returncode != 0 and "person.z.father (0 matches site-wide)" in result.stderr,
         result.stderr,
     )
 
