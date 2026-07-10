@@ -32,6 +32,7 @@ from typing import NoReturn
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_people_index  # noqa: E402
 import family_display  # noqa: E402
+import page_map  # noqa: E402
 from build_people_index import ProjectionError  # noqa: E402
 
 LAYOUT_PATH = "research/people/layout.jsonl"
@@ -124,7 +125,8 @@ def substituted_members(members: list[dict], row_id: str,
 def render_card(item: str, *, groups: dict[str, list[dict]],
                 people: dict[str, dict], gaps: dict[str, dict],
                 evidence_displays: dict[str, dict], anchor_class: str,
-                cite_codes: dict[str, str]) -> str:
+                cite_codes: dict[str, str],
+                page_context: tuple | None = None) -> str:
     is_gap = item.startswith("gap.")
     row = gaps.get(item) if is_gap else people.get(item)
     if row is None:
@@ -137,7 +139,8 @@ def render_card(item: str, *, groups: dict[str, list[dict]],
         fail(f"layout item {item!r} has no people-index registry group")
     title_override = display.get("title_override")
     if isinstance(title_override, str) and title_override:
-        title_html = family_display.render_prose(title_override, cite_codes)
+        title_html = family_display.render_prose(
+            title_override, cite_codes, page_context=page_context)
     else:
         derived = family_display.derived_title(
             substituted_members(members, item, display.get("card_name")))
@@ -166,10 +169,12 @@ def render_card(item: str, *, groups: dict[str, list[dict]],
         ahnen_text=html_module.escape(ahnen_text, quote=False), tag=tag,
         display=display, cite_map=cite_codes,
         record_cards_html=record_cards_html,
-        alias_ids=tuple(display.get("alias_anchors") or []))
+        alias_ids=tuple(display.get("alias_anchors") or []),
+        page_context=page_context)
 
 
-def render_block(block: dict, context: dict) -> str:
+def render_block(block: dict, context: dict,
+                 page_context: tuple | None = None) -> str:
     generations: list[str] = []
     for generation in block["generations"]:
         items_html: list[str] = []
@@ -186,7 +191,8 @@ def render_block(block: dict, context: dict) -> str:
                     gaps=context["gaps"],
                     evidence_displays=context["evidence_displays"],
                     anchor_class=block["anchor_class"],
-                    cite_codes=context["cite_codes"]))
+                    cite_codes=context["cite_codes"],
+                    page_context=page_context))
         generations.append(
             '<div class="generation"><div class="gen-label">'
             f'{html_module.escape(generation["label"], quote=False)}</div>'
@@ -284,7 +290,9 @@ def splice(source: str, blocks: list[dict], rendered: dict[str, str]) -> str:
     return updated
 
 
-def build(root: Path) -> tuple[str, str, int]:
+def build(root: Path) -> tuple[dict[str, str], dict[str, str], int]:
+    """Render every layout block into its page_map-assigned page.
+    Returns ({page: original}, {page: updated}, block count)."""
     blocks = load_layout(root)
     people = {row["id"]: row for row in read_jsonl(root / PEOPLE_PATH)}
     family_rows = read_jsonl(root / RELATIONSHIPS_PATH)
@@ -293,7 +301,6 @@ def build(root: Path) -> tuple[str, str, int]:
     links = [row for row in family_rows
              if row.get("node_type") == "relationship"]
     stems_rows = {row["id"]: row for row in read_jsonl(root / STEMS_PATH)}
-    source = (root / "index.html").read_text(encoding="utf-8")
     registry = build_people_index.registry_payload(root)["people"]
     context = {
         "people": people,
@@ -304,8 +311,23 @@ def build(root: Path) -> tuple[str, str, int]:
         "evidence_displays": load_evidence_displays(root),
         "cite_codes": family_display.cite_map(root),
     }
-    rendered = {block["id"]: render_block(block, context) for block in blocks}
-    return source, splice(source, blocks, rendered), len(blocks)
+    assignments = page_map.page_assignments(root)
+    split = page_map.split_branches(root)
+    by_page: dict[str, list[dict]] = {}
+    for block in blocks:
+        branch = block["anchor_class"]
+        page = page_map.BRANCH_PAGES[branch] if branch in split else "index.html"
+        by_page.setdefault(page, []).append(block)
+    originals: dict[str, str] = {}
+    updateds: dict[str, str] = {}
+    for page in sorted(by_page):
+        source = (root / page).read_text(encoding="utf-8")
+        rendered = {block["id"]: render_block(block, context,
+                                              (assignments, page))
+                    for block in by_page[page]}
+        originals[page] = source
+        updateds[page] = splice(source, by_page[page], rendered)
+    return originals, updateds, len(blocks)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -314,18 +336,22 @@ def main(argv: list[str] | None = None) -> int:
                         default=Path(__file__).resolve().parents[1])
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
-    original, updated, count = build(args.root)
-    html_path = args.root / "index.html"
+    originals, updateds, count = build(args.root)
+    stale = sorted(page for page in updateds
+                   if originals[page] != updateds[page])
     if args.check:
-        if original != updated:
-            print(f"{html_path} family projection is out of date; "
+        if stale:
+            print(f"{', '.join(stale)} family projection is out of date; "
                   "run ./gen build family")
             return 1
-        print(f"family projection current: {count} blocks")
+        print(f"family projection current: {count} blocks "
+              f"across {len(updateds)} page(s)")
         return 0
-    if original != updated:
-        html_path.write_text(updated, encoding="utf-8")
-        print(f"family projection written: {count} blocks")
+    if stale:
+        for page in stale:
+            (args.root / page).write_text(updateds[page], encoding="utf-8")
+        print(f"family projection written: {count} blocks; "
+              f"updated {', '.join(stale)}")
     else:
         print(f"family projection unchanged: {count} blocks")
     return 0

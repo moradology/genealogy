@@ -19,6 +19,10 @@ BRANCH_PAGES = {
 
 
 def _jsonl_rows(path: Path) -> Iterable[dict]:
+    if not path.is_file():
+        # Assignment helper, not a validator: fixtures and partial roots may
+        # lack whole stores; the core validators own existence contracts.
+        return
     for line in path.read_text(encoding="utf-8").splitlines():
         if line.strip():
             row = json.loads(line)

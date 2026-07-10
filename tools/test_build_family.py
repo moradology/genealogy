@@ -311,7 +311,37 @@ with tempfile.TemporaryDirectory(prefix="build-family-test-") as td:
           (root / "index.html").read_text(encoding="utf-8"),
           result.stdout + result.stderr)
 
-    # 9. A stray END marker anywhere refuses everything
+    # 9. Multi-page: when a branch's page file exists, its blocks splice
+    # THERE and cross-page tokens qualify; other pages untouched
+    split = make_root(tmp / "split")
+    run(split)  # bootstrap on the landing first
+    landing = (split / "index.html").read_text(encoding="utf-8")
+    marker = "<!-- BEGIN family-block:layout.branch-test.1 -->"
+    start = landing.index(marker)
+    end = landing.index("<!-- END -->", start) + len("<!-- END -->")
+    region = landing[start:end]
+    (split / "index.html").write_text(
+        landing[:start] + landing[end:], encoding="utf-8")
+    (split / "zimmerman.html").write_text(
+        "<html><body>\n<section id=\"branch-test\"><div class=\"branch\">"
+        f"<div class=\"generations\">\n{region}\n</div></div></section>\n"
+        "</body></html>\n", encoding="utf-8")
+    result = run(split, "--check")
+    check("moved region checks red before rebuild", result.returncode == 1,
+          result.stdout + result.stderr)
+    result = run(split)
+    check("multi-page rebuild exits 0", result.returncode == 0,
+          result.stdout + result.stderr)
+    page_html = (split / "zimmerman.html").read_text(encoding="utf-8")
+    check("blocks splice into the branch page",
+          marker in page_html and 'id="person.solo"' in page_html, page_html[:400])
+    check("cite chips qualify to the landing from the branch page",
+          "href=index.html#s2" in page_html, page_html[-800:])
+    result = run(split, "--check")
+    check("multi-page check green after rebuild", result.returncode == 0,
+          result.stdout + result.stderr)
+
+    # 9b. A stray END marker anywhere refuses everything
     root = make_root(tmp / "stray-end")
     run(root)
     html_path = root / "index.html"

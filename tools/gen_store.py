@@ -1095,12 +1095,16 @@ def render_candidate_family_html(
         if layout_exists:
             # Family blocks render person/gap cards and inline stems from the
             # candidate relationships in the same atomic projection pass.
-            for rel in ("research/evidence", "research/sources"):
+            for rel in ("research/evidence", "research/sources", "research/cases"):
                 target_dir = candidate_root / rel
                 if not target_dir.exists():
                     shutil.copytree(root / rel, target_dir)
             (candidate_root / "index.html").write_text(rendered, encoding="utf-8")
-            _family_original, rendered, _family_count = build_family.build(candidate_root)
+            _family_originals, family_pages, _family_count = build_family.build(
+                candidate_root)
+            # The candidate root carries only the landing until the flip
+            # commits copy split pages in (P5d extends this seam).
+            rendered = family_pages["index.html"]
     stamped, stamp_value = stamp_tool.stamped_html(rendered)
     return stamped, stamp_value, len(payload["people"])
 
