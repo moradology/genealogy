@@ -653,6 +653,58 @@ with tempfile.TemporaryDirectory(prefix="family-rules-test-") as td:
     b = json.dumps(family_rules.adjudicate(root, claim))
     check("adjudicate deterministic", a == b)
 
+    # ============ Chain helpers (page-projection program, C0) ============
+    check("CONFIDENCE_RANK orders documented strongest",
+          family_rules.CONFIDENCE_RANK["documented"]
+          < family_rules.CONFIDENCE_RANK["strong"]
+          < family_rules.CONFIDENCE_RANK["lead"]
+          < family_rules.CONFIDENCE_RANK["open"],
+          family_rules.CONFIDENCE_RANK)
+
+    # Linear chain: anchor a -> father b -> mother c, child-to-parent order
+    chain_links = [plink("person.b", "person.a", "father", confidence="documented"),
+                   plink("person.c", "person.b", "mother", confidence="lead")]
+    chains = family_rules.parent_chains(chain_links, "person.a", "person.c")
+    check("parent_chains finds the linear chain", len(chains) == 1, chains)
+    check("parent_chains is child-to-parent ordered",
+          bool(chains) and [link["person_a"] for link in chains[0]]
+          == ["person.b", "person.c"], chains)
+
+    # No path when the target is not upward of the anchor
+    check("parent_chains empty when unreachable",
+          family_rules.parent_chains(chain_links, "person.c", "person.a") == [],
+          "reverse direction")
+
+    # A rejected link breaks the chain
+    broken = [plink("person.b", "person.a", "father"),
+              plink("person.c", "person.b", "mother", status="rejected")]
+    check("parent_chains skips rejected links",
+          family_rules.parent_chains(broken, "person.a", "person.c") == [], broken)
+
+    # Pedigree collapse: two distinct simple paths both reported, deterministically
+    diamond = [plink("person.b", "person.a", "father"),
+               plink("person.b2", "person.a", "mother"),
+               plink("person.c", "person.b", "father"),
+               plink("person.c", "person.b2", "mother")]
+    two = family_rules.parent_chains(diamond, "person.a", "person.c")
+    check("parent_chains reports both diamond paths", len(two) == 2, two)
+    check("parent_chains deterministic order",
+          two == family_rules.parent_chains(list(reversed(diamond)),
+                                            "person.a", "person.c"), two)
+
+    # Weakest step: lowest confidence wins; ties break nearest the anchor
+    ranked = [plink("person.b", "person.a", "father", confidence="documented"),
+              plink("person.c", "person.b", "mother", confidence="lead"),
+              plink("person.d", "person.c", "father", confidence="strong")]
+    weakest = family_rules.weakest_parent_step(ranked)
+    check("weakest_parent_step picks the lead link",
+          weakest["person_a"] == "person.c", weakest)
+    tied = [plink("person.b", "person.a", "father", confidence="lead"),
+            plink("person.c", "person.b", "mother", confidence="lead")]
+    check("weakest_parent_step tie breaks nearest anchor",
+          family_rules.weakest_parent_step(tied)["person_a"] == "person.b",
+          tied)
+
     # ============ Phase 3: frontier ============
     def ped(pos: list) -> dict:
         return {"Z": [], "M": pos, "D": [], "C": []}

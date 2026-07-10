@@ -17,6 +17,7 @@ from gen_ancestry import name_word_matches, normalized_words
 
 VITAL_FEATURE_KINDS = {"life_event", "candidate_life_event", "life_context"}
 SEVERITY_RANK = {"violation": 0, "conflict": 1, "advisory": 2}
+CONFIDENCE_RANK = {"documented": 0, "strong": 1, "lead": 2, "open": 3}
 NAME_EQUIVALENCE = (
     frozenset({"zodrow", "farrow"}),
     frozenset({"mundell", "mandell", "mondel"}),
@@ -227,6 +228,51 @@ def _link_severity(links: list[dict]) -> str:
     if links and all(link.get("status") == "accepted" for link in links):
         return "violation"
     return "advisory"
+
+
+def parent_chains(links: list[dict], anchor: str, target: str) -> list[list[dict]]:
+    """Every simple upward parent_of path from anchor to target, in
+    child-to-parent order, over non-rejected links. Callers that require a
+    unique chain (the stems builder) enforce len == 1 themselves."""
+    parents: dict[str, list[dict]] = {}
+    for link in links:
+        if link.get("relationship_type") != "parent_of":
+            continue
+        if link.get("status") == "rejected":
+            continue
+        child = link.get("person_b")
+        parent = link.get("person_a")
+        if isinstance(child, str) and isinstance(parent, str):
+            parents.setdefault(child, []).append(link)
+    for child_links in parents.values():
+        child_links.sort(key=_link_id)
+    chains: list[list[dict]] = []
+    stack: list[tuple[str, list[dict], frozenset[str]]] = [
+        (anchor, [], frozenset({anchor}))]
+    while stack:
+        person_id, chain, seen = stack.pop()
+        if person_id == target and chain:
+            chains.append(chain)
+            continue
+        for link in parents.get(person_id, []):
+            parent_id = link["person_a"]
+            if parent_id in seen:
+                continue
+            stack.append((parent_id, chain + [link], seen | {parent_id}))
+    chains.sort(key=lambda chain: [_link_id(link) for link in chain])
+    return chains
+
+
+def weakest_parent_step(chain: list[dict]) -> dict:
+    """The lowest-confidence link in a chain; ties break nearest the anchor.
+    Unknown confidence values rank below open."""
+    worst_rank = len(CONFIDENCE_RANK)
+    weakest = chain[0]
+    for link in chain[1:]:
+        if (CONFIDENCE_RANK.get(link.get("confidence"), worst_rank)
+                > CONFIDENCE_RANK.get(weakest.get("confidence"), worst_rank)):
+            weakest = link
+    return weakest
 
 
 def _finding(
