@@ -99,11 +99,37 @@ TOKEN_RE = re.compile(
     r"|cite:src\.[A-Za-z0-9][A-Za-z0-9._-]*"
     r"|case:case\.[a-z0-9][a-z0-9._-]*"
     r"|link:#[A-Za-z0-9][A-Za-z0-9._-]*\|[^{}|]+"
-    r"|url:https?://[^{}|]+\|[^{}|]+"
+    r"|url:https?://[^{}|\s]+\|[^{}|]+"
     r")\}\}"
 )
 DISPLAY_ENTITY_RE = re.compile(r"&#?[a-zA-Z0-9]+;")
 EVIDENCE_REF_RE = re.compile(r"ev\.[A-Za-z0-9][A-Za-z0-9._-]*")
+DISPLAY_TOKEN_PAYLOAD_RE = re.compile(r"\{\{(cite|case|link):([^{}|]+)")
+
+
+def _validate_display_tokens(
+    display_rows: list[tuple[str, dict]],
+    source_ids: set[str],
+    case_ids: set[str],
+    known_anchors: set[str],
+    errors: list[str],
+) -> None:
+    """Cross-store pass: every display token must resolve at write time so
+    render never meets a dangling cite, case, or anchor."""
+    for where, display in display_rows:
+        for field, value in sorted(display.items()):
+            if not isinstance(value, str):
+                continue
+            for kind, payload in DISPLAY_TOKEN_PAYLOAD_RE.findall(value):
+                if kind == "cite" and payload not in source_ids:
+                    errors.append(
+                        f"{where}: display.{field} cites unknown source {payload!r}")
+                elif kind == "case" and payload not in case_ids:
+                    errors.append(
+                        f"{where}: display.{field} references unknown case {payload!r}")
+                elif kind == "link" and payload[1:] not in known_anchors:
+                    errors.append(
+                        f"{where}: display.{field} links unknown anchor {payload[1:]!r}")
 
 
 def _lint_display_prose(
@@ -156,6 +182,12 @@ def _validate_display(
     for field in DISPLAY_PROSE_FIELDS:
         if field in display:
             _lint_display_prose(display[field], field, where, errors)
+    for field in ("card_name", "ahnen_override"):
+        value = display.get(field)
+        if isinstance(value, str) and "{{" in value:
+            errors.append(
+                f"{where}: display.{field} is rendered as plain text and "
+                "must not carry tokens")
     cameos = display.get("cameos")
     if cameos is not None:
         if not isinstance(cameos, list) or not cameos:
@@ -836,9 +868,12 @@ def validate_repository(
     person_ids: set[str] = set()
     branch_anchors: dict[str, list[str]] = {branch: [] for branch in BRANCHES}
     person_count = 0
+    display_rows: list[tuple[str, dict]] = []
     for where, row in _read_jsonl(people_file, root, errors):
         person_count += 1
         person_id = _validate_person(row, where, html_ids, errors)
+        if isinstance(row, dict) and isinstance(row.get("display"), dict):
+            display_rows.append((where, row["display"]))
         _register_global_id(person_id, where, seen_ids, errors)
         if person_id is not None:
             person_ids.add(person_id)
@@ -903,6 +938,8 @@ def validate_repository(
                     accepted_parent_roles[accepted_parent_role] = where
         elif node_type == "gap":
             gap_count += 1
+            if isinstance(row.get("display"), dict):
+                display_rows.append((where, row["display"]))
             identifier = _validate_gap(
                 row,
                 where,
@@ -921,6 +958,10 @@ def validate_repository(
             )
 
     _validate_parent_acyclic(person_ids, parent_edges, errors)
+    gap_ids = {gap_id for gap_id in seen_ids if gap_id.startswith("gap.")}
+    _validate_display_tokens(
+        display_rows, source_ids, case_ids,
+        person_ids | gap_ids | case_ids, errors)
     return ValidationResult(
         tuple(errors), person_count, relationship_count, gap_count
     )

@@ -310,6 +310,17 @@ with tempfile.TemporaryDirectory(prefix="build-family-test-") as td:
           (root / "index.html").read_text(encoding="utf-8"),
           result.stdout + result.stderr)
 
+    # 9. A stray END marker anywhere refuses everything
+    root = make_root(tmp / "stray-end")
+    run(root)
+    html_path = root / "index.html"
+    html_path.write_text(
+        html_path.read_text(encoding="utf-8") + "<!-- END -->", encoding="utf-8")
+    result = run(root, "--check")
+    check("stray END refuses", result.returncode == 1
+          and "marker counts diverge" in result.stdout + result.stderr,
+          result.stdout + result.stderr)
+
 if failures:
     print("BUILD FAMILY TEST FAILURES:")
     for failure in failures:

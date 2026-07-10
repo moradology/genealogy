@@ -22,6 +22,7 @@ from typing import NoReturn
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import family_rules  # noqa: E402
+from build_people_index import ProjectionError  # noqa: E402
 from check_family_core import TOKEN_RE  # noqa: E402
 
 SOURCES_PATH = "research/sources/sources.jsonl"
@@ -30,8 +31,7 @@ TAG_LABELS = {"documented": "Documented", "strong": "Strong lead",
 
 
 def fail(message: str) -> NoReturn:
-    print(message)
-    raise SystemExit(1)
+    raise ProjectionError(message)
 
 
 def _escape(value: str) -> str:

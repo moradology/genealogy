@@ -32,6 +32,7 @@ from typing import NoReturn
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_docket  # noqa: E402
 import family_display  # noqa: E402
+from build_people_index import ProjectionError  # noqa: E402
 
 LAYOUT_PATH = "research/people/layout.jsonl"
 PEOPLE_PATH = "research/people/people.jsonl"
@@ -48,8 +49,7 @@ DIV_EDGE_RE = re.compile(r"<div\b|</div>")
 
 
 def fail(message: str) -> NoReturn:
-    print(message)
-    raise SystemExit(1)
+    raise ProjectionError(message)
 
 
 def read_jsonl(path: Path) -> list[dict]:
@@ -212,6 +212,9 @@ def region_hrefs(fragment: str) -> list[str]:
 
 
 def splice(source: str, blocks: list[dict], rendered: dict[str, str]) -> str:
+    if source.count("<!-- BEGIN ") != source.count("<!-- END -->"):
+        fail("index.html BEGIN/END marker counts diverge; a marker was added "
+             "or removed by hand - refusing to splice anything")
     marker_keys = MARKER_KEY_RE.findall(source)
     marked = {block["id"] for block in blocks if block["id"] in set(marker_keys)}
     orphans = [key for key in marker_keys

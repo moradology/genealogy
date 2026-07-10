@@ -379,6 +379,19 @@ with tempfile.TemporaryDirectory(prefix="gen-store-test-") as td:
     check("display block preserved byte-identically",
           people_store.read_bytes() == people_with_display)
 
+    # ---- a rejection that breaks a rendered stem refuses with a JSON envelope ----
+    stem_link = "relationship.parent.zodrow_cecilia-to-doyle_zimmerman"
+    before_family = (relationships_store.read_bytes(), html_path.read_bytes())
+    r = store(root, "relationship", "update", stem_link,
+              "--status", "rejected",
+              "--provenance-note", "Test rejection that breaks a stem chain.")
+    o = json.loads(r.stdout)
+    check("stem-breaking rejection returns an envelope",
+          r.returncode != 0 and o.get("ok") is False
+          and "projection failed" in json.dumps(o), r.stdout[:300])
+    check("stem-breaking rejection writes nothing",
+          (relationships_store.read_bytes(), html_path.read_bytes()) == before_family)
+
     prior_provenance = relationship["provenance_note"]
     r = store(root, "relationship", "update", relationship_id,
               "--status", "rejected",
