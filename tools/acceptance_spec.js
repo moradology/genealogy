@@ -65,12 +65,22 @@ function ok(label, cond, detail) {
   // bare querySelector('#person.x') (the dot would be parsed as a class selector).
   const src = fs.readFileSync(FILE, 'utf8');
   const srcBytes = Buffer.byteLength(src, 'utf8');
-  ok('S1 no external scripts', !/<script[^>]*\ssrc=/.test(src));
-  ok('S2 no external stylesheets', !/<link[^>]+rel="stylesheet"[^>]+href="http/.test(src));
-  ok('S3 event data intact', src.includes('verifiedEventData') && src.includes('familyLinkData'));
-  ok('S4 fonts embedded as data URIs', /@font-face/.test(src) && /data:font\/woff2;base64,/.test(src));
-  ok('S5 leaflet fully removed', !/leaflet|unpkg|openstreetmap\.org\/\{z\}|tile\.openstreetmap/i.test(src));
-  ok('S6 marriage corrected to 1954 everywhere', src.includes('event.doyle_zimmerman.marriage.1954-06-14') && !src.includes('1953-06-14'));
+  // Shared same-origin assets (extracted 2026-07-10 for the five-page split):
+  // pages may reference ONLY these relative files; anything else is external.
+  const fontsCss = fs.readFileSync(path.join(ROOT, 'assets', 'fonts.css'), 'utf8');
+  const siteCss = fs.readFileSync(path.join(ROOT, 'assets', 'site.css'), 'utf8');
+  const appJs = fs.readFileSync(path.join(ROOT, 'assets', 'app.js'), 'utf8');
+  const scriptSrcs = [...src.matchAll(/<script[^>]*\ssrc="([^"]+)"/g)].map((m) => m[1]);
+  ok('S1 scripts are same-origin assets only',
+    scriptSrcs.length === 1 && scriptSrcs[0] === 'assets/app.js', scriptSrcs);
+  const styleHrefs = [...src.matchAll(/<link[^>]+rel="stylesheet"[^>]+href="([^"]+)"/g)].map((m) => m[1]);
+  ok('S2 stylesheets are same-origin assets only',
+    styleHrefs.length === 2 &&
+    styleHrefs.every((href) => href.startsWith('assets/')), styleHrefs);
+  ok('S3 event data intact', appJs.includes('verifiedEventData') && appJs.includes('familyLinkData'));
+  ok('S4 fonts embedded as data URIs', /@font-face/.test(fontsCss) && /data:font\/woff2;base64,/.test(fontsCss));
+  ok('S5 leaflet fully removed', ![src, siteCss, appJs].some((body) => /leaflet|unpkg|openstreetmap\.org\/\{z\}|tile\.openstreetmap/i.test(body)));
+  ok('S6 marriage corrected to 1954 everywhere', appJs.includes('event.doyle_zimmerman.marriage.1954-06-14') && !src.includes('1953-06-14') && !appJs.includes('1953-06-14'));
   ok('S7 Colby Free Press source cited', src.includes('Colby Free Press') && src.includes('Sacred Heart Catholic Church'));
   ok('S8 deploy stamp present', /<meta name="deploy-stamp" content="[0-9a-f]{12} \d{4}-\d{2}-\d{2}">/.test(src));
   // Payload budgets (treaty): set at measured+10% after the Track B
@@ -89,20 +99,24 @@ function ok(label, cond, detail) {
   // declares its cost and looks for offsetting cuts. Peers bump
   // budgets only via a declared SPEC DELTA; total never exceeds 384000
   // (family-core ruling 2026-07-09; prior owner ceiling 358400).
-  ok('S9 total payload within owner ceiling', srcBytes <= 384000, srcBytes);
+  // SPEC DELTA 2026-07-10 (owner-approved five-page split, P2): assets
+  // extracted; the ceiling now covers page + shared assets together.
+  const assetBytes = Buffer.byteLength(fontsCss + siteCss + appJs, 'utf8');
+  ok('S9 total payload within owner ceiling', srcBytes + assetBytes <= 384000,
+    { page: srcBytes, assets: assetBytes });
   ok('S10 embedded fonts within budget',
-    (src.match(/data:font\/woff2;base64,[A-Za-z0-9+\/=]+/g) || []).join('').length < 45153);
+    (fontsCss.match(/data:font\/woff2;base64,[A-Za-z0-9+\/=]+/g) || []).join('').length < 45153);
   ok('S11 baked path constants within budget',
-    ((src.match(/const \w+_D = "[^"]*"/g) || []).join('') +
-      (src.match(/const ROUTES_(?:MIG|KS) = \{[^\n]*\};/g) || []).join('')).length < 24910);
+    ((appJs.match(/const \w+_D = "[^"]*"/g) || []).join('') +
+      (appJs.match(/const ROUTES_(?:MIG|KS) = \{[^\n]*\};/g) || []).join('')).length < 24910);
   ok('S12 generated-region marker pairs present',
     ['basemap-proj', 'basemap-paths', 'basemap-routes'].every((tag) =>
-      src.split('// BEGIN GENERATED ' + tag).length === 2 &&
-      src.split('// END GENERATED ' + tag).length === 2));
+      appJs.split('// BEGIN GENERATED ' + tag).length === 2 &&
+      appJs.split('// END GENERATED ' + tag).length === 2));
   ok('S13 route metadata declares 7 lineage and 3 conjectural routes',
-    (src.match(/id:"route\./g) || []).length === 10 &&
-    (src.match(/grade:"solid"/g) || []).length === 7 &&
-    (src.match(/grade:"conjectural"/g) || []).length === 3);
+    (appJs.match(/id:"route\./g) || []).length === 10 &&
+    (appJs.match(/grade:"solid"/g) || []).length === 7 &&
+    (appJs.match(/grade:"conjectural"/g) || []).length === 3);
   ok('S14 Slate 3 reader sections present',
     ['id="foreword"', 'id="stories"', 'id="album"', 'id="wanted"', 'class="colophon"']
       .every((token) => src.includes(token)));
@@ -119,20 +133,20 @@ function ok(label, cond, detail) {
     src.includes('class="plate album-plate"') &&
     src.includes('<span class="plate-no">Plate VII.</span>'));
   ok('S18 print stylesheet covers keepsake rules',
-    src.includes('section.sheet[id^="branch-"], #album, #docket, #index-of-names, #sources') &&
-    src.includes('.plate-key { columns: 2; break-inside: avoid; }') &&
-    src.includes('figure.plate:not(.revealed)') &&
-    src.includes('.tag::before { content: "["; }') &&
-    src.includes('.tag::after { content: "]"; }'));
+    siteCss.includes('section.sheet[id^="branch-"], #album, #docket, #index-of-names, #sources') &&
+    siteCss.includes('.plate-key { columns: 2; break-inside: avoid; }') &&
+    siteCss.includes('figure.plate:not(.revealed)') &&
+    siteCss.includes('.tag::before { content: "["; }') &&
+    siteCss.includes('.tag::after { content: "]"; }'));
   ok('S19 nav tools expose scale and print controls',
     src.includes('class="nav-tools"') &&
     (src.match(/class="tool scale-btn"/g) || []).length === 3 &&
     src.includes('id="print-btn"') &&
-    src.includes('localStorage.getItem("zd-scale")') &&
-    src.includes('window.print()'));
+    appJs.includes('localStorage.getItem("zd-scale")') &&
+    appJs.includes('window.print()'));
   const publicContentFiles = execFileSync('git', [
     'ls-files', '-z', '--cached', '--others', '--exclude-standard', '--',
-    'index.html', 'ancestry_geospatial.geojson', 'README.md', 'TODO.md', 'research',
+    'index.html', 'assets', 'ancestry_geospatial.geojson', 'README.md', 'TODO.md', 'research',
   ], { cwd: ROOT, encoding: 'utf8' }).split('\0').filter(Boolean)
     .filter((relative) => fs.existsSync(path.join(ROOT, relative)));
   const ssnShape = /(^|[^0-9])[0-9]{3}-[0-9]{2}-[0-9]{4}(?![0-9])/m;

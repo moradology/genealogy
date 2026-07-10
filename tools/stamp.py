@@ -98,7 +98,21 @@ def deployed() -> int:
     if remote.split()[0] != local.split()[0]:
         print(f"live {remote} != local {local} (Pages cache max-age is 600s)", file=sys.stderr)
         return 1
-    print(f"live site matches local stamp: {local}")
+    for asset in ("assets/fonts.css", "assets/site.css", "assets/app.js"):
+        local_bytes = (ROOT / asset).read_bytes()
+        fetched = subprocess.run(
+            ["curl", "-s", "--max-time", "20", LIVE_URL + asset],
+            capture_output=True,
+        )
+        if fetched.returncode != 0:
+            print(f"curl failed for {asset} with exit {fetched.returncode}",
+                  file=sys.stderr)
+            return 1
+        if fetched.stdout != local_bytes:
+            print(f"live {asset} differs from local (Pages cache max-age is 600s)",
+                  file=sys.stderr)
+            return 1
+    print(f"live site matches local stamp and assets: {local}")
     return 0
 
 

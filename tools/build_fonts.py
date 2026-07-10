@@ -43,7 +43,10 @@ from fontTools import subset
 from fontTools.ttLib import TTFont
 
 ROOT = Path(__file__).resolve().parents[1]
-HTML = ROOT / "index.html"
+TARGET = ROOT / "assets/fonts.css"
+# Glyph coverage comes from the rendered page text, not the asset file.
+GLYPH_SOURCES = (ROOT / "index.html", ROOT / "assets/site.css",
+                 ROOT / "assets/app.js")
 CACHE = ROOT / "tools" / "font-data"
 
 FONTS_COMMIT = "e4572de925a4c3be12f1f9983ee0adbe1eb6e9fe"
@@ -118,7 +121,7 @@ def subset_woff2(ttf_path: Path, text: str) -> bytes:
 
 
 def build() -> str:
-    html = HTML.read_text()
+    html = "".join(path.read_text() for path in GLYPH_SOURCES)
     text = glyph_text(html)
     print(f"glyph set: {len(text)} characters")
     lines = [
@@ -147,7 +150,7 @@ def region_bounds(html: str):
     begin = "/* BEGIN GENERATED fonts"
     end = "/* END GENERATED fonts */"
     if html.count(begin) != 1 or html.count(end) != 1:
-        print("index.html must contain exactly one BEGIN/END GENERATED fonts pair", file=sys.stderr)
+        print("assets/fonts.css must contain exactly one BEGIN/END GENERATED fonts pair", file=sys.stderr)
         raise SystemExit(1)
     start = html.index("\n", html.index(begin)) + 1
     return start, html.index(end)
@@ -160,7 +163,7 @@ def main() -> int:
     group.add_argument("--write", action="store_true")
     args = parser.parse_args()
     generated = build()
-    html = HTML.read_text()
+    html = TARGET.read_text()
     start, stop = region_bounds(html)
     if args.check:
         current = html[start:stop].rstrip("\n")
@@ -169,7 +172,7 @@ def main() -> int:
             return 1
         print(f"fonts: byte-identical ({stop - start} bytes)")
         return 0
-    HTML.write_text(html[:start] + generated + "\n" + html[stop:])
+    TARGET.write_text(html[:start] + generated + "\n" + html[stop:])
     print("index.html fonts region rewritten; run ./gen stamp --write next")
     return 0
 

@@ -63,6 +63,8 @@ Path(os.environ["INLINE_JS"]).write_text(joined)
 print(f"extracted {len(scripts)} inline script blocks")
 PY
 node --check "$INLINE_JS"
+node --check assets/app.js
+echo "assets/app.js parses"
 rm -rf "$INLINE_DIR"
 echo "inline js parses"
 

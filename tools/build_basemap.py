@@ -36,7 +36,7 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-HTML = ROOT / "index.html"
+HTML = ROOT / "assets/app.js"
 CACHE = ROOT / "tools" / "basemap-data"
 GEOJSON = ROOT / "ancestry_geospatial.geojson"
 
@@ -605,7 +605,7 @@ def region_bounds(html, tag):
     begin = f"// BEGIN GENERATED {tag}"
     end = f"// END GENERATED {tag}"
     if html.count(begin) != 1 or html.count(end) != 1:
-        print(f"index.html must contain exactly one {begin} / {end} pair", file=sys.stderr)
+        print(f"assets/app.js must contain exactly one {begin} / {end} pair", file=sys.stderr)
         raise SystemExit(1)
     start = html.index("\n", html.index(begin)) + 1
     return start, html.index(end)

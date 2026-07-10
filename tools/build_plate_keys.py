@@ -276,11 +276,11 @@ def replace_or_insert_ledger(source: str) -> str:
     return source.replace(needle, block, 1)
 
 
-def render(source: str) -> str:
-    events = parse_events(source)
-    links = parse_links(source)
-    plates = parse_plates(source)
-    ks_proj = parse_js_object_numbers(source, "KS_PROJ")
+def render(source: str, data_source: str) -> str:
+    events = parse_events(data_source)
+    links = parse_links(data_source)
+    plates = parse_plates(data_source)
+    ks_proj = parse_js_object_numbers(data_source, "KS_PROJ")
     rendered = source
     for cfg in plates:
         rows, guest_ids = plate_data(cfg, events, links, ks_proj)
@@ -298,7 +298,8 @@ def main() -> int:
     args = parser.parse_args()
 
     original = HTML_PATH.read_text()
-    rendered = render(original)
+    data_source = (ROOT / "assets/app.js").read_text()
+    rendered = render(original, data_source)
     if args.check:
         if original != rendered:
             print(f"{HTML_PATH} plate keys, ledger, or numerals are out of date; run ./gen build plate-keys", file=sys.stderr)

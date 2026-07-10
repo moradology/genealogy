@@ -45,7 +45,7 @@ def displayed_events(html: str) -> list[dict]:
 
 
 def main() -> int:
-    html = (ROOT / "index.html").read_text()
+    html = (ROOT / "assets/app.js").read_text()
     geo = json.loads((ROOT / "ancestry_geospatial.geojson").read_text())
     events = displayed_events(html)
     if len(events) < 24:

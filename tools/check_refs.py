@@ -317,7 +317,10 @@ def check_grammar(ids: set[str], failures: list[str]) -> None:
 
 
 def main() -> int:
-    html = (ROOT / "index.html").read_text()
+    # The map data (verifiedEventData/familyLinkData) lives in the shared
+    # asset since the five-page split; scan page and asset together.
+    html = ((ROOT / "index.html").read_text()
+            + "\n" + (ROOT / "assets/app.js").read_text())
     geo = json.loads((ROOT / "ancestry_geospatial.geojson").read_text())
     ledger = json.loads((ROOT / "research" / "sources" / "source-index.json").read_text())
 
