@@ -963,6 +963,7 @@ def command_case_update(args: argparse.Namespace, root: Path) -> int:
         if args.status == "closed" and target.get("status") != "closed":
             report = family_rules.contradictions(root)
             case_people = set(target.get("person_refs") or [])
+            case_people.update(additions.get("person_refs") or [])
             blocking = [
                 finding for finding in report["findings"]
                 if finding["severity"] == "violation"
@@ -1995,8 +1996,13 @@ def command_status(_args: argparse.Namespace, root: Path) -> int:
         status: sum(row.get("status") == status for row in gap_rows)
         for status in ("open", "resolved")
     }
-    contradiction_counts = family_rules.contradictions(root)["counts"]
-    frontier_report = family_rules.frontier(root)
+    reasoning_ok = (
+        validators["family"] and validators["cases"] and validators["evidence"]
+    )
+    contradiction_counts = (
+        family_rules.contradictions(root)["counts"] if reasoning_ok else None
+    )
+    frontier_report = family_rules.frontier(root) if reasoning_ok else None
     healthy = all(validators.values())
     return stop(
         {
@@ -2011,14 +2017,20 @@ def command_status(_args: argparse.Namespace, root: Path) -> int:
             },
             "cases": cases,
             "evidence": {"total": sum(by_shard.values()), "by_shard": by_shard},
-            "contradictions": {
-                "violations": contradiction_counts["violation"],
-                "conflicts": contradiction_counts["conflict"],
-                "advisories": contradiction_counts["advisory"],
-            },
-            "frontier_top": [
-                item["target"] for item in frontier_report["online"][:3]
-            ],
+            "contradictions": (
+                {
+                    "violations": contradiction_counts["violation"],
+                    "conflicts": contradiction_counts["conflict"],
+                    "advisories": contradiction_counts["advisory"],
+                }
+                if contradiction_counts is not None
+                else None
+            ),
+            "frontier_top": (
+                [item["target"] for item in frontier_report["online"][:3]]
+                if frontier_report is not None
+                else []
+            ),
             "latest_trace": latest_trace(root),
         },
         0 if healthy else 1,

@@ -767,6 +767,50 @@ with tempfile.TemporaryDirectory(prefix="family-rules-test-") as td:
     out = family_rules.frontier(root)
     check("frontier exhausted online moves offline",
           any(i["target"] == "gap.x1.parents" for i in out["offline"]), out)
+    exhausted = [i for i in out["offline"] if i["target"] == "gap.x1.parents"][0]
+    check("frontier marriage-only subject counts as dated",
+          any("dated subject" in why for why in exhausted["why"]), exhausted["why"])
+
+    # One evidence row touching multiple subjects is one penalty, not two
+    root = make_root(tmp / "fr-multi",
+                     [person("person.m1", "Multi One"), person("person.m2", "Multi Two")],
+                     [gap_row("gap.m.parents", ["person.m1", "person.m2"], [],
+                              pedigree=ped([4, 5]))],
+                     [], evidence=[{**negative_evidence("ev.t.m1", "person.m1"),
+                                    "person_refs": ["person.m1", "person.m2"]}])
+    out = family_rules.frontier(root)
+    multi = [i for i in out["online"] + out["offline"]
+             if i["target"] == "gap.m.parents"][0]
+    check("frontier shared evidence row penalized once", multi["penalty"] == 10, multi)
+
+    # A weak link and a gap citing the same open case both take the shared +4
+    root = make_root(tmp / "fr-share",
+                     [person("person.s1", "Share One"), person("person.s2", "Share Two"),
+                      person("person.s3", "Share Three")],
+                     [gap_row("gap.s1.parents", ["person.s1"], ["case.41"],
+                              pedigree=ped([4, 5])),
+                      plink("person.s2", "person.s3", "father", confidence="lead",
+                            cases=["case.41"])],
+                     [], cases=[case_row("case.41")])
+    out = family_rules.frontier(root)
+    shared = {i["target"]: i for i in out["online"]}
+    check("frontier cross-kind shared case is +4 for both",
+          any("open case reference: +4" in why for why in shared["gap.s1.parents"]["why"])
+          and any("open case reference: +4" in why
+                  for why in shared[plink("person.s2", "person.s3", "father")["id"]]["why"]),
+          shared)
+
+    # Mixed US + German places with a census-era subject stays online
+    root = make_root(tmp / "fr-mix", [person("person.mx", "Mixed Mover")],
+                     [gap_row("gap.mx.parents", ["person.mx"], [], pedigree=ped([8, 9]))],
+                     [event("person.mx", "birth", "1860", "1860-01-01",
+                            place="Dorf, Bayern"),
+                      event("person.mx", "death", "1930", "1930-01-01",
+                            place="Martin, Smith, Kansas")])
+    out = family_rules.frontier(root)
+    check("frontier mixed-place census-era subject stays online",
+          any(i["target"] == "gap.mx.parents" for i in out["online"])
+          and not any(i["target"] == "gap.mx.parents" for i in out["offline"]), out)
 
     # Ties break by id ascending; byte-deterministic output; resolved gaps excluded
     root = make_root(tmp / "fr-tie",
@@ -861,6 +905,25 @@ with tempfile.TemporaryDirectory(prefix="family-rules-test-") as td:
           r.stdout + r.stderr)
     payload = json.loads(r.stdout)
     check("cli case close names the violation",
+          any("parent-age" in error for error in payload.get("errors", [])), payload)
+
+    # The gate must also see people ADDED in the same command - no bypass via
+    # close + add-person-ref when the case previously referenced clean people
+    bypass_root = make_root(tmp / "cli-gate2",
+                            [person("person.x"), person("person.f"), person("person.k")],
+                            [plink("person.f", "person.k", "father")],
+                            [event("person.f", "birth", "1900", "1900-01-01"),
+                             event("person.k", "birth", "1910", "1910-01-01")],
+                            cases=[case_row("case.91", persons=["person.x"])])
+    env = {**os.environ, "GEN_STORE_ROOT": str(bypass_root)}
+    r = subprocess.run([sys.executable, "tools/gen_store.py", "case", "update",
+                        "case.91", "--status", "closed",
+                        "--add-person-ref", "person.f"],
+                       cwd=repo, capture_output=True, text=True, env=env)
+    check("cli case close gate sees added person refs", r.returncode == 1,
+          r.stdout + r.stderr)
+    payload = json.loads(r.stdout)
+    check("cli case close bypass names the violation",
           any("parent-age" in error for error in payload.get("errors", [])), payload)
 
 if failures:

@@ -977,6 +977,8 @@ def _frontier_has_dated_subject(vital_map: dict[str, dict], subjects: list[str])
         vital = vital_map.get(subject, {})
         if isinstance(vital.get("birth_year"), int) or isinstance(vital.get("death_year"), int):
             return True
+        if vital.get("marriage_years"):
+            return True
     return False
 
 
